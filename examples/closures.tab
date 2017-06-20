@@ -1,0 +1,11 @@
+printMessage = (msg) => {
+  () => {
+    print(msg)
+  }
+}
+
+printMyMessage = printMessage('I have a ham radio')
+printMyOtherMessage = printMessage('Holy crap closures work!')
+
+printMyMessage()
+printMyOtherMessage()

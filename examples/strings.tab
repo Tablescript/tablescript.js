@@ -1,0 +1,8 @@
+s = "I have a ham radio"
+print(s.length)
+
+print(s[0])
+print(s[-1])
+
+s += ', honest'
+print(s)

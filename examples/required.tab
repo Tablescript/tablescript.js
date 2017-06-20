@@ -1,0 +1,14 @@
+a = 'I have a ham radio'
+double = (x) => {
+  x * 2
+}
+t = table {
+  1: 'first'
+  2: 'second'
+}
+
+{
+  a: a,
+  double: double,
+  t: t
+}

@@ -1,0 +1,23 @@
+x = 1
+if (x == 1) {
+  print('good')
+}
+
+if (x == 1) {
+  print('good')
+} else {
+  print('bad')
+}
+
+if (x == 2) {
+  print('bad')
+}
+
+if (x == 2) {
+  print('bad')
+} else {
+  print('good')
+}
+
+y = if (x == 1) { 9 } else { 12 }
+print(y)

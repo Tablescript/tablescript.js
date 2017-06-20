@@ -1,0 +1,54 @@
+o = {
+  "foo": 9,
+  "bar": "I have a ham radio",
+  "baz": (x, y) => {
+    x * y
+  },
+  flung: "flamber",
+  sub: {
+    subsub: 1,
+    subsubsub: [3,4,5],
+    subsubsubsub: {
+      a: 1,
+      b: 2
+    }
+  },
+  a: () => {
+    [10,11,12]
+  }
+}
+
+print(o.foo)
+print(o.bar)
+print(o.baz(2, 3))
+
+o.goo = 12
+print(o)
+print(o['flung'])
+
+o.falsey = 17
+
+print(o.baz(4,5) + 2)
+print(o.sub.subsubsubsub.b)
+print(o.a().map((x) => { x - 5 }))
+
+o = {
+  a: 1,
+  b: 2,
+  c: 3
+}
+p = o
+o.a = 99
+print(p.a == 99)
+
+o = {
+  a: 1,
+  b: 2,
+  c: 3
+}
+p = {
+  ...o,
+  d: 4,
+  e: 5
+}
+print(p)

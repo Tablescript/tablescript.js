@@ -1,0 +1,18 @@
+compose = (x, y) => {
+  (a) => {
+    y(x(a))
+  }
+}
+
+double = (n) => {
+  n * 2
+}
+
+addThirty = (n) => {
+  n + 30
+}
+
+toF = compose(double, addThirty)
+
+print(toF(25))
+

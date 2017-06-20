@@ -1,0 +1,38 @@
+a = [1, 2, 3]
+
+print(a[0])
+print(a[4])
+print(a[-1])
+print(a[-2])
+
+print(a)
+a[0] = 9
+print(a)
+
+reducer = (result, e) => {
+  result + e
+}
+
+print("sum(reduce) = " + a.reduce(reducer, 0))
+print(a)
+
+print("double(map) = " + a.map((e) => { e * 2 }))
+print(a)
+
+print("even(filter) = " + a.filter((e) => { e % 2 == 0 }))
+print("odd(filter) = " + a.filter((e) => { e % 2 != 0 }))
+
+print(a.includes(9))
+print(a.includes('I have a ham radio'))
+
+a = [1,2,3]
+b = a
+a[0] = 99
+print(b[0] == 99)
+
+a = [1,2,3]
+b = [a,4,5]
+c = [...a,4,5]
+print(a)
+print(b)
+print(c)

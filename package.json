@@ -1,0 +1,42 @@
+{
+  "name": "tablescript.js",
+  "version": "0.0.1",
+  "description": "Javascript-based Tablescript parser and interpreter",
+  "url": "https://tablescript.org",
+  "bin": {
+    "tablescript": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "node_modules/.bin/babel src --out-dir dist",
+    "build:parser": "node_modules/.bin/pegjs --cache --output src/parser/peg-parser.js src/grammar/tablescript.pegjs",
+    "build:tracing-parser": "node_modules/.bin/pegjs --trace --cache --output src/parser/peg-parser.js src/grammar/tablescript.pegjs",
+    "lint": "node_modules/.bin/eslint src",
+    "test": "mocha --compilers js:babel-core/register test/**/*.js",
+    "test:watch": "mocha --watch --compilers js:babel-core/register test/**/*.js"
+  },
+  "author": {
+    "name": "Jamie Hale",
+    "email": "jamie@smallarmyofnerds.com",
+    "url": "https://smallarmyofnerds.com"
+  },
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamiehale/tablescript.js"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.5.2",
+    "chai": "*",
+    "eslint": "^4.1.1",
+    "eslint-config-google": "^0.8.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "mocha": "*",
+    "pegjs": "^0.10.0"
+  },
+  "dependencies": {
+    "commander": "^2.11.0",
+    "pegjs-backtrace": "^0.1.1"
+  }
+}

@@ -1,0 +1,16 @@
+t1 = table {
+  1: "first " + roll
+  2: "second " + roll
+  3: "third " + roll
+  4-6: "fourth " + roll
+}
+
+print(t1())
+
+t2 = table {
+  "first " + roll
+  "second " + roll
+  "third " + roll
+}
+
+print(t2())

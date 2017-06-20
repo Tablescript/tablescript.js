@@ -1,0 +1,5 @@
+required = require('/Users/jamie/src/tablescript/tsjs/examples/required.tab')
+
+print(required.a)
+print(required.double(5))
+print(required.t())

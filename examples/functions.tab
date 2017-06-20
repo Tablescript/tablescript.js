@@ -1,0 +1,47 @@
+foo = () => {
+  1 + 2
+}
+
+bar = (x, y) => {
+  x * y
+}
+
+print(foo())
+print(bar(2, 3))
+
+baz = (q) => {
+  q = "overwritten"
+  print(q)
+}
+
+q = 9
+print(q)
+baz(q)
+print(q)
+
+nobranch = () => {
+  'nobranch'
+}
+
+print(nobranch())
+
+branch = (n) => {
+  if (n == 1) {
+    'if'
+  } else {
+    'else'
+  }
+}
+
+print(branch(1))
+print(branch(2))
+
+noelse = (n) => {
+  if (n == 1) {
+    'if'
+  }
+  'default'
+}
+
+print(noelse(1))
+print(noelse(2))
