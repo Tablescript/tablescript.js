@@ -1,4 +1,4 @@
-required = require('/Users/jamie/src/tablescript/tsjs/examples/required.tab')
+required = require('./required.tab')
 
 print(required.a)
 print(required.double(5))

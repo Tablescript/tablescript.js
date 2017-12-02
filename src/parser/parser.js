@@ -5,8 +5,17 @@ import Tracer from 'pegjs-backtrace';
 import parser from './peg-parser';
 import { TablescriptError } from '../error';
 
+const contextPath = (context, filename) => {
+  if (filename.startsWith('./')) {
+    return [path.dirname(context.path)];
+  }
+  return [];
+};
+
+const environmentPaths = () => (process.env.TS_PATH || '').split(':');
+
 export const findAndParseFile = (context, filename) => {
-  const paths = (process.env.TS_PATH || '').split(':');
+  const paths = [...contextPath(context, filename), ...environmentPaths()];
   return paths.reduce((result, p) => result || parseFileIfExists(context, p, filename), undefined);
 };
 
