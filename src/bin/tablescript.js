@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // Copyright 2017 Jamie Hale
 //
 // This file is part of Tablescript.js.
@@ -15,10 +17,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { initializeBuiltins } from './builtins';
-import { createUndefined } from './undefined';
+import options from 'commander';
+import { parseFile } from '../parser/parser';
+import { interpret } from '../interpreter/interpreter';
+import { TablescriptError } from '../error';
 
-export const interpret = ast => {
-  const scope = initializeBuiltins();
-  return ast.reduce((_, statement) => statement.evaluate(scope), createUndefined());
-};
+options
+  .version('0.0.1')
+  .usage('[options] <file ...>')
+  .option('-d, --dump-ast', 'Dump AST and terminate')
+  .parse(process.argv);
+
+options.args.map(filename => {
+  try {
+    const ast = parseFile(filename);
+    interpret(ast);
+  } catch (e) {
+    if (e instanceof TablescriptError) {
+      console.log(e.toString());
+      if (e.trace) {
+        console.log(e.trace);
+      }
+    } else {
+      console.log(e);
+    }
+    process.exit(1);
+  }
+});

@@ -4,8 +4,9 @@
   "description": "Javascript-based Tablescript parser and interpreter",
   "url": "https://tablescript.org",
   "bin": {
-    "tablescript": "./dist/index.js"
+    "tablescript": "./dist/bin/tablescript.js"
   },
+  "main": "./dist/index.js",
   "scripts": {
     "build": "node_modules/.bin/babel src --out-dir dist",
     "build:parser": "node_modules/.bin/pegjs --cache --output src/parser/peg-parser.js src/grammar/tablescript.pegjs",

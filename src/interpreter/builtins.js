@@ -19,6 +19,7 @@ import { throwRuntimeError } from '../error';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
 import { findAndParseFile } from '../parser/parser';
+import { interpret } from './interpreter';
 
 const printBuiltin = {
   type: valueTypes.FUNCTION,
@@ -30,14 +31,14 @@ const printBuiltin = {
   asString: () => 'builtin(print)',
 };
 
-const createRequireBuiltin = interpreter => {
+const createRequireBuiltin = () => {
   return {
     type: valueTypes.FUNCTION,
     callFunction: (context, scope, parameters) => {
       const filename = parameters[0].asNativeString(context);
       const ast = findAndParseFile(context, filename);
       if (ast) {
-        return interpreter.execute(ast);
+        return interpret(ast);
       }
       throwRuntimeError(`require() file not found (${filename})`, context);
     },
