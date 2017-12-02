@@ -22,7 +22,7 @@ import { createNumericValue } from '../interpreter/numeric';
 import {
   createLeftHandSideValue,
   createArrayElementLeftHandSideValue,
-  createObjectPropertyLeftHandSideValue
+  createObjectPropertyLeftHandSideValue,
 } from '../interpreter/left-hand-side';
 import { createUndefined } from '../interpreter/undefined';
 import { createBooleanValue } from '../interpreter/boolean';
@@ -392,16 +392,16 @@ export const createTableEntry = (selector, body) => {
   };
 };
 
-export const createNextTableEntry = (body) => {
+export const createNextTableEntry = body => {
   return {
     evaluate: scope => {
       return body.evaluate(scope);
     },
     getReferencedSymbols: () => body.getReferencedSymbols(),
-    getHighestSelector: (index) => (index + 1),
+    getHighestSelector: index => (index + 1),
     rollApplies: (actualRoll, index) => (actualRoll === index + 1),
     json: () => ({
-      body: body.json()
+      body: body.json(),
     }),
   };
 };
@@ -513,7 +513,7 @@ export const createObjectLiteral = (context, entries) => {
 export const createObjectLiteralPropertyExpression = (context, key, value) => {
   return {
     evaluate: scope => createObjectValue({
-      [key]: value.evaluate(scope)
+      [key]: value.evaluate(scope),
     }),
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to an object', context);
@@ -613,7 +613,7 @@ export const createSpreadExpression = (context, expression) => {
     getReferencedSymbols: () => expression.getReferencedSymbols(),
     json: () => ({
       type: 'spread',
-      expression
+      expression,
     }),
   };
 };

@@ -61,6 +61,15 @@ const parse = (filePath, program) => {
   try {
     return parser.parse(program, { tracer, path: filePath });
   } catch (e) {
-    throw new TablescriptError(e.name, e.message, { path: filePath, line: e.location.start.line, column: e.location.start.column }, tracer.getBacktraceString());
+    throw new TablescriptError(
+      e.name,
+      e.message,
+      {
+        path: filePath,
+        line: e.location.start.line,
+        column: e.location.start.column,
+      },
+      tracer.getBacktraceString()
+    );
   }
 };

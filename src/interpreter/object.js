@@ -23,7 +23,9 @@ import { createNativeFunctionValue } from './function';
 import { createUndefined } from './undefined';
 
 export const createObjectValue = o => {
-  const asNativeString = context => JSON.stringify(Object.keys(o).reduce((acc, key) => Object.assign({}, acc, { [key]: o[key].asNativeValue(context) }), {}));
+  const asNativeString = context => {
+    return JSON.stringify(Object.keys(o).reduce((acc, key) => Object.assign({}, acc, { [key]: o[key].asNativeValue(context) }), {}));
+  };
   const asNativeBoolean = () => true;
   const asNativeObject = context => Object.keys(o).reduce((acc, key) => Object.assign({}, acc, { [key]: o[key].asNativeValue(context) }), {});
   const asString = context => createStringValue(asNativeString(context));

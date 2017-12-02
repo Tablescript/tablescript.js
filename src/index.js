@@ -48,7 +48,7 @@ options.args.map(filename => {
     console.log(JSON.stringify(ast.map(e => e.json())));
     process.exit(1);
   }
-  
+
   try {
     const interpreter = new Interpreter();
     interpreter.execute(ast);
