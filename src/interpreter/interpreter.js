@@ -17,8 +17,20 @@
 
 import { initializeBuiltins } from './builtins';
 import { createUndefined } from './undefined';
+import { createStringValue } from './string';
+import { createArrayValue } from './array';
+import { createObjectValue } from './object';
 
-export const interpret = (statements, options) => {
-  const scope = initializeBuiltins(options);
+const expandArguments = args => ({
+  arguments: createArrayValue(args.map(a => (typeof a === 'string') ? createStringValue(a) : a))
+});
+
+export const interpret = (statements, args, options) => {
+  const scope = {
+    system: createObjectValue({
+      ...expandArguments(args),
+      ...initializeBuiltins(options)
+    })
+  };
   return statements.reduce((_, statement) => statement.evaluate(scope), createUndefined());
 };

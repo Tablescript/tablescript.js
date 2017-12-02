@@ -18,7 +18,6 @@
 import { throwRuntimeError } from '../error';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
-import { createObjectValue } from './object';
 import { findAndParseFile } from '../parser/parser';
 import { interpret } from './interpreter';
 
@@ -34,14 +33,18 @@ const printBuiltin = options => {
   };
 };
 
-const createRequireBuiltin = () => {
+const createRequireBuiltin = options => {
   return {
     type: valueTypes.FUNCTION,
     callFunction: (context, scope, parameters) => {
+      if (parameters.length < 1) {
+        throwRuntimeError(`require(modulePath, ...) requires a modulePath`, context);
+      }
       const filename = parameters[0].asNativeString(context);
+      const args = parameters.slice(1);
       const ast = findAndParseFile(context, filename);
       if (ast) {
-        return interpret(ast);
+        return interpret(ast, args, options);
       }
       throwRuntimeError(`require() file not found (${filename})`, context);
     },
@@ -50,8 +53,6 @@ const createRequireBuiltin = () => {
 };
 
 export const initializeBuiltins = options => ({
-  system: createObjectValue({
-    print: printBuiltin(options),
-    require: createRequireBuiltin(),
-  })
+  print: printBuiltin(options),
+  require: createRequireBuiltin(options),
 });

@@ -1,4 +1,4 @@
-a = 'I have a ham radio'
+a = 'I also have a ham radio'
 double = (x) => {
   x * 2
 }
@@ -6,6 +6,10 @@ t = table {
   1: 'first'
   2: 'second'
 }
+
+system.print(system.arguments[0])
+system.print(system.arguments[1])
+system.print(system.arguments[2](3))
 
 {
   a: a,

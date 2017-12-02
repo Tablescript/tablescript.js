@@ -28,25 +28,26 @@ options
   .option('-d, --dump-ast', 'Dump AST and terminate')
   .parse(process.argv);
 
-options.args.map(filename => {
-  try {
-    const ast = parseFile(filename);
-    interpret(ast, {
-      output: {
-        print: s => {
-          console.log(s);
-        }
+const filename = options.args[0];
+const args = options.args.slice(1);
+
+try {
+  const ast = parseFile(filename);
+  interpret(ast, args, {
+    output: {
+      print: s => {
+        console.log(s);
       }
-    });
-  } catch (e) {
-    if (e instanceof TablescriptError) {
-      console.log(e.toString());
-      if (e.trace) {
-        console.log(e.trace);
-      }
-    } else {
-      console.log(e);
     }
-    process.exit(1);
+  });
+} catch (e) {
+  if (e instanceof TablescriptError) {
+    console.log(e.toString());
+    if (e.trace) {
+      console.log(e.trace);
+    }
+  } else {
+    console.log(e);
   }
-});
+  process.exit(1);
+}
