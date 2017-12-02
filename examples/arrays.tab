@@ -1,38 +1,38 @@
 a = [1, 2, 3]
 
-print(a[0])
-print(a[4])
-print(a[-1])
-print(a[-2])
+system.print(a[0])
+system.print(a[4])
+system.print(a[-1])
+system.print(a[-2])
 
-print(a)
+system.print(a)
 a[0] = 9
-print(a)
+system.print(a)
 
 reducer = (result, e) => {
   result + e
 }
 
-print("sum(reduce) = " + a.reduce(reducer, 0))
-print(a)
+system.print("sum(reduce) = " + a.reduce(reducer, 0))
+system.print(a)
 
-print("double(map) = " + a.map((e) => { e * 2 }))
-print(a)
+system.print("double(map) = " + a.map((e) => { e * 2 }))
+system.print(a)
 
-print("even(filter) = " + a.filter((e) => { e % 2 == 0 }))
-print("odd(filter) = " + a.filter((e) => { e % 2 != 0 }))
+system.print("even(filter) = " + a.filter((e) => { e % 2 == 0 }))
+system.print("odd(filter) = " + a.filter((e) => { e % 2 != 0 }))
 
-print(a.includes(9))
-print(a.includes('I have a ham radio'))
+system.print(a.includes(9))
+system.print(a.includes('I have a ham radio'))
 
 a = [1,2,3]
 b = a
 a[0] = 99
-print(b[0] == 99)
+system.print(b[0] == 99)
 
 a = [1,2,3]
 b = [a,4,5]
 c = [...a,4,5]
-print(a)
-print(b)
-print(c)
+system.print(a)
+system.print(b)
+system.print(c)

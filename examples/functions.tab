@@ -6,24 +6,24 @@ bar = (x, y) => {
   x * y
 }
 
-print(foo())
-print(bar(2, 3))
+system.print(foo())
+system.print(bar(2, 3))
 
 baz = (q) => {
   q = "overwritten"
-  print(q)
+  system.print(q)
 }
 
 q = 9
-print(q)
+system.print(q)
 baz(q)
-print(q)
+system.print(q)
 
 nobranch = () => {
   'nobranch'
 }
 
-print(nobranch())
+system.print(nobranch())
 
 branch = (n) => {
   if (n == 1) {
@@ -33,8 +33,8 @@ branch = (n) => {
   }
 }
 
-print(branch(1))
-print(branch(2))
+system.print(branch(1))
+system.print(branch(2))
 
 noelse = (n) => {
   if (n == 1) {
@@ -43,5 +43,5 @@ noelse = (n) => {
   'default'
 }
 
-print(noelse(1))
-print(noelse(2))
+system.print(noelse(1))
+system.print(noelse(2))

@@ -1,23 +1,23 @@
 x = 1
 if (x == 1) {
-  print('good')
+  system.print('good')
 }
 
 if (x == 1) {
-  print('good')
+  system.print('good')
 } else {
-  print('bad')
+  system.print('bad')
 }
 
 if (x == 2) {
-  print('bad')
+  system.print('bad')
 }
 
 if (x == 2) {
-  print('bad')
+  system.print('bad')
 } else {
-  print('good')
+  system.print('good')
 }
 
 y = if (x == 1) { 9 } else { 12 }
-print(y)
+system.print(y)

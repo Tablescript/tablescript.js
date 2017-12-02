@@ -18,19 +18,19 @@ o = {
   }
 }
 
-print(o.foo)
-print(o.bar)
-print(o.baz(2, 3))
+system.print(o.foo)
+system.print(o.bar)
+system.print(o.baz(2, 3))
 
 o.goo = 12
-print(o)
-print(o['flung'])
+system.print(o)
+system.print(o['flung'])
 
 o.falsey = 17
 
-print(o.baz(4,5) + 2)
-print(o.sub.subsubsubsub.b)
-print(o.a().map((x) => { x - 5 }))
+system.print(o.baz(4,5) + 2)
+system.print(o.sub.subsubsubsub.b)
+system.print(o.a().map((x) => { x - 5 }))
 
 o = {
   a: 1,
@@ -39,7 +39,7 @@ o = {
 }
 p = o
 o.a = 99
-print(p.a == 99)
+system.print(p.a == 99)
 
 o = {
   a: 1,
@@ -51,4 +51,4 @@ p = {
   d: 4,
   e: 5
 }
-print(p)
+system.print(p)

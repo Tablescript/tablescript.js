@@ -1,9 +1,9 @@
-10.upto(15).map((i) => { print(i) })
+10.upto(15).map((i) => { system.print(i) })
 
 x = 12
 x += 9
-print(x)
+system.print(x)
 
 x = y = 2
-print(x)
-print(y)
+system.print(x)
+system.print(y)

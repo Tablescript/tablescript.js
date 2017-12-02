@@ -31,7 +31,13 @@ options
 options.args.map(filename => {
   try {
     const ast = parseFile(filename);
-    interpret(ast);
+    interpret(ast, {
+      output: {
+        print: s => {
+          console.log(s);
+        }
+      }
+    });
   } catch (e) {
     if (e instanceof TablescriptError) {
       console.log(e.toString());

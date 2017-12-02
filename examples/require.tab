@@ -1,5 +1,5 @@
-required = require('./required.tab')
+required = system.require('./required.tab')
 
-print(required.a)
-print(required.double(5))
-print(required.t())
+system.print(required.a)
+system.print(required.double(5))
+system.print(required.t())

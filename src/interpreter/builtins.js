@@ -18,17 +18,20 @@
 import { throwRuntimeError } from '../error';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
+import { createObjectValue } from './object';
 import { findAndParseFile } from '../parser/parser';
 import { interpret } from './interpreter';
 
-const printBuiltin = {
-  type: valueTypes.FUNCTION,
-  callFunction: (context, scope, parameters) => {
-    const output = parameters.map(p => p.asNativeString(context)).join();
-    console.log(output);
-    return createStringValue(output);
-  },
-  asString: () => 'builtin(print)',
+const printBuiltin = options => {
+  return {
+    type: valueTypes.FUNCTION,
+    callFunction: (context, scope, parameters) => {
+      const s = parameters.map(p => p.asNativeString(context)).join();
+      options.output.print(s);
+      return createStringValue(s);
+    },
+    asString: () => 'builtin(print)',
+  };
 };
 
 const createRequireBuiltin = () => {
@@ -46,7 +49,9 @@ const createRequireBuiltin = () => {
   };
 };
 
-export const initializeBuiltins = interpreter => ({
-  print: printBuiltin,
-  require: createRequireBuiltin(interpreter),
+export const initializeBuiltins = options => ({
+  system: createObjectValue({
+    print: printBuiltin(options),
+    require: createRequireBuiltin(),
+  })
 });

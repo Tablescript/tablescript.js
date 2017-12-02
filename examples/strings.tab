@@ -1,8 +1,8 @@
 s = "I have a ham radio"
-print(s.length)
+system.print(s.length)
 
-print(s[0])
-print(s[-1])
+system.print(s[0])
+system.print(s[-1])
 
 s += ', honest'
-print(s)
+system.print(s)

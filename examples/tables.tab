@@ -5,7 +5,7 @@ t1 = table {
   4-6: "fourth " + roll
 }
 
-print(t1())
+system.print(t1())
 
 t2 = table {
   "first " + roll
@@ -13,4 +13,4 @@ t2 = table {
   "third " + roll
 }
 
-print(t2())
+system.print(t2())

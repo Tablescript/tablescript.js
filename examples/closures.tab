@@ -1,6 +1,6 @@
 printMessage = (msg) => {
   () => {
-    print(msg)
+    system.print(msg)
   }
 }
 

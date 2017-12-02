@@ -18,7 +18,7 @@
 import { initializeBuiltins } from './builtins';
 import { createUndefined } from './undefined';
 
-export const interpret = ast => {
-  const scope = initializeBuiltins();
-  return ast.reduce((_, statement) => statement.evaluate(scope), createUndefined());
+export const interpret = (statements, options) => {
+  const scope = initializeBuiltins(options);
+  return statements.reduce((_, statement) => statement.evaluate(scope), createUndefined());
 };
