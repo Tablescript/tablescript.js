@@ -18,8 +18,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import options from 'commander';
-import { parseFile } from '../parser/parser';
-import { interpret } from '../interpreter/interpreter';
+import { run } from '../index';
 import { TablescriptError } from '../error';
 
 options
@@ -32,8 +31,7 @@ const filename = options.args[0];
 const args = options.args.slice(1);
 
 try {
-  const statements = parseFile(filename);
-  const value = interpret(statements, args, {
+  const value = run(filename, args, {
     output: {
       print: s => {
         console.log(s);
@@ -41,7 +39,7 @@ try {
     }
   });
   if (options.printLastValue) {
-    console.log(value.asNativeString({}));
+    console.log(value);
   }
 } catch (e) {
   if (e instanceof TablescriptError) {

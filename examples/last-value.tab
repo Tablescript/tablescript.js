@@ -1,0 +1,12 @@
+{
+  a: 'I have a ham radio',
+  b: 12,
+  c: () => { 11 },
+  d: {
+    e: 99
+  },
+  f: table {
+    'Something'
+    'Something else'
+  }
+}
