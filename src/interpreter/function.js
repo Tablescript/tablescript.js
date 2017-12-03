@@ -28,7 +28,10 @@ const validateCalledParameters = (formalParameters, calledParameters) => {
 };
 
 const toKeyValuePair = formalParameters => (value, index) => ({ [formalParameters[index]]: value });
-const keyPairsToObject = (result, pair) => Object.assign({}, result, pair);
+const keyPairsToObject = (result, pair) => ({
+  ...result,
+  ...pair
+});
 
 const parameterConverter = formalParameters => calledParameters => {
   return validateCalledParameters(formalParameters, calledParameters)
@@ -45,7 +48,10 @@ export const createNativeFunctionValue = (formalParameters, f) => {
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
   const equals = other => false;
   const callFunction = (context, scope, parameters) => {
-    const localScope = Object.assign({}, scope, parametersToArguments(parameters));
+    const localScope = {
+      ...scope,
+      ...parametersToArguments(parameters)
+    };
     return f(context, localScope);
   };
 
@@ -75,7 +81,11 @@ export const createFunctionValue = (formalParameters, body, closure) => {
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
   const equals = other => false;
   const callFunction = (context, scope, parameters) => {
-    const localScope = Object.assign({}, scope, closure, parametersToArguments(parameters));
+    const localScope = {
+      ...scope,
+      ...closure,
+      ...parametersToArguments(parameters)
+    };
     return body.evaluate(localScope);
   };
 

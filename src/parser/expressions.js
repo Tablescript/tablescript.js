@@ -297,7 +297,7 @@ export const createFunctionExpression = (context, formalParameters, body) => {
   const createClosure = (body, parameters, scope) => {
     return body.getReferencedSymbols()
       .filter(v => !formalParameters.includes(v))
-      .reduce((result, symbol) => Object.assign({}, result, { [symbol]: scope[symbol] }), []);
+      .reduce((result, symbol) => ({...result, [symbol]: scope[symbol] }), {});
   };
 
   return {

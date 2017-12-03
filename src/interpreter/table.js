@@ -43,7 +43,10 @@ export const createTableValue = (formalParameters, entries) => {
       const indexValue = index.asNativeNumber(context);
       const selectedEntry = entries.find(e => e.rollApplies(indexValue));
       if (selectedEntry) {
-        const localScope = Object.assign({}, scope, { roll: createNumericValue(indexValue) });
+        const localScope = {
+          ...scope,
+          roll: createNumericValue(indexValue)
+        };
         return selectedEntry.evaluate(localScope);
       }
       return createUndefined();
@@ -52,7 +55,11 @@ export const createTableValue = (formalParameters, entries) => {
       const die = entries.reduce((max, entry, index) => Math.max(max, entry.getHighestSelector(index)), 0);
       const roll = randomNumber(die);
       const rolledEntry = entries.find((e, index) => e.rollApplies(roll, index));
-      const localScope = Object.assign({}, scope, parametersToArguments(parameters), { roll: createNumericValue(roll) });
+      const localScope = {
+        ...scope,
+        ...parametersToArguments(parameters),
+        roll: createNumericValue(roll)
+      };
       return rolledEntry.evaluate(localScope);
     },
   };
