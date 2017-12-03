@@ -7,9 +7,11 @@ t = table {
   2: 'second'
 }
 
-system.print(system.arguments[0])
-system.print(system.arguments[1])
-system.print(system.arguments[2](3))
+if (system.arguments.length) {
+  system.print(system.arguments[0])
+  system.print(system.arguments[1])
+  system.print(system.arguments[2](3))
+}
 
 {
   a: a,

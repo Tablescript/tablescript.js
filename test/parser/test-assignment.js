@@ -150,39 +150,4 @@ describe('createAssignmentExpression', () => {
       expect(result).to.eql([2, 4, 1, 3]);
     });
   });
-
-  describe('json', () => {
-    let result;
-
-    beforeEach(() => {
-      mockLeftHandExpression = {
-        getReferencedSymbols: () => [2, 4],
-        json: () => ({
-          name: 'lhsName',
-          value: 'lhsValue'
-        }),
-      };
-      mockValueExpression = {
-        getReferencedSymbols: () => [1, 3],
-        json: () => ({
-          name: 'name',
-          value: 'value'
-        }),
-      };
-      expression = createAssignmentExpression({}, mockLeftHandExpression, mockValueExpression);
-      result = expression.json();
-    });
-
-    it('has type "assign"', () => {
-      expect(result.type).to.equal('assign');
-    });
-
-    it('has left side equal to lhs expression json-ed', () => {
-      expect(result.left).to.eql({ name: 'lhsName', value: 'lhsValue' });
-    });
-
-    it('has right side equal to the value expression json-ed', () => {
-      expect(result.right).to.eql({ name: 'name', value: 'value' });
-    });
-  });
 });

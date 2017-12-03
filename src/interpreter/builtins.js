@@ -42,9 +42,9 @@ const createRequireBuiltin = options => {
       }
       const filename = parameters[0].asNativeString(context);
       const args = parameters.slice(1);
-      const ast = findAndParseFile(context, filename);
-      if (ast) {
-        return interpret(ast, args, options);
+      const statements = findAndParseFile(context, filename);
+      if (statements) {
+        return interpret(statements, args, options);
       }
       throwRuntimeError(`require() file not found (${filename})`, context);
     },

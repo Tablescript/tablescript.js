@@ -24,16 +24,15 @@ import { TablescriptError } from '../error';
 
 options
   .version('0.0.1')
-  .usage('[options] <file ...>')
-  .option('-d, --dump-ast', 'Dump AST and terminate')
+  .usage('[options] <file> [...args]')
   .parse(process.argv);
 
 const filename = options.args[0];
 const args = options.args.slice(1);
 
 try {
-  const ast = parseFile(filename);
-  interpret(ast, args, {
+  const statements = parseFile(filename);
+  interpret(statements, args, {
     output: {
       print: s => {
         console.log(s);

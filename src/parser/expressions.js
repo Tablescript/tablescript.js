@@ -51,19 +51,12 @@ export const createAssignmentExpression = (context, leftHandSideExpression, valu
     ];
   };
 
-  const json = () => ({
-    type: 'assign',
-    left: leftHandSideExpression.json(),
-    right: valueExpression.json(),
-  });
-
   return {
     evaluate,
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to assignment expression', context);
     },
     getReferencedSymbols,
-    json,
   };
 };
 
@@ -92,19 +85,12 @@ export const createPlusEqualsExpression = (context, leftHandSideExpression, valu
     ];
   };
 
-  const json = () => ({
-    type: '+=',
-    left: leftHandSideExpression.json(),
-    right: valueExpression.json(),
-  });
-
   return {
     evaluate,
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to assignment expression', context);
     },
     getReferencedSymbols,
-    json,
   };
 };
 
@@ -128,12 +114,6 @@ export const createConditionalExpression = (context, testExpression, consequentE
         ...alternateExpression.getReferencedSymbols(),
       ];
     },
-    json: () => ({
-      type: 'conditional',
-      test: testExpression.json(),
-      consequent: consequentExpression.json(),
-      alternate: alternateExpression.json(),
-    }),
   };
 };
 
@@ -237,11 +217,6 @@ export const createBinaryExpression = (context, leftExpression, operator, rightE
         ...rightExpression.getReferencedSymbols(),
       ];
     },
-    json: () => ({
-      type: operator,
-      left: leftExpression.json(),
-      right: rightExpression.json(),
-    }),
   };
 };
 
@@ -263,10 +238,6 @@ export const createUnaryExpression = (context, operator, argument) => {
       throwRuntimeError('Cannot assign to unary expression', context);
     },
     getReferencedSymbols: () => argument.getReferencedSymbols(),
-    json: () => ({
-      type: operator,
-      argument: argument.json(),
-    }),
   };
 };
 
@@ -286,11 +257,6 @@ export const createCallExpression = (context, callee, parameters) => {
         ...parameters.reduce((result, parameter) => [...result, ...parameter.getReferencedSymbols()], []),
       ];
     },
-    json: () => ({
-      type: 'call',
-      callee: callee.json(),
-      parameters: parameters.map(p => p.json()),
-    }),
   };
 };
 
@@ -324,11 +290,6 @@ export const createObjectPropertyExpression = (context, objectExpression, proper
         ...propertyNameExpression.getReferencedSymbols(),
       ];
     },
-    json: () => ({
-      type: 'property',
-      object: objectExpression.json(),
-      property: propertyNameExpression.json(),
-    }),
   };
 };
 
@@ -347,11 +308,6 @@ export const createFunctionExpression = (context, formalParameters, body) => {
       throwRuntimeError('Cannot assign to function', context);
     },
     getReferencedSymbols: () => body.getReferencedSymbols(),
-    json: () => ({
-      type: 'function',
-      parameters: formalParameters,
-      body: body.json(),
-    }),
   };
 };
 
@@ -369,11 +325,6 @@ export const createTableExpression = (context, parameters, entries) => {
         ...entries.reduce((result, entry) => [...result, ...entry.getReferencedSymbols()], []),
       ];
     },
-    json: () => ({
-      type: 'table',
-      parameters: parameters.map(p => p.json()),
-      entries: entries.map(e => e.json()),
-    }),
   };
 };
 
@@ -385,10 +336,6 @@ export const createTableEntry = (selector, body) => {
     getReferencedSymbols: () => body.getReferencedSymbols(),
     getHighestSelector: () => selector.highestSelector,
     rollApplies: actualRoll => selector.rollApplies(actualRoll),
-    json: () => ({
-      selector: selector ? selector.json() : undefined,
-      body: body.json(),
-    }),
   };
 };
 
@@ -400,9 +347,6 @@ export const createNextTableEntry = body => {
     getReferencedSymbols: () => body.getReferencedSymbols(),
     getHighestSelector: index => (index + 1),
     rollApplies: (actualRoll, index) => (actualRoll === index + 1),
-    json: () => ({
-      body: body.json(),
-    }),
   };
 };
 
@@ -410,11 +354,6 @@ export const createRangeTableSelector = (rangeStart, rangeEnd) => {
   return {
     highestSelector: rangeEnd,
     rollApplies: actualRoll => actualRoll >= rangeStart && actualRoll <= rangeEnd,
-    json: () => ({
-      type: 'range',
-      start: rangeStart,
-      end: rangeEnd,
-    }),
   };
 };
 
@@ -422,10 +361,6 @@ export const createExactTableSelector = roll => {
   return {
     highestSelector: roll,
     rollApplies: actualRoll => actualRoll === roll,
-    json: () => ({
-      type: 'exact',
-      roll: roll,
-    }),
   };
 };
 
@@ -439,10 +374,6 @@ export const createVariableExpression = (context, name) => {
     },
     evaluateAsLeftHandSide: () => createLeftHandSideValue(name),
     getReferencedSymbols: () => [name],
-    json: () => ({
-      type: 'variable',
-      name: name,
-    }),
   };
 };
 
@@ -453,10 +384,6 @@ export const createBooleanLiteral = (context, value) => {
       throwRuntimeError('Cannot assign to boolean', context);
     },
     getReferencedSymbols: () => [],
-    json: () => ({
-      type: 'boolean',
-      value,
-    }),
   };
 };
 
@@ -475,10 +402,6 @@ export const createArrayLiteral = (context, values) => {
       throwRuntimeError('Cannot assign to array', context);
     },
     getReferencedSymbols: () => values.reduce((result, value) => [...result, ...value.getReferencedSymbols()], []),
-    json: () => ({
-      type: 'array',
-      value: values.map(v => v.json()),
-    }),
   };
 };
 
@@ -503,10 +426,6 @@ export const createObjectLiteral = (context, entries) => {
       throwRuntimeError('Cannot assign to an object', context);
     },
     getReferencedSymbols: () => entries.reduce((result, e) => [...result, e.getReferencedSymbols()], []),
-    json: () => ({
-      type: 'object',
-      properties: e,
-    }),
   };
 };
 
@@ -519,11 +438,6 @@ export const createObjectLiteralPropertyExpression = (context, key, value) => {
       throwRuntimeError('Cannot assign to an object', context);
     },
     getReferencedSymbols: () => value.getReferencedSymbols(),
-    json: () => ({
-      type: 'object property',
-      key,
-      value: value.json(),
-    }),
   };
 };
 
@@ -534,11 +448,6 @@ export const createDiceLiteral = (context, count, die) => {
       throwRuntimeError('Cannot assign to dice', context);
     },
     getReferencedSymbols: () => [],
-    json: () => ({
-      type: 'dice',
-      count,
-      die,
-    }),
   };
 };
 
@@ -549,10 +458,6 @@ export const createNumberLiteral = (context, n) => {
       throwRuntimeError('Cannot assign to number', context);
     },
     getReferencedSymbols: () => [],
-    json: () => ({
-      type: 'number',
-      value: n,
-    }),
   };
 };
 
@@ -563,10 +468,6 @@ export const createStringLiteral = (context, s) => {
       throwRuntimeError('Cannot assign to string', context);
     },
     getReferencedSymbols: () => [],
-    json: () => ({
-      type: 'string',
-      value: s,
-    }),
   };
 };
 
@@ -590,12 +491,6 @@ export const createIfExpression = (context, condition, ifBlock, elseBlock) => {
         ...(elseBlock ? elseBlock.getReferencedSymbols() : []),
       ];
     },
-    json: () => ({
-      type: 'if',
-      condition: condition.json(),
-      ifBlock: ifBlock.json(),
-      elseBlock: elseBlock ? elseBlock.json() : undefined,
-    }),
   };
 };
 
@@ -611,9 +506,5 @@ export const createSpreadExpression = (context, expression) => {
       throwRuntimeError('Spreads only apply to arrays and objects', context);
     },
     getReferencedSymbols: () => expression.getReferencedSymbols(),
-    json: () => ({
-      type: 'spread',
-      expression,
-    }),
   };
 };

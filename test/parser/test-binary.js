@@ -527,21 +527,4 @@ describe('createBinaryExpression', () => {
       expect(expression.getReferencedSymbols()).to.eql([2, 4, 1, 3]);
     });
   });
-
-  describe('json', () => {
-    it('json-ifies', () => {
-      const mockLeftExpression = {
-        json: () => 'leftExpression'
-      };
-      const mockRightExpression = {
-        json: () => 'rightExpression'
-      };
-      const expression = createBinaryExpression({}, mockLeftExpression, 'operator', mockRightExpression);
-      expect(expression.json()).to.eql({
-        type: 'operator',
-        left: 'leftExpression',
-        right: 'rightExpression'
-      });
-    });
-  });
 });

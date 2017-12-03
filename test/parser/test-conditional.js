@@ -75,31 +75,4 @@ describe('createConditionalExpression', () => {
       expect(expression.getReferencedSymbols()).to.eql([1, 2, 3, 4, 5, 6, 7, 8, 9]);
     });
   });
-
-  describe('json', () => {
-    let expression;
-
-    beforeEach(() => {
-      const mockTestExpression = {
-        json: () => 'mockTestExpression',
-      };
-      const mockConsequentExpression = {
-        json: () => 'mockConsequentExpression',
-      };
-      const mockAlternateExpression = {
-        json: () => 'mockAlternateExpression',
-      };
-
-      expression = createConditionalExpression({}, mockTestExpression, mockConsequentExpression, mockAlternateExpression);
-    });
-
-    it('returns a json-ified expression', () => {
-      expect(expression.json()).to.eql({
-        type: 'conditional',
-        test: 'mockTestExpression',
-        consequent: 'mockConsequentExpression',
-        alternate: 'mockAlternateExpression',
-      });
-    });
-  });
 });
