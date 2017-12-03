@@ -22,13 +22,8 @@ import Tracer from 'pegjs-backtrace';
 import parser from './peg-parser';
 import { TablescriptError } from '../error';
 
-const contextPath = (context, filename) => {
-  if (filename.startsWith('./')) {
-    return [path.dirname(context.path)];
-  }
-  return [];
-};
-
+const isPathed = path => path.split('/').length > 1;
+const contextPath = (context, filename) => isPathed(filename) ? [path.dirname(context.path)] : [];
 const environmentPaths = () => (process.env.TS_PATH || '').split(':');
 
 export const findAndParseFile = (context, filename) => {
