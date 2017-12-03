@@ -29,19 +29,19 @@ options
 
 const filename = options.args[0];
 const args = options.args.slice(1);
-
-try {
-  const value = run(filename, args, {
-    output: {
-      print: s => {
-        console.log(s);
-      }
+const interpreterOptions = {
+  output: {
+    print: s => {
+      console.log(s);
     }
-  });
+  }
+};
+
+run(filename, args, interpreterOptions).then(value => {
   if (options.printLastValue) {
     console.log(value);
   }
-} catch (e) {
+}).catch(e => {
   if (e instanceof TablescriptError) {
     console.log(e.toString());
     if (e.trace) {
@@ -51,4 +51,4 @@ try {
     console.log(e);
   }
   process.exit(1);
-}
+});

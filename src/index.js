@@ -22,9 +22,11 @@ import { interpret } from './interpreter/interpreter';
 import { TablescriptError } from './error';
 
 const run = (filePath, args, options) => {
-  const statements = parseFile(filePath);
-  const result = interpret(statements, args, options);
-  return result.asNativeValue({path: filePath, line: 0, column: 0});
+  return new Promise((resolve) => {
+    const statements = parseFile(filePath);
+    const result = interpret(statements, args, options);
+    resolve(result.asNativeValue({path: filePath, line: 0, column: 0}));
+  });
 };
 
 export {
