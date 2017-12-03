@@ -25,6 +25,7 @@ import { TablescriptError } from '../error';
 options
   .version('0.0.1')
   .usage('[options] <file> [...args]')
+  .option('-p, --print-last-value', 'Print the last evaluated value')
   .parse(process.argv);
 
 const filename = options.args[0];
@@ -32,13 +33,16 @@ const args = options.args.slice(1);
 
 try {
   const statements = parseFile(filename);
-  interpret(statements, args, {
+  const value = interpret(statements, args, {
     output: {
       print: s => {
         console.log(s);
       }
     }
   });
+  if (options.printLastValue) {
+    console.log(value.asNativeString({}));
+  }
 } catch (e) {
   if (e instanceof TablescriptError) {
     console.log(e.toString());
