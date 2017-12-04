@@ -534,3 +534,10 @@ export const createSpreadExpression = (context, expression) => {
     getReferencedSymbols: () => expression.getReferencedSymbols(),
   };
 };
+
+export const createUndefinedLiteral = context => {
+  return {
+    evaluate: () => createUndefined(),
+    getReferencedSymbols: () => []
+  };
+};

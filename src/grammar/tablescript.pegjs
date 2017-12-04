@@ -43,6 +43,7 @@
     createDiceLiteral,
     createNumberLiteral,
     createStringLiteral,
+    createUndefinedLiteral,
     createIfExpression,
     createSpreadExpression,
   } = require('./expressions');
@@ -309,6 +310,12 @@ Literal
   / ArrayLiteral
   / ObjectLiteral
   / BooleanLiteral
+  / UndefinedLiteral
+
+UndefinedLiteral
+  = 'undefined' {
+    return createUndefinedLiteral(createContext(location(), options));
+  }
 
 BooleanLiteral
   = 'true' {
@@ -450,3 +457,4 @@ ReservedWord
   / 'not' !IdentifierPart
   / 'table' !IdentifierPart
   / 'return' !IdentifierPart
+  / 'undefined' !IdentifierPart
