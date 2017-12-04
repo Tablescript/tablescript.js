@@ -456,5 +456,4 @@ ReservedWord
   / 'or' !IdentifierPart
   / 'not' !IdentifierPart
   / 'table' !IdentifierPart
-  / 'return' !IdentifierPart
   / 'undefined' !IdentifierPart
