@@ -367,8 +367,19 @@ DiceLiteral
     return createDiceLiteral(createContext(location(), options), 1, die);
   }
 
-__ "Whitespace"
-  = [ \t\n\r]*
+LineTerminator
+  = "\n"
+  / "\r\n"
+  / "\r"
+
+Whitespace
+  = [ \t\n\r]
+
+Comment
+  = '#' (!LineTerminator .)*
+  
+__
+  = (Whitespace / Comment)*
 
 IntegerLiteral
   = i:Integer {

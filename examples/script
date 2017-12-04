@@ -1,0 +1,3 @@
+#! /usr/bin/env tablescript
+
+system.print('Running as a /usr/bin/env script')
