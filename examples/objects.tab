@@ -48,4 +48,4 @@ p = {
   d: 4,
   e: 5
 }
-system.assert(p.a == 1)
+system.assert(p == {a: 1, b: 2, c: 3, d: 4, e: 5})

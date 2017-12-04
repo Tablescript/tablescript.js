@@ -16,6 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { runtimeErrorThrower } from '../error';
+import { defaultValue } from './default';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
 import { createArrayValue } from './array';
@@ -23,13 +24,30 @@ import { createNativeFunctionValue } from './function';
 import { createUndefined } from './undefined';
 
 export const createObjectValue = o => {
-  const asNativeString = context => {
-    return JSON.stringify(Object.keys(o).reduce((acc, key) => ({...acc, [key]: o[key].asNativeValue(context) }), {}));
-  };
+  const propertiesAsNativeValues = (context, properties) => Object.keys(properties).reduce((result, key) => ({...result, [key]: properties[key].asNativeValue(context) }), {});
+
+  const asNativeString = context => JSON.stringify(propertiesAsNativeValues(context, o));
   const asNativeBoolean = () => true;
-  const asNativeObject = context => Object.keys(o).reduce((acc, key) => ({...acc, [key]: o[key].asNativeValue(context) }), {});
+  const asNativeObject = context => propertiesAsNativeValues(context, o);
+  const equals = (context, other) => {
+    if (other.type !== valueTypes.OBJECT) {
+      return false;
+    }
+    const otherProperties = other.asObject();
+    if (Object.keys(o).length !== Object.keys(otherProperties).length) {
+      return false;
+    }
+    return Object.keys(o).reduce((result, key) => {
+      if (!otherProperties[key]) {
+        return false;
+      }
+      return result && o[key].equals(context, otherProperties[key]);
+    }, true);
+  };
+
   const asString = context => createStringValue(asNativeString(context));
-  const asBoolean = context => createBooleanValue(asNativeBoolean(context));
+  const asBoolean = () => createBooleanValue(asNativeBoolean());
+  const asObject = () => o;
   const getProperty = (context, name) => {
     const propertyName = name.asNativeString(context);
     if (members[propertyName]) {
@@ -49,17 +67,14 @@ export const createObjectValue = o => {
   };
 
   return {
-    type: valueTypes.OBJECT,
-    asNativeValue: asNativeObject,
-    asNativeNumber: runtimeErrorThrower('Cannot cast object to number'),
+    ...defaultValue(valueTypes.OBJECT, asNativeObject),
     asNativeString,
     asNativeBoolean,
     asNativeObject,
-    equals: runtimeErrorThrower('Object equality unimplemented'),
-    asNumber: runtimeErrorThrower('Cannot cast object to number'),
+    equals,
     asString,
     asBoolean,
-    asObject: () => o,
+    asObject,
     getProperty,
     setProperty,
     getElement: runtimeErrorThrower('Cannot get element of object'),
