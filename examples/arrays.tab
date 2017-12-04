@@ -37,3 +37,8 @@ system.assert(c == [1,2,3,4,5])
 
 system.assert(c.join() == '1,2,3,4,5')
 system.assert(c.join('-') == '1-2-3-4-5')
+
+system.assert(a.reverse() == [3,2,1])
+
+system.assert(a.find((n) => { n == 3 }) == 3)
+system.assert(a.find((n) => { n == 'abc' }) == undefined)

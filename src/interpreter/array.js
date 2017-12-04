@@ -116,6 +116,17 @@ export const createArrayValue = entries => {
     return createUndefined();
   });
 
+  const find = createNativeFunctionValue(['f'], async (context, scope) => {
+    const f = scope['f'];
+    for (let i = 0; i < entries.length; i++) {
+      const testValue = await f.callFunction(context, scope, [entries[i]]);
+      if (testValue.asNativeBoolean(context)) {
+        return entries[i];
+      }
+    }
+    return createUndefined();
+  });
+
   const join = createNativeFunctionValue(['separator'], (context, scope) => {
     const separator = scope['separator'];
     if (separator) {
@@ -127,12 +138,18 @@ export const createArrayValue = entries => {
     return createStringValue(entries.map(e => e.asNativeString(context)).join());
   });
 
+  const reverse = createNativeFunctionValue([], (context, scope) => {
+    return createArrayValue([...entries].reverse());
+  });
+
   const members = {
     reduce,
     map,
     filter,
     includes,
+    find,
     join,
+    reverse,
     length: createNumericValue(entries.length),
   };
 
