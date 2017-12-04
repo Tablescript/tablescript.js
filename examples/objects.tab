@@ -18,19 +18,16 @@ o = {
   }
 }
 
-system.print(o.foo)
-system.print(o.bar)
-system.print(o.baz(2, 3))
+system.assert(o.foo == 9)
+system.assert(o.bar == 'I have a ham radio')
+system.assert(o.baz(2, 3) == 6)
 
 o.goo = 12
-system.print(o)
-system.print(o['flung'])
+system.assert(o.goo == 12)
+system.assert(o['flung'] == 'flamber')
 
-o.falsey = 17
-
-system.print(o.baz(4,5) + 2)
-system.print(o.sub.subsubsubsub.b)
-system.print(o.a().map((x) => { x - 5 }))
+system.assert(o.sub.subsubsubsub.b == 2)
+system.assert(o.a().map((x) => { x - 5 }) == [5,6,7])
 
 o = {
   a: 1,
@@ -39,7 +36,7 @@ o = {
 }
 p = o
 o.a = 99
-system.print(p.a == 99)
+system.assert(p.a == 99)
 
 o = {
   a: 1,
@@ -51,4 +48,4 @@ p = {
   d: 4,
   e: 5
 }
-system.print(p)
+system.assert(p.a == 1)

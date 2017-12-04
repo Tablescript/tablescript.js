@@ -18,8 +18,30 @@
 import { throwRuntimeError } from '../error';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
+import { createUndefined } from './undefined';
 import { run } from '../index';
 import { interpret } from './interpreter';
+
+const assertBuiltin = options => {
+  return {
+    type: valueTypes.FUNCTION,
+    callFunction: async (context, scope, parameters) => {
+      if (parameters.length < 1) {
+        throwRuntimeError(`assert(condition, [message]) takes 1 or 2 parameters`, context);
+      }
+      if (!parameters[0].asNativeBoolean(context)) {
+        if (parameters.length === 2) {
+          const message = parameters[1].asNativeString(context);
+          throwRuntimeError(`assertion failed: ${message}`);
+        } else {
+          throwRuntimeError('assertion failed');
+        }
+      }
+      return createUndefined();
+    },
+    asString: () => 'buildin(assert)',
+  };
+};
 
 const printBuiltin = options => {
   return {
@@ -49,6 +71,7 @@ const createRequireBuiltin = options => {
 };
 
 export const initializeBuiltins = options => ({
+  assert: assertBuiltin(options),
   print: printBuiltin(options),
   require: createRequireBuiltin(options),
 });
