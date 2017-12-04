@@ -22,6 +22,7 @@ import options from 'commander';
 import fs from 'fs';
 import { runProgram } from '../index';
 import { resolveFsFile } from '../parser/fs-resolver';
+import { resolveHttpFile } from '../parser/http-resolver';
 import { TablescriptError } from '../error';
 
 options
@@ -35,7 +36,7 @@ const args = options.args.slice(1);
 
 const interpreterOptions = {
   input: {
-    resolvers: [resolveFsFile]
+    resolvers: [resolveFsFile, resolveHttpFile]
   },
   output: {
     print: s => {

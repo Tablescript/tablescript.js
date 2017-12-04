@@ -22,19 +22,17 @@ import { interpret } from './interpreter/interpreter';
 import { TablescriptError, throwRuntimeError } from './error';
 
 const loadProgram = async (resolvers, context, filename) => {
-  return await resolvers.reduce(async (program, resolver) => {
-    if (program) {
-      return program;
+  for (let i = 0; i < resolvers.length; i++) {
+    const result = await resolvers[i](context, filename);
+    if (result) {
+      return result;
     }
-    return await resolver(context, filename);
-  }, undefined);
+  }
+  throwRuntimeError(`Unable to load ${filename}`, context);
 };
 
 const run = async (context, filename, args, options) => {
   const program = await loadProgram(options.input.resolvers, context, filename);
-  if (!program) {
-    throwRuntimeError(`Unable to load ${filename}`, context);
-  }
   return await runProgram(context, program, args, options);
 };
 
