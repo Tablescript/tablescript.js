@@ -1,38 +1,39 @@
 a = [1, 2, 3]
 
-system.print(a[0])
-system.print(a[4])
-system.print(a[-1])
-system.print(a[-2])
+system.assert(a[0] == 1)
+system.assert(a[4] == undefined)
+system.assert(a[-1] == 3)
+system.assert(a[-2] == 2)
 
-system.print(a)
+system.assert(a == [1,2,3])
 a[0] = 9
-system.print(a)
+system.assert(a == [9,2,3])
 
 reducer = (result, e) => {
   result + e
 }
 
-system.print("sum(reduce) = " + a.reduce(reducer, 0))
-system.print(a)
+system.assert(a.reduce(reducer, 0) == 14)
 
-system.print("double(map) = " + a.map((e) => { e * 2 }))
-system.print(a)
+system.assert(a.map((e) => { e * 2 }) == [18,4,6])
 
-system.print("even(filter) = " + a.filter((e) => { e % 2 == 0 }))
-system.print("odd(filter) = " + a.filter((e) => { e % 2 != 0 }))
+system.assert(a.filter((e) => { e % 2 == 0 }) == [2])
+system.assert(a.filter((e) => { e % 2 != 0 }) == [9,3])
 
-system.print(a.includes(9))
-system.print(a.includes('I have a ham radio'))
+system.assert(a.includes(9))
+system.assert(not a.includes('I have a ham radio'))
 
 a = [1,2,3]
 b = a
 a[0] = 99
-system.print(b[0] == 99)
+system.assert(b[0] == 99)
 
 a = [1,2,3]
 b = [a,4,5]
 c = [...a,4,5]
-system.print(a)
-system.print(b)
-system.print(c)
+system.assert(a == [1,2,3])
+system.assert(b == [[1,2,3],4,5])
+system.assert(c == [1,2,3,4,5])
+
+system.assert(c.join() == '1,2,3,4,5')
+system.assert(c.join('-') == '1-2-3-4-5')

@@ -1,8 +1,11 @@
 s = "I have a ham radio"
-system.print(s.length)
+system.assert(s.length == 18)
 
-system.print(s[0])
-system.print(s[-1])
+system.assert(s[0] == 'I')
+system.assert(s[-1] == 'o')
 
 s += ', honest'
-system.print(s)
+system.assert(s == 'I have a ham radio, honest')
+
+system.assert(s.split(' ') == ['I', 'have', 'a', 'ham', 'radio,', 'honest'])
+system.assert(s.split() == ['I have a ham radio, honest'])

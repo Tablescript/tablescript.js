@@ -116,11 +116,23 @@ export const createArrayValue = entries => {
     return createUndefined();
   });
 
+  const join = createNativeFunctionValue(['separator'], (context, scope) => {
+    const separator = scope['separator'];
+    if (separator) {
+      if (separator.type !== valueTypes.STRING) {
+        throwRuntimeError(`join([separator]) separator must be a string`);
+      }
+      return createStringValue(entries.map(e => e.asNativeString(context)).join(separator.asNativeString(context)));
+    }
+    return createStringValue(entries.map(e => e.asNativeString(context)).join());
+  });
+
   const members = {
     reduce,
     map,
     filter,
     includes,
+    join,
     length: createNumericValue(entries.length),
   };
 

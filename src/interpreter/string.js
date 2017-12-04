@@ -20,6 +20,8 @@ import { valueTypes } from './types';
 import { createBooleanValue } from './boolean';
 import { createNumericValue } from './numeric';
 import { createUndefined } from './undefined';
+import { createArrayValue } from './array';
+import { createNativeFunctionValue } from './function';
 
 export const createStringValue = value => {
   const asNativeNumber = () => Number(value);
@@ -47,7 +49,19 @@ export const createStringValue = value => {
     return createStringValue(value[indexValue]);
   };
 
+  const split = createNativeFunctionValue(['separator'], (context, scope) => {
+    const separator = scope['separator'];
+    if (separator) {
+      if (separator.type !== valueTypes.STRING) {
+        throwRuntimeError(`split(separator) separator must be a string`);
+      }
+      return createArrayValue(value.split(separator.asNativeString(context)).map(s => createStringValue(s)));
+    }
+    return createArrayValue(value.split().map(s => createStringValue(s)));
+  });
+
   const members = {
+    split,
     empty: createBooleanValue(value.length === 0),
     length: createNumericValue(value.length),
   };
