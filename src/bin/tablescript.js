@@ -17,8 +17,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import "babel-polyfill";
 import options from 'commander';
-import { run } from '../index';
+import fs from 'fs';
+import { runProgram } from '../index';
+import { resolveFsFile } from '../parser/fs-resolver';
 import { TablescriptError } from '../error';
 
 options
@@ -29,7 +32,11 @@ options
 
 const filename = options.args[0];
 const args = options.args.slice(1);
+
 const interpreterOptions = {
+  input: {
+    resolvers: [resolveFsFile]
+  },
   output: {
     print: s => {
       console.log(s);
@@ -37,18 +44,28 @@ const interpreterOptions = {
   }
 };
 
-run(filename, args, interpreterOptions).then(value => {
-  if (options.printLastValue) {
-    console.log(value);
-  }
-}).catch(e => {
-  if (e instanceof TablescriptError) {
-    console.log(e.toString());
-    if (e.trace) {
-      console.log(e.trace);
+try {
+  const context = {
+    path: filename,
+    line: 0,
+    column: 0
+  };
+  const program = fs.readFileSync(filename, 'utf8');
+  runProgram(context, program, args, interpreterOptions).then(value => {
+    if (options.printLastValue) {
+      console.log(value.asNativeValue(context));
     }
-  } else {
-    console.log(e);
-  }
-  process.exit(1);
-});
+  }).catch(e => {
+    if (e instanceof TablescriptError) {
+      console.log(e.toString());
+      if (e.trace) {
+        console.log(e.trace);
+      }
+    } else {
+      console.log(e);
+    }
+    process.exit(1);
+  });
+} catch (e) {
+  console.log(`RuntimeError: Unable to read ${filename}`);
+}

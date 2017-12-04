@@ -17,25 +17,29 @@
 
 import fs from 'fs';
 import path from 'path';
-import Tracer from 'pegjs-backtrace';
 
-import parser from './peg-parser';
-import { TablescriptError } from '../error';
+const isPathed = p => p.split('/').length > 1;
+const contextPath = (context, filename) => isPathed(filename) ? [path.dirname(context.path)] : [];
+const environmentPaths = () => (process.env.TS_PATH || '').split(':');
 
-export const parse = (filePath, program) => {
-  const tracer = new Tracer(program);
-  try {
-    return parser.parse(program, { path: filePath });
-  } catch (e) {
-    throw new TablescriptError(
-      e.name,
-      e.message,
-      {
-        path: filePath,
-        line: e.location.start.line,
-        column: e.location.start.column,
-      },
-      tracer.getBacktraceString()
-    );
-  }
+const fileContents = (filePath) => {
+  return new Promise(resolve => {
+    fs.readFile(filePath, 'utf8', (error, contents) => {
+      if (error) {
+        resolve(undefined);
+      } else {
+        resolve(contents);
+      }
+    });
+  });
+};
+
+export const resolveFsFile = async (context, filename) => {
+  const paths = [...contextPath(context, filename), ...environmentPaths()];
+  return await paths.reduce(async (contents, p) => {
+    if (contents) {
+      return contents;
+    }
+    return await fileContents(path.resolve(p, filename));
+  }, undefined);
 };

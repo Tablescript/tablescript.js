@@ -34,12 +34,12 @@ import { createArraySpread, createObjectSpread } from '../interpreter/spread';
 import { rollDice } from '../interpreter/random';
 
 export const createAssignmentExpression = (context, leftHandSideExpression, valueExpression) => {
-  const evaluate = scope => {
-    const leftHandSideValue = leftHandSideExpression.evaluateAsLeftHandSide(scope);
+  const evaluate = async scope => {
+    const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(scope);
     if (leftHandSideValue.type !== valueTypes.LEFT_HAND_SIDE) {
       throwRuntimeError('Cannot assign to a non-left-hand-side type', context);
     }
-    const value = valueExpression.evaluate(scope);
+    const value = await valueExpression.evaluate(scope);
     leftHandSideValue.assignFrom(context, scope, value);
     return value;
   };
@@ -61,13 +61,13 @@ export const createAssignmentExpression = (context, leftHandSideExpression, valu
 };
 
 export const createPlusEqualsExpression = (context, leftHandSideExpression, valueExpression) => {
-  const evaluate = scope => {
-    const leftHandSideValue = leftHandSideExpression.evaluateAsLeftHandSide(scope);
+  const evaluate = async scope => {
+    const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(scope);
     if (leftHandSideValue.type !== valueTypes.LEFT_HAND_SIDE) {
       throwRuntimeError('Cannot assign to a non-left-hand-side type', context);
     }
-    const leftValue = leftHandSideExpression.evaluate(scope);
-    const rightValue = valueExpression.evaluate(scope);
+    const leftValue = await leftHandSideExpression.evaluate(scope);
+    const rightValue = await valueExpression.evaluate(scope);
     if (leftValue.type === valueTypes.STRING) {
       leftHandSideValue.assignFrom(context, scope, createStringValue(leftValue.asNativeString(context) + rightValue.asNativeString(context)));
       return rightValue;
@@ -96,12 +96,12 @@ export const createPlusEqualsExpression = (context, leftHandSideExpression, valu
 
 export const createConditionalExpression = (context, testExpression, consequentExpression, alternateExpression) => {
   return {
-    evaluate: scope => {
-      const testValue = testExpression.evaluate(scope);
+    evaluate: async scope => {
+      const testValue = await testExpression.evaluate(scope);
       if (testValue.asNativeBoolean(context)) {
-        return consequentExpression.evaluate(scope);
+        return await consequentExpression.evaluate(scope);
       } else {
-        return alternateExpression.evaluate(scope);
+        return await alternateExpression.evaluate(scope);
       }
     },
     evaluateAsLeftHandSide: () => {
@@ -119,23 +119,25 @@ export const createConditionalExpression = (context, testExpression, consequentE
 
 export const createBinaryExpression = (context, leftExpression, operator, rightExpression) => {
   const operations = {
-    'or': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
+    'or': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
       if (leftValue.asNativeBoolean(context)) {
         return createBooleanValue(true);
       }
-      return createBooleanValue(rightExpression.evaluate(scope).asNativeBoolean(context));
+      const rightValue = await rightExpression.evaluate(scope);
+      return createBooleanValue(rightValue.asNativeBoolean(context));
     },
-    'and': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
+    'and': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
       if (!leftValue.asNativeBoolean(context)) {
         return createBooleanValue(false);
       }
-      return createBooleanValue(rightExpression.evaluate(scope).asNativeBoolean(context));
+      const rightValue = await rightExpression.evaluate(scope);
+      return createBooleanValue(rightValue.asNativeBoolean(context));
     },
-    '+': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '+': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       if (leftValue.type === valueTypes.STRING) {
         return createStringValue(leftValue.asNativeString(context) + rightValue.asNativeString(context));
       } else if (leftValue.type === valueTypes.NUMBER) {
@@ -143,68 +145,68 @@ export const createBinaryExpression = (context, leftExpression, operator, rightE
       }
       throwRuntimeError('Cannot add these values', context);
     },
-    '-': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '-': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       return createNumericValue(leftValue.asNativeNumber(context) - rightValue.asNativeNumber(context));
     },
-    '*': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '*': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       return createNumericValue(leftValue.asNativeNumber(context) * rightValue.asNativeNumber(context));
     },
-    '/': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '/': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       if (rightValue.asNativeNumber(context) === 0) {
         throwRuntimeError('Divide by zero', context);
       }
       return createNumericValue(leftValue.asNativeNumber(context) / rightValue.asNativeNumber(context));
     },
-    '%': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '%': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       if (rightValue.asNativeNumber(context) === 0) {
         throwRuntimeError('Divide by zero', context);
       }
       return createNumericValue(leftValue.asNativeNumber(context) % rightValue.asNativeNumber(context));
     },
-    '==': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '==': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       return createBooleanValue(leftValue.equals(context, rightValue));
     },
-    '!=': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '!=': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       return createBooleanValue(!leftValue.equals(context, rightValue));
     },
-    '<': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '<': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       return createBooleanValue(leftValue.asNativeNumber(context) < rightValue.asNativeNumber(context));
     },
-    '>': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '>': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       return createBooleanValue(leftValue.asNativeNumber(context) > rightValue.asNativeNumber(context));
     },
-    '<=': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '<=': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       return createBooleanValue(leftValue.asNativeNumber(context) <= rightValue.asNativeNumber(context));
     },
-    '>=': (scope, leftExpression, rightExpression) => {
-      const leftValue = leftExpression.evaluate(scope);
-      const rightValue = rightExpression.evaluate(scope);
+    '>=': async (scope, leftExpression, rightExpression) => {
+      const leftValue = await leftExpression.evaluate(scope);
+      const rightValue = await rightExpression.evaluate(scope);
       return createBooleanValue(leftValue.asNativeNumber(context) >= rightValue.asNativeNumber(context));
     },
   };
 
   return {
-    evaluate: scope => {
+    evaluate: async scope => {
       if (operations[operator]) {
-        return operations[operator](scope, leftExpression, rightExpression);
+        return await operations[operator](scope, leftExpression, rightExpression);
       }
       throwRuntimeError(`Invalid operator ${operator}`, context);
     },
@@ -222,8 +224,8 @@ export const createBinaryExpression = (context, leftExpression, operator, rightE
 
 export const createUnaryExpression = (context, operator, argument) => {
   return {
-    evaluate: scope => {
-      const value = argument.evaluate(scope);
+    evaluate: async scope => {
+      const value = await argument.evaluate(scope);
       if (operator === '-') {
         return createNumericValue(-1 * value.asNativeNumber(context));
       } else if (operator === '+') {
@@ -242,12 +244,25 @@ export const createUnaryExpression = (context, operator, argument) => {
 };
 
 export const createCallExpression = (context, callee, parameters) => {
+  const evaluateParameters = async (parameters, scope) => {
+    let result = []
+    for (let i = 0; i < parameters.length; i++) {
+      result = [
+        ...result,
+        await parameters[i].evaluate(scope)
+      ];
+    }
+    return result;
+  };
+
+  const evaluate = async scope => {
+    const calleeValue = await callee.evaluate(scope);
+    const parameterValues = await evaluateParameters(parameters, scope);
+    return await calleeValue.callFunction(context, scope, parameterValues);
+  };
+
   return {
-    evaluate: scope => {
-      const calleeValue = callee.evaluate(scope);
-      const parameterValues = parameters.map(p => p.evaluate(scope));
-      return calleeValue.callFunction(context, scope, parameterValues);
-    },
+    evaluate,
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to call expression', context);
     },
@@ -262,20 +277,20 @@ export const createCallExpression = (context, callee, parameters) => {
 
 export const createObjectPropertyExpression = (context, objectExpression, propertyNameExpression) => {
   return {
-    evaluate: scope => {
-      const objectValue = objectExpression.evaluate(scope);
-      const propertyNameValue = propertyNameExpression.evaluate(scope);
+    evaluate: async scope => {
+      const objectValue = await objectExpression.evaluate(scope);
+      const propertyNameValue = await propertyNameExpression.evaluate(scope);
       if (propertyNameValue.type === valueTypes.NUMBER) {
-        return objectValue.getElement(context, propertyNameValue);
+        return await objectValue.getElement(context, propertyNameValue);
       }
       return objectValue.getProperty(context, propertyNameValue);
     },
-    evaluateAsLeftHandSide: scope => {
-      const objectValue = objectExpression.evaluate(scope);
+    evaluateAsLeftHandSide: async scope => {
+      const objectValue = await objectExpression.evaluate(scope);
       if (!(objectValue.type === valueTypes.OBJECT || objectValue.type === valueTypes.ARRAY)) {
         throwRuntimeError('Cannot assign to non-object non-array type', context);
       }
-      const propertyNameValue = propertyNameExpression.evaluate(scope);
+      const propertyNameValue = await propertyNameExpression.evaluate(scope);
       if (propertyNameValue.type === valueTypes.NUMBER) {
         return createArrayElementLeftHandSideValue(objectValue, propertyNameValue);
       } else if (propertyNameValue.type === valueTypes.STRING) {
@@ -330,8 +345,8 @@ export const createTableExpression = (context, parameters, entries) => {
 
 export const createTableEntry = (selector, body) => {
   return {
-    evaluate: scope => {
-      return body.evaluate(scope);
+    evaluate: async scope => {
+      return await body.evaluate(scope);
     },
     getReferencedSymbols: () => body.getReferencedSymbols(),
     getHighestSelector: () => selector.highestSelector,
@@ -341,8 +356,8 @@ export const createTableEntry = (selector, body) => {
 
 export const createNextTableEntry = body => {
   return {
-    evaluate: scope => {
-      return body.evaluate(scope);
+    evaluate: async scope => {
+      return await body.evaluate(scope);
     },
     getReferencedSymbols: () => body.getReferencedSymbols(),
     getHighestSelector: index => (index + 1),
@@ -388,16 +403,29 @@ export const createBooleanLiteral = (context, value) => {
 };
 
 export const createArrayLiteral = (context, values) => {
-  return {
-    evaluate: scope => createArrayValue(values.reduce((result, v) => {
-      const value = v.evaluate(scope);
+  const evaluate = async scope => {
+    let result = [];
+    for (let i = 0; i < values.length; i++) {
+      const value = await values[i].evaluate(scope);
       if (value.type === valueTypes.ARRAY_SPREAD) {
-        return [...result, ...value.getElements(context)];
+        result = [
+          ...result,
+          ...value.getElements(context)
+        ];
       } else if (value.type === valueTypes.OBJECT_SPREAD) {
         throwRuntimeError('Cannot spread object into array', context);
+      } else {
+        result = [
+          ...result,
+          value
+        ];
       }
-      return [...result, value];
-    }, [])),
+    }
+    return createArrayValue(result);
+  };
+
+  return {
+    evaluate,
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to array', context);
     },
@@ -406,22 +434,20 @@ export const createArrayLiteral = (context, values) => {
 };
 
 export const createObjectLiteral = (context, entries) => {
+  const evaluate = async scope => {
+    let result = {};
+    for (let i = 0; i < entries.length; i++) {
+      const value = await entries[i].evaluate(scope);
+      result = {
+        ...result,
+        ...value.getProperties(context),
+      };
+    }
+    return createObjectValue(result);
+  };
+
   return {
-    evaluate: scope => {
-      return createObjectValue(entries.reduce((result, e) => {
-        const value = e.evaluate(scope);
-        if (value.type === valueTypes.OBJECT_SPREAD) {
-          return {
-            ...result,
-            ...value.getProperties(context),
-          };
-        }
-        return {
-          ...result,
-          ...value.getProperties(context),
-        };
-      }, {}));
-    },
+    evaluate,
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to an object', context);
     },
@@ -431,8 +457,8 @@ export const createObjectLiteral = (context, entries) => {
 
 export const createObjectLiteralPropertyExpression = (context, key, value) => {
   return {
-    evaluate: scope => createObjectValue({
-      [key]: value.evaluate(scope),
+    evaluate: async scope => createObjectValue({
+      [key]: await value.evaluate(scope),
     }),
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to an object', context);
@@ -473,13 +499,13 @@ export const createStringLiteral = (context, s) => {
 
 export const createIfExpression = (context, condition, ifBlock, elseBlock) => {
   return {
-    evaluate: scope => {
-      const expressionValue = condition.evaluate(scope);
+    evaluate: async scope => {
+      const expressionValue = await condition.evaluate(scope);
       if (expressionValue.asNativeBoolean(context)) {
-        return ifBlock.evaluate(scope);
+        return await ifBlock.evaluate(scope);
       } else {
         if (elseBlock) {
-          return elseBlock.evaluate(scope);
+          return await elseBlock.evaluate(scope);
         }
         return createUndefined();
       }
@@ -496,8 +522,8 @@ export const createIfExpression = (context, condition, ifBlock, elseBlock) => {
 
 export const createSpreadExpression = (context, expression) => {
   return {
-    evaluate: scope => {
-      const value = expression.evaluate(scope);
+    evaluate: async scope => {
+      const value = await expression.evaluate(scope);
       if (value.type === valueTypes.ARRAY) {
         return createArraySpread(value);
       } else if (value.type === valueTypes.OBJECT) {

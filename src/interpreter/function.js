@@ -47,12 +47,12 @@ export const createNativeFunctionValue = (formalParameters, f) => {
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
   const equals = other => false;
-  const callFunction = (context, scope, parameters) => {
+  const callFunction = async (context, scope, parameters) => {
     const localScope = {
       ...scope,
       ...parametersToArguments(parameters)
     };
-    return f(context, localScope);
+    return await f(context, localScope);
   };
 
   return {
@@ -80,13 +80,13 @@ export const createFunctionValue = (formalParameters, body, closure) => {
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
   const equals = other => false;
-  const callFunction = (context, scope, parameters) => {
+  const callFunction = async (context, scope, parameters) => {
     const localScope = {
       ...scope,
       ...closure,
       ...parametersToArguments(parameters)
     };
-    return body.evaluate(localScope);
+    return await body.evaluate(localScope);
   };
 
   return {

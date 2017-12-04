@@ -61,30 +61,30 @@ export const createArrayValue = entries => {
     return entries[indexValue];
   };
 
-  const reduce = createNativeFunctionValue(['reducer', 'initialValue'], (context, scope) => {
+  const reduce = createNativeFunctionValue(['reducer', 'initialValue'], async (context, scope) => {
     const reducer = scope['reducer'];
     const initialValue = scope['initialValue'];
     let result = initialValue;
     for (let i = 0; i < entries.length; i++) {
-      result = reducer.callFunction(context, scope, [result, entries[i]]);
+      result = await reducer.callFunction(context, scope, [result, entries[i]]);
     }
     return result;
   });
 
-  const map = createNativeFunctionValue(['f'], (context, scope) => {
+  const map = createNativeFunctionValue(['f'], async (context, scope) => {
     const f = scope['f'];
     const result = [];
     for (let i = 0; i < entries.length; i++) {
-      result.push(f.callFunction(context, scope, [entries[i]]));
+      result.push(await f.callFunction(context, scope, [entries[i]]));
     }
     return createArrayValue(result);
   });
 
-  const filter = createNativeFunctionValue(['f'], (context, scope) => {
+  const filter = createNativeFunctionValue(['f'], async (context, scope) => {
     const f = scope['f'];
     const result = [];
     for (let i = 0; i < entries.length; i++) {
-      const testValue = f.callFunction(context, scope, [entries[i]]);
+      const testValue = await f.callFunction(context, scope, [entries[i]]);
       if (testValue.asNativeBoolean(context)) {
         result.push(entries[i]);
       }

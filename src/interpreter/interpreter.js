@@ -25,12 +25,22 @@ const expandArguments = args => ({
   arguments: createArrayValue(args.map(a => (typeof a === 'string') ? createStringValue(a) : a))
 });
 
-export const interpret = (statements, args, options) => {
-  const scope = {
-    system: createObjectValue({
-      ...expandArguments(args),
-      ...initializeBuiltins(options)
-    })
-  };
-  return statements.reduce((_, statement) => statement.evaluate(scope), createUndefined());
+const initializeScope = (args, options) => ({
+  system: createObjectValue({
+    ...expandArguments(args),
+    ...initializeBuiltins(options)
+  })
+});
+
+const evaluateStatements = async (statements, scope) => {
+  let value;
+  for (let i = 0; i < statements.length; i++) {
+    value = await statements[i].evaluate(scope);
+  }
+  return value;
+}
+
+export const interpret = async (statements, args, options) => {
+  const scope = initializeScope(args, options);
+  return await evaluateStatements(statements, scope);
 };

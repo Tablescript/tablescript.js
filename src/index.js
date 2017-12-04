@@ -17,21 +17,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { parseFile } from './parser/parser';
+import { parse } from './parser/parser';
 import { interpret } from './interpreter/interpreter';
-import { TablescriptError } from './error';
+import { TablescriptError, throwRuntimeError } from './error';
 
-const run = (filePath, args, options) => {
-  return new Promise((resolve) => {
-    const statements = parseFile(filePath);
-    const result = interpret(statements, args, options);
-    resolve(result.asNativeValue({path: filePath, line: 0, column: 0}));
-  });
+const loadProgram = async (resolvers, context, filename) => {
+  return await resolvers.reduce(async (program, resolver) => {
+    if (program) {
+      return program;
+    }
+    return await resolver(context, filename);
+  }, undefined);
 };
+
+const run = async (context, filename, args, options) => {
+  const program = await loadProgram(options.input.resolvers, context, filename);
+  if (!program) {
+    throwRuntimeError(`Unable to load ${filename}`, context);
+  }
+  return await runProgram(context, program, args, options);
+};
+
+const runProgram = async (context, program, args, options) => {
+  const ast = parse(context.path, program);
+  return await interpret(ast, args, options);
+}
 
 export {
   run,
-  parseFile,
-  interpret,
+  runProgram,
   TablescriptError
 }

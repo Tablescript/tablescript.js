@@ -18,8 +18,14 @@
 import { createUndefined } from '../interpreter/undefined';
 
 export const createBlock = statements => {
+  const evaluate = async scope => {
+    return await statements.reduce(async (_, s) => {
+      return await s.evaluate(scope);
+    }, createUndefined());
+  };
+
   return {
-    evaluate: scope => statements.reduce((_, s) => s.evaluate(scope), createUndefined()),
+    evaluate,
     getReferencedSymbols: () => {
       return statements.reduce((result, statement) => [...result, ...statement.getReferencedSymbols()], []);
     },
@@ -27,8 +33,12 @@ export const createBlock = statements => {
 };
 
 export const createExpressionStatement = expression => {
+  const evaluate = async scope => {
+    return await expression.evaluate(scope);
+  };
+
   return {
-    evaluate: scope => expression.evaluate(scope),
+    evaluate,
     getReferencedSymbols: () => expression.getReferencedSymbols(),
   };
 };
