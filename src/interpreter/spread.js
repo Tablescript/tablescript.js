@@ -30,11 +30,11 @@ export const createArraySpread = a => {
     asNumber: runtimeErrorThrower('Cannot convert spread to number'),
     asString: runtimeErrorThrower('Cannot convert spread to string'),
     asBoolean: runtimeErrorThrower('Cannot convert spread to boolean'),
+    asArray: () => a.asArray(),
     getProperty: runtimeErrorThrower('Cannot get property of spread'),
     setProperty: runtimeErrorThrower('Cannot set property of spread'),
     getProperties: runtimeErrorThrower('Cannot get properties of array spread'),
     getElement: runtimeErrorThrower('Cannot get element of spread'),
-    getElements: () => a.getElements(),
     callFunction: runtimeErrorThrower('Cannot call an array spread'),
   };
 };
@@ -51,11 +51,10 @@ export const createObjectSpread = o => {
     asNumber: runtimeErrorThrower('Cannot convert spread to number'),
     asString: runtimeErrorThrower('Cannot convert spread to string'),
     asBoolean: runtimeErrorThrower('Cannot convert spread to boolean'),
+    asObject: () => o.asObject(),
     getProperty: runtimeErrorThrower('Cannot get property of spread'),
     setProperty: runtimeErrorThrower('Cannot set property of spread'),
-    getProperties: () => o.getProperties(),
     getElement: runtimeErrorThrower('Cannot get element of spread'),
-    getElements: runtimeErrorThrower('Cannot get elements of object spread'),
     callFunction: runtimeErrorThrower('Cannot call an object spread'),
   };
 };

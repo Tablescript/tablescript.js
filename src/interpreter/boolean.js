@@ -44,7 +44,6 @@ export const createBooleanValue = value => {
     setProperty: runtimeErrorThrower('Cannot set property of boolean'),
     getProperties: runtimeErrorThrower('Cannot get properties of boolean'),
     getElement: runtimeErrorThrower('Cannot get element of boolean'),
-    getElements: runtimeErrorThrower('Cannot get elements of boolean'),
     callFunction: runtimeErrorThrower('Cannot call boolean'),
   };
 };

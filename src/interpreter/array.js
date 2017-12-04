@@ -16,6 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError, runtimeErrorThrower } from '../error';
+import { defaultValue } from './default';
 import { valueTypes } from './types';
 import { createNativeFunctionValue } from './function';
 import { createNumericValue } from './numeric';
@@ -24,11 +25,26 @@ import { createStringValue } from './string';
 import { createUndefined } from './undefined';
 
 export const createArrayValue = entries => {
-  const asNativeString = context => JSON.stringify(entries.map(e => e.asNativeValue(context)));
+  const entriesAsNativeValues = (context, entries) => entries.map(e => e.asNativeValue(context));
+
+  const asNativeString = context => JSON.stringify(entriesAsNativeValues(context, entries));
   const asNativeBoolean = () => true;
-  const asNativeArray = context => entries.map(e => e.asNativeValue(context));
+  const asNativeArray = context => entriesAsNativeValues(context, entries);
+
+  const equals = (context, other) => {
+    if (other.type !== valueTypes.ARRAY) {
+      return false;
+    }
+    const otherEntries = other.asArray();
+    if (otherEntries.length !== entries.length) {
+      return false;
+    }
+    return entries.reduce((result, entry, index) => result && entry.equals(context, otherEntries[index]), true);
+  };
+
   const asString = context => createStringValue(asNativeString(context));
-  const asBoolean = context => createBooleanValue(asNativeBoolean(context));
+  const asBoolean = () => createBooleanValue(asNativeBoolean());
+  const asArray = () => entries;
 
   const getProperty = (context, name) => {
     const nameValue = name.asNativeString(context);
@@ -109,21 +125,17 @@ export const createArrayValue = entries => {
   };
 
   return {
-    type: valueTypes.ARRAY,
-    asNativeValue: asNativeArray,
-    asNativeNumber: runtimeErrorThrower('Cannot cast array to number'),
+    ...defaultValue(valueTypes.ARRAY, asNativeArray),
     asNativeString,
     asNativeBoolean,
     asNativeArray,
-    equals: runtimeErrorThrower('Array equality unimplemented'),
-    asNumber: runtimeErrorThrower('Cannot cast array to number'),
+    equals,
     asString,
     asBoolean,
+    asArray,
     getProperty,
     setProperty,
-    getProperties: runtimeErrorThrower('Cannot get properties of array'),
     getElement,
-    getElements: () => entries,
-    callFunction: runtimeErrorThrower('Cannot call array'),
   };
 };
+

@@ -410,7 +410,7 @@ export const createArrayLiteral = (context, values) => {
       if (value.type === valueTypes.ARRAY_SPREAD) {
         result = [
           ...result,
-          ...value.getElements(context)
+          ...value.asArray(context)
         ];
       } else if (value.type === valueTypes.OBJECT_SPREAD) {
         throwRuntimeError('Cannot spread object into array', context);
@@ -440,7 +440,7 @@ export const createObjectLiteral = (context, entries) => {
       const value = await entries[i].evaluate(scope);
       result = {
         ...result,
-        ...value.getProperties(context),
+        ...value.asObject(),
       };
     }
     return createObjectValue(result);

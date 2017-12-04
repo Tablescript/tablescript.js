@@ -59,9 +59,9 @@ export const createObjectValue = o => {
     asNumber: runtimeErrorThrower('Cannot cast object to number'),
     asString,
     asBoolean,
+    asObject: () => o,
     getProperty,
     setProperty,
-    getProperties: () => o,
     getElement: runtimeErrorThrower('Cannot get element of object'),
     callFunction: runtimeErrorThrower('Cannot call object'),
   };

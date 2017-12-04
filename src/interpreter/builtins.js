@@ -32,9 +32,9 @@ const assertBuiltin = options => {
       if (!parameters[0].asNativeBoolean(context)) {
         if (parameters.length === 2) {
           const message = parameters[1].asNativeString(context);
-          throwRuntimeError(`assertion failed: ${message}`);
+          throwRuntimeError(`assertion failed: ${message}`, context);
         } else {
-          throwRuntimeError('assertion failed');
+          throwRuntimeError('assertion failed', context);
         }
       }
       return createUndefined();
