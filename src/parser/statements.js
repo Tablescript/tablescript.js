@@ -19,9 +19,11 @@ import { createUndefined } from '../interpreter/undefined';
 
 export const createBlock = statements => {
   const evaluate = async scope => {
-    return await statements.reduce(async (_, s) => {
-      return await s.evaluate(scope);
-    }, createUndefined());
+    let result = createUndefined();
+    for (let i = 0; i < statements.length; i++) {
+      result = await statements[i].evaluate(scope);
+    }
+    return result;
   };
 
   return {

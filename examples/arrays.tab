@@ -42,3 +42,12 @@ system.assert(a.reverse() == [3,2,1])
 
 system.assert(a.find((n) => { n == 3 }) == 3)
 system.assert(a.find((n) => { n == 'abc' }) == undefined)
+
+system.assert(a.findIndex((n) => { n == 3 }) == 2)
+system.assert(a.findIndex((n) => { n == 'abc' }) == -1)
+
+system.assert(a.indexOf(3) == 2)
+system.assert(a.indexOf(99) == -1)
+
+c = (a, b) => { a - b }
+system.assert([4,2,5,1,3].sort(c) == [1,2,3,4,5])

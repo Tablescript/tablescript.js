@@ -23,6 +23,7 @@ import { createNumericValue } from './numeric';
 import { createBooleanValue } from './boolean';
 import { createStringValue } from './string';
 import { createUndefined } from './undefined';
+import { quickSort } from './sort';
 
 export const createArrayValue = entries => {
   const entriesAsNativeValues = (context, entries) => entries.map(e => e.asNativeValue(context));
@@ -110,10 +111,17 @@ export const createArrayValue = entries => {
 
   const includes = createNativeFunctionValue(['value'], (context, scope) => {
     const value = scope['value'];
-    if (value) {
-      return createBooleanValue(entries.reduce((result, entry) => result || entry.equals(context, value), false));
+    return createBooleanValue(entries.reduce((result, entry) => result || entry.equals(context, value), false));
+  });
+
+  const indexOf = createNativeFunctionValue(['value'], (context, scope) => {
+    const value = scope['value'];
+    for (let i = 0; i < entries.length; i++) {
+      if (entries[i].equals(context, value)) {
+        return createNumericValue(i);
+      }
     }
-    return createUndefined();
+    return createNumericValue(-1);
   });
 
   const find = createNativeFunctionValue(['f'], async (context, scope) => {
@@ -125,6 +133,22 @@ export const createArrayValue = entries => {
       }
     }
     return createUndefined();
+  });
+
+  const findIndex = createNativeFunctionValue(['f'], async (context, scope) => {
+    const f = scope['f'];
+    for (let i = 0; i < entries.length; i++) {
+      const testValue = await f.callFunction(context, scope, [entries[i]]);
+      if (testValue.asNativeBoolean(context)) {
+        return createNumericValue(i);
+      }
+    }
+    return createNumericValue(-1);
+  });
+
+  const sort = createNativeFunctionValue(['f'], async (context, scope) => {
+    const f = scope['f'];
+    return createArrayValue(await quickSort(context, scope, [...entries], f));
   });
 
   const join = createNativeFunctionValue(['separator'], (context, scope) => {
@@ -147,7 +171,10 @@ export const createArrayValue = entries => {
     map,
     filter,
     includes,
+    indexOf,
     find,
+    findIndex,
+    sort,
     join,
     reverse,
     length: createNumericValue(entries.length),
