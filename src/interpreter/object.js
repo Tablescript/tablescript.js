@@ -50,9 +50,6 @@ export const createObjectValue = o => {
   const asObject = () => o;
   const getProperty = (context, name) => {
     const propertyName = name.asNativeString(context);
-    if (members[propertyName]) {
-      return members[propertyName];
-    }
     if (o[propertyName]) {
       return o[propertyName];
     }
@@ -60,10 +57,6 @@ export const createObjectValue = o => {
   };
   const setProperty = (context, name, value) => {
     o[name.asNativeString(context)] = value;
-  };
-
-  const members = {
-    keys: createNativeFunctionValue([], (context, scope) => createArrayValue(Object.keys(o).map(key => createStringValue(key)))),
   };
 
   return {

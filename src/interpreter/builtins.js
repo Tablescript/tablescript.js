@@ -19,6 +19,7 @@ import { throwRuntimeError } from '../error';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
 import { createUndefined } from './undefined';
+import { createArrayValue } from './array';
 import { run } from '../index';
 import { interpret } from './interpreter';
 
@@ -70,8 +71,23 @@ const createRequireBuiltin = options => {
   };
 };
 
+const keysBuiltin = {
+  type: valueTypes.FUNCTION,
+  callFunction: (context, scope, parameters) => {
+    if (parameters.length != 1) {
+      throwRuntimeError(`keys(object) takes a single object parameter`);
+    }
+    const object = parameters[0].asObject();
+    const keys = Object.keys(object)
+    keys.sort();
+    return createArrayValue(keys.map(key => createStringValue(key)));
+  },
+  asString: () => 'builtin(keys)',
+};
+
 export const initializeBuiltins = options => ({
   assert: assertBuiltin(options),
+  keys: keysBuiltin,
   print: printBuiltin(options),
   require: createRequireBuiltin(options),
 });
