@@ -53,15 +53,91 @@ export const createStringValue = value => {
     const separator = scope['separator'];
     if (separator) {
       if (separator.type !== valueTypes.STRING) {
-        throwRuntimeError(`split(separator) separator must be a string`);
+        throwRuntimeError(`split(separator) separator must be a string`, context);
       }
       return createArrayValue(value.split(separator.asNativeString(context)).map(s => createStringValue(s)));
     }
     return createArrayValue(value.split().map(s => createStringValue(s)));
   });
 
+  const capitalize = createNativeFunctionValue([], (context, scope) => {
+    return createStringValue(value[0].toUpperCase() + value.slice(1));
+  });
+
+  const uppercase = createNativeFunctionValue([], (context, scope) => {
+    return createStringValue(value.toUpperCase());
+  });
+
+  const lowercase = createNativeFunctionValue([], (context, scope) => {
+    return createStringValue(value.toLowerCase());
+  });
+
+  const includes = createNativeFunctionValue(['s'], (context, scope) => {
+    const s = scope['s'];
+    if (s.type !== valueTypes.STRING) {
+      throwRuntimeError(`includes(s) s must be a string`, context);
+    }
+    return createBooleanValue(value.includes(s.asNativeString(context)));
+  });
+
+  const indexOf = createNativeFunctionValue(['s'], (context, scope) => {
+    const s = scope['s'];
+    if (s.type !== valueTypes.STRING) {
+      throwRuntimeError(`indexOf(s) s must be a string`, context);
+    }
+    return createNumericValue(value.indexOf(s.asNativeString(context)));
+  });
+
+  const startsWith = createNativeFunctionValue(['s'], (context, scope) => {
+    const s = scope['s'];
+    if (s.type !== valueTypes.STRING) {
+      throwRuntimeError(`startsWith(s) s must be a string`, context);
+    }
+    return createBooleanValue(value.startsWith(s.asNativeString(context)));
+  });
+
+  const endsWith = createNativeFunctionValue(['s'], (context, scope) => {
+    const s = scope['s'];
+    if (s.type !== valueTypes.STRING) {
+      throwRuntimeError(`endsWith(s) s must be a string`, context);
+    }
+    return createBooleanValue(value.endsWith(s.asNativeString(context)));
+  });
+
+  const trim = createNativeFunctionValue([], (context, scope) => {
+    return createStringValue(value.trim());
+  });
+
+  const trimLeft = createNativeFunctionValue([], (context, scope) => {
+    return createStringValue(value.trimLeft());
+  });
+
+  const trimRight = createNativeFunctionValue([], (context, scope) => {
+    return createStringValue(value.trimRight());
+  });
+
+  const slice = createNativeFunctionValue(['start', 'end'], (context, scope) => {
+    const startValue = scope['start'];
+    const endValue = scope['end'];
+    if (endValue) {
+      return createStringValue(value.slice(startValue.asNativeNumber(context), endValue.asNativeNumber(context)));
+    }
+    return createStringValue(value.slice(startValue.asNativeNumber(context)));
+  });
+
   const members = {
     split,
+    capitalize,
+    uppercase,
+    lowercase,
+    includes,
+    indexOf,
+    slice,
+    startsWith,
+    endsWith,
+    trim,
+    trimLeft,
+    trimRight,
     empty: createBooleanValue(value.length === 0),
     length: createNumericValue(value.length),
   };

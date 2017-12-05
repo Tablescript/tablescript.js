@@ -9,3 +9,29 @@ system.assert(s == 'I have a ham radio, honest')
 
 system.assert(s.split(' ') == ['I', 'have', 'a', 'ham', 'radio,', 'honest'])
 system.assert(s.split() == ['I have a ham radio, honest'])
+
+system.assert('a'.capitalize() == 'A')
+system.assert('alf'.capitalize() == 'Alf')
+
+system.assert('cucumber'.uppercase() == 'CUCUMBER')
+system.assert('CUCUMBER'.lowercase() == 'cucumber')
+system.assert('cUCumBer'.lowercase() == 'cucumber')
+system.assert('cucumber'.uppercase().lowercase() == 'cucumber')
+
+system.assert('cucumber'.includes('umb'))
+system.assert(not 'cucumber'.includes('nailpolish'))
+
+system.assert('cucumber'.indexOf('m') == 4)
+system.assert('cucumber'.indexOf('umb') == 3)
+
+system.assert('cucumber'.startsWith('cucu'))
+system.assert(not 'cucumber'.startsWith('poodle'))
+system.assert('cucumber'.endsWith('ber'))
+system.assert(not 'cucumber'.endsWith('poodle'))
+
+system.assert('     eleven  '.trim() == 'eleven')
+system.assert('     four  '.trimLeft() == 'four  ')
+system.assert('     four  '.trimRight() == '     four')
+
+system.assert('cucumber'.slice(3) == 'umber')
+system.assert('cucumber'.slice(1, 4) == 'ucu')
