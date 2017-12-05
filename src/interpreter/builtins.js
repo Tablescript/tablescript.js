@@ -18,6 +18,7 @@
 import { throwRuntimeError } from '../error';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
+import { createNumericValue } from './numeric';
 import { createUndefined } from './undefined';
 import { createArrayValue } from './array';
 import { run } from '../index';
@@ -75,7 +76,7 @@ const keysBuiltin = {
   type: valueTypes.FUNCTION,
   callFunction: (context, scope, parameters) => {
     if (parameters.length != 1) {
-      throwRuntimeError(`keys(object) takes a single object parameter`);
+      throwRuntimeError(`keys(object) takes a single object parameter`, context);
     }
     const object = parameters[0].asObject();
     const keys = Object.keys(object)
@@ -85,9 +86,46 @@ const keysBuiltin = {
   asString: () => 'builtin(keys)',
 };
 
+const rangeBuiltin = {
+  type: valueTypes.FUNCTION,
+  callFunction: (context, scope, parameters) => {
+    let startValue = 0;
+    let endValue;
+    let stepValue = 1;
+    if (parameters.length === 1) {
+      endValue = parameters[0].asNativeNumber(context);
+    } else if (parameters.length === 2) {
+      startValue = parameters[0].asNativeNumber(context);
+      endValue = parameters[1].asNativeNumber(context);
+      if (endValue < startValue) {
+        stepValue = -1;
+      }
+    } else if (parameters.length === 3) {
+      startValue = parameters[0].asNativeNumber(context);
+      endValue = parameters[1].asNativeNumber(context);
+      stepValue = parameters[2].asNativeNumber(context);
+      if (endValue < startValue && stepValue >= 0) {
+        throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be negative if end is less than start', context);
+      }
+      if (endValue > startValue && stepValue <= 0) {
+        throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be positive if start is less than end', context);
+      }
+    } else {
+      throwRuntimeError('range(end|[start, end]|[start, end, step]) takes 1, 2, or 3 numeric parameters', context);
+    }
+    const result = [];
+    for (let i = startValue; i < endValue; i += stepValue) {
+      result.push(createNumericValue(i));
+    }
+    return createArrayValue(result);
+  },
+  asString: () => 'builtin(range)',
+};
+
 export const initializeBuiltins = options => ({
   assert: assertBuiltin(options),
   keys: keysBuiltin,
   print: printBuiltin(options),
+  range: rangeBuiltin,
   require: createRequireBuiltin(options),
 });

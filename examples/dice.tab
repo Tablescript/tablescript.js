@@ -2,5 +2,5 @@ system.print(3d6)
 system.print(d20 + 4)
 
 statNames = ['str', 'dex', 'con', 'int', 'wis', 'cha']
-stats = 0.upto(statNames.length).reduce((results, index) => { results[statNames[index]] = 3d6 results }, {})
+stats = system.range(0, statNames.length).reduce((results, index) => { results[statNames[index]] = 3d6 results }, {})
 system.print(stats)

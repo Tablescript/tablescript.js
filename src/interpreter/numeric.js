@@ -29,27 +29,6 @@ export const createNumericValue = value => {
   const asNumber = context => createNumericValue(asNativeNumber(context));
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
-  const getProperty = (context, name) => {
-    const nameValue = name.asNativeString(context);
-    if (members[nameValue]) {
-      return members[nameValue];
-    }
-    return createUndefined();
-  };
-
-  const members = {
-    upto: createNativeFunctionValue(['end'], (context, scope) => {
-      const endValue = scope['end'];
-      if (!endValue) {
-        throwRuntimeError('upto(n) takes 1 numeric parameter', context);
-      }
-      const result = [];
-      for (let i = value; i < endValue.asNativeNumber(context); i++) {
-        result.push(createNumericValue(i));
-      }
-      return createArrayValue(result);
-    }),
-  };
 
   return {
     type: valueTypes.NUMBER,
@@ -61,7 +40,7 @@ export const createNumericValue = value => {
     asNumber,
     asString,
     asBoolean,
-    getProperty,
+    getProperty: runtimeErrorThrower('Cannot get property of numeric'),
     setProperty: runtimeErrorThrower('Cannot set property on numeric'),
     getElement: runtimeErrorThrower('Cannot get element of numeric'),
     callFunction: runtimeErrorThrower('Cannot call numeric'),
