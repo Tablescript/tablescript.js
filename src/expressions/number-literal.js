@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createNumericValue } from '../values/numeric';
-import { defaultExpression } from './default-expression';
+import { defaultExpression } from './default';
 import { expressionTypes } from './types';
 
 export const createNumberLiteral = (context, n) => {

@@ -17,7 +17,7 @@
 
 import { rollDice } from '../util/random';
 import { createNumericValue } from '../values/numeric';
-import { defaultExpression } from './default-expression';
+import { defaultExpression } from './default';
 import { expressionTypes } from './types';
 
 export const createDiceLiteral = (context, count, die) => {

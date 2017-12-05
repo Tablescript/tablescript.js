@@ -15,9 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import { expressionTypes } from './types';
+import { defaultExpression } from './default';
 import { createUndefined } from '../values/undefined';
 
-export const createBlock = statements => {
+export const createBlockExpression = statements => {
   const evaluate = async scope => {
     let result = createUndefined();
     for (let i = 0; i < statements.length; i++) {
@@ -26,21 +28,14 @@ export const createBlock = statements => {
     return result;
   };
 
-  return {
-    evaluate,
-    getReferencedSymbols: () => {
-      return statements.reduce((result, statement) => [...result, ...statement.getReferencedSymbols()], []);
-    },
-  };
-};
-
-export const createExpressionStatement = expression => {
-  const evaluate = async scope => {
-    return await expression.evaluate(scope);
+  const getReferencedSymbols = () => {
+    return statements.reduce((result, statement) => ([
+      ...result,
+      ...statement.getReferencedSymbols()
+    ]), []);
   };
 
   return {
-    evaluate,
-    getReferencedSymbols: () => expression.getReferencedSymbols(),
+    ...defaultExpression(expressionTypes.BLOCK, evaluate, getReferencedSymbols),
   };
 };

@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createTableValue } from '../values/table';
-import { defaultExpression } from './default-expression';
+import { defaultExpression } from './default';
 import { expressionTypes } from './types';
 
 export const createTableExpression = (context, parameters, entries) => {

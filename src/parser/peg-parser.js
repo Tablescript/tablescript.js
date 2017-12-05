@@ -155,10 +155,10 @@ function peg$parse(input, options) {
       peg$c5 = "}",
       peg$c6 = peg$literalExpectation("}", false),
       peg$c7 = function(body) {
-          return createBlock(optionalList(extractOptional(body, 0)));
+          return createBlockExpression(optionalList(extractOptional(body, 0)));
         },
       peg$c8 = function(e) {
-          return createExpressionStatement(e);
+          return createSimpleExpression(e);
         },
       peg$c9 = function(e) {
           return e;
@@ -268,7 +268,7 @@ function peg$parse(input, options) {
           return createFunctionExpression(createContext(location(), options), params ? params[0] : [], body);
         },
       peg$c76 = function(body) {
-          return createBlock(optionalList(body));
+          return createBlockExpression(optionalList(body));
         },
       peg$c77 = "table",
       peg$c78 = peg$literalExpectation("table", false),
@@ -5237,11 +5237,8 @@ function peg$parse(input, options) {
   }
 
 
-    const {
-      createBlock,
-      createExpressionStatement,
-    } = require('../expressions/statements');
-
+    const { createBlockExpression } = require('../expressions/block');
+    const { createSimpleExpression } = require('../expressions/simple');
     const { createAssignmentExpression } = require('../expressions/assignment');
     const { createPlusEqualsExpression } = require('../expressions/plus-equals');
     const { createConditionalExpression } = require('../expressions/conditional');

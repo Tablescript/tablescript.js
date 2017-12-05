@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError } from '../error';
-import { defaultExpression } from './default-expression';
+import { defaultExpression } from './default';
 import { expressionTypes } from './types';
 import { valueTypes } from '../values/types';
 import { createArraySpread, createObjectSpread } from '../values/spread';

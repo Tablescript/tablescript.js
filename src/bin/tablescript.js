@@ -21,8 +21,8 @@ import "babel-polyfill";
 import options from 'commander';
 import fs from 'fs';
 import { runProgram } from '../index';
-import { resolveFsFile } from '../fs-resolver';
-import { resolveHttpFile } from '../http-resolver';
+import { loadFsFile } from '../fs-loader';
+import { loadHttpFile } from '../http-loader';
 import { TablescriptError } from '../error';
 
 options
@@ -36,7 +36,7 @@ const args = options.args.slice(1);
 
 const interpreterOptions = {
   input: {
-    resolvers: [resolveFsFile, resolveHttpFile]
+    loaders: [loadFsFile, loadHttpFile]
   },
   output: {
     print: s => {

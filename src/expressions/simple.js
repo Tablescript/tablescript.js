@@ -15,25 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import http from 'http';
+import { expressionTypes } from './types';
+import { defaultExpression } from './default';
 
-export const resolveHttpFile = async (context, filename) => {
-  return new Promise((resolve, reject) => {
-    http.get(filename, res => {
-      const { statusCode } = res;
-      if (statusCode !== 200) {
-        res.resume();
-        resolve(undefined);
-      } else {
-        res.setEncoding('utf8');
-        let rawData = '';
-        res.on('data', chunk => { rawData += chunk; });
-        res.on('end', () => {
-          resolve(rawData);
-        });
-      }
-    }).on('error', e => {
-      resolve(undefined);
-    });
-  });
+export const createSimpleExpression = expression => {
+  const evaluate = async scope => {
+    return await expression.evaluate(scope);
+  };
+
+  const getReferencedSymbols = () => expression.getReferencedSymbols();
+
+  return {
+    ...defaultExpression(expressionTypes.SIMPLE, evaluate, getReferencedSymbols),
+  };
 };

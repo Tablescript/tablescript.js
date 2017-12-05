@@ -17,7 +17,7 @@
 
 import { valueTypes } from '../values/types';
 import { throwRuntimeError } from '../error';
-import { defaultExpression } from './default-expression';
+import { defaultExpression } from './default';
 
 export const createAssignmentExpression = (context, leftHandSideExpression, valueExpression) => {
   const evaluate = async scope => {

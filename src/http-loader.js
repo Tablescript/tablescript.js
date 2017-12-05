@@ -15,31 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import fs from 'fs';
-import path from 'path';
+import http from 'http';
 
-const isPathed = p => p.split('/').length > 1;
-const contextPath = (context, filename) => isPathed(filename) ? [path.dirname(context.path)] : [];
-const environmentPaths = () => (process.env.TS_PATH || '').split(':');
-
-const fileContents = (filePath) => {
-  return new Promise(resolve => {
-    fs.readFile(filePath, 'utf8', (error, contents) => {
-      if (error) {
+export const loadHttpFile = async (context, filename) => {
+  return new Promise((resolve, reject) => {
+    http.get(filename, res => {
+      const { statusCode } = res;
+      if (statusCode !== 200) {
+        res.resume();
         resolve(undefined);
       } else {
-        resolve(contents);
+        res.setEncoding('utf8');
+        let rawData = '';
+        res.on('data', chunk => { rawData += chunk; });
+        res.on('end', () => {
+          resolve(rawData);
+        });
       }
+    }).on('error', e => {
+      resolve(undefined);
     });
   });
-};
-
-export const resolveFsFile = async (context, filename) => {
-  const paths = [...contextPath(context, filename), ...environmentPaths()];
-  return await paths.reduce(async (contents, p) => {
-    if (contents) {
-      return contents;
-    }
-    return await fileContents(path.resolve(p, filename));
-  }, undefined);
 };

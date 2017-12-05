@@ -16,11 +16,8 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 {
-  const {
-    createBlock,
-    createExpressionStatement,
-  } = require('../expressions/statements');
-
+  const { createBlockExpression } = require('../expressions/block');
+  const { createSimpleExpression } = require('../expressions/simple');
   const { createAssignmentExpression } = require('../expressions/assignment');
   const { createPlusEqualsExpression } = require('../expressions/plus-equals');
   const { createConditionalExpression } = require('../expressions/conditional');
@@ -88,12 +85,12 @@ Statement
 
 Block
   = '{' __ body:(Statements __)? '}' {
-    return createBlock(optionalList(extractOptional(body, 0)));
+    return createBlockExpression(optionalList(extractOptional(body, 0)));
   }
 
 ExpressionStatement
   = e:Expression {
-    return createExpressionStatement(e);
+    return createSimpleExpression(e);
   }
 
 Expression
@@ -243,7 +240,7 @@ FormalParameterList
 
 FunctionBody
   = body:Statements? {
-    return createBlock(optionalList(body));
+    return createBlockExpression(optionalList(body));
   }
 
 TableExpression
