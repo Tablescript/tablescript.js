@@ -16,6 +16,8 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError } from '../error';
+import { defaultExpression } from './default-expression';
+import { expressionTypes } from './expression-types';
 import { valueTypes } from '../interpreter/types';
 import { createStringValue } from '../interpreter/string';
 import { createNumericValue } from '../interpreter/numeric';
@@ -35,7 +37,7 @@ import { rollDice } from '../interpreter/random';
 
 export const createAssignmentExpression = (context, leftHandSideExpression, valueExpression) => {
   const evaluate = async scope => {
-    const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(scope);
+    const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(context, scope);
     if (leftHandSideValue.type !== valueTypes.LEFT_HAND_SIDE) {
       throwRuntimeError('Cannot assign to a non-left-hand-side type', context);
     }
@@ -62,7 +64,7 @@ export const createAssignmentExpression = (context, leftHandSideExpression, valu
 
 export const createPlusEqualsExpression = (context, leftHandSideExpression, valueExpression) => {
   const evaluate = async scope => {
-    const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(scope);
+    const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(context, scope);
     if (leftHandSideValue.type !== valueTypes.LEFT_HAND_SIDE) {
       throwRuntimeError('Cannot assign to a non-left-hand-side type', context);
     }
@@ -285,7 +287,7 @@ export const createObjectPropertyExpression = (context, objectExpression, proper
       }
       return objectValue.getProperty(context, propertyNameValue);
     },
-    evaluateAsLeftHandSide: async scope => {
+    evaluateAsLeftHandSide: async (context, scope) => {
       const objectValue = await objectExpression.evaluate(scope);
       if (!(objectValue.type === valueTypes.OBJECT || objectValue.type === valueTypes.ARRAY)) {
         throwRuntimeError('Cannot assign to non-object non-array type', context);
@@ -327,19 +329,16 @@ export const createFunctionExpression = (context, formalParameters, body) => {
 };
 
 export const createTableExpression = (context, parameters, entries) => {
+
+  const evaluate = scope => createTableValue(parameters, entries);
+
+  const getReferencedSymbols = () => ([
+    ...parameters.reduce((result, parameter) => [...result, ...parameter.getReferencedSymbols()], []),
+    ...entries.reduce((result, entry) => [...result, ...entry.getReferencedSymbols()], []),
+  ]);
+
   return {
-    evaluate: scope => {
-      return createTableValue(parameters, entries);
-    },
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to table', context);
-    },
-    getReferencedSymbols: () => {
-      return [
-        ...parameters.reduce((result, parameter) => [...result, ...parameter.getReferencedSymbols()], []),
-        ...entries.reduce((result, entry) => [...result, ...entry.getReferencedSymbols()], []),
-      ];
-    },
+    ...defaultExpression(expressionTypes.TABLE, evaluate, getReferencedSymbols),
   };
 };
 
@@ -380,29 +379,37 @@ export const createExactTableSelector = roll => {
 };
 
 export const createVariableExpression = (context, name) => {
+
+  const evaluate = scope => {
+    if (scope[name]) {
+      return scope[name];
+    }
+    throwRuntimeError(`Symbol '${name}' not found`, context);
+  };
+
+  const evaluateAsLeftHandSide = () => createLeftHandSideValue(name);
+
+  const getReferencedSymbols = () => [name];
+
   return {
-    evaluate: scope => {
-      if (scope[name]) {
-        return scope[name];
-      }
-      throwRuntimeError(`Symbol '${name}' not found`, context);
-    },
-    evaluateAsLeftHandSide: () => createLeftHandSideValue(name),
-    getReferencedSymbols: () => [name],
+    ...defaultExpression(expressionTypes.VARIABLE, evaluate, getReferencedSymbols),
+    evaluateAsLeftHandSide,
   };
 };
 
 export const createBooleanLiteral = (context, value) => {
+
+  const evaluate = scope => createBooleanValue(value);
+
+  const getReferencedSymbols = () => [];
+
   return {
-    evaluate: scope => createBooleanValue(value),
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to boolean', context);
-    },
-    getReferencedSymbols: () => [],
+    ...defaultExpression(expressionTypes.BOOLEAN, evaluate, getReferencedSymbols),
   };
 };
 
 export const createArrayLiteral = (context, values) => {
+
   const evaluate = async scope => {
     let result = [];
     for (let i = 0; i < values.length; i++) {
@@ -424,16 +431,15 @@ export const createArrayLiteral = (context, values) => {
     return createArrayValue(result);
   };
 
+  const getReferencedSymbols = () => values.reduce((result, value) => [...result, ...value.getReferencedSymbols()], []);
+
   return {
-    evaluate,
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to array', context);
-    },
-    getReferencedSymbols: () => values.reduce((result, value) => [...result, ...value.getReferencedSymbols()], []),
+    ...defaultExpression(expressionTypes.ARRAY, evaluate, getReferencedSymbols),
   };
 };
 
 export const createObjectLiteral = (context, entries) => {
+
   const evaluate = async scope => {
     let result = {};
     for (let i = 0; i < entries.length; i++) {
@@ -446,98 +452,111 @@ export const createObjectLiteral = (context, entries) => {
     return createObjectValue(result);
   };
 
+  const getReferencedSymbols = () => entries.reduce((result, e) => [...result, e.getReferencedSymbols()], []);
+
   return {
-    evaluate,
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to an object', context);
-    },
-    getReferencedSymbols: () => entries.reduce((result, e) => [...result, e.getReferencedSymbols()], []),
+    ...defaultExpression(expressionTypes.OBJECT, evaluate, getReferencedSymbols),
   };
 };
 
 export const createObjectLiteralPropertyExpression = (context, key, value) => {
+
+  const evaluate = async scope => createObjectValue({
+    [key]: await value.evaluate(scope),
+  });
+
+  const getReferencedSymbols = () => value.getReferencedSymbols();
+
   return {
-    evaluate: async scope => createObjectValue({
-      [key]: await value.evaluate(scope),
-    }),
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to an object', context);
-    },
-    getReferencedSymbols: () => value.getReferencedSymbols(),
+    ...defaultExpression(expressionTypes.OBJECT_PROPERTY, evaluate, getReferencedSymbols),
   };
 };
 
 export const createDiceLiteral = (context, count, die) => {
+
+  const evaluate = scope => createNumericValue(rollDice(count, die));
+
+  const getReferencedSymbols = () => [];
+
   return {
-    evaluate: scope => createNumericValue(rollDice(count, die)),
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to dice', context);
-    },
-    getReferencedSymbols: () => [],
+    ...defaultExpression(expressionTypes.DICE, evaluate, getReferencedSymbols),
   };
 };
 
 export const createNumberLiteral = (context, n) => {
+  const evaluate = scope => createNumericValue(n);
+
+  const getReferencedSymbols = () => [];
+
   return {
-    evaluate: scope => createNumericValue(n),
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to number', context);
-    },
-    getReferencedSymbols: () => [],
+    ...defaultExpression(expressionTypes.NUMBER, evaluate, getReferencedSymbols),
   };
 };
 
 export const createStringLiteral = (context, s) => {
+
+  const evaluate = scope => createStringValue(s);
+
+  const getReferencedSymbols = () => [];
+
   return {
-    evaluate: scope => createStringValue(s),
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to string', context);
-    },
-    getReferencedSymbols: () => [],
+    ...defaultExpression(expressionTypes.STRING, evaluate, getReferencedSymbols),
   };
 };
 
 export const createIfExpression = (context, condition, ifBlock, elseBlock) => {
-  return {
-    evaluate: async scope => {
-      const expressionValue = await condition.evaluate(scope);
-      if (expressionValue.asNativeBoolean(context)) {
-        return await ifBlock.evaluate(scope);
-      } else {
-        if (elseBlock) {
-          return await elseBlock.evaluate(scope);
-        }
-        return createUndefined();
+
+  const evaluate = async scope => {
+    const expressionValue = await condition.evaluate(scope);
+    if (expressionValue.asNativeBoolean(context)) {
+      return await ifBlock.evaluate(scope);
+    } else {
+      if (elseBlock) {
+        return await elseBlock.evaluate(scope);
       }
-    },
-    getReferencedSymbols: () => {
-      return [
-        ...condition.getReferencedSymbols(),
-        ...ifBlock.getReferencedSymbols(),
-        ...(elseBlock ? elseBlock.getReferencedSymbols() : []),
-      ];
-    },
+      return createUndefined();
+    }
+  };
+
+  const getReferencedSymbols = () => {
+    return [
+      ...condition.getReferencedSymbols(),
+      ...ifBlock.getReferencedSymbols(),
+      ...(elseBlock ? elseBlock.getReferencedSymbols() : []),
+    ];
+  };
+
+  return {
+    ...defaultExpression(expressionTypes.IF, evaluate, getReferencedSymbols),
   };
 };
 
 export const createSpreadExpression = (context, expression) => {
+
+  const evaluate = async scope => {
+    const value = await expression.evaluate(scope);
+    if (value.type === valueTypes.ARRAY) {
+      return createArraySpread(value);
+    } else if (value.type === valueTypes.OBJECT) {
+      return createObjectSpread(value);
+    }
+    throwRuntimeError('Spreads only apply to arrays and objects', context);
+  };
+
+  const getReferencedSymbols = () => expression.getReferencedSymbols();
+
   return {
-    evaluate: async scope => {
-      const value = await expression.evaluate(scope);
-      if (value.type === valueTypes.ARRAY) {
-        return createArraySpread(value);
-      } else if (value.type === valueTypes.OBJECT) {
-        return createObjectSpread(value);
-      }
-      throwRuntimeError('Spreads only apply to arrays and objects', context);
-    },
-    getReferencedSymbols: () => expression.getReferencedSymbols(),
+    ...defaultExpression(expressionTypes.SPREAD, evaluate, getReferencedSymbols),
   };
 };
 
 export const createUndefinedLiteral = context => {
+
+  const evaluate = () => createUndefined();
+
+  const getReferencedSymbols = () => [];
+
   return {
-    evaluate: () => createUndefined(),
-    getReferencedSymbols: () => []
+    ...defaultExpression(expressionTypes.UNDEFINED, evaluate, getReferencedSymbols),
   };
 };

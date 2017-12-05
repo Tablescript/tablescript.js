@@ -20,6 +20,7 @@ import { runtimeErrorThrower } from '../error';
 
 export const defaultValue = (type, nativeValueFunction) => {
   const typeName = valueTypeName(type);
+  
   return {
     type,
     asNativeValue: nativeValueFunction,

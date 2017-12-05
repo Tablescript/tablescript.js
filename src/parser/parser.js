@@ -32,8 +32,8 @@ export const parse = (filePath, program) => {
       e.message,
       {
         path: filePath,
-        line: e.location.start.line,
-        column: e.location.start.column,
+        line: e.location ? e.location.start.line : 0,
+        column: e.location ? e.location.start.column: 0,
       },
       tracer.getBacktraceString()
     );
