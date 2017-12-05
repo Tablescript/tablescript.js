@@ -155,7 +155,7 @@ export const createArrayValue = entries => {
     const separator = scope['separator'];
     if (separator) {
       if (separator.type !== valueTypes.STRING) {
-        throwRuntimeError(`join([separator]) separator must be a string`);
+        throwRuntimeError(`join([separator]) separator must be a string`, context);
       }
       return createStringValue(entries.map(e => e.asNativeString(context)).join(separator.asNativeString(context)));
     }

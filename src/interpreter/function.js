@@ -15,7 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError, runtimeErrorThrower } from '../error';
+import { throwRuntimeError } from '../error';
+import { defaultValue } from './default';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
@@ -44,9 +45,9 @@ export const createNativeFunctionValue = (formalParameters, f) => {
 
   const asNativeString = () => 'function(native)';
   const asNativeBoolean = () => true;
+  const equals = other => false;
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
-  const equals = other => false;
   const callFunction = async (context, scope, parameters) => {
     const localScope = {
       ...scope,
@@ -56,18 +57,12 @@ export const createNativeFunctionValue = (formalParameters, f) => {
   };
 
   return {
-    type: valueTypes.FUNCTION,
-    asNativeValue: asNativeString,
-    asNativeNumber: runtimeErrorThrower('Cannot cast function to number'),
+    ...defaultValue(valueTypes.FUNCTION, asNativeString),
     asNativeString,
     asNativeBoolean,
     equals,
-    asNumber: runtimeErrorThrower('Cannot cast function to number'),
     asString,
     asBoolean,
-    getProperty: runtimeErrorThrower('Cannot get property of native function'),
-    setProperty: runtimeErrorThrower('Cannot set property of native function'),
-    getElement: runtimeErrorThrower('Cannot get element of native function'),
     callFunction,
   };
 };
@@ -77,9 +72,9 @@ export const createFunctionValue = (formalParameters, body, closure) => {
 
   const asNativeString = () => 'function';
   const asNativeBoolean = () => true;
+  const equals = other => false;
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
-  const equals = other => false;
   const callFunction = async (context, scope, parameters) => {
     const localScope = {
       ...scope,
@@ -90,18 +85,12 @@ export const createFunctionValue = (formalParameters, body, closure) => {
   };
 
   return {
-    type: valueTypes.FUNCTION,
-    asNativeValue: asNativeString,
-    asNativeNumber: runtimeErrorThrower('Cannot cast function to number'),
+    ...defaultValue(valueTypes.FUNCTION, asNativeString),
     asNativeString,
     asNativeBoolean,
     equals,
-    asNumber: runtimeErrorThrower('Cannot cast function to number'),
     asString,
     asBoolean,
-    getProperty: runtimeErrorThrower('Cannot get property of function'),
-    setProperty: runtimeErrorThrower('Cannot set property of function'),
-    getElement: runtimeErrorThrower('Cannot get element of function'),
     callFunction,
   };
 };

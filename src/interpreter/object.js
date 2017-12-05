@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { runtimeErrorThrower } from '../error';
 import { defaultValue } from './default';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
@@ -70,7 +69,5 @@ export const createObjectValue = o => {
     asObject,
     getProperty,
     setProperty,
-    getElement: runtimeErrorThrower('Cannot get element of object'),
-    callFunction: runtimeErrorThrower('Cannot call object'),
   };
 };

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { runtimeErrorThrower } from '../error';
+import { defaultValue } from './default';
 import { valueTypes } from './types';
 import { randomNumber } from './random';
 import { createUndefined } from './undefined';
@@ -30,37 +30,43 @@ export const createTableValue = (formalParameters, entries) => {
     return o;
   };
 
-  return {
-    type: valueTypes.TABLE,
-    asNativeValue: () => 'table',
-    asNumber: runtimeErrorThrower('Cannot cast table to number'),
-    asString: () => 'table',
-    asBoolean: () => true,
-    equals: () => false,
-    getProperty: runtimeErrorThrower('Cannot get property of table'),
-    setProperty: runtimeErrorThrower('Cannot set property of table'),
-    getElement: async (context, index) => {
-      const indexValue = index.asNativeNumber(context);
-      const selectedEntry = entries.find(e => e.rollApplies(indexValue));
-      if (selectedEntry) {
-        const localScope = {
-          ...scope,
-          roll: createNumericValue(indexValue)
-        };
-        return await selectedEntry.evaluate(localScope);
-      }
-      return createUndefined();
-    },
-    callFunction: async (context, scope, parameters) => {
-      const die = entries.reduce((max, entry, index) => Math.max(max, entry.getHighestSelector(index)), 0);
-      const roll = randomNumber(die);
-      const rolledEntry = entries.find((e, index) => e.rollApplies(roll, index));
+  const asNativeString = () => 'table';
+  const asNativeBoolean = () => true;
+  const equals = () => false;
+  const asString = () => createStringValue(asNativeString());
+  const asBoolean = () => createBooleanValue(asNativeBoolean());
+  const getElement = async (context, index) => {
+    const indexValue = index.asNativeNumber(context);
+    const selectedEntry = entries.find(e => e.rollApplies(indexValue));
+    if (selectedEntry) {
       const localScope = {
         ...scope,
-        ...parametersToArguments(parameters),
-        roll: createNumericValue(roll)
+        roll: createNumericValue(indexValue)
       };
-      return await rolledEntry.evaluate(localScope);
-    },
+      return await selectedEntry.evaluate(localScope);
+    }
+    return createUndefined();
+  };
+  const callFunction = async (context, scope, parameters) => {
+    const die = entries.reduce((max, entry, index) => Math.max(max, entry.getHighestSelector(index)), 0);
+    const roll = randomNumber(die);
+    const rolledEntry = entries.find((e, index) => e.rollApplies(roll, index));
+    const localScope = {
+      ...scope,
+      ...parametersToArguments(parameters),
+      roll: createNumericValue(roll)
+    };
+    return await rolledEntry.evaluate(localScope);
+  };
+
+  return {
+    ...defaultValue(valueTypes.TABLE, asNativeString),
+    asNativeString,
+    asNativeBoolean,
+    equals,
+    asString,
+    asBoolean,
+    getElement,
+    callFunction,
   };
 };

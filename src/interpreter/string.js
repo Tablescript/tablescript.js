@@ -15,7 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError, runtimeErrorThrower } from '../error';
+import { throwRuntimeError } from '../error';
+import { defaultValue } from './default';
 import { valueTypes } from './types';
 import { createBooleanValue } from './boolean';
 import { createNumericValue } from './numeric';
@@ -143,8 +144,7 @@ export const createStringValue = value => {
   };
 
   return {
-    type: valueTypes.STRING,
-    asNativeValue: asNativeString,
+    ...defaultValue(valueTypes.STRING, asNativeString),
     asNativeNumber,
     asNativeString,
     asNativeBoolean,
@@ -153,8 +153,6 @@ export const createStringValue = value => {
     asString,
     asBoolean,
     getProperty,
-    setProperty: runtimeErrorThrower('Cannot set property on string'),
     getElement,
-    callFunction: runtimeErrorThrower('Cannot call string'),
   };
 };
