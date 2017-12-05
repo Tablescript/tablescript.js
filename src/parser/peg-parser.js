@@ -5240,36 +5240,36 @@ function peg$parse(input, options) {
     const {
       createBlock,
       createExpressionStatement,
-    } = require('./statements');
+    } = require('../expressions/statements');
 
-    const { createAssignmentExpression } = require('./assignment');
-    const { createPlusEqualsExpression } = require('./plus-equals');
-    const { createConditionalExpression } = require('./conditional');
-    const { createBinaryExpression } = require('./binary');
-    const { createUnaryExpression } = require('./unary');
-    const { createCallExpression } = require('./call');
-    const { createObjectPropertyExpression } = require('./object-property');
-    const { createFunctionExpression } = require('./function');
+    const { createAssignmentExpression } = require('../expressions/assignment');
+    const { createPlusEqualsExpression } = require('../expressions/plus-equals');
+    const { createConditionalExpression } = require('../expressions/conditional');
+    const { createBinaryExpression } = require('../expressions/binary');
+    const { createUnaryExpression } = require('../expressions/unary');
+    const { createCallExpression } = require('../expressions/call');
+    const { createObjectPropertyExpression } = require('../expressions/object-property');
+    const { createFunctionExpression } = require('../expressions/function');
     const {
       createTableExpression,
       createTableEntry,
       createNextTableEntry,
       createRangeTableSelector,
       createExactTableSelector
-    } = require('./table');
-    const { createVariableExpression } = require('./variable');
-    const { createBooleanLiteral } = require('./boolean-literal');
-    const { createArrayLiteral } = require('./array-literal');
+    } = require('../expressions/table');
+    const { createVariableExpression } = require('../expressions/variable');
+    const { createBooleanLiteral } = require('../expressions/boolean-literal');
+    const { createArrayLiteral } = require('../expressions/array-literal');
     const {
       createObjectLiteral,
       createObjectLiteralPropertyExpression
-    } = require('./object-literal');
-    const { createDiceLiteral } = require('./dice-literal');
-    const { createNumberLiteral } = require('./number-literal');
-    const { createStringLiteral } = require('./string-literal');
-    const { createUndefinedLiteral } = require('./undefined-literal');
-    const { createIfExpression } = require('./if');
-    const { createSpreadExpression } = require('./spread');
+    } = require('../expressions/object-literal');
+    const { createDiceLiteral } = require('../expressions/dice-literal');
+    const { createNumberLiteral } = require('../expressions/number-literal');
+    const { createStringLiteral } = require('../expressions/string-literal');
+    const { createUndefinedLiteral } = require('../expressions/undefined-literal');
+    const { createIfExpression } = require('../expressions/if');
+    const { createSpreadExpression } = require('../expressions/spread');
 
     const composeBinaryExpression = (context, head, tail) => {
       return tail.reduce((result, element) => createBinaryExpression(context, result, element[1], element[3]), head);

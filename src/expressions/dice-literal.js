@@ -15,17 +15,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createStringValue } from '../interpreter/string';
+import { rollDice } from '../values/random';
+import { createNumericValue } from '../values/numeric';
 import { defaultExpression } from './default-expression';
 import { expressionTypes } from './expression-types';
 
-export const createStringLiteral = (context, s) => {
+export const createDiceLiteral = (context, count, die) => {
 
-  const evaluate = scope => createStringValue(s);
+  const evaluate = scope => createNumericValue(rollDice(count, die));
 
   const getReferencedSymbols = () => [];
 
   return {
-    ...defaultExpression(expressionTypes.STRING, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.DICE, evaluate, getReferencedSymbols),
   };
 };
+

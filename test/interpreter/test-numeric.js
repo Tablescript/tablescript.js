@@ -18,9 +18,9 @@
 import chai from 'chai';
 const expect = chai.expect;
 
-import { createNumericValue } from '../../src/interpreter/numeric';
-import { createStringValue } from '../../src/interpreter/string';
-import { valueTypes } from '../../src/interpreter/types';
+import { createNumericValue } from '../../src/values/numeric';
+import { createStringValue } from '../../src/values/string';
+import { valueTypes } from '../../src/values/types';
 
 describe('numeric value', () => {
   let value;

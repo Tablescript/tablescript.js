@@ -15,23 +15,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createFunctionValue } from '../interpreter/function';
+import { createNumericValue } from '../values/numeric';
+import { createBooleanValue } from '../values/boolean';
 import { throwRuntimeError } from '../error';
 
-export const createFunctionExpression = (context, formalParameters, body) => {
-  const createClosure = (body, parameters, scope) => {
-    return body.getReferencedSymbols()
-      .filter(v => !formalParameters.includes(v))
-      .reduce((result, symbol) => ({...result, [symbol]: scope[symbol] }), {});
-  };
-
+export const createUnaryExpression = (context, operator, argument) => {
   return {
-    evaluate: scope => {
-      return createFunctionValue(formalParameters, body, createClosure(body, formalParameters, scope));
+    evaluate: async scope => {
+      const value = await argument.evaluate(scope);
+      if (operator === '-') {
+        return createNumericValue(-1 * value.asNativeNumber(context));
+      } else if (operator === '+') {
+        return createNumericValue(value.asNativeNumber(context));
+      } else if (operator === 'not') {
+        return createBooleanValue(!value.asNativeBoolean(context));
+      } else {
+        throwRuntimeError(`Invalid operator ${operator}`, context);
+      }
     },
     evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to function', context);
+      throwRuntimeError('Cannot assign to unary expression', context);
     },
-    getReferencedSymbols: () => body.getReferencedSymbols(),
+    getReferencedSymbols: () => argument.getReferencedSymbols(),
   };
 };

@@ -21,8 +21,8 @@ import "babel-polyfill";
 import options from 'commander';
 import fs from 'fs';
 import { runProgram } from '../index';
-import { resolveFsFile } from '../parser/fs-resolver';
-import { resolveHttpFile } from '../parser/http-resolver';
+import { resolveFsFile } from '../fs-resolver';
+import { resolveHttpFile } from '../http-resolver';
 import { TablescriptError } from '../error';
 
 options

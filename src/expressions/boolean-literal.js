@@ -15,33 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createUndefined } from '../interpreter/undefined';
+import { createBooleanValue } from '../values/boolean';
 import { defaultExpression } from './default-expression';
 import { expressionTypes } from './expression-types';
 
-export const createIfExpression = (context, condition, ifBlock, elseBlock) => {
-  
-  const evaluate = async scope => {
-    const expressionValue = await condition.evaluate(scope);
-    if (expressionValue.asNativeBoolean(context)) {
-      return await ifBlock.evaluate(scope);
-    } else {
-      if (elseBlock) {
-        return await elseBlock.evaluate(scope);
-      }
-      return createUndefined();
-    }
-  };
+export const createBooleanLiteral = (context, value) => {
 
-  const getReferencedSymbols = () => {
-    return [
-      ...condition.getReferencedSymbols(),
-      ...ifBlock.getReferencedSymbols(),
-      ...(elseBlock ? elseBlock.getReferencedSymbols() : []),
-    ];
-  };
+  const evaluate = scope => createBooleanValue(value);
+
+  const getReferencedSymbols = () => [];
 
   return {
-    ...defaultExpression(expressionTypes.IF, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.BOOLEAN, evaluate, getReferencedSymbols),
   };
 };

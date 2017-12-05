@@ -18,9 +18,9 @@
 import chai from 'chai';
 const expect = chai.expect;
 
-import { createBooleanValue } from '../../src/interpreter/boolean';
-import { createStringValue } from '../../src/interpreter/string';
-import { valueTypes } from '../../src/interpreter/types';
+import { createBooleanValue } from '../../src/values/boolean';
+import { createStringValue } from '../../src/values/string';
+import { valueTypes } from '../../src/values/types';
 
 describe('boolean', () => {
   describe('when true', () => {

@@ -18,8 +18,8 @@
 import chai from 'chai';
 const expect = chai.expect;
 
-import { valueTypes } from '../../src/interpreter/types';
-import { createNativeFunctionValue, createFunctionValue } from '../../src/interpreter/function';
+import { valueTypes } from '../../src/values/types';
+import { createNativeFunctionValue, createFunctionValue } from '../../src/values/function';
 
 describe('function', () => {
   describe('createNativeFunctionValue', () => {

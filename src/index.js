@@ -18,7 +18,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { parse } from './parser/parser';
-import { interpret } from './interpreter/interpreter';
+import { interpret } from './values/interpreter';
 import { TablescriptError, throwRuntimeError } from './error';
 
 const loadProgram = async (resolvers, context, filename) => {

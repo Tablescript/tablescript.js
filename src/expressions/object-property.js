@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../interpreter/types';
+import { valueTypes } from '../values/types';
 import {
   createArrayElementLeftHandSideValue,
   createObjectPropertyLeftHandSideValue
-} from '../interpreter/left-hand-side';
+} from '../values/left-hand-side';
 import { throwRuntimeError } from '../error';
 
 export const createObjectPropertyExpression = (context, objectExpression, propertyNameExpression) => {

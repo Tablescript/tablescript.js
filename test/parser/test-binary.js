@@ -18,7 +18,7 @@
 import chai from 'chai';
 const expect = chai.expect;
 
-import { valueTypes } from '../../src/interpreter/types';
+import { valueTypes } from '../../src/values/types';
 import { createBinaryExpression } from '../../src/parser/expressions';
 
 describe('createBinaryExpression', () => {

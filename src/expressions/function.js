@@ -15,17 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createUndefined } from '../interpreter/undefined';
-import { defaultExpression } from './default-expression';
-import { expressionTypes } from './expression-types';
+import { createFunctionValue } from '../values/function';
+import { throwRuntimeError } from '../error';
 
-export const createUndefinedLiteral = context => {
-
-  const evaluate = () => createUndefined();
-
-  const getReferencedSymbols = () => [];
+export const createFunctionExpression = (context, formalParameters, body) => {
+  const createClosure = (body, parameters, scope) => {
+    return body.getReferencedSymbols()
+      .filter(v => !formalParameters.includes(v))
+      .reduce((result, symbol) => ({...result, [symbol]: scope[symbol] }), {});
+  };
 
   return {
-    ...defaultExpression(expressionTypes.UNDEFINED, evaluate, getReferencedSymbols),
+    evaluate: scope => {
+      return createFunctionValue(formalParameters, body, createClosure(body, formalParameters, scope));
+    },
+    evaluateAsLeftHandSide: () => {
+      throwRuntimeError('Cannot assign to function', context);
+    },
+    getReferencedSymbols: () => body.getReferencedSymbols(),
   };
 };

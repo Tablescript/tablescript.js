@@ -18,7 +18,7 @@
 import chai from 'chai';
 const expect = chai.expect;
 
-import { valueTypes } from '../../src/interpreter/types';
+import { valueTypes } from '../../src/values/types';
 import { createAssignmentExpression } from '../../src/parser/expressions';
 
 const recordCall = (calls, name, args = []) => {

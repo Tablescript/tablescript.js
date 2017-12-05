@@ -18,11 +18,11 @@
 import chai from 'chai';
 const expect = chai.expect;
 
-import { createObjectValue } from '../../src/interpreter/object';
-import { createNumericValue } from '../../src/interpreter/numeric';
-import { createStringValue } from '../../src/interpreter/string';
-import { createArrayValue } from '../../src/interpreter/array';
-import { valueTypes } from '../../src/interpreter/types';
+import { createObjectValue } from '../../src/values/object';
+import { createNumericValue } from '../../src/values/numeric';
+import { createStringValue } from '../../src/values/string';
+import { createArrayValue } from '../../src/values/array';
+import { valueTypes } from '../../src/values/types';
 
 describe('object value', () => {
   let dummyObject;

@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError } from '../error';
-import { createLeftHandSideValue } from '../interpreter/left-hand-side';
+import { createLeftHandSideValue } from '../values/left-hand-side';
 import { defaultExpression } from './default-expression';
 import { expressionTypes } from './expression-types';
 

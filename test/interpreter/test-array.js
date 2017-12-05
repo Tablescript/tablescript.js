@@ -18,12 +18,12 @@
 import chai from 'chai';
 const expect = chai.expect;
 
-import { valueTypes } from '../../src/interpreter/types';
-import { createStringValue } from '../../src/interpreter/string';
-import { createNumericValue } from '../../src/interpreter/numeric';
-import { createBooleanValue } from '../../src/interpreter/boolean';
-import { createUndefined } from '../../src/interpreter/undefined';
-import { createArrayValue } from '../../src/interpreter/array';
+import { valueTypes } from '../../src/values/types';
+import { createStringValue } from '../../src/values/string';
+import { createNumericValue } from '../../src/values/numeric';
+import { createBooleanValue } from '../../src/values/boolean';
+import { createUndefined } from '../../src/values/undefined';
+import { createArrayValue } from '../../src/values/array';
 import { TablescriptError } from '../../src/error';
 
 describe('array', () => {

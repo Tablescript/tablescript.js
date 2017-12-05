@@ -18,8 +18,8 @@
 import chai from 'chai';
 const expect = chai.expect;
 
-import { valueTypes } from '../../src/interpreter/types';
-import { createUndefined } from '../../src/interpreter/undefined';
+import { valueTypes } from '../../src/values/types';
+import { createUndefined } from '../../src/values/undefined';
 
 describe('createUndefined', () => {
   let value;

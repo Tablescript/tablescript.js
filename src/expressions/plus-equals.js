@@ -15,19 +15,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../interpreter/types';
+import { valueTypes } from '../values/types';
 import { throwRuntimeError } from '../error';
-import { defaultExpression } from './default-expression';
+import { createStringValue } from '../values/string';
+import { createNumericValue } from '../values/numeric';
 
-export const createAssignmentExpression = (context, leftHandSideExpression, valueExpression) => {
+export const createPlusEqualsExpression = (context, leftHandSideExpression, valueExpression) => {
   const evaluate = async scope => {
     const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(context, scope);
     if (leftHandSideValue.type !== valueTypes.LEFT_HAND_SIDE) {
       throwRuntimeError('Cannot assign to a non-left-hand-side type', context);
     }
-    const value = await valueExpression.evaluate(scope);
-    leftHandSideValue.assignFrom(context, scope, value);
-    return value;
+    const leftValue = await leftHandSideExpression.evaluate(scope);
+    const rightValue = await valueExpression.evaluate(scope);
+    if (leftValue.type === valueTypes.STRING) {
+      leftHandSideValue.assignFrom(context, scope, createStringValue(leftValue.asNativeString(context) + rightValue.asNativeString(context)));
+      return rightValue;
+    } else if (leftValue.type === valueTypes.NUMBER) {
+      leftHandSideValue.assignFrom(context, scope, createNumericValue(leftValue.asNativeNumber(context) + rightValue.asNativeNumber(context)));
+      return rightValue;
+    }
+    throwRuntimeError('Cannot add these values', context);
   };
 
   const getReferencedSymbols = () => {

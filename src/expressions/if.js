@@ -15,27 +15,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../error';
+import { createUndefined } from '../values/undefined';
 import { defaultExpression } from './default-expression';
 import { expressionTypes } from './expression-types';
-import { valueTypes } from '../interpreter/types';
-import { createArraySpread, createObjectSpread } from '../interpreter/spread';
 
-export const createSpreadExpression = (context, expression) => {
-
+export const createIfExpression = (context, condition, ifBlock, elseBlock) => {
+  
   const evaluate = async scope => {
-    const value = await expression.evaluate(scope);
-    if (value.type === valueTypes.ARRAY) {
-      return createArraySpread(value);
-    } else if (value.type === valueTypes.OBJECT) {
-      return createObjectSpread(value);
+    const expressionValue = await condition.evaluate(scope);
+    if (expressionValue.asNativeBoolean(context)) {
+      return await ifBlock.evaluate(scope);
+    } else {
+      if (elseBlock) {
+        return await elseBlock.evaluate(scope);
+      }
+      return createUndefined();
     }
-    throwRuntimeError('Spreads only apply to arrays and objects', context);
   };
 
-  const getReferencedSymbols = () => expression.getReferencedSymbols();
+  const getReferencedSymbols = () => {
+    return [
+      ...condition.getReferencedSymbols(),
+      ...ifBlock.getReferencedSymbols(),
+      ...(elseBlock ? elseBlock.getReferencedSymbols() : []),
+    ];
+  };
 
   return {
-    ...defaultExpression(expressionTypes.SPREAD, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.IF, evaluate, getReferencedSymbols),
   };
 };
