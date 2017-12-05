@@ -21,32 +21,34 @@
     createExpressionStatement,
   } = require('./statements');
 
+  const { createAssignmentExpression } = require('./assignment');
+  const { createPlusEqualsExpression } = require('./plus-equals');
+  const { createConditionalExpression } = require('./conditional');
+  const { createBinaryExpression } = require('./binary');
+  const { createUnaryExpression } = require('./unary');
+  const { createCallExpression } = require('./call');
+  const { createObjectPropertyExpression } = require('./object-property');
+  const { createFunctionExpression } = require('./function');
   const {
-    createAssignmentExpression,
-    createConditionalExpression,
-    createBinaryExpression,
-    createUnaryExpression,
-    createCallExpression,
-    createObjectPropertyExpression,
-    createPlusEqualsExpression,
-    createFunctionExpression,
     createTableExpression,
     createTableEntry,
     createNextTableEntry,
     createRangeTableSelector,
-    createExactTableSelector,
-    createVariableExpression,
-    createBooleanLiteral,
-    createArrayLiteral,
+    createExactTableSelector
+  } = require('./table');
+  const { createVariableExpression } = require('./variable');
+  const { createBooleanLiteral } = require('./boolean-literal');
+  const { createArrayLiteral } = require('./array-literal');
+  const {
     createObjectLiteral,
-    createObjectLiteralPropertyExpression,
-    createDiceLiteral,
-    createNumberLiteral,
-    createStringLiteral,
-    createUndefinedLiteral,
-    createIfExpression,
-    createSpreadExpression,
-  } = require('./expressions');
+    createObjectLiteralPropertyExpression
+  } = require('./object-literal');
+  const { createDiceLiteral } = require('./dice-literal');
+  const { createNumberLiteral } = require('./number-literal');
+  const { createStringLiteral } = require('./string-literal');
+  const { createUndefinedLiteral } = require('./undefined-literal');
+  const { createIfExpression } = require('./if');
+  const { createSpreadExpression } = require('./spread');
 
   const composeBinaryExpression = (context, head, tail) => {
     return tail.reduce((result, element) => createBinaryExpression(context, result, element[1], element[3]), head);

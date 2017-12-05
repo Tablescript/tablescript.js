@@ -15,16 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { expressionTypeName } from './expression-types';
-import { runtimeErrorThrower } from '../error';
+import { createUndefined } from '../interpreter/undefined';
+import { defaultExpression } from './default-expression';
+import { expressionTypes } from './expression-types';
 
-export const defaultExpression = (type, evaluate, getReferencedSymbols) => {
-  const typeName = expressionTypeName(type);
+export const createUndefinedLiteral = context => {
+
+  const evaluate = () => createUndefined();
+
+  const getReferencedSymbols = () => [];
 
   return {
-    type,
-    evaluate,
-    evaluateAsLeftHandSide: runtimeErrorThrower(`Cannot assign to ${typeName}`),
-    getReferencedSymbols,
+    ...defaultExpression(expressionTypes.UNDEFINED, evaluate, getReferencedSymbols),
   };
 };

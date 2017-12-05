@@ -15,16 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { expressionTypeName } from './expression-types';
-import { runtimeErrorThrower } from '../error';
+import { throwRuntimeError } from '../error';
+import { createLeftHandSideValue } from '../interpreter/left-hand-side';
+import { defaultExpression } from './default-expression';
+import { expressionTypes } from './expression-types';
 
-export const defaultExpression = (type, evaluate, getReferencedSymbols) => {
-  const typeName = expressionTypeName(type);
+export const createVariableExpression = (context, name) => {
+
+  const evaluate = scope => {
+    if (scope[name]) {
+      return scope[name];
+    }
+    throwRuntimeError(`Symbol '${name}' not found`, context);
+  };
+
+  const evaluateAsLeftHandSide = () => createLeftHandSideValue(name);
+
+  const getReferencedSymbols = () => [name];
 
   return {
-    type,
-    evaluate,
-    evaluateAsLeftHandSide: runtimeErrorThrower(`Cannot assign to ${typeName}`),
-    getReferencedSymbols,
+    ...defaultExpression(expressionTypes.VARIABLE, evaluate, getReferencedSymbols),
+    evaluateAsLeftHandSide,
   };
 };
