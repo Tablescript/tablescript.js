@@ -17,7 +17,7 @@
 
 import { createTableValue } from '../values/table';
 import { defaultExpression } from './default-expression';
-import { expressionTypes } from './expression-types';
+import { expressionTypes } from './types';
 
 export const createTableExpression = (context, parameters, entries) => {
   

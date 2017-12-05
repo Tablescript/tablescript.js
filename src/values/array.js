@@ -23,7 +23,7 @@ import { createNumericValue } from './numeric';
 import { createBooleanValue } from './boolean';
 import { createStringValue } from './string';
 import { createUndefined } from './undefined';
-import { quickSort } from './sort';
+import { quickSort } from '../util/sort';
 
 export const createArrayValue = entries => {
   const entriesAsNativeValues = (context, entries) => entries.map(e => e.asNativeValue(context));

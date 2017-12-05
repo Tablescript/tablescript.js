@@ -17,7 +17,7 @@
 
 import { createUndefined } from '../values/undefined';
 import { defaultExpression } from './default-expression';
-import { expressionTypes } from './expression-types';
+import { expressionTypes } from './types';
 
 export const createUndefinedLiteral = context => {
 

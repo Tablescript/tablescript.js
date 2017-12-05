@@ -18,7 +18,7 @@
 import { throwRuntimeError } from '../error';
 import { createLeftHandSideValue } from '../values/left-hand-side';
 import { defaultExpression } from './default-expression';
-import { expressionTypes } from './expression-types';
+import { expressionTypes } from './types';
 
 export const createVariableExpression = (context, name) => {
 

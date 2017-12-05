@@ -17,7 +17,7 @@
 
 import { createStringValue } from '../values/string';
 import { defaultExpression } from './default-expression';
-import { expressionTypes } from './expression-types';
+import { expressionTypes } from './types';
 
 export const createStringLiteral = (context, s) => {
 

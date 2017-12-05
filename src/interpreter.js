@@ -15,11 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { initializeBuiltins } from './builtins';
-import { createUndefined } from './undefined';
-import { createStringValue } from './string';
-import { createArrayValue } from './array';
-import { createObjectValue } from './object';
+import { initializeBuiltins } from './builtins/builtins';
+import { createStringValue } from './values/string';
+import { createArrayValue } from './values/array';
+import { createObjectValue } from './values/object';
 
 const expandArguments = args => ({
   arguments: createArrayValue(args.map(a => (typeof a === 'string') ? createStringValue(a) : a))

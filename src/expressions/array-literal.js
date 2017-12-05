@@ -19,7 +19,7 @@ import { valueTypes } from '../values/types';
 import { throwRuntimeError } from '../error';
 import { createArrayValue } from '../values/array';
 import { defaultExpression } from './default-expression';
-import { expressionTypes } from './expression-types';
+import { expressionTypes } from './types';
 
 export const createArrayLiteral = (context, values) => {
 

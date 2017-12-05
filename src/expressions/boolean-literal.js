@@ -17,7 +17,7 @@
 
 import { createBooleanValue } from '../values/boolean';
 import { defaultExpression } from './default-expression';
-import { expressionTypes } from './expression-types';
+import { expressionTypes } from './types';
 
 export const createBooleanLiteral = (context, value) => {
 

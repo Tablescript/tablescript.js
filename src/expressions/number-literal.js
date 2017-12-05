@@ -17,7 +17,7 @@
 
 import { createNumericValue } from '../values/numeric';
 import { defaultExpression } from './default-expression';
-import { expressionTypes } from './expression-types';
+import { expressionTypes } from './types';
 
 export const createNumberLiteral = (context, n) => {
 

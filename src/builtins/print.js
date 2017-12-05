@@ -15,27 +15,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../error';
-import { defaultExpression } from './default-expression';
-import { expressionTypes } from './types';
 import { valueTypes } from '../values/types';
-import { createArraySpread, createObjectSpread } from '../values/spread';
+import { defaultValue } from '../values/default';
+import { createStringValue } from '../values/string';
 
-export const createSpreadExpression = (context, expression) => {
+export const createPrintBuiltin = options => {
+  const asNativeString = () => 'builtin function(print)';
+  const asNativeBoolean = () => true;
 
-  const evaluate = async scope => {
-    const value = await expression.evaluate(scope);
-    if (value.type === valueTypes.ARRAY) {
-      return createArraySpread(value);
-    } else if (value.type === valueTypes.OBJECT) {
-      return createObjectSpread(value);
-    }
-    throwRuntimeError('Spreads only apply to arrays and objects', context);
+  const asString = () => createStringValue(asNativeString());
+  const asBoolean = () => createBooleanValue(asNativeBoolean());
+
+  const callFunction = async (context, scope, parameters) => {
+    const s = parameters.map(p => p.asNativeString(context)).join();
+    await options.output.print(s);
+    return createStringValue(s);
   };
 
-  const getReferencedSymbols = () => expression.getReferencedSymbols();
-
   return {
-    ...defaultExpression(expressionTypes.SPREAD, evaluate, getReferencedSymbols),
+    ...defaultValue(valueTypes.FUNCTION, asNativeString),
+    asNativeString,
+    asNativeBoolean,
+    asString,
+    asBoolean,
+    callFunction,
   };
 };

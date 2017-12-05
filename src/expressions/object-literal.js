@@ -17,7 +17,7 @@
 
 import { createObjectValue } from '../values/object';
 import { defaultExpression } from './default-expression';
-import { expressionTypes } from './expression-types';
+import { expressionTypes } from './types';
 
 export const createObjectLiteral = (context, entries) => {
 

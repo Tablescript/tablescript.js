@@ -17,7 +17,7 @@
 
 import { defaultValue } from './default';
 import { valueTypes } from './types';
-import { randomNumber } from './random';
+import { randomNumber } from '../util/random';
 import { createUndefined } from './undefined';
 import { createNumericValue } from './numeric';
 
