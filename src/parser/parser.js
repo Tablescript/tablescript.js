@@ -25,7 +25,7 @@ import { TablescriptError } from '../error';
 export const parse = (filePath, program) => {
   const tracer = new Tracer(program);
   try {
-    return parser.parse(program, { path: filePath });
+    return parser.parse(program, { tracer, path: filePath });
   } catch (e) {
     throw new TablescriptError(
       e.name,
