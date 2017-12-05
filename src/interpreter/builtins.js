@@ -23,6 +23,7 @@ import { createUndefined } from './undefined';
 import { createArrayValue } from './array';
 import { run } from '../index';
 import { interpret } from './interpreter';
+import { randomNumber } from './random';
 
 const assertBuiltin = options => {
   return {
@@ -122,8 +123,22 @@ const rangeBuiltin = {
   asString: () => 'builtin(range)',
 };
 
+const chooseBuiltin = {
+  type: valueTypes.FUNCTION,
+  callFunction: (context, scope, parameters) => {
+    if (parameters.length !== 1) {
+      throwRuntimeError('choose(items) takes a single array parameter', context);
+    }
+    const items = parameters[0].asArray();
+    const roll = randomNumber(items.length) - 1;
+    return items[roll];
+  },
+  asString: () => 'builtin(choose)',
+};
+
 export const initializeBuiltins = options => ({
   assert: assertBuiltin(options),
+  choose: chooseBuiltin,
   keys: keysBuiltin,
   print: printBuiltin(options),
   range: rangeBuiltin,
