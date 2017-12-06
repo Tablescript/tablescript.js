@@ -19,9 +19,14 @@ import { createTableValue } from '../values/table';
 import { defaultExpression } from './default';
 import { expressionTypes } from './types';
 
-export const createTableExpression = (context, parameters, entries) => {
-  
-  const evaluate = scope => createTableValue(parameters, entries);
+export const createTableExpression = (context, formalParameters, entries) => {
+  const createClosure = (entries, parameters, scope) => {
+    return entries.reduce((acc, e) => ([...acc, ...e.getReferencedSymbols()]), [])
+      .filter(v => !formalParameters.includes(v))
+      .reduce((result, symbol) => ({...result, [symbol]: scope[symbol] }), {});
+  };
+
+  const evaluate = scope => createTableValue(formalParameters, entries, createClosure(entries, formalParameters, scope));
 
   const getReferencedSymbols = () => ([
     ...parameters.reduce((result, parameter) => [...result, ...parameter.getReferencedSymbols()], []),

@@ -20,8 +20,16 @@ import { valueTypes } from './types';
 import { randomNumber } from '../util/random';
 import { createUndefined } from './undefined';
 import { createNumericValue } from './numeric';
+import { createNativeFunctionValue } from './function';
 
-export const createTableValue = (formalParameters, entries) => {
+export const createTableValue = (formalParameters, entries, closure) => {
+  /*
+  console.log('createTableValue');
+  console.log(formalParameters);
+  console.log(entries);
+  console.log(closure);
+  */
+
   const parametersToArguments = parameters => {
     const o = {};
     for (let i = 0; i < parameters.length; i++) {
@@ -40,8 +48,9 @@ export const createTableValue = (formalParameters, entries) => {
     const selectedEntry = entries.find(e => e.rollApplies(indexValue));
     if (selectedEntry) {
       const localScope = {
-        ...scope,
-        roll: createNumericValue(indexValue)
+        ...closure,
+        roll: createNumericValue(indexValue),
+        'this': createTableValue(formalParameters, entries, closure),
       };
       return await selectedEntry.evaluate(localScope);
     }
@@ -53,8 +62,10 @@ export const createTableValue = (formalParameters, entries) => {
     const rolledEntry = entries.find((e, index) => e.rollApplies(roll, index));
     const localScope = {
       ...scope,
+      ...closure,
       ...parametersToArguments(parameters),
-      roll: createNumericValue(roll)
+      roll: createNumericValue(roll),
+      'this': createTableValue(formalParameters, entries, closure),
     };
     return await rolledEntry.evaluate(localScope);
   };
