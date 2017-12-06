@@ -21,13 +21,6 @@ import { valueTypes } from './types';
 import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 
-const validateCalledParameters = (formalParameters, calledParameters) => {
-  if (calledParameters.length > formalParameters.length) {
-    throwRuntimeError(`function call expected ${formalParameters.length} parameters but got ${calledParameters.length}`);
-  }
-  return calledParameters;
-};
-
 const toKeyValuePair = formalParameters => (value, index) => ({ [formalParameters[index]]: value });
 const keyPairsToObject = (result, pair) => ({
   ...result,
@@ -35,7 +28,7 @@ const keyPairsToObject = (result, pair) => ({
 });
 
 const parameterConverter = formalParameters => calledParameters => {
-  return validateCalledParameters(formalParameters, calledParameters)
+  return calledParameters
     .map(toKeyValuePair(formalParameters))
     .reduce(keyPairsToObject, {});
 };
