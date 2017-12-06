@@ -19,7 +19,6 @@
   const { createBlockExpression } = require('../expressions/block');
   const { createSimpleExpression } = require('../expressions/simple');
   const { createAssignmentExpression } = require('../expressions/assignment');
-  const { createPlusEqualsExpression } = require('../expressions/plus-equals');
   const { createConditionalExpression } = require('../expressions/conditional');
   const { createBinaryExpression } = require('../expressions/binary');
   const { createUnaryExpression } = require('../expressions/unary');
@@ -99,13 +98,20 @@ Expression
   }
 
 AssignmentExpression
-  = l:LeftHandSideExpression __ '=' __ e:Expression {
-    return createAssignmentExpression(createContext(location(), options), l, e);
+  = l:LeftHandSideExpression __ '=' !'=' __ e:Expression {
+    return createAssignmentExpression(createContext(location(), options), l, '=', e);
   }
-  / l:LeftHandSideExpression __ '+=' __ e:Expression {
-    return createPlusEqualsExpression(createContext(location(), options), l, e);
+  / l:LeftHandSideExpression __ o:AssignmentOperator __ e:Expression {
+    return createAssignmentExpression(createContext(location(), options), l, o, e);
   }
   / ConditionalExpression
+
+AssignmentOperator
+  = '+='
+  / '-='
+  / '*='
+  / '/='
+  / '%='
 
 ConditionalExpression
   = test:LogicalOrExpression __ '?' __ consequent:Expression __ ':' __ alternate:Expression {
@@ -149,8 +155,8 @@ AdditiveExpression
   }
 
 AdditiveOperator
-  = '+'
-  / '-'
+  = $('+' !'=')
+  / $('-' !'=')
 
 MultiplicativeExpression
   = head:UnaryExpression tail:(__ MultiplicativeOperator __ UnaryExpression)* {
@@ -158,9 +164,9 @@ MultiplicativeExpression
   }
 
 MultiplicativeOperator
-  = '*'
-  / '/'
-  / '%'
+  = $('*' !'=')
+  / $('/' !'=')
+  / $('%' !'=')
 
 UnaryExpression
   = LeftHandSideExpression
@@ -169,8 +175,8 @@ UnaryExpression
   }
 
 UnaryOperator
-  = '+'
-  / '-'
+  = $('+' !'=')
+  / $('-' !'=')
   / 'not'
 
 LeftHandSideExpression

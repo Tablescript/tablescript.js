@@ -1,5 +1,16 @@
 
 x = 12
 x += 3
-system.print(x)
+system.assert(x == 15)
 
+x -= 5
+system.assert(x == 10)
+
+x /= 2
+system.assert(x == 5)
+
+x *= 12
+system.assert(x == 60)
+
+x %= 7
+system.assert(x == 4)
