@@ -33,7 +33,7 @@ const fileContents = (filePath) => {
       if (error) {
         resolve(undefined);
       } else {
-        resolve(contents);
+        resolve({path: filePath, body: contents});
       }
     });
   });

@@ -29,7 +29,7 @@ export const loadHttpFile = async (context, filename) => {
         let rawData = '';
         res.on('data', chunk => { rawData += chunk; });
         res.on('end', () => {
-          resolve(rawData);
+          resolve({path: filename, body: rawData});
         });
       }
     }).on('error', e => {
