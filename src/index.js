@@ -65,7 +65,7 @@ const loadProgram = async (loaders, context, filename) => {
 
 const run = async (context, filename, args, options) => {
   const program = await loadProgram(options.input.loaders, context, filename);
-  return await runProgram({path: program.path}, program.body, args, options);
+  return await runProgram({ path: program.path }, program.body, args, options);
 };    
 
 export {

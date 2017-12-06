@@ -57,7 +57,7 @@ export const createTableValue = (formalParameters, entries, closure) => {
       ...scope,
       ...closure,
       ...parametersToArguments(parameters),
-      roll: createNumericValue(roll),
+      'roll': createNumericValue(roll),
       'this': createTableValue(formalParameters, entries, closure),
     };
     return await rolledEntry.evaluate(localScope);

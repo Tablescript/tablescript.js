@@ -23,7 +23,7 @@ export const createTableExpression = (context, formalParameters, entries) => {
   const createClosure = (entries, parameters, scope) => {
     return entries.reduce((acc, e) => ([...acc, ...e.getReferencedSymbols()]), [])
       .filter(v => !formalParameters.includes(v))
-      .reduce((result, symbol) => ({...result, [symbol]: scope[symbol] }), {});
+      .reduce((result, symbol) => ({ ...result, [symbol]: scope[symbol] }), {});
   };
 
   const evaluate = scope => createTableValue(formalParameters, entries, createClosure(entries, formalParameters, scope));

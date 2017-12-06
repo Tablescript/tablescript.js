@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import "babel-polyfill";
+import 'babel-polyfill';
 import options from 'commander';
 import fs from 'fs';
 import { runProgram } from '../index';
@@ -36,20 +36,20 @@ const args = options.args.slice(1);
 
 const interpreterOptions = {
   input: {
-    loaders: [loadFsFile, loadHttpFile]
+    loaders: [loadFsFile, loadHttpFile],
   },
   output: {
     print: s => {
       console.log(s);
-    }
-  }
+    },
+  },
 };
 
 try {
   const context = {
     path: filename,
     line: 0,
-    column: 0
+    column: 0,
   };
   const program = fs.readFileSync(filename, 'utf8');
   runProgram(context, program, args, interpreterOptions).then(value => {

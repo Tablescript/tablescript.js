@@ -27,13 +27,13 @@ const allPaths = (context, filename) => ([
   ...environmentPaths()
 ]);
 
-const fileContents = (filePath) => {
+const fileContents = filePath => {
   return new Promise(resolve => {
     fs.readFile(filePath, 'utf8', (error, contents) => {
       if (error) {
         resolve(undefined);
       } else {
-        resolve({path: filePath, body: contents});
+        resolve({ path: filePath, body: contents });
       }
     });
   });
