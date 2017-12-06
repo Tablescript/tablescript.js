@@ -16,10 +16,13 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { valueTypes } from '../../src/values/types';
-import { createBinaryExpression } from '../../src/parser/expressions';
+import { valueTypes, valueTypeName } from '../../src/values/types';
+import { createBinaryExpression } from '../../src/expressions/binary';
+import { isBooleanValue, isNumericValue, isStringValue } from '../util';
 
 describe('createBinaryExpression', () => {
 
@@ -38,12 +41,8 @@ describe('createBinaryExpression', () => {
           result = expression.evaluate({});
         })
 
-        it('returns a boolean', () => {
-          expect(result.type).to.equal(valueTypes.BOOLEAN);
-        });
-
-        it('returns true', () => {
-          expect(result.asNativeBoolean()).to.be.true;
+        it('returns boolean true', () => {
+          return expect(result).to.eventually.satisfy(isBooleanValue(true));
         });
       });
 
@@ -65,12 +64,8 @@ describe('createBinaryExpression', () => {
           result = expression.evaluate({});
         });
 
-        it('returns a boolean', () => {
-          expect(result.type).to.equal(valueTypes.BOOLEAN);
-        });
-
-        it('returns the right expression value', () => {
-          expect(result.asNativeBoolean()).to.be.false;
+        it('returns boolean false', () => {
+          return expect(result).to.eventually.satisfy(isBooleanValue(false));
         });
       });
     });
@@ -89,12 +84,8 @@ describe('createBinaryExpression', () => {
           result = expression.evaluate({});
         })
 
-        it('returns a boolean', () => {
-          expect(result.type).to.equal(valueTypes.BOOLEAN);
-        });
-
-        it('returns false', () => {
-          expect(result.asNativeBoolean()).to.be.false;
+        it('returns boolean false', () => {
+          return expect(result).to.eventually.satisfy(isBooleanValue(false));
         });
       });
 
@@ -116,12 +107,8 @@ describe('createBinaryExpression', () => {
           result = expression.evaluate({});
         });
 
-        it('returns a boolean', () => {
-          expect(result.type).to.equal(valueTypes.BOOLEAN);
-        });
-
         it('returns the right expression value', () => {
-          expect(result.asNativeBoolean()).to.be.true;
+          return expect(result).to.eventually.satisfy(isBooleanValue(true));
         });
       });
     });
@@ -152,12 +139,8 @@ describe('createBinaryExpression', () => {
             result = expression.evaluate();
           });
 
-          it('returns a string', () => {
-            expect(result.type).to.equal(valueTypes.STRING);
-          });
-
           it('returns the left and right values concatenated', () => {
-            expect(result.asNativeString()).to.equal('left valueright value');
+            return expect(result).to.eventually.satisfy(isStringValue('left valueright value'));
           });
         });
 
@@ -168,7 +151,7 @@ describe('createBinaryExpression', () => {
             })
           };
           const expression = createBinaryExpression({}, mockLeftExpression, '+', mockRightExpression);
-          expect(() => expression.evaluate()).to.throw('Something went wrong');
+          return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
         });
       });
 
@@ -198,12 +181,8 @@ describe('createBinaryExpression', () => {
             result = expression.evaluate({});
           });
 
-          it('returns a number', () => {
-            expect(result.type).to.equal(valueTypes.NUMBER);
-          });
-
           it('returns the sum of the two numbers', () => {
-            expect(result.asNativeNumber()).to.equal(21);
+            return expect(result).to.eventually.satisfy(isNumericValue(21));
           });
         });
 
@@ -214,7 +193,7 @@ describe('createBinaryExpression', () => {
             })
           };
           const expression = createBinaryExpression({}, mockLeftExpression, '+', mockRightExpression);
-          expect(() => expression.evaluate()).to.throw('Something went wrong');
+          return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
         });
       });
 
@@ -228,7 +207,7 @@ describe('createBinaryExpression', () => {
           evaluate: () => undefined
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '+', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Cannot add these values');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot add these values');
       });
     });
 
@@ -243,7 +222,7 @@ describe('createBinaryExpression', () => {
           evaluate: () => undefined
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '-', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
       });
 
       it('throws if the right value cannot be converted to a number', () => {
@@ -258,7 +237,7 @@ describe('createBinaryExpression', () => {
           })
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '-', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
       });
 
       describe('when both values are numeric', () => {
@@ -279,12 +258,8 @@ describe('createBinaryExpression', () => {
           result = expression.evaluate();
         });
 
-        it('returns a number', () => {
-          expect(result.type).to.equal(valueTypes.NUMBER);
-        });
-
         it('returns the difference between the two numbers', () => {
-          expect(result.asNativeNumber()).to.equal(6);
+          return expect(result).to.eventually.satisfy(isNumericValue(6));
         });
       });
     });
@@ -300,7 +275,7 @@ describe('createBinaryExpression', () => {
           evaluate: () => undefined
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '*', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
       });
 
       it('throws if the right value cannot be converted to a number', () => {
@@ -315,7 +290,7 @@ describe('createBinaryExpression', () => {
           })
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '*', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
       });
 
       describe('when both values are numeric', () => {
@@ -336,12 +311,8 @@ describe('createBinaryExpression', () => {
           result = expression.evaluate();
         });
 
-        it('returns a number', () => {
-          expect(result.type).to.equal(valueTypes.NUMBER);
-        });
-
         it('returns the product of the two numbers', () => {
-          expect(result.asNativeNumber()).to.equal(27);
+          return expect(result).to.eventually.satisfy(isNumericValue(27));
         });
       });
     });
@@ -359,7 +330,7 @@ describe('createBinaryExpression', () => {
           })
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '/', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
       });
 
       it('throws if the right value cannot be converted to a number', () => {
@@ -374,7 +345,7 @@ describe('createBinaryExpression', () => {
           })
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '/', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
       });
 
       it('throws if the right value is 0', () => {
@@ -389,7 +360,7 @@ describe('createBinaryExpression', () => {
           })
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '/', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Divide by zero');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Divide by zero');
       });
 
       describe('when both values are numeric', () => {
@@ -410,12 +381,8 @@ describe('createBinaryExpression', () => {
           result = expression.evaluate();
         });
 
-        it('returns a number', () => {
-          expect(result.type).to.equal(valueTypes.NUMBER);
-        });
-
         it('returns the first divided by the second', () => {
-          expect(result.asNativeNumber()).to.equal(3);
+          return expect(result).to.eventually.satisfy(isNumericValue(3));
         });
       });
     });
@@ -433,7 +400,7 @@ describe('createBinaryExpression', () => {
           })
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '%', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
       });
 
       it('throws if the right value cannot be converted to a number', () => {
@@ -448,7 +415,7 @@ describe('createBinaryExpression', () => {
           })
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '%', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
       });
 
       it('throws if the right value is 0', () => {
@@ -463,7 +430,7 @@ describe('createBinaryExpression', () => {
           })
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '%', mockRightExpression);
-        expect(() => expression.evaluate()).to.throw('Divide by zero');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Divide by zero');
       });
 
       describe('when both values are numeric', () => {
@@ -484,12 +451,8 @@ describe('createBinaryExpression', () => {
           result = expression.evaluate();
         });
 
-        it('returns a number', () => {
-          expect(result.type).to.equal(valueTypes.NUMBER);
-        });
-
         it('returns the first modulo the second', () => {
-          expect(result.asNativeNumber()).to.equal(2);
+          return expect(result).to.eventually.satisfy(isNumericValue(2));
         });
       });
     });
@@ -506,13 +469,13 @@ describe('createBinaryExpression', () => {
 
     it('throws when given an unrecognized operator', () => {
       const expression = createBinaryExpression({}, undefined, 'not defined', undefined);
-      expect(() => expression.evaluate()).to.throw('Invalid operator not defined');
+      return expect(expression.evaluate()).to.eventually.be.rejectedWith('Invalid operator not defined');
     });
   });
 
   it('throws when evaluated as lhs', () => {
-    const expression = createBinaryExpression({}, '', {});
-    expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to binary expression');
+    const expression = createBinaryExpression({}, {}, '', {});
+    return expect(expression.evaluateAsLeftHandSide()).to.eventually.be.rejectedWith('Cannot assign to binary expression');
   });
 
   describe('getReferencedSymbols', () => {

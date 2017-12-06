@@ -16,6 +16,8 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 import { valueTypes } from '../../src/values/types';
@@ -25,6 +27,7 @@ import { createBooleanValue } from '../../src/values/boolean';
 import { createUndefined } from '../../src/values/undefined';
 import { createArrayValue } from '../../src/values/array';
 import { TablescriptError } from '../../src/error';
+import { isUndefined } from '../util';
 
 describe('array', () => {
   const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);
@@ -42,7 +45,7 @@ describe('array', () => {
     });
 
     it('throws if cast as a number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast array to number');
+      expect(() => value.asNativeNumber()).to.throw('Cannot cast ARRAY to number');
     });
 
     it('has a JSON-ish string representation', () => {
@@ -58,8 +61,8 @@ describe('array', () => {
     });
 
     describe('equality', () => {
-      it('is unimplemented', () => {
-        expect(() => value.equals()).to.throw('Array equality unimplemented');
+      it('is equal to the same non-empty array', () => {
+        expect(value.equals({}, nonEmptyArray())).to.be.true;
       });
     });
 
@@ -134,7 +137,7 @@ describe('array', () => {
           });
 
           it('returns undefined', () => {
-            expect(result.type).to.equal(valueTypes.UNDEFINED);
+            return expect(result).to.eventually.satisfy(isUndefined);
           });
         });
 
@@ -144,11 +147,15 @@ describe('array', () => {
           });
 
           it('returns a boolean', () => {
-            expect(result.type).to.equal(valueTypes.BOOLEAN);
+            result.then(value => {
+              expect(value.type).to.equal(valueTypes.BOOLEAN);
+            });
           });
 
           it('returns true', () => {
-            expect(result.asNativeBoolean()).to.be.true;
+            result.then(value => {
+              expect(value.asNativeBoolean()).to.be.true;
+            });
           });
         });
 
@@ -158,11 +165,15 @@ describe('array', () => {
           });
 
           it('returns a boolean', () => {
-            expect(result.type).to.equal(valueTypes.BOOLEAN);
+            result.then(value => {
+              expect(value.type).to.equal(valueTypes.BOOLEAN);
+            });
           });
 
           it('returns false', () => {
-            expect(result.asNativeBoolean()).to.be.false;
+            result.then(value => {
+              expect(value.asNativeBoolean()).to.be.false;
+            });
           });
         });
       });
@@ -183,7 +194,9 @@ describe('array', () => {
           });
 
           it('returns undefined', () => {
-            expect(result.type).to.equal(valueTypes.UNDEFINED);
+            result.then(value => {
+              expect(value.type).to.equal(valueTypes.UNDEFINED);
+            });
           });
         });
 
@@ -193,11 +206,15 @@ describe('array', () => {
           });
 
           it('returns a boolean', () => {
-            expect(result.type).to.equal(valueTypes.BOOLEAN);
+            result.then(value => {
+              expect(value.type).to.equal(valueTypes.BOOLEAN);
+            });
           });
 
           it('returns false', () => {
-            expect(result.asNativeBoolean()).to.be.false;
+            result.then(value => {
+              expect(value.asNativeBoolean()).to.be.false;
+            });
           });
         });
       });
@@ -226,27 +243,35 @@ describe('array', () => {
         });
 
         it('calls the callback once for each element', () => {
-          method.callFunction({}, {}, [mockCallback]);
-          expect(mockCallback.callValues.length).to.equal(3);
+          method.callFunction({}, {}, [mockCallback]).then(() => {
+            expect(mockCallback.callValues.length).to.equal(3);
+          });
         });
 
         describe('calling callback for each element', () => {
           const firstParameterForCall = (array, call) => array[call][0].asNativeValue();
+          let result;
 
           beforeEach(() => {
-            method.callFunction({}, {}, [mockCallback]);
+            result = method.callFunction({}, {}, [mockCallback]);
           });
 
           it('calls with the first element', () => {
-            expect(firstParameterForCall(mockCallback.callValues, 0)).to.equal('I have a ham radio');
+            result.then(() => {
+              expect(firstParameterForCall(mockCallback.callValues, 0)).to.equal('I have a ham radio');
+            });
           });
 
           it('calls with the second element', () => {
-            expect(firstParameterForCall(mockCallback.callValues, 1)).to.equal(12);
+            result.then(() => {
+              expect(firstParameterForCall(mockCallback.callValues, 1)).to.equal(12);
+            });
           });
 
           it('calls with the third element', () => {
-            expect(firstParameterForCall(mockCallback.callValues, 2)).to.equal(false);
+            result.then(() => {
+              expect(firstParameterForCall(mockCallback.callValues, 2)).to.equal(false);
+            });
           });
         });
 
@@ -266,11 +291,15 @@ describe('array', () => {
           });
 
           it('returns an array', () => {
-            expect(result.type).to.equal(valueTypes.ARRAY);
+            result.then(value => {
+              expect(value.type).to.equal(valueTypes.ARRAY);
+            });
           });
 
           it('returns an array built with the results of the callback calls', () => {
-            expect(result.asNativeArray()).to.eql([0, 1, 2]);
+            result.then(value => {
+              expect(value.asNativeArray()).to.eql([0, 1, 2]);
+            });
           });
         });
       });
@@ -306,11 +335,15 @@ describe('array', () => {
           });
 
           it('returns an array', () => {
-            expect(result.type).to.equal(valueTypes.ARRAY);
+            result.then(value => {
+              expect(value.type).to.equal(valueTypes.ARRAY);
+            });
           });
 
           it('returns an empty array', () => {
-            expect(result.asNativeArray().length).to.equal(0);
+            result.then(value => {
+              expect(value.asNativeArray().length).to.equal(0);
+            });
           });
         });
       });
@@ -339,31 +372,39 @@ describe('array', () => {
         });
 
         it('calls the callback once for each element', () => {
-          method.callFunction({}, {}, [mockCallback]);
-          expect(mockCallback.callValues.length).to.equal(3);
+          method.callFunction({}, {}, [mockCallback]).then(() => {
+            expect(mockCallback.callValues.length).to.equal(3);
+          });
         });
 
         describe('calling callback for each element', () => {
           const firstParameterForCall = (array, call) => array[call][0].asNativeValue();
           const secondParameterForCall = (array, call) => array[call][1].asNativeValue();
+          let result;
 
           beforeEach(() => {
-            method.callFunction({}, {}, [mockCallback, createStringValue('first')]);
+            result = method.callFunction({}, {}, [mockCallback, createStringValue('first')]);
           });
 
           it('calls with the initial value and first element', () => {
-            expect(firstParameterForCall(mockCallback.callValues, 0)).to.equal('first');
-            expect(secondParameterForCall(mockCallback.callValues, 0)).to.equal('I have a ham radio');
+            result.then(() => {
+              expect(firstParameterForCall(mockCallback.callValues, 0)).to.equal('first');
+              expect(secondParameterForCall(mockCallback.callValues, 0)).to.equal('I have a ham radio');
+            });
           });
 
           it('calls with the first element and second element', () => {
-            expect(firstParameterForCall(mockCallback.callValues, 1)).to.equal('I have a ham radio');
-            expect(secondParameterForCall(mockCallback.callValues, 1)).to.equal(12);
+            result.then(() => {
+              expect(firstParameterForCall(mockCallback.callValues, 1)).to.equal('I have a ham radio');
+              expect(secondParameterForCall(mockCallback.callValues, 1)).to.equal(12);
+            });
           });
 
           it('calls with the second element and third element', () => {
-            expect(firstParameterForCall(mockCallback.callValues, 2)).to.equal(12);
-            expect(secondParameterForCall(mockCallback.callValues, 2)).to.equal(false);
+            result.then(() => {
+              expect(firstParameterForCall(mockCallback.callValues, 2)).to.equal(12);
+              expect(secondParameterForCall(mockCallback.callValues, 2)).to.equal(false);
+            });
           });
         });
 
@@ -375,11 +416,15 @@ describe('array', () => {
           });
 
           it('returns a boolean', () => {
-            expect(result.type).to.equal(valueTypes.BOOLEAN);
+            result.then(value => {
+              expect(value.type).to.equal(valueTypes.BOOLEAN);
+            });
           });
 
-          it('returns the last value', () => {
-            expect(result.asNativeBoolean()).to.equal(false);
+          it('returns the last value', async () => {
+            result.then(value => {
+              expect(value.asNativeBoolean()).to.equal(false);
+            });
           });
         });
       });
@@ -414,11 +459,15 @@ describe('array', () => {
           });
 
           it('returns a string', () => {
-            expect(result.type).to.equal(valueTypes.STRING);
+            result.then(value => {
+              expect(result.type).to.equal(valueTypes.STRING);
+            });
           });
 
           it('returns the initial value', () => {
-            expect(result.asNativeString()).to.equal('initial value');
+            result.then(value => {
+              expect(value.asNativeString()).to.equal('initial value');
+            });
           });
         });
       });
@@ -447,27 +496,35 @@ describe('array', () => {
         });
 
         it('calls the callback once for each element', () => {
-          method.callFunction({}, {}, [mockCallback]);
-          expect(mockCallback.callValues.length).to.equal(3);
+          method.callFunction({}, {}, [mockCallback]).then(() => {
+            expect(mockCallback.callValues.length).to.equal(3);
+          });
         });
 
         describe('calling callback for each element', () => {
           const firstParameterForCall = (array, call) => array[call][0].asNativeValue();
+          let result;
 
           beforeEach(() => {
-            method.callFunction({}, {}, [mockCallback]);
+            result = method.callFunction({}, {}, [mockCallback]);
           });
 
           it('calls with the first element', () => {
-            expect(firstParameterForCall(mockCallback.callValues, 0)).to.equal('I have a ham radio');
+            result.then(() => {
+              expect(firstParameterForCall(mockCallback.callValues, 0)).to.equal('I have a ham radio');
+            });
           });
 
           it('calls with the second element', () => {
-            expect(firstParameterForCall(mockCallback.callValues, 1)).to.equal(12);
+            result.then(() => {
+              expect(firstParameterForCall(mockCallback.callValues, 1)).to.equal(12);
+            });
           });
 
           it('calls with the third element', () => {
-            expect(firstParameterForCall(mockCallback.callValues, 2)).to.equal(false);
+            result.then(() => {
+              expect(firstParameterForCall(mockCallback.callValues, 2)).to.equal(false);
+            });
           });
         });
 
@@ -484,11 +541,15 @@ describe('array', () => {
           });
 
           it('returns an array', () => {
-            expect(result.type).to.equal(valueTypes.ARRAY);
+            result.then(value => {
+              expect(value.type).to.equal(valueTypes.ARRAY);
+            });
           });
 
           it('returns an array built with the results of the callback calls', () => {
-            expect(result.asNativeArray()).to.eql(['I have a ham radio']);
+            result.then(value => {
+              expect(value.asNativeArray()).to.eql(['I have a ham radio']);
+            });
           });
         });
       });
@@ -524,11 +585,15 @@ describe('array', () => {
           });
 
           it('returns an array', () => {
-            expect(result.type).to.equal(valueTypes.ARRAY);
+            result.then(value => {
+              expect(value.type).to.equal(valueTypes.ARRAY);
+            });
           });
 
           it('returns an empty array', () => {
-            expect(result.asNativeArray().length).to.equal(0);
+            result.then(value => {
+              expect(value.asNativeArray().length).to.equal(0);
+            });
           });
         });
       });

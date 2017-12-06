@@ -27,7 +27,7 @@ export const createConditionalExpression = (context, testExpression, consequentE
         return await alternateExpression.evaluate(scope);
       }
     },
-    evaluateAsLeftHandSide: () => {
+    evaluateAsLeftHandSide: async () => {
       throwRuntimeError('Cannot assign to conditional expression', context);
     },
     getReferencedSymbols: () => {

@@ -16,6 +16,8 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 import { createBooleanValue } from '../../src/values/boolean';
@@ -53,19 +55,19 @@ describe('boolean', () => {
     });
 
     it('throws when asked for a property', () => {
-      expect(() => value.getProperty({}, createStringValue('anything'))).to.throw('Cannot get property of boolean');
+      expect(() => value.getProperty({}, createStringValue('anything'))).to.throw('Cannot get property of BOOLEAN');
     });
 
     it('throws when told to set a property', () => {
-      expect(() => value.setProperty({}, 'anything', 'anything')).to.throw('Cannot set property of boolean');
+      expect(() => value.setProperty({}, 'anything', 'anything')).to.throw('Cannot set property of BOOLEAN');
     });
 
     it('throws when asked for an element', () => {
-      expect(() => value.getElement({}, 9)).to.throw('Cannot get element of boolean');
+      expect(() => value.getElement({}, 9)).to.throw('Cannot get element of BOOLEAN');
     });
 
     it('throws when called', () => {
-      expect(() => value.callFunction()).to.throw('Cannot call boolean');
+      expect(() => value.callFunction()).to.throw('BOOLEAN is not callable');
     });
   });
 
@@ -99,19 +101,19 @@ describe('boolean', () => {
     });
 
     it('throws when asked for a property', () => {
-      expect(() => value.getProperty({}, createStringValue('anything'))).to.throw('Cannot get property of boolean');
+      expect(() => value.getProperty({}, createStringValue('anything'))).to.throw('Cannot get property of BOOLEAN');
     });
 
     it('throws when told to set a property', () => {
-      expect(() => value.setProperty({}, 'anything', 'anything')).to.throw('Cannot set property of boolean');
+      expect(() => value.setProperty({}, 'anything', 'anything')).to.throw('Cannot set property of BOOLEAN');
     });
 
     it('throws when asked for an element', () => {
-      expect(() => value.getElement({}, 9)).to.throw('Cannot get element of boolean');
+      expect(() => value.getElement({}, 9)).to.throw('Cannot get element of BOOLEAN');
     });
 
     it('throws when called', () => {
-      expect(() => value.callFunction()).to.throw('Cannot call boolean');
+      expect(() => value.callFunction()).to.throw('BOOLEAN is not callable');
     });
   });
 });

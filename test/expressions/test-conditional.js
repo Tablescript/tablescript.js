@@ -16,9 +16,11 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { createConditionalExpression } from '../../src/parser/expressions';
+import { createConditionalExpression } from '../../src/expressions/conditional';
 
 describe('createConditionalExpression', () => {
   describe('evaluate', () => {
@@ -32,7 +34,7 @@ describe('createConditionalExpression', () => {
         evaluate: () => 9
       };
       const expression = createConditionalExpression({}, mockTestExpression, mockConsequentExpression, undefined);
-      expect(expression.evaluate({})).to.equal(9);
+      return expect(expression.evaluate({})).to.eventually.equal(9);
     });
 
     it('returns the alternate value when test expression is true', () => {
@@ -45,13 +47,13 @@ describe('createConditionalExpression', () => {
         evaluate: () => 47
       };
       const expression = createConditionalExpression({}, mockTestExpression, undefined, mockAlternateExpression);
-      expect(expression.evaluate({})).to.equal(47);
+      return expect(expression.evaluate({})).to.eventually.equal(47);
     });
   });
 
   it('throws when evaluated as a lhs', () => {
     const expression = createConditionalExpression({}, {}, {}, {});
-    expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to conditional expression');
+    return expect(expression.evaluateAsLeftHandSide()).to.eventually.be.rejectedWith('Cannot assign to conditional expression');
   });
 
   describe('getReferencedSymbols', () => {

@@ -16,6 +16,8 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 import { createStringValue } from '../../src/values/string';
@@ -81,7 +83,7 @@ describe('string value', () => {
     });
 
     it('throws when asked to set a property', () => {
-      expect(() => value.setProperty({}, 'anything', 'anything')).to.throw('Cannot set property on string');
+      expect(() => value.setProperty({}, 'anything', 'anything')).to.throw('Cannot set property of STRING');
     });
 
     describe('elements', () => {
@@ -121,7 +123,7 @@ describe('string value', () => {
     });
 
     it('throws when called', () => {
-      expect(() => value.callFunction()).to.throw('Cannot call string');
+      expect(() => value.callFunction()).to.throw('STRING is not callable');
     });
   });
 
@@ -197,7 +199,7 @@ describe('string value', () => {
     });
 
     it('throws when asked to set a property', () => {
-      expect(() => value.setProperty({}, 'anything', 'anything')).to.throw('Cannot set property on string');
+      expect(() => value.setProperty({}, 'anything', 'anything')).to.throw('Cannot set property of STRING');
     });
 
     describe('elements', () => {
@@ -207,7 +209,7 @@ describe('string value', () => {
     });
 
     it('throws when called', () => {
-      expect(() => value.callFunction()).to.throw('Cannot call string');
+      expect(() => value.callFunction()).to.throw('STRING is not callable');
     });
   });
 

@@ -16,6 +16,8 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 import { createObjectValue } from '../../src/values/object';
@@ -43,7 +45,7 @@ describe('object value', () => {
     });
 
     it('throws when asked for its numeric value', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast object to number');
+      expect(() => value.asNativeNumber()).to.throw('Cannot cast OBJECT to number');
     });
 
     it('returns a json-y value when asked for its string value', () => {
@@ -106,30 +108,6 @@ describe('object value', () => {
           expect(prop.asNativeArray()).to.eql([2, 'FizzBuzz']);
         });
       });
-
-      describe('methods', () => {
-        describe('keys', () => {
-          beforeEach(() => {
-            prop = value.getProperty({}, createStringValue('keys'));
-          });
-
-          describe('with no arguments', () => {
-            let result;
-
-            beforeEach(() => {
-              result = prop.callFunction({}, {}, []);
-            });
-
-            it('returns an array', () => {
-              expect(result.type).to.equal(valueTypes.ARRAY);
-            });
-
-            it('returns an array of the key strings', () => {
-              expect(result.asNativeValue()).to.eql(['a', 'b', 'c']);
-            });
-          });
-        });
-      });
     });
 
     describe('setting properties', () => {
@@ -146,11 +124,11 @@ describe('object value', () => {
     });
 
     it('throws when asked for an element', () => {
-      expect(() => value.getElement()).to.throw('Cannot get element of object');
+      expect(() => value.getElement()).to.throw('Cannot get element of OBJECT');
     });
 
     it('throws when called', () => {
-      expect(() => value.callFunction()).to.throw('Cannot call object');
+      expect(() => value.callFunction()).to.throw('OBJECT is not callable');
     });
   });
 
@@ -165,7 +143,7 @@ describe('object value', () => {
     });
 
     it('throws when cast as number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast object to number');
+      expect(() => value.asNativeNumber()).to.throw('Cannot cast OBJECT to number');
     });
 
     it('has an empty json-ish string value', () => {
@@ -181,8 +159,8 @@ describe('object value', () => {
     });
 
     describe('equality', () => {
-      it('is unimplemented', () => {
-        expect(() => value.equals()).to.throw('Object equality unimplemented');
+      it('is equal to an empty object', () => {
+        expect(value.equals({}, createObjectValue({}))).to.be.true;
       });
     });
 
@@ -190,26 +168,6 @@ describe('object value', () => {
       describe('getting', () => {
         it('returns undefined for non-existent keys', () => {
           expect(value.getProperty({}, createStringValue('not there')).type).to.equal(valueTypes.UNDEFINED);
-        });
-
-        describe('methods', () => {
-          describe('keys', () => {
-            let method;
-            let result;
-
-            beforeEach(() => {
-              method = value.getProperty({}, createStringValue('keys'));
-              result = method.callFunction({}, {}, []);
-            });
-
-            it('returns an array', () => {
-              expect(result.type).to.equal(valueTypes.ARRAY);
-            });
-
-            it('has no keys', () => {
-              expect(result.asNativeArray()).to.be.empty;
-            });
-          });
         });
       });
 
@@ -232,11 +190,11 @@ describe('object value', () => {
     });
 
     it('throws when asked for an element', () => {
-      expect(() => value.getElement()).to.throw('Cannot get element of object');
+      expect(() => value.getElement()).to.throw('Cannot get element of OBJECT');
     });
 
     it('throws when called', () => {
-      expect(() => value.callFunction()).to.throw('Cannot call object');
+      expect(() => value.callFunction()).to.throw('OBJECT is not callable');
     });
   });
 });

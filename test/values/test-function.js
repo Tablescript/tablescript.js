@@ -16,6 +16,8 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 import { valueTypes } from '../../src/values/types';
@@ -38,7 +40,7 @@ describe('function', () => {
     });
 
     it('throws when converted to a native number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast function to number');
+      expect(() => value.asNativeNumber()).to.throw('Cannot cast FUNCTION to number');
     });
 
     it('has native string value "function(native)"', () => {
@@ -54,7 +56,7 @@ describe('function', () => {
     });
 
     it('throws when converted to number', () => {
-      expect(() => value.asNumber()).to.throw('Cannot cast function to number');
+      expect(() => value.asNumber()).to.throw('Cannot cast FUNCTION to number');
     });
 
     describe('as string', () => {
@@ -90,15 +92,15 @@ describe('function', () => {
     });
 
     it('throws when asked for a property', () => {
-      expect(() => value.getProperty()).to.throw('Cannot get property of native function');
+      expect(() => value.getProperty()).to.throw('Cannot get property of FUNCTION');
     });
 
     it('throws when asked to set a property', () => {
-      expect(() => value.setProperty()).to.throw('Cannot set property of native function');
+      expect(() => value.setProperty()).to.throw('Cannot set property of FUNCTION');
     });
 
     it('throws when asked for an element', () => {
-      expect(() => value.getElement()).to.throw('Cannot get element of native function');
+      expect(() => value.getElement()).to.throw('Cannot get element of FUNCTION');
     });
 
     describe('with no formal parameters', () => {
@@ -121,8 +123,9 @@ describe('function', () => {
         });
 
         it('returns the result of executing the body', () => {
-          const result = value.callFunction({}, {}, []);
-          expect(result).to.equal(97);
+          value.callFunction({}, {}, []).then(result => {
+            expect(result).to.equal(97);
+          });
         });
 
         it('overrides calling scope with closure scope', () => {
@@ -139,7 +142,9 @@ describe('function', () => {
       });
 
       it('throws when called with too many parameters', () => {
-        expect(() => value.callFunction({}, {}, [4, 4, 4])).to.throw('function call expected 0 parameters but got 3');
+        value.callFunction({}, {}, [4, 4, 4]).catch(e => {
+          expect(e).to.equal('function call expected 0 parameters but got 3');
+        });
       });
     });
 
@@ -163,8 +168,9 @@ describe('function', () => {
         });
 
         it('returns the result of executing the body', () => {
-          const result = value.callFunction({}, {}, []);
-          expect(result).to.equal(97);
+          value.callFunction({}, {}, []).then(result => {
+            expect(result).to.equal(97);
+          });
         });
       });
 
@@ -183,7 +189,9 @@ describe('function', () => {
       });
 
       it('throws when called with too many parameters', () => {
-        expect(() => value.callFunction({}, {}, [4, 4, 4])).to.throw('function call expected 2 parameters but got 3');
+        value.callFunction({}, {}, [4, 4, 4]).catch(e => {
+          expect(e).to.equal('function call expected 2 parameters but got 3');
+        });
       });
     });
   });
@@ -204,7 +212,7 @@ describe('function', () => {
     });
 
     it('throws when converted to a native number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast function to number');
+      expect(() => value.asNativeNumber()).to.throw('Cannot cast FUNCTION to number');
     });
 
     it('has native string value "function"', () => {
@@ -220,7 +228,7 @@ describe('function', () => {
     });
 
     it('throws when converted to number', () => {
-      expect(() => value.asNumber()).to.throw('Cannot cast function to number');
+      expect(() => value.asNumber()).to.throw('Cannot cast FUNCTION to number');
     });
 
     describe('as string', () => {
@@ -256,15 +264,15 @@ describe('function', () => {
     });
 
     it('throws when asked for a property', () => {
-      expect(() => value.getProperty()).to.throw('Cannot get property of function');
+      expect(() => value.getProperty()).to.throw('Cannot get property of FUNCTION');
     });
 
     it('throws when asked to set a property', () => {
-      expect(() => value.setProperty()).to.throw('Cannot set property of function');
+      expect(() => value.setProperty()).to.throw('Cannot set property of FUNCTION');
     });
 
     it('throws when asked for an element', () => {
-      expect(() => value.getElement()).to.throw('Cannot get element of function');
+      expect(() => value.getElement()).to.throw('Cannot get element of FUNCTION');
     });
 
     describe('with no formal parameters', () => {
@@ -291,8 +299,9 @@ describe('function', () => {
 
         it('returns the result of executing the body', () => {
           mockBody.evaluate = () => 97;
-          const result = value.callFunction({}, {}, []);
-          expect(result).to.equal(97);
+          value.callFunction({}, {}, []).then(result => {
+            expect(result).to.equal(97);
+          });
         });
 
         it('overrides calling scope with closure scope', () => {
@@ -318,7 +327,9 @@ describe('function', () => {
       });
 
       it('throws when called with too many parameters', () => {
-        expect(() => value.callFunction({}, {}, [4, 4, 4])).to.throw('function call expected 0 parameters but got 3');
+        value.callFunction({}, {}, [4, 4, 4]).catch(e => {
+          expect(e).to.equal('function call expected 0 parameters but got 3');
+        });
       });
     });
 
@@ -345,9 +356,10 @@ describe('function', () => {
         });
 
         it('returns the result of executing the body', () => {
-          mockBody.evaluate = () => 97;
-          const result = value.callFunction({}, {}, []);
-          expect(result).to.equal(97);
+          mockBody.evaluate = () => createNumericValue(97);
+          value.callFunction({}, {}, []).then(result => {
+            expect(result.asNativeNumber()).to.equal(97);
+          });
         });
       });
 
@@ -374,7 +386,9 @@ describe('function', () => {
       });
 
       it('throws when called with too many parameters', () => {
-        expect(() => value.callFunction({}, {}, [4, 4, 4])).to.throw('function call expected 2 parameters but got 3');
+        value.callFunction({}, {}, [4, 4, 4]).catch(e => {
+          expect(e).to.equal('function call expected 2 parameters but got 3');
+        });
       });
     });
   });

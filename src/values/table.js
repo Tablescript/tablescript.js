@@ -23,13 +23,6 @@ import { createNumericValue } from './numeric';
 import { createNativeFunctionValue } from './function';
 
 export const createTableValue = (formalParameters, entries, closure) => {
-  /*
-  console.log('createTableValue');
-  console.log(formalParameters);
-  console.log(entries);
-  console.log(closure);
-  */
-
   const parametersToArguments = parameters => {
     const o = {};
     for (let i = 0; i < parameters.length; i++) {

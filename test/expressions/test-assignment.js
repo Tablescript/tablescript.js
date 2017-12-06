@@ -16,10 +16,15 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import spies from 'chai-spies-next';
+chai.use(chaiAsPromised);
+chai.use(spies);
 const expect = chai.expect;
 
 import { valueTypes } from '../../src/values/types';
-import { createAssignmentExpression } from '../../src/parser/expressions';
+import { createAssignmentExpression } from '../../src/expressions/assignment';
+import { isBooleanValue, isNumericValue, isStringValue } from '../util';
 
 const recordCall = (calls, name, args = []) => {
   if (calls[name]) {
@@ -43,7 +48,7 @@ describe('createAssignmentExpression', () => {
     let mockLeftHandValue;
     let mockValue;
     let mockScope;
-    let calls;
+    let mockContext;
 
     describe('with invalid lhs', () => {
       beforeEach(() => {
@@ -55,73 +60,58 @@ describe('createAssignmentExpression', () => {
         expression = createAssignmentExpression({}, mockLeftHandExpression);
       });
 
-      it('throws when evaluated', () => {
-        expect(() => expression.evaluate({})).to.throw('Cannot assign to a non-left-hand-side type');
+      it('throws when evaluated', done => {
+        expect(expression.evaluate({})).to.eventually.be.rejectedWith('Cannot assign to a non-left-hand-side type').and.notify(done);
       });
     });
 
     describe('with valid lhs', () => {
       beforeEach(() => {
-        calls = {};
         mockLeftHandValue = {
           type: valueTypes.LEFT_HAND_SIDE,
-          assignFrom: (context, scope, value) => {
-            recordCall(calls, 'assignFrom', [scope, value]);
-          },
+          assignFrom: (context, scope, value) => undefined
         };
         mockLeftHandExpression = {
-          evaluateAsLeftHandSide: scope => {
-            recordCall(calls, 'evaluateAsLeftHandSide', [scope]);
-            return mockLeftHandValue;
-          },
+          evaluateAsLeftHandSide: () => mockLeftHandValue
         };
         mockValue = 97;
         mockValueExpression = {
-          evaluate: scope => {
-            recordCall(calls, 'evaluate', [scope]);
-            return mockValue;
-          },
+          evaluate: scope => mockValue
         };
         mockScope = {
           a: 1,
           b: 2,
           c: 3,
         };
-        expression = createAssignmentExpression({}, mockLeftHandExpression, mockValueExpression);
+        mockContext = {
+          d: 4
+        };
+        expression = createAssignmentExpression(mockContext, mockLeftHandExpression, mockValueExpression);
       });
 
       it('evaluates the lhs as an lhs', () => {
-        expression.evaluate({});
-        expect(calls['evaluateAsLeftHandSide'].callCount).to.equal(1);
-      });
-
-      it('passes the proper scope to evaluateAsLeftHandSide', () => {
-        expression.evaluate(mockScope);
-        expect(calls['evaluateAsLeftHandSide'].args[0]).to.eql([mockScope]);
+        chai.spy.on(mockLeftHandExpression, 'evaluateAsLeftHandSide');
+        return expression.evaluate(mockScope).then(() => {
+          expect(mockLeftHandExpression.evaluateAsLeftHandSide).to.have.been.called.with(mockContext, mockScope);
+        });
       });
 
       it('evalutes the value expression', () => {
-        expression.evaluate({});
-        expect(calls['evaluate'].callCount).to.equal(1);
-      });
-
-      it('passes the proper scope to evaluate', () => {
-        expression.evaluate(mockScope);
-        expect(calls['evaluate'].args[0]).to.eql([mockScope]);
+        chai.spy.on(mockValueExpression, 'evaluate');
+        return expression.evaluate(mockScope).then(() => {
+          expect(mockValueExpression.evaluate).to.have.been.called.with(mockScope);
+        });
       });
 
       it('delegates to the lhs value to assign', () => {
-        expression.evaluate({});
-        expect(calls['assignFrom'].callCount).to.equal(1);
-      });
-
-      it('passes the scope and value', () => {
-        expression.evaluate(mockScope);
-        expect(calls['assignFrom'].args[0]).to.eql([mockScope, mockValue]);
+        chai.spy.on(mockLeftHandValue, 'assignFrom');
+        return expression.evaluate(mockScope).then(() => {
+          expect(mockLeftHandValue.assignFrom).to.have.been.called.with(mockContext, mockScope, mockValue);
+        });
       });
 
       it('returns the value', () => {
-        expect(expression.evaluate({})).to.equal(mockValue);
+        return expect(expression.evaluate(mockScope)).to.eventually.equal(mockValue);
       });
     });
   });

@@ -114,7 +114,7 @@ export const createBinaryExpression = (context, leftExpression, operator, rightE
       }
       throwRuntimeError(`Invalid operator ${operator}`, context);
     },
-    evaluateAsLeftHandSide: () => {
+    evaluateAsLeftHandSide: async () => {
       throwRuntimeError('Cannot assign to binary expression', context);
     },
     getReferencedSymbols: () => {
