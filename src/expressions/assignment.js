@@ -18,6 +18,7 @@
 import { valueTypes } from '../values/types';
 import { throwRuntimeError } from '../error';
 import { defaultExpression } from './default';
+import { expressionTypes } from './types';
 
 export const createAssignmentExpression = (context, leftHandSideExpression, valueExpression) => {
   const evaluate = async scope => {
@@ -38,10 +39,6 @@ export const createAssignmentExpression = (context, leftHandSideExpression, valu
   };
 
   return {
-    evaluate,
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to assignment expression', context);
-    },
-    getReferencedSymbols,
+    ...defaultExpression(expressionTypes.ASSIGNMENT, evaluate, getReferencedSymbols),
   };
 };

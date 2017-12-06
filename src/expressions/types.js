@@ -27,6 +27,7 @@ export const expressionTypes = {
   BOOLEAN: Symbol('BOOLEAN'),
   VARIABLE: Symbol('VARIABLE'),
   TABLE: Symbol('TABLE'),
+  ASSIGNMENT: Symbol('ASSIGNMENT'),
 };
 
 export const expressionTypeName = type => {
@@ -53,6 +54,8 @@ export const expressionTypeName = type => {
       return 'VARIABLE';
     case expressionTypes.TABLE:
       return 'TABLE';
+    case expressionTypes.ASSIGNMENT:
+      return 'ASSIGNMENT';
     default:
       return '<TYPE UNSET>';
   }
