@@ -20,6 +20,7 @@ import { defaultValue } from '../values/default';
 import { throwRuntimeError } from '../error';
 import { createStringValue } from '../values/string';
 import { createBooleanValue } from '../values/boolean';
+import { createNumericValue } from '../values/numeric';
 import { createArrayValue } from '../values/array';
 
 export const createRangeBuiltin = () => {

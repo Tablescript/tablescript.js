@@ -20,6 +20,7 @@ import { defaultValue } from '../values/default';
 import { throwRuntimeError } from '../error';
 import { createStringValue } from '../values/string';
 import { createBooleanValue } from '../values/boolean';
+import { randomNumber } from '../util/random';
 
 export const createChooseBuiltin = () => {
   const asNativeString = () => 'builtin function(choose)';
