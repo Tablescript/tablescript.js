@@ -82,22 +82,22 @@ Statement
   = Block
   / ExpressionStatement
 
-Block
+Block "block"
   = '{' __ body:(Statements __)? '}' {
     return createBlockExpression(optionalList(extractOptional(body, 0)));
   }
 
-ExpressionStatement
+ExpressionStatement "simple expression"
   = e:Expression {
     return createSimpleExpression(e);
   }
 
-Expression
+Expression "expression"
   = e:AssignmentExpression __ {
     return e;
   }
 
-AssignmentExpression
+AssignmentExpression "assignment"
   = l:LeftHandSideExpression __ '=' !'=' __ e:Expression {
     return createAssignmentExpression(createContext(location(), options), l, '=', e);
   }
@@ -106,44 +106,44 @@ AssignmentExpression
   }
   / ConditionalExpression
 
-AssignmentOperator
+AssignmentOperator "assignment operator"
   = '+='
   / '-='
   / '*='
   / '/='
   / '%='
 
-ConditionalExpression
+ConditionalExpression "conditional"
   = test:LogicalOrExpression __ '?' __ consequent:Expression __ ':' __ alternate:Expression {
     return createConditionalExpression(createContext(location(), options), test, consequent, alternate);
   }
   / LogicalOrExpression
 
-LogicalOrExpression
-  = head:LogicalAndExpression tail:(__ 'or' __ LogicalAndExpression)* {
+LogicalOrExpression "logical or expression"
+  = head:LogicalAndExpression tail:(__ OrToken __ LogicalAndExpression)* {
     return composeBinaryExpression(createContext(location(), options), head, tail);
   }
 
-LogicalAndExpression
-  = head:EqualityExpression tail:(__ 'and' __ EqualityExpression)* {
+LogicalAndExpression "logical and expression"
+  = head:EqualityExpression tail:(__ AndToken __ EqualityExpression)* {
     return composeBinaryExpression(createContext(location(), options), head, tail);
   }
 
-EqualityExpression
+EqualityExpression "equality expression"
   = head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* {
     return composeBinaryExpression(createContext(location(), options), head, tail);
   }
 
-EqualityOperator
+EqualityOperator "equality operator"
   = '=='
   / '!='
 
-RelationalExpression
+RelationalExpression "relational expression"
   = head:AdditiveExpression tail:(__ RelationalOperator __ AdditiveExpression)* {
     return composeBinaryExpression(createContext(location(), options), head, tail);
   }
 
-RelationalOperator
+RelationalOperator "relational operator"
   = '<='
   / '>='
   / '<'
@@ -154,7 +154,7 @@ AdditiveExpression
     return composeBinaryExpression(createContext(location(), options), head, tail);
   }
 
-AdditiveOperator
+AdditiveOperator "addition or subtraction operator"
   = $('+' !'=')
   / $('-' !'=')
 
@@ -163,27 +163,27 @@ MultiplicativeExpression
     return composeBinaryExpression(createContext(location(), options), head, tail);
   }
 
-MultiplicativeOperator
+MultiplicativeOperator "multiply, divide, or modulo operator"
   = $('*' !'=')
   / $('/' !'=')
   / $('%' !'=')
 
-UnaryExpression
+UnaryExpression "unary expression"
   = LeftHandSideExpression
   / operator:UnaryOperator __ argument:UnaryExpression {
     return createUnaryExpression(createContext(location(), options), operator, argument);
   }
 
-UnaryOperator
+UnaryOperator "unary operator"
   = $('+' !'=')
   / $('-' !'=')
-  / 'not'
+  / NotToken
 
-LeftHandSideExpression
+LeftHandSideExpression "left-hand side"
   = CallExpression
   / MemberExpression
 
-CallExpression
+CallExpression "call expression"
   = head:(
     callee:MemberExpression __ args:Arguments {
       return createCallExpression(createContext(location(), options), callee, args);
@@ -209,7 +209,7 @@ CallExpression
     }, head);
   }
 
-Arguments
+Arguments "arguments"
   = '(' __ args:(ArgumentList __)? ')' {
     return args ? args[0] : [];
   }
@@ -219,7 +219,7 @@ ArgumentList
     return composeList(head, extractList(tail, 3));
   }
 
-MemberExpression
+MemberExpression "member expression"
   = head:(
     PrimaryExpression
   )
@@ -234,35 +234,35 @@ MemberExpression
     return tail.reduce((result, element) => createObjectPropertyExpression(createContext(location(), options), result, element.property), head);
   }
 
-FunctionExpression
+FunctionExpression "function expression"
   = '(' __ params:(FormalParameterList __)? ')' __ '=>' __ '{' __ body:FunctionBody __ '}' {
     return createFunctionExpression(createContext(location(), options), params ? params[0] : [], body);
   }
 
-FormalParameterList
+FormalParameterList "formal parameter list"
   = head:Identifier tail:(__ ',' __ Identifier)* {
     return composeList(head, extractList(tail, 3));
   }
 
-FunctionBody
+FunctionBody "function body"
   = body:Statements? {
     return createBlockExpression(optionalList(body));
   }
 
-TableExpression
-  = 'table' __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ entries:TableEntries __ '}' {
+TableExpression "table expression"
+  = TableToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ entries:TableEntries __ '}' {
     return createTableExpression(createContext(location(), options), params ? params[0] : [], entries);
   }
-  / 'table' __ '{' __ entries:TableEntries __ '}' {
+  / TableToken __ '{' __ entries:TableEntries __ '}' {
     return createTableExpression(createContext(location(), options), [], entries);
   }
 
-TableEntries
+TableEntries "table entries"
   = head:TableEntry tail:(__ TableEntry)* {
     return composeList(head, extractList(tail, 1));
   }
 
-TableEntry
+TableEntry "table entry"
   = selector:TableEntrySelector __ ':' __ body:TableEntryBody {
     return createTableEntry(selector, body);
   }
@@ -282,15 +282,15 @@ TableEntryBody
   = Expression
   / Block
 
-IfExpression
-  = 'if' __ '(' __ e:Expression __ ')' __ ifBlock:Statement __ 'else' __ elseBlock:Statement {
+IfExpression "if expression"
+  = IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Statement __ ElseToken __ elseBlock:Statement {
     return createIfExpression(createContext(location(), options), e, ifBlock, elseBlock);
   }
-  / 'if' __ '(' __ e:Expression __ ')' __ ifBlock:Statement {
+  / IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Statement {
     return createIfExpression(createContext(location(), options), e, ifBlock);
   }
 
-SpreadExpression
+SpreadExpression "spread"
   = '...' e:Expression {
     return createSpreadExpression(createContext(location(), options), e);
   }
@@ -317,20 +317,20 @@ Literal
   / BooleanLiteral
   / UndefinedLiteral
 
-UndefinedLiteral
-  = 'undefined' {
+UndefinedLiteral "undefined"
+  = UndefinedToken {
     return createUndefinedLiteral(createContext(location(), options));
   }
 
-BooleanLiteral
-  = 'true' {
+BooleanLiteral "boolean"
+  = TrueToken {
     return createBooleanLiteral(createContext(location(), options), true);
   }
-  / 'false' {
+  / FalseToken {
     return createBooleanLiteral(createContext(location(), options), false);
   }
 
-ArrayLiteral
+ArrayLiteral "array"
   = '[' __ e:ArrayEntries __ ']' {
     return createArrayLiteral(createContext(location(), options), e);
   }
@@ -346,7 +346,7 @@ ArrayEntries
     return [e];
   }
 
-ObjectLiteral
+ObjectLiteral "object"
   = '{' __ p:ObjectProperties __ '}' {
     return createObjectLiteral(createContext(location(), options), p);
   }
@@ -371,7 +371,7 @@ ObjectProperty
   }
   / SpreadExpression
 
-DiceLiteral
+DiceLiteral "dice"
   = count:NonZeroInteger 'd' die:NonZeroInteger {
     return createDiceLiteral(createContext(location(), options), count, die);
   }
@@ -387,13 +387,13 @@ LineTerminator
 Whitespace
   = [ \t\n\r]
 
-Comment
+Comment "comment"
   = '#' (!LineTerminator .)*
   
 __
   = (Whitespace / Comment)*
 
-IntegerLiteral
+IntegerLiteral "integer"
   = i:Integer {
     return createNumberLiteral(createContext(location(), options), i);
   }
@@ -417,7 +417,7 @@ NonZeroDigit
 DecimalDigit
   = [0-9]
 
-Identifier
+Identifier "identifier"
   = !ReservedWord head:IdentifierStart tail:IdentifierPart* {
     return head + tail.join('');
   }
@@ -429,7 +429,7 @@ IdentifierPart
   = IdentifierStart
   / [0-9]
 
-StringLiteral
+StringLiteral "string"
   = s:String {
     return createStringLiteral(createContext(location(), options), s);
   }
@@ -453,12 +453,22 @@ SingleQuoteStringCharacter
   }
 
 ReservedWord
-  = 'true' !IdentifierPart
-  / 'false' !IdentifierPart
-  / 'if' !IdentifierPart
-  / 'else' !IdentifierPart
-  / 'and' !IdentifierPart
-  / 'or' !IdentifierPart
-  / 'not' !IdentifierPart
-  / 'table' !IdentifierPart
-  / 'undefined' !IdentifierPart
+  = TrueToken
+  / FalseToken
+  / IfToken
+  / ElseToken
+  / AndToken
+  / OrToken
+  / NotToken
+  / TableToken
+  / UndefinedToken
+
+TrueToken = "true" !IdentifierPart
+FalseToken = "false" !IdentifierPart
+IfToken = "if" !IdentifierPart
+ElseToken = "else" !IdentifierPart
+AndToken = "and" !IdentifierPart
+OrToken = "or" !IdentifierPart
+NotToken = "not" !IdentifierPart
+TableToken = "table" !IdentifierPart
+UndefinedToken = "undefined" !IdentifierPart

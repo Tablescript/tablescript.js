@@ -59,6 +59,9 @@ try {
   }).catch(e => {
     if (e instanceof TablescriptError) {
       console.log(e.toString());
+      if (e.trace) {
+        console.log(e.trace);
+      }
     } else {
       console.log(e);
     }
