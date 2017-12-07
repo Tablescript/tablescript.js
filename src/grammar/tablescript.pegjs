@@ -215,7 +215,7 @@ Arguments "arguments"
   }
 
 ArgumentList
-  = head:AssignmentExpression tail:(__ ',' __ AssignmentExpression)* {
+  = head:AssignmentExpression tail:(__ Comma __ AssignmentExpression)* {
     return composeList(head, extractList(tail, 3));
   }
 
@@ -240,7 +240,7 @@ FunctionExpression "function expression"
   }
 
 FormalParameterList "formal parameter list"
-  = head:Identifier tail:(__ ',' __ Identifier)* {
+  = head:Identifier tail:(__ Comma __ Identifier)* {
     return composeList(head, extractList(tail, 3));
   }
 
@@ -339,7 +339,7 @@ ArrayLiteral "array"
   }
 
 ArrayEntries
-  = head:Expression tail:(__ ',' __ Expression)* {
+  = head:Expression tail:(__ Comma __ Expression)* {
     return composeList(head, extractList(tail, 3));
   }
   / e:Expression {
@@ -355,12 +355,15 @@ ObjectLiteral "object"
   }
 
 ObjectProperties
-  = head:ObjectProperty __ ',' __ tail:ObjectProperties {
+  = head:ObjectProperty __ Comma __ tail:ObjectProperties {
     return composeList(head, tail);
   }
   / p:ObjectProperty {
     return [p];
   }
+
+Comma ","
+  = ','
 
 ObjectProperty
   = key:String __ ':' __ value:Expression {
@@ -379,12 +382,12 @@ DiceLiteral "dice"
     return createDiceLiteral(createContext(location(), options), 1, die);
   }
 
-LineTerminator
+LineTerminator "end of line"
   = "\n"
   / "\r\n"
   / "\r"
 
-Whitespace
+Whitespace "whitespace"
   = [ \t\n\r]
 
 Comment "comment"
