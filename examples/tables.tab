@@ -1,6 +1,8 @@
 assert = system.assert
 print = system.print
 range = system.range
+choose = system.choose
+keys = system.keys
 
 ############################################################################
 # Simple table of expressions.
@@ -184,5 +186,81 @@ t1 = table {
 range(10)
   .map(() => {
     assert(colours.includes(t1()))
+  })
+############################################################################
+
+############################################################################
+# Calling one table from another.
+t1 = table {
+  'first'
+  'second'
+  'third'
+}
+
+t2 = table {
+  t1() + ' from first'
+  t1() + ' from second'
+}
+
+expected_values = [
+  'first from first',
+  'second from first',
+  'third from first',
+  'first from second',
+  'second from second',
+  'third from second'
+]
+range(10)
+  .map(() => {
+    assert(expected_values.includes(t2()))
+  })
+############################################################################
+
+############################################################################
+# Table parameters
+#
+# You can define parameters to be passed into tables when called.
+t1 = table(p1, p2) {
+  'first ' + p1
+  'second ' + p2
+}
+
+expected_values = [
+  'first a',
+  'second b'
+]
+range(10)
+  .map(() => {
+    assert(expected_values.includes(t1('a', 'b')))
+  })
+
+# Note that if you do not pass the parameters, or try to index into an
+# entry that requires a parameter, your script will error.
+# t1() => RuntimeError: Symbol 'p2' not found
+# t1('only one') => RuntimeError: Symbol 'p2' not found
+# t1[1] => RuntimeError: Symbol 'p1' not found
+############################################################################
+
+############################################################################
+# Non-string table parameters.
+#
+# Table parameters can be any type.
+t1 = table(object, choices) {
+  object[choose(keys(object))]
+  choose(choices)
+}
+
+o = {
+  a: 1,
+  b: 2,
+  c: 3
+}
+
+a = ['red', 'green', 'blue']
+
+expected_values = [1, 2, 3, 'red', 'green', 'blue']
+range(10)
+  .map(() => {
+    assert(expected_values.includes(t1(o, a)))
   })
 ############################################################################
