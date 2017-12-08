@@ -262,19 +262,24 @@ TableEntries "table entries"
   = head:TableEntry tail:(__ TableEntry)* {
     return composeList(head, extractList(tail, 1));
   }
-
-TableEntry "table entry"
-  = selector:TableEntrySelector __ ':' __ body:TableEntryBody {
-    return createTableEntryExpression(selector, body);
+  / head:SimpleTableEntry tail:(__ SimpleTableEntry)* {
+    return composeList(head, extractList(tail, 1));
   }
-  / spread:SpreadExpression {
+
+SimpleTableEntry "simple table entry"
+  = spread:SpreadExpression {
     return createSpreadTableEntryExpression(spread);
   }
   / body:TableEntryBody {
     return createSimpleTableEntryExpression(body);
   }
 
-TableEntrySelector
+TableEntry "table entry"
+  = selector:TableEntrySelector __ ':' __ body:TableEntryBody {
+    return createTableEntryExpression(selector, body);
+  }
+
+TableEntrySelector "table entry selector"
   = start:Integer __ '-' __ end:Integer {
     return createRangeTableSelector(start, end);
   }
@@ -282,7 +287,7 @@ TableEntrySelector
     return createExactTableSelector(roll);
   }
 
-TableEntryBody
+TableEntryBody "table entry body"
   = Expression
   / Block
 

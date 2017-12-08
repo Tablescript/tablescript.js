@@ -65,24 +65,12 @@ range(10)
 ############################################################################
 
 ############################################################################
-# Mixed entry types.
-#
-# It's ugly but you can mix and match simple and indexed table entries.
-t1 = table {
-  1-2: 'first'
-  'second'
-  4-6: 'third'
-}
-
-assert(t1[1] == 'first')
-assert(t1[3] == 'second')
-assert(t1[4] == 'third')
-
-expected_value = ['first', 'second', 'third']
-range(10)
-  .map(() => {
-    assert(expected_value.includes(t1()))
-  })
+# You cannot mixed entry types.
+# t1 = table {
+#   1-2: 'first'
+#   'second'
+#   4-6: 'third'
+# }
 ############################################################################
 
 ############################################################################
@@ -97,49 +85,60 @@ t1 = table {
 }
 
 assert(t1[1] == 'first 1')
-assert(t1[3] == 'second 2')
-assert(t1[4] == 'third 3')
-assert(t1[10] == 'fourth 4')
+assert(t1[3] == 'second 3')
+assert(t1[4] == 'third 4')
+assert(t1[10] == 'fourth 10')
+
+expected_value = [
+  'first 1', 'first 2',
+  'second 3',
+  'third 4', 'third 5',
+  'fourth 6', 'fourth 7', 'fourth 8', 'fourth 9', 'fourth 10'
+]
+range(10)
+  .map(() => {
+    assert(expected_value.includes(t1()))
+  })
+
+t1 = table {
+  "first " + roll
+  "second " + roll
+  "third " + roll
+}
 
 expected_value = ['first 1', 'second 2', 'third 3', 'fourth 4']
 range(10)
   .map(() => {
     assert(expected_value.includes(t1()))
   })
+############################################################################
 
-t2 = table {
-  "first " + roll
-  "second " + roll
-  "third " + roll
-}
-
-range(10)
-  .map(() => {
-    assert([
-      'first 1',
-      'second 2',
-      'third 3'
-    ].includes(t2()))
-  })
-
+############################################################################
+# Spreading an array into a table.
+#
+# You can spread an array into a table of simple entries.
 a = ['first', 'second', 'third']
-t3 = table {
+t1 = table {
   ...a
   'fourth'
 }
 
-assert(t3[1] == 'first')
-assert(t3[2] == 'second')
-assert(t3[3] == 'third')
-assert(t3[4] == 'fourth')
+assert(t1[1] == 'first')
+assert(t1[2] == 'second')
+assert(t1[3] == 'third')
+assert(t1[4] == 'fourth')
+############################################################################
 
 ############################################################################
-# Reuse table entries by spreading an existing table into a new table.
+# Spreading a table into a table.
 #
+# Reuse table entries by spreading an existing table into a new table of
+# simple entries. Spread entries are expanded based on their original
+# probabilities.
 t1 = table {
-  'first'
-  'second'
-  'third'
+  1-2: 'first'
+  3: 'second'
+  4-6: 'third'
 }
 
 t2 = table {
@@ -148,50 +147,42 @@ t2 = table {
 }
 
 assert(t2[1] == 'first')
-assert(t2[2] == 'second')
-assert(t2[3] == 'third')
-assert(t2[4] == 'fourth')
+assert(t2[2] == 'first')
+assert(t2[3] == 'second')
+assert(t2[4] == 'third')
+assert(t2[5] == 'third')
+assert(t2[6] == 'third')
+############################################################################
 
+############################################################################
+# Table entries are evaluated when the table is called.
 t1 = table {
-  1-10: 'first'
-  11-20: 'second'
-  'third'
-  22-30: 'fourth'
-}
-
-t2 = table {
-  ...t1
-  'fifth'
-}
-
-assert(t2[1] == 'first')
-assert(t2[11] == 'second')
-assert(t1[21] == 'third')
-assert(t2[21] == 'third')
-assert(t2[22] == 'fourth')
-assert(t2[31] == 'fifth')
-############################################################################
-
-############################################################################
-# 
-tf1 = table {
   'first ' + roll
   'second ' + roll
 }
-tf2 = table {
-  ...tf1
+t2 = table {
   'third ' + roll
+  ...t1
 }
 
-print(tf2())
+expected_values = ['third 1', 'first 2', 'second 3']
+range(10)
+  .map(() => {
+    assert(expected_values.includes(t2()))
+  })
+############################################################################
 
-# Tables from split string
+############################################################################
+# Tables from split string.
+#
+# Generate table entries from any array.
 colours = 'red orange yellow green blue violet'
-t6 = table {
+t1 = table {
   ...(colours.split(' '))
 }
 
 range(10)
   .map(() => {
-    assert(colours.includes(t6()))
+    assert(colours.includes(t1()))
   })
+############################################################################

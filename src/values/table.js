@@ -51,7 +51,7 @@ export const createTableValue = (formalParameters, entries, closure) => {
     return createUndefined();
   };
   const callFunction = async (context, scope, parameters) => {
-    const die = entries.reduce((max, entry, index) => Math.max(max, entry.getHighestSelector(index)), 0);
+    const die = entries.reduce((max, entry, index) => Math.max(max, entry.getHighestSelector(index + 1)), 0);
     const roll = randomNumber(die);
     const rolledEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
     const localScope = {

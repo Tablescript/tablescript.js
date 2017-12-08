@@ -55,7 +55,7 @@ export const createTableExpression = (context, formalParameters, entries) => {
   };
 };
 
-export const createTableEntry = (selector, body) => ({
+const createTableEntry = (selector, body) => ({
   evaluate: async scope => {
     return await body.evaluate(scope);
   },
@@ -69,7 +69,7 @@ export const createTableEntryExpression = (selector, body) => ({
   getReferencedSymbols: () => body.getReferencedSymbols(),
 });
 
-export const createSimpleTableEntry = body => ({
+const createSimpleTableEntry = body => ({
   evaluate: async scope => {
     return await body.evaluate(scope);
   },
@@ -83,7 +83,7 @@ export const createSimpleTableEntryExpression = body => ({
   getReferencedSymbols: () => body.getReferencedSymbols(),
 });
 
-export const createLiteralTableEntry = value => ({
+const createLiteralTableEntry = value => ({
   evaluate: async scope => {
     return value;
   },
