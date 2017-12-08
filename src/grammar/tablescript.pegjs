@@ -27,11 +27,11 @@
   const { createFunctionExpression } = require('../expressions/function');
   const {
     createTableExpression,
-    createTableEntry,
-    createNextTableEntry,
+    createTableEntryExpression,
+    createSimpleTableEntryExpression,
     createRangeTableSelector,
     createExactTableSelector,
-    createSpreadTableEntry
+    createSpreadTableEntryExpression
   } = require('../expressions/table');
   const { createVariableExpression } = require('../expressions/variable');
   const { createBooleanLiteral } = require('../expressions/boolean-literal');
@@ -265,13 +265,13 @@ TableEntries "table entries"
 
 TableEntry "table entry"
   = selector:TableEntrySelector __ ':' __ body:TableEntryBody {
-    return createTableEntry(selector, body);
+    return createTableEntryExpression(selector, body);
   }
   / spread:SpreadExpression {
-    return createSpreadTableEntry(spread);
+    return createSpreadTableEntryExpression(spread);
   }
   / body:TableEntryBody {
-    return createNextTableEntry(body);
+    return createSimpleTableEntryExpression(body);
   }
 
 TableEntrySelector

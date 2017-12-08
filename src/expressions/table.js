@@ -55,61 +55,56 @@ export const createTableExpression = (context, formalParameters, entries) => {
   };
 };
 
-export const createTableEntry = (selector, body) => {
-  return {
-    expand: async () => ([
-      {
-        evaluate: async scope => {
-          return await body.evaluate(scope);
-        },
-        getReferencedSymbols: () => body.getReferencedSymbols(),
-        getHighestSelector: () => selector.highestSelector,
-        rollApplies: actualRoll => selector.rollApplies(actualRoll),
-      },
-    ]),
-  };
-};
+export const createTableEntry = (selector, body) => ({
+  evaluate: async scope => {
+    return await body.evaluate(scope);
+  },
+  getReferencedSymbols: () => body.getReferencedSymbols(),
+  getHighestSelector: () => selector.highestSelector,
+  rollApplies: actualRoll => selector.rollApplies(actualRoll),
+});
 
-export const createNextTableEntry = body => {
-  return {
-    expand: async () => ([
-      {
-        evaluate: async scope => {
-          return await body.evaluate(scope);
-        },
-        getReferencedSymbols: () => body.getReferencedSymbols(),
-        getHighestSelector: index => index,
-        rollApplies: (actualRoll, index) => (actualRoll === index),
-      },
-    ]),
-  };
-};
+export const createTableEntryExpression = (selector, body) => ({
+  expand: () => ([createTableEntry(selector, body)]),
+  getReferencedSymbols: () => body.getReferencedSymbols(),
+});
 
-export const createLiteralTableEntry = value => {
-  return {
-    evaluate: async scope => {
-      return value;
-    },
-    getReferencedSymbols: () => [],
-    getHighestSelector: index => index,
-    rollApplies: (actualRoll, index) => (actualRoll === index),
-  };
-};
+export const createSimpleTableEntry = body => ({
+  evaluate: async scope => {
+    return await body.evaluate(scope);
+  },
+  getReferencedSymbols: () => body.getReferencedSymbols(),
+  getHighestSelector: index => index,
+  rollApplies: (actualRoll, index) => (actualRoll === index),
+});
 
-export const createSpreadTableEntry = spread => {
-  return {
-    expand: async scope => {
-      const spreadValue = await spread.evaluate(scope);
-      if (spreadValue.type === valueTypes.ARRAY_SPREAD) {
-        return spreadValue.asArray().map(entry => createLiteralTableEntry(entry));
-      } else if (spreadValue.type === valueTypes.TABLE_SPREAD) {
-        return spreadValue.asArray();
-      } else {
-        throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`);
-      }
-    },
-  };
-};
+export const createSimpleTableEntryExpression = body => ({
+  expand: () => ([createSimpleTableEntry(body)]),
+  getReferencedSymbols: () => body.getReferencedSymbols(),
+});
+
+export const createLiteralTableEntry = value => ({
+  evaluate: async scope => {
+    return value;
+  },
+  getReferencedSymbols: () => [],
+  getHighestSelector: index => index,
+  rollApplies: (actualRoll, index) => (actualRoll === index),
+});
+
+export const createSpreadTableEntryExpression = spread => ({
+  expand: async scope => {
+    const spreadValue = await spread.evaluate(scope);
+    if (spreadValue.type === valueTypes.ARRAY_SPREAD) {
+      return spreadValue.asArray().map(entry => createLiteralTableEntry(entry));
+    } else if (spreadValue.type === valueTypes.TABLE_SPREAD) {
+      return spreadValue.asArray();
+    } else {
+      throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`);
+    }
+  },
+  getReferencedSymbols: () => spread.getReferencedSymbols(),
+});
 
 export const createRangeTableSelector = (rangeStart, rangeEnd) => {
   return {

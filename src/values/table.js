@@ -39,7 +39,7 @@ export const createTableValue = (formalParameters, entries, closure) => {
   const asArray = () => entries;
   const getElement = async (context, index) => {
     const indexValue = index.asNativeNumber(context);
-    const selectedEntry = entries.find(e => e.rollApplies(indexValue));
+    const selectedEntry = entries.find((e, index) => e.rollApplies(indexValue, index + 1));
     if (selectedEntry) {
       const localScope = {
         ...closure,
