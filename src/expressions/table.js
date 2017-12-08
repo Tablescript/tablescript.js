@@ -20,22 +20,22 @@ import { defaultExpression } from './default';
 import { expressionTypes } from './types';
 import { valueTypes } from '../values/types';
 
+const createClosure = (entries, parameters, scope) => {
+  return entries.reduce((acc, e) => ([...acc, ...e.getReferencedSymbols()]), [])
+    .filter(v => !parameters.includes(v))
+    .reduce((result, symbol) => ({ ...result, [symbol]: scope[symbol] }), {});
+};
+
+const expandEntries = async (scope, entries) => {
+  let results = [];
+  for (let i = 0; i < entries.length; i++) {
+    const expandedEntries = await entries[i].expand(scope);
+    results = [ ...results, ...expandedEntries];
+  }
+  return results;
+};
+
 export const createTableExpression = (context, formalParameters, entries) => {
-  const createClosure = (entries, parameters, scope) => {
-    return entries.reduce((acc, e) => ([...acc, ...e.getReferencedSymbols()]), [])
-      .filter(v => !formalParameters.includes(v))
-      .reduce((result, symbol) => ({ ...result, [symbol]: scope[symbol] }), {});
-  };
-
-  const expandEntries = async (scope, entries) => {
-    let results = [];
-    for (let i = 0; i < entries.length; i++) {
-      const expandedEntries = await entries[i].expand(scope);
-      results = [ ...results, ...expandedEntries];
-    }
-    return results;
-  };
-
   const evaluate = async scope => {
     const expandedEntries = await expandEntries(scope, entries);
     return createTableValue(
@@ -52,70 +52,5 @@ export const createTableExpression = (context, formalParameters, entries) => {
 
   return {
     ...defaultExpression(expressionTypes.TABLE, evaluate, getReferencedSymbols),
-  };
-};
-
-const createTableEntry = (selector, body) => ({
-  evaluate: async scope => {
-    return await body.evaluate(scope);
-  },
-  getReferencedSymbols: () => body.getReferencedSymbols(),
-  getHighestSelector: () => selector.highestSelector,
-  rollApplies: actualRoll => selector.rollApplies(actualRoll),
-});
-
-export const createTableEntryExpression = (selector, body) => ({
-  expand: () => ([createTableEntry(selector, body)]),
-  getReferencedSymbols: () => body.getReferencedSymbols(),
-});
-
-const createSimpleTableEntry = body => ({
-  evaluate: async scope => {
-    return await body.evaluate(scope);
-  },
-  getReferencedSymbols: () => body.getReferencedSymbols(),
-  getHighestSelector: index => index,
-  rollApplies: (actualRoll, index) => (actualRoll === index),
-});
-
-export const createSimpleTableEntryExpression = body => ({
-  expand: () => ([createSimpleTableEntry(body)]),
-  getReferencedSymbols: () => body.getReferencedSymbols(),
-});
-
-const createLiteralTableEntry = value => ({
-  evaluate: async scope => {
-    return value;
-  },
-  getReferencedSymbols: () => [],
-  getHighestSelector: index => index,
-  rollApplies: (actualRoll, index) => (actualRoll === index),
-});
-
-export const createSpreadTableEntryExpression = spread => ({
-  expand: async scope => {
-    const spreadValue = await spread.evaluate(scope);
-    if (spreadValue.type === valueTypes.ARRAY_SPREAD) {
-      return spreadValue.asArray().map(entry => createLiteralTableEntry(entry));
-    } else if (spreadValue.type === valueTypes.TABLE_SPREAD) {
-      return spreadValue.asArray();
-    } else {
-      throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`);
-    }
-  },
-  getReferencedSymbols: () => spread.getReferencedSymbols(),
-});
-
-export const createRangeTableSelector = (rangeStart, rangeEnd) => {
-  return {
-    highestSelector: rangeEnd,
-    rollApplies: actualRoll => actualRoll >= rangeStart && actualRoll <= rangeEnd,
-  };
-};
-
-export const createExactTableSelector = roll => {
-  return {
-    highestSelector: roll,
-    rollApplies: actualRoll => actualRoll === roll,
   };
 };

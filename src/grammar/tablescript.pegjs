@@ -25,14 +25,16 @@
   const { createCallExpression } = require('../expressions/call');
   const { createObjectPropertyExpression } = require('../expressions/object-property');
   const { createFunctionExpression } = require('../expressions/function');
+  const { createTableExpression } = require('../expressions/table');
   const {
-    createTableExpression,
     createTableEntryExpression,
     createSimpleTableEntryExpression,
+    createSpreadTableEntryExpression,
+  } = require('../expressions/table-entry');
+  const {
     createRangeTableSelector,
     createExactTableSelector,
-    createSpreadTableEntryExpression
-  } = require('../expressions/table');
+  } = require('../expressions/table-selector');
   const { createVariableExpression } = require('../expressions/variable');
   const { createBooleanLiteral } = require('../expressions/boolean-literal');
   const { createArrayLiteral } = require('../expressions/array-literal');
