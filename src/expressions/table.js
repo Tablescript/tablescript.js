@@ -18,6 +18,7 @@
 import { createTableValue } from '../values/table';
 import { defaultExpression } from './default';
 import { expressionTypes } from './types';
+import { valueTypes } from '../values/types';
 
 export const createTableExpression = (context, formalParameters, entries) => {
   const createClosure = (entries, parameters, scope) => {
@@ -26,10 +27,26 @@ export const createTableExpression = (context, formalParameters, entries) => {
       .reduce((result, symbol) => ({ ...result, [symbol]: scope[symbol] }), {});
   };
 
-  const evaluate = scope => createTableValue(formalParameters, entries, createClosure(entries, formalParameters, scope));
+  const expandEntries = async (scope, entries) => {
+    let results = [];
+    for (let i = 0; i < entries.length; i++) {
+      const expandedEntries = await entries[i].expand(scope);
+      results = [ ...results, ...expandedEntries];
+    }
+    return results;
+  };
+
+  const evaluate = async scope => {
+    const expandedEntries = await expandEntries(scope, entries);
+    return createTableValue(
+      formalParameters,
+      expandedEntries,
+      createClosure(expandedEntries, formalParameters, scope)
+    );
+  };
 
   const getReferencedSymbols = () => ([
-    ...parameters.reduce((result, parameter) => [...result, ...parameter.getReferencedSymbols()], []),
+    ...formalParameters.reduce((result, parameter) => [...result, ...parameter.getReferencedSymbols()], []),
     ...entries.reduce((result, entry) => [...result, ...entry.getReferencedSymbols()], []),
   ]);
 
@@ -40,23 +57,57 @@ export const createTableExpression = (context, formalParameters, entries) => {
 
 export const createTableEntry = (selector, body) => {
   return {
-    evaluate: async scope => {
-      return await body.evaluate(scope);
-    },
-    getReferencedSymbols: () => body.getReferencedSymbols(),
-    getHighestSelector: () => selector.highestSelector,
-    rollApplies: actualRoll => selector.rollApplies(actualRoll),
+    expand: async () => ([
+      {
+        evaluate: async scope => {
+          return await body.evaluate(scope);
+        },
+        getReferencedSymbols: () => body.getReferencedSymbols(),
+        getHighestSelector: () => selector.highestSelector,
+        rollApplies: actualRoll => selector.rollApplies(actualRoll),
+      },
+    ]),
   };
 };
 
 export const createNextTableEntry = body => {
   return {
+    expand: async () => ([
+      {
+        evaluate: async scope => {
+          return await body.evaluate(scope);
+        },
+        getReferencedSymbols: () => body.getReferencedSymbols(),
+        getHighestSelector: index => index,
+        rollApplies: (actualRoll, index) => (actualRoll === index),
+      },
+    ]),
+  };
+};
+
+export const createLiteralTableEntry = value => {
+  return {
     evaluate: async scope => {
-      return await body.evaluate(scope);
+      return value;
     },
-    getReferencedSymbols: () => body.getReferencedSymbols(),
-    getHighestSelector: index => (index + 1),
-    rollApplies: (actualRoll, index) => (actualRoll === index + 1),
+    getReferencedSymbols: () => [],
+    getHighestSelector: index => index,
+    rollApplies: (actualRoll, index) => (actualRoll === index),
+  };
+};
+
+export const createSpreadTableEntry = spread => {
+  return {
+    expand: async scope => {
+      const spreadValue = await spread.evaluate(scope);
+      if (spreadValue.type === valueTypes.ARRAY_SPREAD) {
+        return spreadValue.asArray().map(entry => createLiteralTableEntry(entry));
+      } else if (spreadValue.type === valueTypes.TABLE_SPREAD) {
+        return spreadValue.asArray();
+      } else {
+        throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`);
+      }
+    },
   };
 };
 

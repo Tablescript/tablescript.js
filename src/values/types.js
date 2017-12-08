@@ -26,6 +26,7 @@ export const valueTypes = {
   LEFT_HAND_SIDE: Symbol('LEFT_HAND_SIDE'),
   ARRAY_SPREAD: Symbol('ARRAY_SPREAD'),
   OBJECT_SPREAD: Symbol('OBJECT_SPREAD'),
+  TABLE_SPREAD: Symbol('TABLE_SPREAD'),
   UNDEFINED: Symbol('UNDEFINED'),
 };
 
@@ -51,6 +52,8 @@ export const valueTypeName = type => {
       return 'ARRAY_SPREAD';
     case valueTypes.OBJECT_SPREAD:
       return 'OBJECT_SPREAD';
+    case valueTypes.TABLE_SPREAD:
+      return 'TABLE_SPREAD';
     case valueTypes.UNDEFINED:
       return 'UNDEFINED';
     default:

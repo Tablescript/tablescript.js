@@ -31,3 +31,10 @@ export const createObjectSpread = o => {
     asObject: () => o.asObject(),
   };
 };
+
+export const createTableSpread = t => {
+  return {
+    ...defaultValue(valueTypes.TABLE_SPREAD),
+    asArray: () => t.asArray(),
+  };
+};

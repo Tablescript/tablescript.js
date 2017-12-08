@@ -1,11 +1,111 @@
+assert = system.assert
+print = system.print
+range = system.range
+
+############################################################################
+# Simple table of expressions.
+#
+# Without a range specifier, the "next" single roll will be used. Each
+# entry has an equal chance of being rolled.
 t1 = table {
-  1: "first " + roll
-  2: "second " + roll
-  3: "third " + roll
-  4-6: "fourth " + roll
+  'first'
+  'second'
+  'third'
 }
 
-system.print(t1())
+# Manually select table entries by indexing them like arrays. Note, however,
+# that table entries are indexed by their roll and are usually 1-indexed.
+assert(t1[1] == 'first')
+assert(t1[2] == 'second')
+assert(t1[3] == 'third')
+
+# Indexing past the end of the table, or before the beginning will result
+# in undefined
+assert(t1[0] == undefined)
+assert(t1[100] == undefined)
+
+# Roll on the table by calling the table as you would a function.
+expected_values = ['first', 'second', 'third']
+actual_value = t1()
+assert(expected_values.includes(actual_value))
+
+range(10)
+  .map(() => {
+    assert(expected_values.includes(t1()))
+  })
+############################################################################
+
+############################################################################
+# Ranged table entries.
+#
+# By specifying a range, you control the probability
+t1 = table {
+  1-2: 'first'
+  3: 'second'
+  4-5: 'third'
+  6-10: 'fourth'
+}
+
+assert(t1[1] == 'first')
+assert(t1[2] == 'first')
+assert(t1[3] == 'second')
+assert(t1[4] == 'third')
+assert(t1[5] == 'third')
+assert(t1[6] == 'fourth')
+assert(t1[7] == 'fourth')
+assert(t1[8] == 'fourth')
+assert(t1[9] == 'fourth')
+assert(t1[10] == 'fourth')
+
+expected_values = ['first', 'second', 'third', 'fourth']
+range(10)
+  .map(() => {
+    assert(expected_values.includes(t1()))
+  })
+############################################################################
+
+############################################################################
+# Mixed entry types.
+#
+# It's ugly but you can mix and match simple and indexed table entries.
+t1 = table {
+  1-2: 'first'
+  'second'
+  4-6: 'third'
+}
+
+assert(t1[1] == 'first')
+assert(t1[3] == 'second')
+assert(t1[4] == 'third')
+
+expected_value = ['first', 'second', 'third']
+range(10)
+  .map(() => {
+    assert(expected_value.includes(t1()))
+  })
+############################################################################
+
+############################################################################
+# Accessing the rolled value.
+#
+# The 'roll' value is provided when evaluating the table entry.
+t1 = table {
+  1-2: 'first ' + roll
+  3: 'second ' + roll
+  4-5: 'third ' + roll
+  6-10: 'fourth ' + roll
+}
+
+assert(t1[1] == 'first 1')
+assert(t1[3] == 'second 2')
+assert(t1[4] == 'third 3')
+assert(t1[10] == 'fourth 4')
+
+expected_value = ['first 1', 'second 2', 'third 3', 'fourth 4']
+range(10)
+  .map(() => {
+    assert(expected_value.includes(t1()))
+  })
 
 t2 = table {
   "first " + roll
@@ -13,4 +113,85 @@ t2 = table {
   "third " + roll
 }
 
-system.print(t2())
+range(10)
+  .map(() => {
+    assert([
+      'first 1',
+      'second 2',
+      'third 3'
+    ].includes(t2()))
+  })
+
+a = ['first', 'second', 'third']
+t3 = table {
+  ...a
+  'fourth'
+}
+
+assert(t3[1] == 'first')
+assert(t3[2] == 'second')
+assert(t3[3] == 'third')
+assert(t3[4] == 'fourth')
+
+############################################################################
+# Reuse table entries by spreading an existing table into a new table.
+#
+t1 = table {
+  'first'
+  'second'
+  'third'
+}
+
+t2 = table {
+  ...t1
+  'fourth'
+}
+
+assert(t2[1] == 'first')
+assert(t2[2] == 'second')
+assert(t2[3] == 'third')
+assert(t2[4] == 'fourth')
+
+t1 = table {
+  1-10: 'first'
+  11-20: 'second'
+  'third'
+  22-30: 'fourth'
+}
+
+t2 = table {
+  ...t1
+  'fifth'
+}
+
+assert(t2[1] == 'first')
+assert(t2[11] == 'second')
+assert(t1[21] == 'third')
+assert(t2[21] == 'third')
+assert(t2[22] == 'fourth')
+assert(t2[31] == 'fifth')
+############################################################################
+
+############################################################################
+# 
+tf1 = table {
+  'first ' + roll
+  'second ' + roll
+}
+tf2 = table {
+  ...tf1
+  'third ' + roll
+}
+
+print(tf2())
+
+# Tables from split string
+colours = 'red orange yellow green blue violet'
+t6 = table {
+  ...(colours.split(' '))
+}
+
+range(10)
+  .map(() => {
+    assert(colours.includes(t6()))
+  })

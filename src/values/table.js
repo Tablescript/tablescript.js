@@ -36,6 +36,7 @@ export const createTableValue = (formalParameters, entries, closure) => {
   const equals = () => false;
   const asString = () => createStringValue(asNativeString());
   const asBoolean = () => createBooleanValue(asNativeBoolean());
+  const asArray = () => entries;
   const getElement = async (context, index) => {
     const indexValue = index.asNativeNumber(context);
     const selectedEntry = entries.find(e => e.rollApplies(indexValue));
@@ -52,7 +53,7 @@ export const createTableValue = (formalParameters, entries, closure) => {
   const callFunction = async (context, scope, parameters) => {
     const die = entries.reduce((max, entry, index) => Math.max(max, entry.getHighestSelector(index)), 0);
     const roll = randomNumber(die);
-    const rolledEntry = entries.find((e, index) => e.rollApplies(roll, index));
+    const rolledEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
     const localScope = {
       ...scope,
       ...closure,
@@ -70,6 +71,7 @@ export const createTableValue = (formalParameters, entries, closure) => {
     equals,
     asString,
     asBoolean,
+    asArray,
     getElement,
     callFunction,
   };

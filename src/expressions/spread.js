@@ -19,7 +19,7 @@ import { throwRuntimeError } from '../error';
 import { defaultExpression } from './default';
 import { expressionTypes } from './types';
 import { valueTypes } from '../values/types';
-import { createArraySpread, createObjectSpread } from '../values/spread';
+import { createArraySpread, createObjectSpread, createTableSpread } from '../values/spread';
 
 export const createSpreadExpression = (context, expression) => {
 
@@ -29,8 +29,10 @@ export const createSpreadExpression = (context, expression) => {
       return createArraySpread(value);
     } else if (value.type === valueTypes.OBJECT) {
       return createObjectSpread(value);
+    } else if (value.type === valueTypes.TABLE) {
+      return createTableSpread(value);
     }
-    throwRuntimeError('Spreads only apply to arrays and objects', context);
+    throwRuntimeError('Spreads only apply to ARRAY, OBJECT, and TABLE', context);
   };
 
   const getReferencedSymbols = () => expression.getReferencedSymbols();

@@ -30,7 +30,8 @@
     createTableEntry,
     createNextTableEntry,
     createRangeTableSelector,
-    createExactTableSelector
+    createExactTableSelector,
+    createSpreadTableEntry
   } = require('../expressions/table');
   const { createVariableExpression } = require('../expressions/variable');
   const { createBooleanLiteral } = require('../expressions/boolean-literal');
@@ -266,6 +267,9 @@ TableEntry "table entry"
   = selector:TableEntrySelector __ ':' __ body:TableEntryBody {
     return createTableEntry(selector, body);
   }
+  / spread:SpreadExpression {
+    return createSpreadTableEntry(spread);
+  }
   / body:TableEntryBody {
     return createNextTableEntry(body);
   }
@@ -472,6 +476,6 @@ IfToken = "if" !IdentifierPart
 ElseToken = "else" !IdentifierPart
 AndToken = "and" !IdentifierPart
 OrToken = "or" !IdentifierPart
-NotToken = "not" !IdentifierPart
+NotToken = "not" !IdentifierPart { return 'not'; }
 TableToken = "table" !IdentifierPart
 UndefinedToken = "undefined" !IdentifierPart
