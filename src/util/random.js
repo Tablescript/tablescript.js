@@ -19,10 +19,47 @@ export const randomNumber = n => {
   return Math.floor(Math.random() * n) + 1;
 };
 
-export const rollDice = (count, die) => {
-  let total = 0;
+const createRollSet = (count, die) => {
+  let rolls = [];
   for (let i = 0; i < count; i++) {
-    total += randomNumber(die);
+    rolls.push(randomNumber(die));
   }
-  return total;
+  return rolls;
+}
+
+const sort = rolls => ([...rolls].sort());
+
+const dropRolls = (sortedRolls, suffix, count) => {
+  if (suffix.specifier === 'l') {
+    return sortedRolls.slice(count);
+  } else {
+    return sortedRolls.slice(0, -1 * count);
+  }
+}
+
+const reAddRolls = (sortedRolls, suffix, count) => {
+  if (suffix.specifier === 'l') {
+    return sort([...sortedRolls.slice(0, count), ...sortedRolls]);
+  } else {
+    return sort([...sortedRolls, ...sortedRolls.slice(-1 * count)]);
+  }
+}
+
+const applySuffix = (rolls, suffix) => {
+  if (suffix) {
+    const sortedRolls = sort(rolls);
+    const count = suffix.count || 1;
+    if (suffix.operator === '-') {
+      return dropRolls(sortedRolls, suffix, count);
+    } else {
+      return reAddRolls(sortedRolls, suffix, count);
+    }
+  } else {
+    return rolls;
+  }
+};
+
+export const rollDice = (count, die, suffix) => {
+  return applySuffix(createRollSet(count, die), suffix)
+    .reduce((sum, roll) => sum + roll, 0);
 };

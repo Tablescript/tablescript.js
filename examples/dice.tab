@@ -1,6 +1,161 @@
-system.print(3d6)
-system.print(d20 + 4)
+assert = system.assert
+range = system.range
 
-statNames = ['str', 'dex', 'con', 'int', 'wis', 'cha']
-stats = system.range(0, statNames.length).reduce((results, index) => { results[statNames[index]] = 3d6 results }, {})
-system.print(stats)
+############################################################################
+# Helpers
+#
+# test_rolls calls the passed roll function 100 times and asserts the result
+# is in the expected_values array.
+test_rolls = (roll, expected_values) => {
+  range(100)
+    .map(() => {
+      assert(expected_values.includes(roll()))
+    })
+}
+
+# all_rolls_for_d creates an array of possible rolls for a die with
+# the passed number of sides. e.g. all_rolls_for_d(100) creates an array
+# of 1 to 100 inclusive.
+all_rolls_for_d = (count) => { range(count).map((n) => { n + 1 }) }
+############################################################################
+
+############################################################################
+# Basics.
+#
+# d1 rolls a 1-sided die. It is like saying 1d1, i.e. "roll 1 1-sided dice".
+# i.e. "always return 1". This is probably not useful. 2d2 rolls 2 1-sided
+# dice and adds the results. 3d2 rolls and adds 3 1-sided dice, etc.
+assert(d1 == 1)
+assert(1d1 == 1)
+assert(2d1 == 2)
+
+# d2 rolls a 2-sided die. Like flipping a coin, it will result in 1 or 2.
+# 2d2 will flip 2 2-sided dice and add the results.
+assert([1, 2].includes(d2))
+assert([1, 2].includes(1d2))
+assert([2, 3, 4].includes(2d2))
+############################################################################
+
+############################################################################
+# "Standard" dice.
+#
+roll = () => { d4 }
+expected_results = [1, 2, 3, 4]
+test_rolls(roll, expected_results)
+
+roll = () => { d6 }
+expected_results = [1, 2, 3, 4, 5, 6]
+test_rolls(roll, expected_results)
+
+roll = () => { 2d6 }
+expected_results = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+test_rolls(roll, expected_results)
+
+roll = () => { 1d12 }
+expected_results = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+test_rolls(roll, expected_results)
+
+roll = () => { d20 }
+expected_results = all_rolls_for_d(20)
+test_rolls(roll, expected_results)
+############################################################################
+
+############################################################################
+# Use dice literals in mathematical expressions.
+#
+# Apply roll modifiers.
+roll = () => { 3d6 + 3 }
+expected_results = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+test_rolls(roll, expected_results)
+
+roll = () => { 2d6 * 100 + 7 }
+expected_results = [207, 307, 407, 507, 607, 707, 807, 907, 1007, 1107, 1207]
+test_rolls(roll, expected_results)
+############################################################################
+
+############################################################################
+# Die is not limited to physical dice.
+#
+# Roll d100, d1000, d7, d43. Whatever you like.
+roll = () => { d100 }
+expected_results = all_rolls_for_d(100)
+test_rolls(roll, expected_results)
+
+roll = () => { d1000 }
+expected_results = all_rolls_for_d(1000)
+test_rolls(roll, expected_results)
+
+roll = () => { d7 }
+expected_results = [1, 2, 3, 4, 5, 6, 7]
+test_rolls(roll, expected_results)
+
+roll = () => { d43 }
+expected_results = all_rolls_for_d(43)
+test_rolls(roll, expected_results)
+############################################################################
+
+############################################################################
+# Drop rolls.
+#
+# Append -l (or -L) with an optional count to drop the low rolls. -l drops
+# 1 die. Append -h (or -H) with an optional count to drop the high rolls.
+# -h drops 1 die.
+expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+roll = () => { 4d6-l }
+test_rolls(roll, expected_results)
+
+roll = () => { 5d6-l2 }
+test_rolls(roll, expected_results)
+
+roll = () => { 4d6-h }
+test_rolls(roll, expected_results)
+
+roll = () => { 5d6-h2 }
+test_rolls(roll, expected_results)
+############################################################################
+
+############################################################################
+# Re-add rolls.
+#
+# Append +l (or +L) with an optional count to re-add the low rolls. +l
+# re-adds 1 die. Append +h (or +H) with an optional count to re-add the
+# high rolls. +h re-adds 1 die.
+expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+roll = () => { 4d6-l }
+test_rolls(roll, expected_results)
+
+roll = () => { 5d6-l2 }
+test_rolls(roll, expected_results)
+
+roll = () => { 2d6+h }
+test_rolls(roll, expected_results)
+
+roll = () => { 3d4+h2 }
+expected_results = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+test_rolls(roll, expected_results)
+
+# If you drop too many dice, you get 0.
+assert(3d6-l3 == 0)
+assert(3d6-l100 == 0)
+
+# If you re-add more dice than were rolled, you get the sum of fewer rolls
+# than expected.
+roll = () => { 2d4+l5 }
+expected_results = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+test_rolls(roll, expected_results)
+############################################################################
+
+############################################################################
+# D&D 5E "Advantage"
+#
+# 2d20-l means roll 2 d20s and drop the lowest. (2d20-h is "disadvantage".)
+expected_results = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+roll = () => { 2d20-l }
+test_rolls(roll, expected_results)
+
+roll = () => { 2d20-h }
+test_rolls(roll, expected_results)
+############################################################################

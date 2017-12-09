@@ -20,9 +20,9 @@ import { createNumericValue } from '../values/numeric';
 import { defaultExpression } from './default';
 import { expressionTypes } from './types';
 
-export const createDiceLiteral = (context, count, die) => {
+export const createDiceLiteral = (context, count, die, suffix) => {
 
-  const evaluate = scope => createNumericValue(rollDice(count, die));
+  const evaluate = scope => createNumericValue(rollDice(count, die, suffix));
 
   const getReferencedSymbols = () => [];
 
@@ -31,3 +31,8 @@ export const createDiceLiteral = (context, count, die) => {
   };
 };
 
+export const createDiceLiteralSuffix = (operator, specifier, count) => ({
+  operator,
+  specifier,
+  count
+});

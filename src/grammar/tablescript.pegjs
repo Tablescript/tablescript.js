@@ -42,7 +42,10 @@
     createObjectLiteral,
     createObjectLiteralPropertyExpression
   } = require('../expressions/object-literal');
-  const { createDiceLiteral } = require('../expressions/dice-literal');
+  const {
+    createDiceLiteral,
+    createDiceLiteralSuffix
+  } = require('../expressions/dice-literal');
   const { createNumberLiteral } = require('../expressions/number-literal');
   const { createStringLiteral } = require('../expressions/string-literal');
   const { createUndefinedLiteral } = require('../expressions/undefined-literal');
@@ -386,12 +389,27 @@ ObjectProperty
   / SpreadExpression
 
 DiceLiteral "dice"
-  = count:NonZeroInteger 'd' die:NonZeroInteger {
-    return createDiceLiteral(createContext(location(), options), count, die);
+  = count:NonZeroInteger ('d' / 'D') die:NonZeroInteger suffix:DiceLiteralSuffix? {
+    return createDiceLiteral(createContext(location(), options), count, die, suffix);
   }
-  / 'd' die:NonZeroInteger {
-    return createDiceLiteral(createContext(location(), options), 1, die);
+  / ('d' / 'D') die:NonZeroInteger suffix:DiceLiteralSuffix? {
+    return createDiceLiteral(createContext(location(), options), 1, die, suffix);
   }
+
+DiceLiteralSuffix
+  = operator:DiceLiteralSuffixOperator specifier:DiceLiteralSuffixSpecifier count:NonZeroInteger? {
+    return createDiceLiteralSuffix(operator, specifier.toLowerCase(), count);
+  }
+
+DiceLiteralSuffixOperator
+  = '-'
+  / '+'
+
+DiceLiteralSuffixSpecifier
+  = 'l'
+  / 'L'
+  / 'h'
+  / 'H'
 
 LineTerminator "end of line"
   = "\n"
