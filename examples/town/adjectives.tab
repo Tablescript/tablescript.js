@@ -1,0 +1,53 @@
+colour = table {
+  'red'
+  'orange'
+  'yellow'
+  'green'
+  'blue'
+  'violet'
+  'indigo'
+  'purple'
+  'black'
+  'white'
+  'silver'
+  'gold'
+}
+
+action = table {
+  'prancing'
+  'flying'
+  'hanging'
+  'drooping'
+  'dancing'
+  'dying'
+  'rotting'
+}
+
+description = table {
+  'marvelous'
+  'smelly'
+  'beautiful'
+  'pretty'
+  'injured'
+  'dead'
+  'wounded'
+  'foul'
+  'rusty'
+  'faded'
+  'mean'
+  'jolly'
+  'quick'
+}
+
+adjective = table {
+  colour().capitalize()
+  action().capitalize()
+  description().capitalize()
+}
+
+{
+  adjective: adjective,
+  colour: colour,
+  action: action,
+  description: description
+}

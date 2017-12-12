@@ -1,0 +1,72 @@
+farm_animal = table {
+  'pony'
+  'pig'
+  'horse'
+  'mare'
+  'cow'
+  'goat'
+  'sheep'
+  'ewe'
+  'lamb'
+  'cat'
+  'dog'
+  'donkey'
+  'ass'
+}
+
+animal = table {
+  'tiger'
+  'lion'
+  'boar'
+  'bear'
+  'crow'
+  'eagle'
+  'hawk'
+  'falcon'
+  'ferret'
+  'badger'
+}
+
+monster = table {
+  'kobold'
+  'goblin'
+  'orc'
+  'bugbear'
+  'dragon'
+  'hippogriff'
+  'pegasus'
+  'ogre'
+  'giant'
+}
+
+human = table {
+  'witch'
+  'hag'
+  'wizard'
+  'warlock'
+  'blacksmith'
+  'tinker'
+  'farmer'
+  'adventurer'
+  'ranger'
+  'druid'
+  'explorer'
+  'fool'
+  'bard'
+  'maid'
+}
+
+creature = table {
+  farmAnimal()
+  animal()
+  monster()
+  human()
+}
+
+{
+  creature: creature,
+  farm_animal: farm_animal,
+  animal: animal,
+  monster: monster,
+  human: human
+}

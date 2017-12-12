@@ -1,0 +1,19 @@
+
+taverns = system.require('./town/taverns.tab')
+#rumours = system.require('./town/rumours.tab')
+
+tavern = () => {
+  if (d100 < 90) {
+    {
+      tavern: taverns.tavern()
+    }
+  } else {
+    {}
+  }
+}
+
+town = {
+  ...tavern()
+}
+
+system.print(town)

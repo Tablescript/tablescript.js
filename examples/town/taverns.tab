@@ -1,0 +1,43 @@
+choose = system.choose
+
+adjectives = system.require('./adjectives.tab')
+creatures = system.require('./creatures.tab')
+things = system.require('./things.tab')
+names = system.require('./names.tab')
+
+suffix = table {
+  1-5: 'Inn'
+  6-9: 'Tavern'
+  10: 'Pub'
+}
+
+noun = table {
+  creatures.creature().capitalize()
+  things.body_part().capitalize()
+  things.dungeon_thing().capitalize()
+  things.weapon().capitalize()
+  things.tree().capitalize()
+  things.instrument().capitalize()
+}
+
+join_and_capitalize = (words) => { words.map((w) => { w.capitalize() }).join(' ') }
+
+tavern_name = table {
+  join_and_capitalize(['The', adjectives.adjective(), noun(), suffix()])
+  join_and_capitalize(['The', adjectives.adjective(), noun()])
+  join_and_capitalize([adjectives.adjective(), noun(), suffix()])
+  join_and_capitalize([adjectives.adjective(), noun()])
+}
+
+tavern = () => {
+  {
+    name: tavern_name(),
+    owner: names.name()
+    #rumours: rumours(10)
+  }
+}
+
+{
+  name: tavern_name,
+  tavern: tavern
+}

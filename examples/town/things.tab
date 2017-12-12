@@ -1,0 +1,54 @@
+body_part = table {
+  'head'
+  'arm'
+  'leg'
+  'foot'
+  'ankle'
+  'knee'
+  'elbow'
+}
+
+dungeon_thing = table {
+  'chest'
+  'coin'
+  'sack'
+  'wagon'
+  'cheese'
+}
+
+weapon = table {
+  'whip'
+  'sword'
+  'flail'
+  'lance'
+  'halberd'
+  'broadsword'
+  'longbow'
+  'bow'
+  'lance'
+}
+
+tree = table {
+  'pine'
+  'yew'
+  'spruce'
+  'birch'
+  'palm'
+  'elm'
+}
+
+instrument = table {
+  'harp'
+  'guitar'
+  'banjo'
+  'fiddle'
+  'lute'
+}
+
+{
+  body_part: body_part,
+  dungeon_thing: dungeon_thing,
+  weapon: weapon,
+  tree: tree,
+  instrument: instrument
+}
