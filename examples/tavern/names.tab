@@ -9,13 +9,18 @@ male_first_name = () => { system.choose(male_first_names) }
 female_first_name = () => { system.choose(female_first_names) }
 last_name = () => { system.choose(last_names) }
 
+first_name = () => {
+  system.choose([male_first_name, female_first_name])()
+}
+
 name = () => {
-  system.choose([male_first_name, female_first_name])() + ' ' + last_name()
+  first_name() + ' ' + last_name()
 }
 
 {
   name: name,
   male_first_name: male_first_name,
   female_first_name: female_first_name,
+  first_name: first_name,
   last_name: last_name
 }

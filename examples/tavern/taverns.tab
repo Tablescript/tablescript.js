@@ -4,6 +4,7 @@ adjectives = system.require('./adjectives.tab')
 creatures = system.require('./creatures.tab')
 things = system.require('./things.tab')
 names = system.require('./names.tab')
+rumours = system.require('./rumours.tab')
 
 suffix = table {
   1-5: 'Inn'
@@ -32,8 +33,8 @@ tavern_name = table {
 tavern = () => {
   {
     name: tavern_name(),
-    owner: names.name()
-    #rumours: rumours(10)
+    owner: names.name(),
+    rumours: rumours.rumours(2)
   }
 }
 

@@ -1,0 +1,4 @@
+
+taverns = system.require('./tavern/taverns.tab')
+
+system.print(taverns.tavern())

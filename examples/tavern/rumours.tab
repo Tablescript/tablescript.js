@@ -1,0 +1,291 @@
+names = system.require('./names.tab')
+things = system.require('./things.tab')
+creatures = system.require('./creatures.tab')
+
+all_things = table {
+  ...things.body_part
+  ...things.dungeon_thing
+  ...things.weapon
+  ...things.tree
+  ...things.instrument
+  ...creatures.farm_animal
+  ...creatures.animal
+  ...creatures.monster
+  ...creatures.human
+}
+
+special_nouns = {
+}
+
+is_vowel = (letter) => {
+  ['a', 'e', 'i', 'o', 'u'].includes(letter.lowercase())
+}
+
+articlize = (thing) => {
+  if (special_nouns[thing]) {
+    special_nouns[things].article
+  } else {
+    if (is_vowel(thing[0])) {
+      'an ' + thing
+    } else {
+      'a ' + thing
+    }
+  }
+}
+
+possessivethize = (name) => {
+  if (name[-1] == 's') {
+    name + "'"
+  } else {
+    name + "'s"
+  }
+}
+
+create_person = (name, lair, pronouns) => {
+  {
+    name: name,
+    article: articlize(name),
+    lair: lair,
+    possessive: possessivethize(name),
+    pronoun: system.choose(pronouns)
+  }
+}
+
+lair = table {
+  'lair'
+  'cave'
+  'tower'
+  'fortress'
+  'mine'
+  'camp'
+}
+
+person_description = table {
+  'aromatic'
+  'old'
+  'unscrupulous'
+  'blind'
+  'derepid'
+  'drunk'
+  'drunken'
+  'famous'
+  'grizzled'
+  'lonely'
+  'lost'
+  'mysterious'
+  'reknowned'
+  'secretive'
+  'smart'
+  'stupid'
+  'tired'
+  'travelling'
+  'wise'
+  'withered'
+  'young'
+}
+
+person = table {
+  create_person('wizard', lair(), ['his', 'her'])
+  create_person('sorcerer', lair(), ['his', 'her'])
+  create_person('goblin king', lair(), ['his'])
+  create_person('dragon', lair(), ['his', 'her', 'its'])
+  create_person('orc chieftan', lair(), ['his', 'her', 'its'])
+  create_person('ogre', lair(), ['his', 'her', 'its'])
+  create_person('ogre chieftan', lair(), ['his', 'her', 'its'])
+}
+
+relations = [
+  'mother',
+  'father',
+  'ma',
+  'pa',
+  'wife',
+  'husband',
+  'son',
+  'daughter',
+  'kid',
+  'brat',
+  'cousin',
+  'mother in-law',
+  'father in-law',
+  'maid',
+  'server',
+  'landlord'
+].map((n) => { 'my ' + n })
+
+roles = [
+  'adventurer',
+  'butcher',
+  'crone',
+  'explorer',
+  'farmer',
+  'man',
+  'merchant',
+  'monk',
+  'prince',
+  'princess',
+  'sailor',
+  'spy',
+  'soldier',
+  'tailor',
+  'tinker',
+  'warlock',
+  'wench',
+  'witch',
+  'wizard',
+  'woman'
+].map((n) => {
+  description = system.choose([[], [person_description()]])
+  ['the', ...description, n].join(' ')
+})
+
+local = table {
+  {
+    name: names.first_name()
+  }
+  {
+    name: names.name()
+  }
+  ...relations.map((n) => { { name: n } })
+  ...roles.map((n) => { { name: n } })
+}
+
+create_thing = (thing, possible_adjectives) => {
+  description = [(table {
+    ...possible_adjectives
+    ''
+  })(), thing].filter((w) => { w != '' }).join(' ')
+  {
+    name: description,
+    root: thing,
+    article: articlize(description)
+  }
+}
+
+desirable_thing = table {
+  create_thing('amulet', ['magic', 'jeweled', 'golden', 'silver', 'platinum'])
+  create_thing('treasure', ['long lost'])
+  create_thing('chalice', ['magic', 'jeweled', 'golden', 'silver', 'platinum'])
+  create_thing('scroll', ['magic'])
+  create_thing('sword', ['magic', 'jeweled', 'lost'])
+  create_thing('spellbook', ['long lost'])
+}
+
+found_thing = table {
+  ...desirable_thing
+  create_thing('cart', ['overturned'])
+  create_thing('wagon', ['overturned'])
+}
+
+create_location = (name, areas, types) => {
+  description = [(table {
+    ...types
+    ''
+  })(), name].filter((w) => { w != '' }).join(' ')
+  {
+    name: description,
+    area: [system.choose(areas), description].join(' ')
+  }
+}
+
+directions = ['north', 'south', 'east', 'west']
+
+area_modifiers = ['in the', 'near the', ...directions.map((d) => { 'on the ' + d + ' side of the' })]
+hill_modifiers = ['on the', 'near the', 'on the other side of the', ...directions.map((d) => { 'on the ' + d + ' side of the' })]
+mine_modifiers = [...area_modifiers, 'near the entrance to the', 'deep in the', 'just outside the']
+forest_modifiers = [...area_modifiers, 'near the edge of the', 'on the edge of the', 'just outside the', ...directions.map((d) => { 'at the ' + d + ' edge of the' })]
+river_modifiers = [...area_modifiers, 'on the edge of the', 'on the shore of the', ...directions.map((d) => { 'on the ' + d + ' shore of the' })]
+mine_types = ['diamond', 'gold', 'silver', 'platinum', 'copper', 'creepy', 'haunted']
+forest_types = ['pine', 'spruce', 'dark', 'creepy', 'haunted']
+building_types = ['ruined', 'crumbling', 'ancient', 'dark']
+
+locations = table {
+  create_location('mine', mine_modifiers, mine_types)
+  create_location('mines', mine_modifiers, mine_types)
+  create_location('forest', forest_modifiers, forest_types)
+  create_location('fortress', mine_modifiers, building_types)
+  create_location('ruins', mine_modifiers, ['ancient'])
+  create_location('tower', mine_modifiers, building_types)
+  create_location('lake', river_modifiers, [])
+  create_location('sewer', mine_modifiers, ['ancient'])
+  create_location('sewers', mine_modifiers, ['ancient'])
+  create_location('pond', river_modifiers, ['mill', 'town'])
+  create_location('monastery', mine_modifiers, building_types)
+  create_location('river', river_modifiers, [])
+  create_location('stream', river_modifiers, [])
+  create_location('cave', mine_modifiers, ['dark'])
+  create_location('caves', mine_modifiers, ['dark'])
+  create_location('hill', hill_modifiers, [])
+  create_location('foothills', hill_modifiers, [])
+  create_location('tavern', area_modifiers, [])
+  create_location('farm', hill_modifiers, [])
+}
+
+rumour_template = table {
+  {
+    subject = person()
+    description = system.choose([[], [person_description()]])
+    object = desirable_thing()
+    ['the', ...description, subject.name, 'wants', ...system.choose([['their', object.name], [object.article], ['the', object.name]])]
+  }
+  {
+    subject = person()
+    description = system.choose([[], [person_description()]])
+    object = desirable_thing()
+    ['the', ...description, subject.name, 'wants', ...system.choose([[subject.pronoun, object.name], [object.article], ['the', object.name]]), 'delivered to', subject.pronoun, subject.lair]
+  }
+  {
+    subject = person()
+    description = system.choose([[], [person_description()]])
+    object = desirable_thing()
+    ['the', ...description, subject.name, 'is searching for', ...system.choose([[subject.pronoun, object.name], [object.article]])]
+  }
+  {
+    subject = local()
+    object = desirable_thing()
+    antagonist = person()
+    [subject.name, 'has been looking for', object.article, 'for the', antagonist.name]
+  }
+  {
+    subject = person()
+    object = desirable_thing()
+    ['there will be a delivery of', object.article, 'to the', subject.possessive, subject.lair]
+  }
+  {
+    subject = local()
+    object = found_thing()
+    location = locations()
+    [subject.name, 'found', object.article, location.area]
+  }
+  {
+    password = system.range(d3).map(() => { all_things() }).join(' ')
+    ['the password is', '"' + password + '"']
+  }
+  {
+    subject = local()
+    [subject.name, system.choose(['has been missing for', "hasn't been seen for"]), d6 + 1, system.choose(['days', 'weeks'])]
+  }
+}
+
+prefix = table {
+  1: ['I heard' + system.choose([' that', ''])]
+  2: ['I hear' + system.choose([' that', ''])]
+  3: ['I overheard ' + local().name + ' saying' + system.choose([' that', ''])]
+  4: ['I overheard ' + local().name + ' say' + system.choose([' that', ''])]
+  5-10: [local().name + system.choose([' said', ' told me']) + system.choose([' that', ''])]
+  11-20: []
+}
+
+rumour = () => {
+  [...prefix(), ...rumour_template()].join(' ').capitalize() + '.'
+}
+
+rumours = (n) => {
+  system.range(n)
+    .map(() => { rumour() })
+}
+
+{
+  rumour: rumour,
+  rumours: rumours
+}
