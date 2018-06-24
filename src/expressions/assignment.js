@@ -28,7 +28,7 @@ export const createAssignmentExpression = (context, leftHandSideExpression, oper
       leftHandSideValue.assignFrom(context, scope, value);
     },
     '+=': (context, scope, leftHandSideValue, leftValue, value) => {
-      if (leftHandSideValue.type === valueTypes.STRING) {
+      if (leftValue.type === valueTypes.STRING) {
         leftHandSideValue.assignFrom(context, scope, createStringValue(leftValue.asNativeString(context) + value.asNativeString(context)));
       } else if (leftValue.type === valueTypes.NUMBER) {
         leftHandSideValue.assignFrom(context, scope, createNumericValue(leftValue.asNativeNumber(context) + value.asNativeNumber(context)));
