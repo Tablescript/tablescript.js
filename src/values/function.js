@@ -70,7 +70,6 @@ export const createFunctionValue = (formalParameters, body, closure) => {
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
   const callFunction = async (context, scope, parameters) => {
     const localScope = {
-      ...scope,
       ...closure,
       ...parametersToArguments(parameters)
     };

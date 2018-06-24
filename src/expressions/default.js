@@ -24,7 +24,7 @@ export const defaultExpression = (type, evaluate, getReferencedSymbols) => {
   return {
     type,
     evaluate,
-    evaluateAsLeftHandSide: runtimeErrorThrower(`Cannot assign to ${typeName}`),
+    evaluateAsLeftHandSide: runtimeErrorThrower(`Cannot assign to ${typeName} expression`),
     getReferencedSymbols,
   };
 };

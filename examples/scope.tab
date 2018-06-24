@@ -1,0 +1,12 @@
+baz = () => {
+  foo = () => {
+    'foo'
+  }
+  bar = () => {
+    foo()
+  }
+
+  bar()
+}
+
+system.print(baz())

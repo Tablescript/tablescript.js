@@ -1,11 +1,12 @@
-printMessage = (msg) => {
-  () => {
-    system.print(msg)
+add = (x) => {
+  addX = (y) => {
+    x + y
   }
+  addX
 }
 
-printMyMessage = printMessage('I have a ham radio')
-printMyOtherMessage = printMessage('Holy crap closures work!')
+add1 = add(1)
+add5 = add(5)
 
-printMyMessage()
-printMyOtherMessage()
+system.print(add1(3))
+system.print(add5(3))

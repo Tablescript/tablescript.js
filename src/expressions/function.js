@@ -19,15 +19,9 @@ import { createFunctionValue } from '../values/function';
 import { throwRuntimeError } from '../error';
 
 export const createFunctionExpression = (context, formalParameters, body) => {
-  const createClosure = (body, parameters, scope) => {
-    return body.getReferencedSymbols()
-      .filter(v => !formalParameters.includes(v))
-      .reduce((result, symbol) => ({ ...result, [symbol]: scope[symbol] }), {});
-  };
-
   return {
     evaluate: scope => {
-      return createFunctionValue(formalParameters, body, createClosure(body, formalParameters, scope));
+      return createFunctionValue(formalParameters, body, { ...scope });
     },
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to function', context);

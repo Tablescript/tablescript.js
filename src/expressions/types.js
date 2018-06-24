@@ -33,29 +33,29 @@ export const expressionTypes = {
 export const expressionTypeName = type => {
   switch (type) {
     case expressionTypes.IF:
-      return 'IF';
+      return 'if';
     case expressionTypes.SPREAD:
-      return 'SPREAD';
+      return 'spread';
     case expressionTypes.UNDEFINED:
-      return 'UNDEFINED';
+      return 'undefined';
     case expressionTypes.STRING:
-      return 'STRING';
+      return 'string';
     case expressionTypes.NUMBER:
-      return 'NUMBER';
+      return 'number';
     case expressionTypes.DICE:
-      return 'DICE';
+      return 'dice';
     case expressionTypes.OBJECT_PROPERTY:
-      return 'OBJECT_PROPERTY';
+      return 'object property';
     case expressionTypes.ARRAY:
-      return 'ARRAY';
+      return 'array';
     case expressionTypes.BOOLEAN:
-      return 'BOOLEAN';
+      return 'boolean';
     case expressionTypes.VARIABLE:
-      return 'VARIABLE';
+      return 'variable';
     case expressionTypes.TABLE:
-      return 'TABLE';
+      return 'table';
     case expressionTypes.ASSIGNMENT:
-      return 'ASSIGNMENT';
+      return 'assignment';
     default:
       return '<TYPE UNSET>';
   }

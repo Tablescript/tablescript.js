@@ -21,18 +21,20 @@ import { createUndefined } from '../values/undefined';
 
 export const createBlockExpression = statements => {
   const evaluate = async scope => {
+    const localScope = { ...scope };
     let result = createUndefined();
     for (let i = 0; i < statements.length; i++) {
-      result = await statements[i].evaluate(scope);
+      result = await statements[i].evaluate(localScope);
     }
     return result;
   };
 
   const getReferencedSymbols = () => {
-    return statements.reduce((result, statement) => ([
+    const symbols =  statements.reduce((result, statement) => ([
       ...result,
       ...statement.getReferencedSymbols()
     ]), []);
+    return symbols;
   };
 
   return {

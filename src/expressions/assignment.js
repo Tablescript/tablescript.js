@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../values/types';
+import { valueTypes, valueTypeName } from '../values/types';
 import { throwRuntimeError } from '../error';
 import { defaultExpression } from './default';
 import { expressionTypes } from './types';

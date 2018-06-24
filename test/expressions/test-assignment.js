@@ -86,7 +86,7 @@ describe('createAssignmentExpression', () => {
         mockContext = {
           d: 4
         };
-        expression = createAssignmentExpression(mockContext, mockLeftHandExpression, mockValueExpression);
+        expression = createAssignmentExpression(mockContext, mockLeftHandExpression, '=', mockValueExpression);
       });
 
       it('evaluates the lhs as an lhs', () => {

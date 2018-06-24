@@ -18,13 +18,6 @@
 import { createTableValue } from '../values/table';
 import { defaultExpression } from './default';
 import { expressionTypes } from './types';
-import { valueTypes } from '../values/types';
-
-const createClosure = (entries, parameters, scope) => {
-  return entries.reduce((acc, e) => ([...acc, ...e.getReferencedSymbols()]), [])
-    .filter(v => !parameters.includes(v))
-    .reduce((result, symbol) => ({ ...result, [symbol]: scope[symbol] }), {});
-};
 
 const expandEntries = async (scope, entries) => {
   let results = [];
@@ -41,7 +34,7 @@ export const createTableExpression = (context, formalParameters, entries) => {
     return createTableValue(
       formalParameters,
       expandedEntries,
-      createClosure(expandedEntries, formalParameters, scope)
+      { ...scope }
     );
   };
 
