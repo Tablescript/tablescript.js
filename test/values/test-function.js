@@ -105,9 +105,10 @@ describe('function', () => {
 
     describe('with no formal parameters', () => {
       let calledScope;
-      let callCount = 0;
+      let callCount;
 
       beforeEach(() => {
+        callCount = 0;
         const nativeFunction = (context, scope) => {
           calledScope = scope;
           callCount += 1;
@@ -150,9 +151,10 @@ describe('function', () => {
 
     describe('with formal parameters', () => {
       let calledScope;
-      let callCount = 0;
+      let callCount;
 
       beforeEach(() => {
+        callCount = 0;
         const nativeFunction = (context, scope) => {
           calledScope = scope;
           callCount += 1;
@@ -322,7 +324,7 @@ describe('function', () => {
             calledScope = scope;
           };
           value.callFunction({}, { callingScope: 12 }, []);
-          expect(calledScope).to.eql({ callingScope: 12, closureScope: 63 });
+          expect(calledScope).to.eql({ closureScope: 63 });
         });
       });
 
@@ -348,7 +350,7 @@ describe('function', () => {
       describe('when called', () => {
         it('evalutes the block', () => {
           let callCount = 0;
-          mockBody.evaluate = (_) => {
+          mockBody.evaluate = _ => {
             callCount += 1;
           };
           value.callFunction({}, {}, []);
@@ -370,7 +372,7 @@ describe('function', () => {
             calledScope = scope;
           };
           value.callFunction({}, { callingScope: 12 }, []);
-          expect(calledScope).to.eql({ callingScope: 12, closureScope: 63 });
+          expect(calledScope).to.eql({ closureScope: 63 });
         });
       });
 
@@ -381,7 +383,7 @@ describe('function', () => {
             calledScope = scope;
           };
           value.callFunction({}, { callingScope: 12 }, ['I have a ham radio', 12]);
-          expect(calledScope).to.eql({ callingScope: 12, closureScope: 63, a: 'I have a ham radio', b: 12 });
+          expect(calledScope).to.eql({ closureScope: 63, a: 'I have a ham radio', b: 12 });
         });
       });
 

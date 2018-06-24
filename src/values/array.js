@@ -111,7 +111,10 @@ export const createArrayValue = entries => {
 
   const includes = createNativeFunctionValue(['value'], (context, scope) => {
     const value = scope['value'];
-    return createBooleanValue(entries.reduce((result, entry) => result || entry.equals(context, value), false));
+    if (value) {
+      return createBooleanValue(entries.reduce((result, entry) => result || entry.equals(context, value), false));
+    }
+    return createUndefined();
   });
 
   const indexOf = createNativeFunctionValue(['value'], (context, scope) => {
