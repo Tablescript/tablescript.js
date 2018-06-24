@@ -55,26 +55,4 @@ describe('createConditionalExpression', () => {
     const expression = createConditionalExpression({}, {}, {}, {});
     return expect(expression.evaluateAsLeftHandSide()).to.eventually.be.rejectedWith('Cannot assign to conditional expression');
   });
-
-  describe('getReferencedSymbols', () => {
-    let expression;
-
-    beforeEach(() => {
-      const mockTestExpression = {
-        getReferencedSymbols: () => [1, 2, 3],
-      };
-      const mockConsequentExpression = {
-        getReferencedSymbols: () => [4, 5, 6],
-      };
-      const mockAlternateExpression = {
-        getReferencedSymbols: () => [7, 8, 9],
-      };
-
-      expression = createConditionalExpression({}, mockTestExpression, mockConsequentExpression, mockAlternateExpression);
-    });
-
-    it('merges the results of deferring to each subexpression', () => {
-      expect(expression.getReferencedSymbols()).to.eql([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-    });
-  });
 });

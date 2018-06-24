@@ -22,35 +22,30 @@ const createTableEntry = (selector, body) => ({
   evaluate: async scope => {
     return await body.evaluate(scope);
   },
-  getReferencedSymbols: () => body.getReferencedSymbols(),
   getHighestSelector: () => selector.highestSelector,
   rollApplies: actualRoll => selector.rollApplies(actualRoll),
 });
 
 export const createTableEntryExpression = (selector, body) => ({
   expand: () => ([createTableEntry(selector, body)]),
-  getReferencedSymbols: () => body.getReferencedSymbols(),
 });
 
 const createSimpleTableEntry = body => ({
   evaluate: async scope => {
     return await body.evaluate(scope);
   },
-  getReferencedSymbols: () => body.getReferencedSymbols(),
   getHighestSelector: index => index,
   rollApplies: (actualRoll, index) => (actualRoll === index),
 });
 
 export const createSimpleTableEntryExpression = body => ({
   expand: () => ([createSimpleTableEntry(body)]),
-  getReferencedSymbols: () => body.getReferencedSymbols(),
 });
 
 const createLiteralTableEntry = value => ({
   evaluate: async scope => {
     return value;
   },
-  getReferencedSymbols: () => [],
   getHighestSelector: index => index,
   rollApplies: (actualRoll, index) => (actualRoll === index),
 });
@@ -66,5 +61,4 @@ export const createSpreadTableEntryExpression = spread => ({
       throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`);
     }
   },
-  getReferencedSymbols: () => spread.getReferencedSymbols(),
 });

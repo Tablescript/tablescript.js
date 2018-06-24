@@ -23,9 +23,7 @@ export const createUndefinedLiteral = context => {
 
   const evaluate = () => createUndefined();
 
-  const getReferencedSymbols = () => [];
-
   return {
-    ...defaultExpression(expressionTypes.UNDEFINED, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.UNDEFINED, evaluate),
   };
 };

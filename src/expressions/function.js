@@ -26,6 +26,5 @@ export const createFunctionExpression = (context, formalParameters, body) => {
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to function', context);
     },
-    getReferencedSymbols: () => body.getReferencedSymbols(),
   };
 };

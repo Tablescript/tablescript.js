@@ -46,11 +46,5 @@ export const createObjectPropertyExpression = (context, objectExpression, proper
         throwRuntimeError('Cannot access property or element', context);
       }
     },
-    getReferencedSymbols: () => {
-      return [
-        ...objectExpression.getReferencedSymbols(),
-        ...propertyNameExpression.getReferencedSymbols(),
-      ];
-    },
   };
 };

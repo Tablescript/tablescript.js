@@ -33,10 +33,8 @@ export const createObjectLiteral = (context, entries) => {
     return createObjectValue(result);
   };
 
-  const getReferencedSymbols = () => entries.reduce((result, e) => [...result, e.getReferencedSymbols()], []);
-
   return {
-    ...defaultExpression(expressionTypes.OBJECT, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.OBJECT, evaluate),
   };
 };
 
@@ -46,9 +44,7 @@ export const createObjectLiteralPropertyExpression = (context, key, value) => {
     [key]: await value.evaluate(scope),
   });
 
-  const getReferencedSymbols = () => value.getReferencedSymbols();
-
   return {
-    ...defaultExpression(expressionTypes.OBJECT_PROPERTY, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.OBJECT_PROPERTY, evaluate),
   };
 };

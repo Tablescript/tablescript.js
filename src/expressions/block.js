@@ -29,15 +29,7 @@ export const createBlockExpression = statements => {
     return result;
   };
 
-  const getReferencedSymbols = () => {
-    const symbols =  statements.reduce((result, statement) => ([
-      ...result,
-      ...statement.getReferencedSymbols()
-    ]), []);
-    return symbols;
-  };
-
   return {
-    ...defaultExpression(expressionTypes.BLOCK, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.BLOCK, evaluate),
   };
 };

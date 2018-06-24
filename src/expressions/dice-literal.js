@@ -24,10 +24,8 @@ export const createDiceLiteral = (context, count, die, suffix) => {
 
   const evaluate = scope => createNumericValue(rollDice(count, die, suffix));
 
-  const getReferencedSymbols = () => [];
-
   return {
-    ...defaultExpression(expressionTypes.DICE, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.DICE, evaluate),
   };
 };
 

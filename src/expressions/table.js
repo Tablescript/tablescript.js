@@ -38,12 +38,7 @@ export const createTableExpression = (context, formalParameters, entries) => {
     );
   };
 
-  const getReferencedSymbols = () => ([
-    ...formalParameters.reduce((result, parameter) => [...result, ...parameter.getReferencedSymbols()], []),
-    ...entries.reduce((result, entry) => [...result, ...entry.getReferencedSymbols()], []),
-  ]);
-
   return {
-    ...defaultExpression(expressionTypes.TABLE, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.TABLE, evaluate),
   };
 };

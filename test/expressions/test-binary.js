@@ -477,17 +477,4 @@ describe('createBinaryExpression', () => {
     const expression = createBinaryExpression({}, {}, '', {});
     return expect(expression.evaluateAsLeftHandSide()).to.eventually.be.rejectedWith('Cannot assign to binary expression');
   });
-
-  describe('getReferencedSymbols', () => {
-    it('mixes the results of delegating to each of lhs and value expressions', () => {
-      const mockLeftExpression = {
-        getReferencedSymbols: () => [2, 4],
-      };
-      const mockRightExpression = {
-        getReferencedSymbols: () => [1, 3],
-      };
-      const expression = createBinaryExpression({}, mockLeftExpression, '', mockRightExpression);
-      expect(expression.getReferencedSymbols()).to.eql([2, 4, 1, 3]);
-    });
-  });
 });

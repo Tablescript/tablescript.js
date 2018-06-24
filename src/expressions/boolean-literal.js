@@ -23,9 +23,7 @@ export const createBooleanLiteral = (context, value) => {
 
   const evaluate = scope => createBooleanValue(value);
 
-  const getReferencedSymbols = () => [];
-
   return {
-    ...defaultExpression(expressionTypes.BOOLEAN, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.BOOLEAN, evaluate),
   };
 };

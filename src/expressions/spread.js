@@ -35,9 +35,7 @@ export const createSpreadExpression = (context, expression) => {
     throwRuntimeError('Spreads only apply to ARRAY, OBJECT, and TABLE', context);
   };
 
-  const getReferencedSymbols = () => expression.getReferencedSymbols();
-
   return {
-    ...defaultExpression(expressionTypes.SPREAD, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.SPREAD, evaluate),
   };
 };

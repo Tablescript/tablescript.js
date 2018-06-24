@@ -23,9 +23,7 @@ export const createNumberLiteral = (context, n) => {
 
   const evaluate = scope => createNumericValue(n);
 
-  const getReferencedSymbols = () => [];
-
   return {
-    ...defaultExpression(expressionTypes.NUMBER, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.NUMBER, evaluate),
   };
 };

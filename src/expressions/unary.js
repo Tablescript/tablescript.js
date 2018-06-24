@@ -36,6 +36,5 @@ export const createUnaryExpression = (context, operator, argument) => {
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to unary expression', context);
     },
-    getReferencedSymbols: () => argument.getReferencedSymbols(),
   };
 };

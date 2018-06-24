@@ -39,12 +39,6 @@ export const createCallExpression = (context, callee, parameters) => {
     evaluate,
     evaluateAsLeftHandSide: () => {
       throwRuntimeError('Cannot assign to call expression', context);
-    },
-    getReferencedSymbols: () => {
-      return [
-        ...callee.getReferencedSymbols(),
-        ...parameters.reduce((result, parameter) => [...result, ...parameter.getReferencedSymbols()], []),
-      ];
-    },
+    }
   };
 };

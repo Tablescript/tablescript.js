@@ -31,10 +31,8 @@ export const createVariableExpression = (context, name) => {
 
   const evaluateAsLeftHandSide = () => createLeftHandSideValue(name);
 
-  const getReferencedSymbols = () => [name];
-
   return {
-    ...defaultExpression(expressionTypes.VARIABLE, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.VARIABLE, evaluate),
     evaluateAsLeftHandSide,
   };
 };

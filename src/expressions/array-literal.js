@@ -44,10 +44,8 @@ export const createArrayLiteral = (context, values) => {
     return createArrayValue(result);
   };
 
-  const getReferencedSymbols = () => values.reduce((result, value) => [...result, ...value.getReferencedSymbols()], []);
-
   return {
-    ...defaultExpression(expressionTypes.ARRAY, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.ARRAY, evaluate),
   };
 };
 

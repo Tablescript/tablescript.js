@@ -29,13 +29,6 @@ export const createConditionalExpression = (context, testExpression, consequentE
     },
     evaluateAsLeftHandSide: async () => {
       throwRuntimeError('Cannot assign to conditional expression', context);
-    },
-    getReferencedSymbols: () => {
-      return [
-        ...testExpression.getReferencedSymbols(),
-        ...consequentExpression.getReferencedSymbols(),
-        ...alternateExpression.getReferencedSymbols(),
-      ];
-    },
+    }
   };
 };

@@ -23,9 +23,7 @@ export const createSimpleExpression = expression => {
     return await expression.evaluate(scope);
   };
 
-  const getReferencedSymbols = () => expression.getReferencedSymbols();
-
   return {
-    ...defaultExpression(expressionTypes.SIMPLE, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.SIMPLE, evaluate),
   };
 };

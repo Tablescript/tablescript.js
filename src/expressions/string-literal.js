@@ -23,9 +23,7 @@ export const createStringLiteral = (context, s) => {
 
   const evaluate = scope => createStringValue(s);
 
-  const getReferencedSymbols = () => [];
-
   return {
-    ...defaultExpression(expressionTypes.STRING, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.STRING, evaluate),
   };
 };

@@ -33,15 +33,7 @@ export const createIfExpression = (context, condition, ifBlock, elseBlock) => {
     }
   };
 
-  const getReferencedSymbols = () => {
-    return [
-      ...condition.getReferencedSymbols(),
-      ...ifBlock.getReferencedSymbols(),
-      ...(elseBlock ? elseBlock.getReferencedSymbols() : []),
-    ];
-  };
-
   return {
-    ...defaultExpression(expressionTypes.IF, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.IF, evaluate),
   };
 };

@@ -92,14 +92,7 @@ export const createAssignmentExpression = (context, leftHandSideExpression, oper
     return value;
   };
 
-  const getReferencedSymbols = () => {
-    return [
-      ...leftHandSideExpression.getReferencedSymbols(),
-      ...valueExpression.getReferencedSymbols(),
-    ];
-  };
-
   return {
-    ...defaultExpression(expressionTypes.ASSIGNMENT, evaluate, getReferencedSymbols),
+    ...defaultExpression(expressionTypes.ASSIGNMENT, evaluate),
   };
 };

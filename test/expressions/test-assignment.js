@@ -121,23 +121,4 @@ describe('createAssignmentExpression', () => {
       expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to assignment expression');
     });
   });
-
-  describe('getReferencedSymbols', () => {
-    let result;
-
-    beforeEach(() => {
-      mockLeftHandExpression = {
-        getReferencedSymbols: () => [2, 4],
-      };
-      mockValueExpression = {
-        getReferencedSymbols: () => [1, 3],
-      };
-      expression = createAssignmentExpression({}, mockLeftHandExpression, mockValueExpression);
-      result = expression.getReferencedSymbols();
-    });
-
-    it('mixes the results of delegating to each of lhs and value expressions', () => {
-      expect(result).to.eql([2, 4, 1, 3]);
-    });
-  });
 });

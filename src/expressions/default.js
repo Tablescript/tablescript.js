@@ -18,13 +18,12 @@
 import { expressionTypeName } from './types';
 import { runtimeErrorThrower } from '../error';
 
-export const defaultExpression = (type, evaluate, getReferencedSymbols) => {
+export const defaultExpression = (type, evaluate) => {
   const typeName = expressionTypeName(type);
 
   return {
     type,
     evaluate,
     evaluateAsLeftHandSide: runtimeErrorThrower(`Cannot assign to ${typeName} expression`),
-    getReferencedSymbols,
   };
 };
