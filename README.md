@@ -6,12 +6,13 @@ This is a work in progress. Version 0.0.1.
 
 ## Development
 
-    $> npm run lint
+    $> yarn lint
+    $> yarn test
 
 ### Parser
 
-    $> npm run build:parser
+    $> yarn build:parser
 
 ### Build
 
-    $> npm run build
+    $> yarn build
