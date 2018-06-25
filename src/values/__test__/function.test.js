@@ -293,7 +293,7 @@ describe('function', () => {
       describe('when called', () => {
         it('evaluates the block', () => {
           let callCount = 0;
-          mockBody.evaluate = (_) => {
+          mockBody.evaluate = _ => {
             callCount += 1;
           };
           value.callFunction({}, {}, []);
@@ -310,7 +310,7 @@ describe('function', () => {
         it('overrides calling scope with closure scope', () => {
           mockClosure.callingScope = 'overridden';
           let calledScope = {};
-          mockBody.evaluate = (scope) => {
+          mockBody.evaluate = scope => {
             calledScope = scope;
           };
           value.callFunction({}, { callingScope: 12 }, []);
@@ -321,7 +321,7 @@ describe('function', () => {
       describe('when called with no parameters', () => {
         it('calls evaluate with proper scope', () => {
           let calledScope = {};
-          mockBody.evaluate = (scope) => {
+          mockBody.evaluate = scope => {
             calledScope = scope;
           };
           value.callFunction({}, { callingScope: 12 }, []);
@@ -369,7 +369,7 @@ describe('function', () => {
       describe('when called with no parameters', () => {
         it('calls evaluate with proper scope', () => {
           let calledScope = {};
-          mockBody.evaluate = (scope) => {
+          mockBody.evaluate = scope => {
             calledScope = scope;
           };
           value.callFunction({}, { callingScope: 12 }, []);
@@ -380,7 +380,7 @@ describe('function', () => {
       describe('when called with the correct number of parameters', () => {
         it('calls evaluate with proper scope', () => {
           let calledScope = {};
-          mockBody.evaluate = (scope) => {
+          mockBody.evaluate = scope => {
             calledScope = scope;
           };
           value.callFunction({}, { callingScope: 12 }, ['I have a ham radio', 12]);
