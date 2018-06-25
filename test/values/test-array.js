@@ -460,7 +460,7 @@ describe('array', () => {
 
           it('returns a string', () => {
             result.then(value => {
-              expect(result.type).to.equal(valueTypes.STRING);
+              expect(value.type).to.equal(valueTypes.STRING);
             });
           });
 
