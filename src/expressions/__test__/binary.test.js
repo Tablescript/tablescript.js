@@ -20,9 +20,9 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { valueTypes, valueTypeName } from '../../src/values/types';
-import { createBinaryExpression } from '../../src/expressions/binary';
-import { isBooleanValue, isNumericValue, isStringValue } from '../util';
+import { valueTypes, valueTypeName } from '../../values/types';
+import { createBinaryExpression } from '../binary';
+import { isBooleanValue, isNumericValue, isStringValue } from '../../__test__/util';
 
 describe('createBinaryExpression', () => {
 

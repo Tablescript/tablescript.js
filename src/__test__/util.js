@@ -1,4 +1,4 @@
-import { valueTypes } from '../src/values/types';
+import { valueTypes } from '../values/types';
 
 export const isBooleanValue = expected => value => {
   if (value.type !== valueTypes.BOOLEAN) {

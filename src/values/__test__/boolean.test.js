@@ -20,9 +20,9 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { createBooleanValue } from '../../src/values/boolean';
-import { createStringValue } from '../../src/values/string';
-import { valueTypes } from '../../src/values/types';
+import { createBooleanValue } from '../boolean';
+import { createStringValue } from '../string';
+import { valueTypes } from '../types';
 
 describe('boolean', () => {
   describe('when true', () => {

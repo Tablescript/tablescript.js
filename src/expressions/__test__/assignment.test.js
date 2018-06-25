@@ -22,9 +22,9 @@ chai.use(chaiAsPromised);
 chai.use(spies);
 const expect = chai.expect;
 
-import { valueTypes } from '../../src/values/types';
-import { createAssignmentExpression } from '../../src/expressions/assignment';
-import { isBooleanValue, isNumericValue, isStringValue } from '../util';
+import { valueTypes } from '../../values/types';
+import { createAssignmentExpression } from '../assignment';
+import { isBooleanValue, isNumericValue, isStringValue } from '../../__test__/util';
 
 const recordCall = (calls, name, args = []) => {
   if (calls[name]) {

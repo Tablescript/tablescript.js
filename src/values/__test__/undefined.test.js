@@ -20,8 +20,8 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { valueTypes } from '../../src/values/types';
-import { createUndefined } from '../../src/values/undefined';
+import { valueTypes } from '../types';
+import { createUndefined } from '../undefined';
 
 describe('createUndefined', () => {
   let value;

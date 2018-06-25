@@ -20,11 +20,11 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { createObjectValue } from '../../src/values/object';
-import { createNumericValue } from '../../src/values/numeric';
-import { createStringValue } from '../../src/values/string';
-import { createArrayValue } from '../../src/values/array';
-import { valueTypes } from '../../src/values/types';
+import { createObjectValue } from '../object';
+import { createNumericValue } from '../numeric';
+import { createStringValue } from '../string';
+import { createArrayValue } from '../array';
+import { valueTypes } from '../types';
 
 describe('object value', () => {
   let dummyObject;

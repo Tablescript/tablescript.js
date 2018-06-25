@@ -12,7 +12,7 @@
     "build:parser": "node_modules/.bin/pegjs --cache --output src/parser/peg-parser.js src/grammar/tablescript.pegjs",
     "build:tracing-parser": "node_modules/.bin/pegjs --trace --cache --output src/parser/peg-parser.js src/grammar/tablescript.pegjs",
     "lint": "node_modules/.bin/eslint src",
-    "test": "mocha --require babel-core/register --require babel-polyfill test/**/*.js",
+    "test": "mocha --require babel-core/register --require babel-polyfill src/**/*.test.js",
     "test:watch": "mocha --watch --require babel-core/register --require babel-polyfill test/**/*.js"
   },
   "author": {

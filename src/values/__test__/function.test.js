@@ -20,9 +20,9 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { valueTypes } from '../../src/values/types';
-import { createNumericValue } from '../../src/values/numeric';
-import { createNativeFunctionValue, createFunctionValue } from '../../src/values/function';
+import { valueTypes } from '../types';
+import { createNumericValue } from '../numeric';
+import { createNativeFunctionValue, createFunctionValue } from '../function';
 
 describe('function', () => {
   describe('createNativeFunctionValue', () => {

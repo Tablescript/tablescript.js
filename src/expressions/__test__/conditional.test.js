@@ -20,7 +20,7 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { createConditionalExpression } from '../../src/expressions/conditional';
+import { createConditionalExpression } from '../conditional';
 
 describe('createConditionalExpression', () => {
   describe('evaluate', () => {

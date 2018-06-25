@@ -20,9 +20,9 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { createStringValue } from '../../src/values/string';
-import { createNumericValue } from '../../src/values/numeric';
-import { valueTypes } from '../../src/values/types';
+import { createStringValue } from '../string';
+import { createNumericValue } from '../numeric';
+import { valueTypes } from '../types';
 
 describe('string value', () => {
   let value;
