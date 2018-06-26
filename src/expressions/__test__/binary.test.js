@@ -23,6 +23,9 @@ const expect = chai.expect;
 import { valueTypes, valueTypeName } from '../../values/types';
 import { createBinaryExpression } from '../binary';
 import { isBooleanValue, isNumericValue, isStringValue } from '../../__test__/util';
+import { createStringValue } from '../../values/string';
+import { createNumericValue } from '../../values/numeric';
+import { createBooleanValue } from '../../values/boolean';
 
 describe('createBinaryExpression', () => {
 
@@ -214,30 +217,24 @@ describe('createBinaryExpression', () => {
     describe('-', () => {
       it('throws if the left value cannot be converted to a number', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => { throw new Error('Something went wrong'); }
-          })
+          evaluate: () => createStringValue('Not subtractable'),
         };
         const mockRightExpression = {
           evaluate: () => undefined
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '-', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot subtract these values');
       });
 
       it('throws if the right value cannot be converted to a number', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => 9
-          })
+          evaluate: () => createNumericValue(9),
         };
         const mockRightExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => { throw new Error('Something went wrong'); }
-          })
+          evaluate: () => createStringValue('Not subtractable'),
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '-', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot subtract these values');
       });
 
       describe('when both values are numeric', () => {
@@ -245,14 +242,10 @@ describe('createBinaryExpression', () => {
 
         beforeEach(() => {
           const mockLeftExpression = {
-            evaluate: () => ({
-              asNativeNumber: () => 9
-            })
+            evaluate: () => createNumericValue(9),
           };
           const mockRightExpression = {
-            evaluate: () => ({
-              asNativeNumber: () => 3
-            })
+            evaluate: () => createNumericValue(3),
           };
           const expression = createBinaryExpression({}, mockLeftExpression, '-', mockRightExpression);
           result = expression.evaluate();
@@ -267,30 +260,24 @@ describe('createBinaryExpression', () => {
     describe('*', () => {
       it('throws if the left value cannot be converted to a number', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => { throw new Error('Something went wrong'); }
-          })
+          evaluate: () => createBooleanValue(true),
         };
         const mockRightExpression = {
           evaluate: () => undefined
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '*', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot multiply these values');
       });
 
       it('throws if the right value cannot be converted to a number', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => 9
-          })
+          evaluate: () => createNumericValue(9),
         };
         const mockRightExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => { throw new Error('Something went wrong'); }
-          })
+          evaluate: () => createBooleanValue(true),
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '*', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot multiply these values');
       });
 
       describe('when both values are numeric', () => {
@@ -298,14 +285,10 @@ describe('createBinaryExpression', () => {
 
         beforeEach(() => {
           const mockLeftExpression = {
-            evaluate: () => ({
-              asNativeNumber: () => 9
-            })
+            evaluate: () => createNumericValue(9),
           };
           const mockRightExpression = {
-            evaluate: () => ({
-              asNativeNumber: () => 3
-            })
+            evaluate: () => createNumericValue(3),
           };
           const expression = createBinaryExpression({}, mockLeftExpression, '*', mockRightExpression);
           result = expression.evaluate();
@@ -468,13 +451,12 @@ describe('createBinaryExpression', () => {
     });
 
     it('throws when given an unrecognized operator', () => {
-      const expression = createBinaryExpression({}, undefined, 'not defined', undefined);
-      return expect(expression.evaluate()).to.eventually.be.rejectedWith('Invalid operator not defined');
+      expect(() => createBinaryExpression({}, undefined, 'not defined', undefined)).to.throw('Invalid operator not defined');
     });
   });
 
   it('throws when evaluated as lhs', () => {
-    const expression = createBinaryExpression({}, {}, '', {});
-    return expect(expression.evaluateAsLeftHandSide()).to.eventually.be.rejectedWith('Cannot assign to binary expression');
+    const expression = createBinaryExpression({}, {}, 'or', {});
+    expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to binary expression');
   });
 });

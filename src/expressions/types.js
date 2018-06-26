@@ -28,6 +28,7 @@ export const expressionTypes = {
   VARIABLE: Symbol('VARIABLE'),
   TABLE: Symbol('TABLE'),
   ASSIGNMENT: Symbol('ASSIGNMENT'),
+  BINARY: Symbol('BINARY'),
 };
 
 export const expressionTypeName = type => {
@@ -56,6 +57,8 @@ export const expressionTypeName = type => {
       return 'table';
     case expressionTypes.ASSIGNMENT:
       return 'assignment';
+    case expressionTypes.BINARY:
+      return 'binary';
     default:
       return '<TYPE UNSET>';
   }
