@@ -15,39 +15,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { throwRuntimeError } from '../error';
 import { defaultValue } from './default';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 
-const toKeyValuePair = formalParameters => (value, index) => ({ [formalParameters[index]]: value });
+const toKeyValuePair = formalParameters => (value, index) => ({
+  [formalParameters[index]]: value
+});
+
 const keyPairsToObject = (result, pair) => ({
   ...result,
   ...pair
 });
 
-const parameterConverter = formalParameters => calledParameters => {
-  return calledParameters
-    .map(toKeyValuePair(formalParameters))
-    .reduce(keyPairsToObject, {});
-};
+const parameterConverter = formalParameters => calledParameters => calledParameters
+  .map(toKeyValuePair(formalParameters))
+  .reduce(keyPairsToObject, {});
 
 export const createNativeFunctionValue = (formalParameters, f) => {
   const parametersToArguments = parameterConverter(formalParameters);
 
   const asNativeString = () => 'function(native)';
   const asNativeBoolean = () => true;
-  const equals = other => false;
-  const asString = context => createStringValue(asNativeString(context));
-  const asBoolean = context => createBooleanValue(asNativeBoolean(context));
-  const callFunction = async (context, scope, parameters) => {
-    const localScope = {
-      ...scope,
-      ...parametersToArguments(parameters)
-    };
-    return await f(context, localScope);
-  };
+  const equals = () => false;
+  const asString = R.pipe(asNativeString, createStringValue);
+  const asBoolean = R.pipe(asNativeBoolean, createBooleanValue);
+  const callFunction = async (context, scope, parameters) => await f(context, parametersToArguments(parameters));
 
   return {
     ...defaultValue(valueTypes.FUNCTION, asNativeString),
@@ -65,9 +61,9 @@ export const createFunctionValue = (formalParameters, body, closure) => {
 
   const asNativeString = () => 'function';
   const asNativeBoolean = () => true;
-  const equals = other => false;
-  const asString = context => createStringValue(asNativeString(context));
-  const asBoolean = context => createBooleanValue(asNativeBoolean(context));
+  const equals = () => false;
+  const asString = R.pipe(asNativeString, createStringValue);
+  const asBoolean = R.pipe(asNativeBoolean, createBooleanValue);
   const callFunction = async (context, scope, parameters) => {
     const localScope = {
       ...closure,

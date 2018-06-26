@@ -132,14 +132,14 @@ describe('function', () => {
 
         it('overrides calling scope with closure scope', () => {
           value.callFunction({}, { callingScope: 12 }, []);
-          expect(calledScope).to.eql({ callingScope: 12 });
+          expect(calledScope).to.eql({});
         });
       });
 
       describe('when called with no parameters', () => {
         it('calls evaluate with proper scope', () => {
           value.callFunction({}, { callingScope: 12 }, []);
-          expect(calledScope).to.eql({ callingScope: 12 });
+          expect(calledScope).to.eql({});
         });
       });
 
@@ -180,14 +180,14 @@ describe('function', () => {
       describe('when called with no parameters', () => {
         it('calls evaluate with proper scope', () => {
           value.callFunction({}, { callingScope: 12 }, []);
-          expect(calledScope).to.eql({ callingScope: 12 });
+          expect(calledScope).to.eql({});
         });
       });
 
       describe('when called with the correct number of parameters', () => {
         it('calls evaluate with proper scope', () => {
           value.callFunction({}, { callingScope: 12 }, ['I have a ham radio', 12]);
-          expect(calledScope).to.eql({ callingScope: 12, a: 'I have a ham radio', b: 12 });
+          expect(calledScope).to.eql({ a: 'I have a ham radio', b: 12 });
         });
       });
 
