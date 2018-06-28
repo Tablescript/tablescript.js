@@ -17,7 +17,6 @@
 
 import { defaultValue } from './default';
 import { valueTypes } from './types';
-import { createNumericValue } from './numeric';
 import { createStringValue } from './string';
 
 export const createBooleanValue = value => {
@@ -26,6 +25,8 @@ export const createBooleanValue = value => {
   const nativeEquals = (context, other) => value === other.asNativeBoolean(context);
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = () => createBooleanValue(value);
+  const equals = (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
+  const notEquals = (context, otherValue) => createBooleanValue(!nativeEquals(context, otherValue));
 
   return {
     ...defaultValue(valueTypes.BOOLEAN, asNativeBoolean),
@@ -34,11 +35,7 @@ export const createBooleanValue = value => {
     nativeEquals,
     asString,
     asBoolean,
-    equals: (context, otherValue) => {
-      return createBooleanValue(nativeEquals(context, otherValue));
-    },
-    notEquals: (context, otherValue) => {
-      return createBooleanValue(!nativeEquals(context, otherValue));
-    },
+    equals,
+    notEquals,
   };
 };

@@ -62,6 +62,7 @@ export const createTableValue = (formalParameters, entries, closure) => {
     };
     return await rolledEntry.evaluate(localScope);
   };
+  const equals = () => createBooleanValue(false);
 
   return {
     ...defaultValue(valueTypes.TABLE, asNativeString),
@@ -73,6 +74,6 @@ export const createTableValue = (formalParameters, entries, closure) => {
     asArray,
     getElement,
     callFunction,
-    equals: () => createBooleanValue(false),
+    equals,
   };
 };

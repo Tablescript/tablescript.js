@@ -61,6 +61,9 @@ export const createObjectValue = o => {
   const setProperty = (context, name, value) => {
     o[name.asNativeString(context)] = value;
   };
+  const equals = (context, otherValue) => {
+    return createBooleanValue(nativeEquals(context, otherValue));
+  };
 
   return {
     ...defaultValue(valueTypes.OBJECT, asNativeObject),
@@ -73,8 +76,6 @@ export const createObjectValue = o => {
     asObject,
     getProperty,
     setProperty,
-    equals: (context, otherValue) => {
-      return createBooleanValue(nativeEquals(context, otherValue));
-    },
+    equals,
   };
 };

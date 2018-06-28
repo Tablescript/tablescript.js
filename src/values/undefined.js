@@ -16,26 +16,27 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { valueTypes } from './types';
-import { defaultValue } from './default';
+import { createValue } from './default';
 import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 
-export const createUndefined = () => {
-  const asNativeValue = () => undefined;
-  const asNativeString = () => 'undefined';
-  const asNativeBoolean = () => false;
-  const nativeEquals = (context, other) => other.type === valueTypes.UNDEFINED;
-  const asString = context => createStringValue(asNativeString(context));
-  const asBoolean = context => createBooleanValue(asNativeBoolean(context));
+const asNativeValue = () => undefined;
+const asNativeString = () => 'undefined';
+const asNativeBoolean = () => false;
+const nativeEquals = (context, other) => other.type === valueTypes.UNDEFINED;
+const asString = context => createStringValue(asNativeString(context));
+const asBoolean = context => createBooleanValue(asNativeBoolean(context));
+const equals = (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
 
-  return {
-    ...defaultValue(valueTypes.UNDEFINED),
-    asNativeValue,
+export const createUndefined = () => createValue(
+  valueTypes.UNDEFINED,
+  asNativeValue,
+  {
     asNativeString,
     asNativeBoolean,
     nativeEquals,
     asString,
     asBoolean,
-    equals: (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue)),
-  };
-};
+    equals,
+  }
+);

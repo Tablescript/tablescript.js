@@ -29,6 +29,37 @@ export const createNumericValue = value => {
   const asNumber = context => createNumericValue(asNativeNumber(context));
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
+  const add = (context, otherValue) => {
+    return createNumericValue(asNativeNumber(context) + otherValue.asNativeNumber(context));
+  };
+  const subtract = (context, otherValue) => {
+    return createNumericValue(asNativeNumber(context) - otherValue.asNativeNumber(context));
+  };
+  const multiplyBy = (context, otherValue) => {
+    return createNumericValue(asNativeNumber(context) * otherValue.asNativeNumber(context));
+  };
+  const divideBy = (context, otherValue) => {
+    if (otherValue.asNativeNumber(context) === 0) {
+      throwRuntimeError('Divide by zero', context);
+    }
+    return createNumericValue(asNativeNumber(context) / otherValue.asNativeNumber(context));
+  };
+  const modulo = (context, otherValue) => {
+    if (otherValue.asNativeNumber(context) === 0) {
+      throwRuntimeError('Divide by zero', context);
+    }
+    return createNumericValue(asNativeNumber(context) % otherValue.asNativeNumber(context));
+  };
+  const equals = (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
+  const notEquals = (context, otherValue) => createBooleanValue(!nativeEquals(context, otherValue));
+  const lessThan = (context, otherValue) => {
+    return createBooleanValue(asNativeNumber(context) < otherValue.asNativeNumber(context));
+  };
+  const greaterThan = (context, otherValue) => {
+    return createBooleanValue(asNativeNumber(context) > otherValue.asNativeNumber(context));
+  };
+  const lessThanOrEquals = (context, otherValue) => createBooleanValue(!greaterThan(context, otherValue));
+  const greaterThanOrEquals = (context, otherValue) => createBooleanValue(!lessThan(context, otherValue));
 
   return {
     ...defaultValue(valueTypes.NUMBER, asNativeNumber),
@@ -39,44 +70,16 @@ export const createNumericValue = value => {
     asNumber,
     asString,
     asBoolean,
-    add: (context, otherValue) => {
-      return createNumericValue(asNativeNumber(context) + otherValue.asNativeNumber(context));
-    },
-    subtract: (context, otherValue) => {
-      return createNumericValue(asNativeNumber(context) - otherValue.asNativeNumber(context));
-    },
-    multiplyBy: (context, otherValue) => {
-      return createNumericValue(asNativeNumber(context) * otherValue.asNativeNumber(context));
-    },
-    divideBy: (context, otherValue) => {
-      if (otherValue.asNativeNumber(context) === 0) {
-        throwRuntimeError('Divide by zero', context);
-      }
-      return createNumericValue(asNativeNumber(context) / otherValue.asNativeNumber(context));
-    },
-    modulo: (context, otherValue) => {
-      if (otherValue.asNativeNumber(context) === 0) {
-        throwRuntimeError('Divide by zero', context);
-      }
-      return createNumericValue(asNativeNumber(context) % otherValue.asNativeNumber(context));
-    },
-    equals: (context, otherValue) => {
-      return createBooleanValue(nativeEquals(context, otherValue));
-    },
-    notEquals: (context, otherValue) => {
-      return createBooleanValue(!nativeEquals(context, otherValue));
-    },
-    lessThan: (context, otherValue) => {
-      return createBooleanValue(asNativeNumber(context) < otherValue.asNativeNumber(context));
-    },
-    greaterThan: (context, otherValue) => {
-      return createBooleanValue(asNativeNumber(context) > otherValue.asNativeNumber(context));
-    },
-    lessThanOrEquals: (context, otherValue) => {
-      return createBooleanValue(!greaterThan(context, otherValue));
-    },
-    greatThanOrEquals: (context, otherValue) => {
-      return createBooleanValue(!lessThan(context, otherValue));
-    },
+    add,
+    subtract,
+    multiplyBy,
+    divideBy,
+    modulo,
+    equals,
+    notEquals,
+    lessThan,
+    greaterThan,
+    lessThanOrEquals,
+    greaterThanOrEquals,
   };
 };

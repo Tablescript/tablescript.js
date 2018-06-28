@@ -141,6 +141,16 @@ export const createStringValue = value => {
     length: createNumericValue(value.length),
   };
 
+  const add = (context, otherValue) => {
+    return createStringValue(asNativeString(context) + otherValue.asNativeString(context));
+  };
+  const multiplyBy = (context, otherValue) => {
+    return createStringValue(asNativeString().repeat(otherValue.asNativeNumber()));
+  };
+  const equals = (context, otherValue) => {
+    return createBooleanValue(nativeEquals(context, otherValue));
+  };
+
   return {
     ...defaultValue(valueTypes.STRING, asNativeString),
     asNativeString,
@@ -150,14 +160,8 @@ export const createStringValue = value => {
     asBoolean,
     getProperty,
     getElement,
-    add: (context, otherValue) => {
-      return createStringValue(asNativeString(context) + otherValue.asNativeString(context));
-    },
-    multiplyBy: (context, otherValue) => {
-      return createStringValue(asNativeString().repeat(otherValue.asNativeNumber()));
-    },
-    equals: (context, otherValue) => {
-      return createBooleanValue(nativeEquals(context, otherValue));
-    },
+    add,
+    multiplyBy,
+    equals,
   };
 };

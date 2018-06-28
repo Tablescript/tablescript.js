@@ -18,6 +18,37 @@
 import { valueTypeName } from './types';
 import { runtimeErrorThrower } from '../error';
 
+const defaultMethods = (nativeValueFunction, getTypeName) => ({
+  asNativeValue: nativeValueFunction,
+  asNativeNumber: runtimeErrorThrower(`Cannot cast ${getTypeName()} to number`),
+  asNativeString: runtimeErrorThrower(`Cannot cast ${getTypeName()} to string`),
+  asNativeBoolean: runtimeErrorThrower(`Cannot cast ${getTypeName()} to boolean`),
+  asNativeArray: runtimeErrorThrower(`Cannot cast ${getTypeName()} to array`),
+  asNativeObject: runtimeErrorThrower(`Cannot cast ${getTypeName()} to object`),
+  nativeEquals: runtimeErrorThrower(`${getTypeName()} equality unimplemented`),
+  asNumber: runtimeErrorThrower(`Cannot cast ${getTypeName()} to number`),
+  asString: runtimeErrorThrower(`Cannot cast ${getTypeName()} to string`),
+  asBoolean: runtimeErrorThrower(`Cannot cast ${getTypeName()} to boolean`),
+  asArray: runtimeErrorThrower(`Cannot cast ${getTypeName()} to array`),
+  asObject: runtimeErrorThrower(`Cannot cast ${getTypeName()} to object`),
+  getProperty: runtimeErrorThrower(`Cannot get property of ${getTypeName()}`),
+  setProperty: runtimeErrorThrower(`Cannot set property of ${getTypeName()}`),
+  getElement: runtimeErrorThrower(`Cannot get element of ${getTypeName()}`),
+  callFunction: runtimeErrorThrower(`${getTypeName()} is not callable`),
+  add: runtimeErrorThrower(`Cannot add to ${getTypeName()}`),
+  subtract: runtimeErrorThrower(`Cannot subtract from ${getTypeName()}`),
+  multiplyBy: runtimeErrorThrower(`Cannot multiply ${getTypeName()}`),
+  divideBy: runtimeErrorThrower(`Cannot divide ${getTypeName()}`),
+  modulo: runtimeErrorThrower(`Cannot modulo ${getTypeName()}`),
+  equals: runtimeErrorThrower(`Cannot determine equality with ${getTypeName()}`),
+});
+
+export const createValue = (type, nativeValueFunction, methods) => ({
+  type,
+  ...defaultMethods(nativeValueFunction, () => valueTypeName(type)),
+  ...methods,
+});
+
 export const defaultValue = (type, nativeValueFunction) => {
   const typeName = valueTypeName(type);
   

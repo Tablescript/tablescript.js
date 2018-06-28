@@ -183,6 +183,19 @@ export const createArrayValue = entries => {
     length: createNumericValue(entries.length),
   };
 
+  const add = (context, otherValue) => {
+    return createArrayValue([...entries, otherValue]);
+  };
+  const multiplyBy = (context, otherValue) => {
+    return createArrayValue(R.range(0, otherValue.asNativeNumber(context)).reduce((all,n) => ([...all, ...entries]), []));
+  };
+  const equals = (context, otherValue) => {
+    return createBooleanValue(nativeEquals(context, otherValue));
+  };
+  const notEquals = (context, otherValue) => {
+    return createBooleanValue(!nativeEquals(context, otherValue));
+  };
+
   return {
     ...defaultValue(valueTypes.ARRAY, asNativeArray),
     asNativeString,
@@ -195,18 +208,10 @@ export const createArrayValue = entries => {
     getProperty,
     setProperty,
     getElement,
-    add: (context, otherValue) => {
-      return createArrayValue([...entries, otherValue]);
-    },
-    multiplyBy: (context, otherValue) => {
-      return createArrayValue(R.range(0, otherValue.asNativeNumber(context)).reduce((all,n) => ([...all, ...entries]), []));
-    },
-    equals: (context, otherValue) => {
-      return createBooleanValue(nativeEquals(context, otherValue));
-    },
-    notEquals: (context, otherValue) => {
-      return createBooleanValue(!nativeEquals(context, otherValue));
-    },
+    add,
+    multiplyBy,
+    equals,
+    notEquals,
   };
 };
 
