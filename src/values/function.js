@@ -40,7 +40,7 @@ export const createNativeFunctionValue = (formalParameters, f) => {
 
   const asNativeString = () => 'function(native)';
   const asNativeBoolean = () => true;
-  const equals = () => false;
+  const nativeEquals = () => false;
   const asString = R.pipe(asNativeString, createStringValue);
   const asBoolean = R.pipe(asNativeBoolean, createBooleanValue);
   const callFunction = async (context, scope, parameters) => await f(context, parametersToArguments(parameters));
@@ -49,7 +49,7 @@ export const createNativeFunctionValue = (formalParameters, f) => {
     ...defaultValue(valueTypes.FUNCTION, asNativeString),
     asNativeString,
     asNativeBoolean,
-    equals,
+    nativeEquals,
     asString,
     asBoolean,
     callFunction,
@@ -61,7 +61,7 @@ export const createFunctionValue = (formalParameters, body, closure) => {
 
   const asNativeString = () => 'function';
   const asNativeBoolean = () => true;
-  const equals = () => false;
+  const nativeEquals = () => false;
   const asString = R.pipe(asNativeString, createStringValue);
   const asBoolean = R.pipe(asNativeBoolean, createBooleanValue);
   const callFunction = async (context, scope, parameters) => {
@@ -76,9 +76,10 @@ export const createFunctionValue = (formalParameters, body, closure) => {
     ...defaultValue(valueTypes.FUNCTION, asNativeString),
     asNativeString,
     asNativeBoolean,
-    equals,
+    nativeEquals,
     asString,
     asBoolean,
     callFunction,
+    equals: () => createBooleanValue(false),
   };
 };

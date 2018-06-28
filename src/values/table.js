@@ -33,7 +33,7 @@ export const createTableValue = (formalParameters, entries, closure) => {
 
   const asNativeString = () => 'table';
   const asNativeBoolean = () => true;
-  const equals = () => false;
+  const nativeEquals = () => false;
   const asString = () => createStringValue(asNativeString());
   const asBoolean = () => createBooleanValue(asNativeBoolean());
   const asArray = () => entries;
@@ -55,7 +55,6 @@ export const createTableValue = (formalParameters, entries, closure) => {
     const roll = randomNumber(die);
     const rolledEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
     const localScope = {
-      ...scope,
       ...closure,
       ...parametersToArguments(parameters),
       'roll': createNumericValue(roll),
@@ -68,11 +67,12 @@ export const createTableValue = (formalParameters, entries, closure) => {
     ...defaultValue(valueTypes.TABLE, asNativeString),
     asNativeString,
     asNativeBoolean,
-    equals,
+    nativeEquals,
     asString,
     asBoolean,
     asArray,
     getElement,
     callFunction,
+    equals: () => createBooleanValue(false),
   };
 };

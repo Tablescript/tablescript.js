@@ -24,7 +24,7 @@ export const createUndefined = () => {
   const asNativeValue = () => undefined;
   const asNativeString = () => 'undefined';
   const asNativeBoolean = () => false;
-  const equals = (context, other) => other.type === valueTypes.UNDEFINED;
+  const nativeEquals = (context, other) => other.type === valueTypes.UNDEFINED;
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
 
@@ -33,8 +33,9 @@ export const createUndefined = () => {
     asNativeValue,
     asNativeString,
     asNativeBoolean,
-    equals,
+    nativeEquals,
     asString,
     asBoolean,
+    equals: (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue)),
   };
 };

@@ -60,3 +60,6 @@ export const valueTypeName = type => {
       return '<TYPE UNSET>';
   }
 };
+
+export const isNumeric = o => o.type === valueTypes.NUMBER;
+export const isString = o => o.type === valueTypes.STRING;

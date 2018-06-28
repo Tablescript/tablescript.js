@@ -21,22 +21,24 @@ import { createNumericValue } from './numeric';
 import { createStringValue } from './string';
 
 export const createBooleanValue = value => {
-  const asNativeNumber = () => value ? 1 : 0;
   const asNativeString = () => value ? 'true' : 'false';
   const asNativeBoolean = () => value;
-  const equals = (context, other) => value === other.asNativeBoolean(context);
-  const asNumber = context => createNumericValue(asNativeNumber(context));
+  const nativeEquals = (context, other) => value === other.asNativeBoolean(context);
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = () => createBooleanValue(value);
 
   return {
     ...defaultValue(valueTypes.BOOLEAN, asNativeBoolean),
-    asNativeNumber,
     asNativeString,
     asNativeBoolean,
-    equals,
-    asNumber,
+    nativeEquals,
     asString,
     asBoolean,
+    equals: (context, otherValue) => {
+      return createBooleanValue(nativeEquals(context, otherValue));
+    },
+    notEquals: (context, otherValue) => {
+      return createBooleanValue(!nativeEquals(context, otherValue));
+    },
   };
 };

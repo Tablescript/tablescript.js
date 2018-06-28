@@ -50,11 +50,11 @@ describe('numeric value', () => {
 
     describe('equivalency', () => {
       it('is equal to its own value', () => {
-        expect(value.equals({}, createNumericValue(1))).to.be.true;
+        expect(value.nativeEquals({}, createNumericValue(1))).to.be.true;
       });
 
       it('is not equal to a different value', () => {
-        expect(value.equals({}, createNumericValue(99))).to.be.false;
+        expect(value.nativeEquals({}, createNumericValue(99))).to.be.false;
       });
     });
 

@@ -36,8 +36,8 @@ describe('string value', () => {
       expect(value.type).to.equal(valueTypes.STRING);
     });
 
-    it('has numeric value of NaN', () => {
-      expect(value.asNativeNumber()).to.be.NaN;
+    it('cannot be implicitly converted to number', () => {
+      expect(() => value.asNativeNumber()).to.throw('Cannot cast STRING to number');
     });
 
     it('has a string value of itself', () => {
@@ -50,11 +50,11 @@ describe('string value', () => {
 
     describe('equivalency', () => {
       it('is equal to the same string', () => {
-        expect(value.equals({}, createStringValue('I have a ham radio'))).to.be.true;
+        expect(value.nativeEquals({}, createStringValue('I have a ham radio'))).to.be.true;
       });
 
       it('is not equal to a different string', () => {
-        expect(value.equals({}, createStringValue('I do not have a ham radio'))).to.be.false;
+        expect(value.nativeEquals({}, createStringValue('I do not have a ham radio'))).to.be.false;
       });
     });
 
@@ -136,8 +136,8 @@ describe('string value', () => {
       expect(value.type).to.equal(valueTypes.STRING);
     });
 
-    it('has numeric value of NaN', () => {
-      expect(value.asNativeNumber()).to.equal(0);
+    it('cannot be implicitly converted to number', () => {
+      expect(() => value.asNativeNumber()).to.throw('Cannot cast STRING to number');
     });
 
     it('has a string value of itself', () => {
@@ -150,11 +150,11 @@ describe('string value', () => {
 
     describe('equivalency', () => {
       it('is equal to the same string', () => {
-        expect(value.equals({}, createStringValue(''))).to.be.true;
+        expect(value.nativeEquals({}, createStringValue(''))).to.be.true;
       });
 
       it('is not equal to a different string', () => {
-        expect(value.equals({}, createStringValue('I do not have a ham radio'))).to.be.false;
+        expect(value.nativeEquals({}, createStringValue('I do not have a ham radio'))).to.be.false;
       });
     });
 
@@ -218,8 +218,8 @@ describe('string value', () => {
       value = createStringValue('123');
     });
 
-    it('converts to a number', () => {
-      expect(value.asNativeNumber()).to.equal(123);
+    it('cannot convert implicitly to number', () => {
+      expect(() => value.asNativeNumber()).to.throw('Cannot cast STRING to number');
     });
   });
 });

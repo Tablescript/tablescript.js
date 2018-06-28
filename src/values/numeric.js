@@ -16,15 +16,16 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { defaultValue } from './default';
-import { valueTypes } from './types';
+import { valueTypes, isNumeric } from './types';
 import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
+import { throwRuntimeError } from '../error';
 
 export const createNumericValue = value => {
   const asNativeNumber = () => value;
   const asNativeString = () => value.toString();
   const asNativeBoolean = () => value == 0 ? false : true;
-  const equals = (context, other) => value === other.asNativeNumber(context);
+  const nativeEquals = (context, other) => isNumeric(other) && value === other.asNativeNumber(context);
   const asNumber = context => createNumericValue(asNativeNumber(context));
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
@@ -34,9 +35,48 @@ export const createNumericValue = value => {
     asNativeNumber,
     asNativeString,
     asNativeBoolean,
-    equals,
+    nativeEquals,
     asNumber,
     asString,
     asBoolean,
+    add: (context, otherValue) => {
+      return createNumericValue(asNativeNumber(context) + otherValue.asNativeNumber(context));
+    },
+    subtract: (context, otherValue) => {
+      return createNumericValue(asNativeNumber(context) - otherValue.asNativeNumber(context));
+    },
+    multiplyBy: (context, otherValue) => {
+      return createNumericValue(asNativeNumber(context) * otherValue.asNativeNumber(context));
+    },
+    divideBy: (context, otherValue) => {
+      if (otherValue.asNativeNumber(context) === 0) {
+        throwRuntimeError('Divide by zero', context);
+      }
+      return createNumericValue(asNativeNumber(context) / otherValue.asNativeNumber(context));
+    },
+    modulo: (context, otherValue) => {
+      if (otherValue.asNativeNumber(context) === 0) {
+        throwRuntimeError('Divide by zero', context);
+      }
+      return createNumericValue(asNativeNumber(context) % otherValue.asNativeNumber(context));
+    },
+    equals: (context, otherValue) => {
+      return createBooleanValue(nativeEquals(context, otherValue));
+    },
+    notEquals: (context, otherValue) => {
+      return createBooleanValue(!nativeEquals(context, otherValue));
+    },
+    lessThan: (context, otherValue) => {
+      return createBooleanValue(asNativeNumber(context) < otherValue.asNativeNumber(context));
+    },
+    greaterThan: (context, otherValue) => {
+      return createBooleanValue(asNativeNumber(context) > otherValue.asNativeNumber(context));
+    },
+    lessThanOrEquals: (context, otherValue) => {
+      return createBooleanValue(!greaterThan(context, otherValue));
+    },
+    greatThanOrEquals: (context, otherValue) => {
+      return createBooleanValue(!lessThan(context, otherValue));
+    },
   };
 };

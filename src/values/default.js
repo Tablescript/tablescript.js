@@ -29,7 +29,7 @@ export const defaultValue = (type, nativeValueFunction) => {
     asNativeBoolean: runtimeErrorThrower(`Cannot cast ${typeName} to boolean`),
     asNativeArray: runtimeErrorThrower(`Cannot cast ${typeName} to array`),
     asNativeObject: runtimeErrorThrower(`Cannot cast ${typeName} to object`),
-    equals: runtimeErrorThrower(`${typeName} equality unimplemented`),
+    nativeEquals: runtimeErrorThrower(`${typeName} equality unimplemented`),
     asNumber: runtimeErrorThrower(`Cannot cast ${typeName} to number`),
     asString: runtimeErrorThrower(`Cannot cast ${typeName} to string`),
     asBoolean: runtimeErrorThrower(`Cannot cast ${typeName} to boolean`),
@@ -39,5 +39,11 @@ export const defaultValue = (type, nativeValueFunction) => {
     setProperty: runtimeErrorThrower(`Cannot set property of ${typeName}`),
     getElement: runtimeErrorThrower(`Cannot get element of ${typeName}`),
     callFunction: runtimeErrorThrower(`${typeName} is not callable`),
+    add: runtimeErrorThrower(`Cannot add to ${typeName}`),
+    subtract: runtimeErrorThrower(`Cannot subtract from ${typeName}`),
+    multiplyBy: runtimeErrorThrower(`Cannot multiply ${typeName}`),
+    divideBy: runtimeErrorThrower(`Cannot divide ${typeName}`),
+    modulo: runtimeErrorThrower(`Cannot modulo ${typeName}`),
+    equals: runtimeErrorThrower(`Cannot determine equality with ${typeName}`),
   };
 };

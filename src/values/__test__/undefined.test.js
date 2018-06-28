@@ -53,11 +53,11 @@ describe('createUndefined', () => {
 
     describe('equality', () => {
       it('is equal to another undefined', () => {
-        expect(value.equals({}, createUndefined())).to.be.true;
+        expect(value.nativeEquals({}, createUndefined())).to.be.true;
       });
 
       it('is not equal to anything else', () => {
-        expect(value.equals({}, { type: 'anything else' })).to.be.false;
+        expect(value.nativeEquals({}, { type: 'anything else' })).to.be.false;
       });
     });
   });

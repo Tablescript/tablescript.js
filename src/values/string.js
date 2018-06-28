@@ -17,7 +17,7 @@
 
 import { throwRuntimeError } from '../error';
 import { defaultValue } from './default';
-import { valueTypes } from './types';
+import { valueTypes, isString } from './types';
 import { createBooleanValue } from './boolean';
 import { createNumericValue } from './numeric';
 import { createUndefined } from './undefined';
@@ -25,11 +25,9 @@ import { createArrayValue } from './array';
 import { createNativeFunctionValue } from './function';
 
 export const createStringValue = value => {
-  const asNativeNumber = () => Number(value);
   const asNativeString = () => value;
   const asNativeBoolean = () => value === '' ? false : true;
-  const equals = (context, other) => value === other.asNativeString(context);
-  const asNumber = context => createNumericValue(asNativeNumber(context));
+  const nativeEquals = (context, other) => isString(other) && value === other.asNativeString(context);
   const asString = context => createStringValue(asNativeString(context));
   const asBoolean = context => createBooleanValue(asNativeBoolean(context));
   const getProperty = (context, name) => {
@@ -145,14 +143,21 @@ export const createStringValue = value => {
 
   return {
     ...defaultValue(valueTypes.STRING, asNativeString),
-    asNativeNumber,
     asNativeString,
     asNativeBoolean,
-    equals,
-    asNumber,
+    nativeEquals,
     asString,
     asBoolean,
     getProperty,
     getElement,
+    add: (context, otherValue) => {
+      return createStringValue(asNativeString(context) + otherValue.asNativeString(context));
+    },
+    multiplyBy: (context, otherValue) => {
+      return createStringValue(asNativeString().repeat(otherValue.asNativeNumber()));
+    },
+    equals: (context, otherValue) => {
+      return createBooleanValue(nativeEquals(context, otherValue));
+    },
   };
 };

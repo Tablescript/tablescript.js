@@ -62,7 +62,7 @@ describe('array', () => {
 
     describe('equality', () => {
       it('is equal to the same non-empty array', () => {
-        expect(value.equals({}, nonEmptyArray())).to.be.true;
+        expect(value.nativeEquals({}, nonEmptyArray())).to.be.true;
       });
     });
 

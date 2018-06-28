@@ -160,7 +160,7 @@ describe('object value', () => {
 
     describe('equality', () => {
       it('is equal to an empty object', () => {
-        expect(value.equals({}, createObjectValue({}))).to.be.true;
+        expect(value.nativeEquals({}, createObjectValue({}))).to.be.true;
       });
     });
 

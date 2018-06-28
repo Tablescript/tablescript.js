@@ -53,7 +53,7 @@ describe('function', () => {
     });
 
     it('is not equal to anything', () => {
-      expect(value.equals()).to.be.false;
+      expect(value.nativeEquals()).to.be.false;
     });
 
     it('throws when converted to number', () => {
@@ -227,7 +227,7 @@ describe('function', () => {
     });
 
     it('is not equal to anything', () => {
-      expect(value.equals()).to.be.false;
+      expect(value.nativeEquals()).to.be.false;
     });
 
     it('throws when converted to number', () => {

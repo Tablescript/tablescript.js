@@ -59,6 +59,7 @@ try {
   }).catch(e => {
     if (e instanceof TablescriptError) {
       console.log(e.toString());
+      console.log(e.stack);
       if (e.trace) {
         console.log(e.trace);
       }

@@ -32,7 +32,7 @@ export const createArrayValue = entries => {
   const asNativeBoolean = () => true;
   const asNativeArray = context => entriesAsNativeValues(context, entries);
 
-  const equals = (context, other) => {
+  const nativeEquals = (context, other) => {
     if (other.type !== valueTypes.ARRAY) {
       return false;
     }
@@ -40,7 +40,7 @@ export const createArrayValue = entries => {
     if (otherEntries.length !== entries.length) {
       return false;
     }
-    return entries.reduce((result, entry, index) => result && entry.equals(context, otherEntries[index]), true);
+    return entries.reduce((result, entry, index) => result && entry.nativeEquals(context, otherEntries[index]), true);
   };
 
   const asString = context => createStringValue(asNativeString(context));
@@ -112,7 +112,7 @@ export const createArrayValue = entries => {
   const includes = createNativeFunctionValue(['value'], (context, scope) => {
     const value = scope['value'];
     if (value) {
-      return createBooleanValue(entries.reduce((result, entry) => result || entry.equals(context, value), false));
+      return createBooleanValue(entries.reduce((result, entry) => result || entry.nativeEquals(context, value), false));
     }
     return createUndefined();
   });
@@ -120,7 +120,7 @@ export const createArrayValue = entries => {
   const indexOf = createNativeFunctionValue(['value'], (context, scope) => {
     const value = scope['value'];
     for (let i = 0; i < entries.length; i++) {
-      if (entries[i].equals(context, value)) {
+      if (entries[i].nativeEquals(context, value)) {
         return createNumericValue(i);
       }
     }
@@ -188,13 +188,25 @@ export const createArrayValue = entries => {
     asNativeString,
     asNativeBoolean,
     asNativeArray,
-    equals,
+    nativeEquals,
     asString,
     asBoolean,
     asArray,
     getProperty,
     setProperty,
     getElement,
+    add: (context, otherValue) => {
+      return createArrayValue([...entries, otherValue]);
+    },
+    multiplyBy: (context, otherValue) => {
+      return createArrayValue(R.range(0, otherValue.asNativeNumber(context)).reduce((all,n) => ([...all, ...entries]), []));
+    },
+    equals: (context, otherValue) => {
+      return createBooleanValue(nativeEquals(context, otherValue));
+    },
+    notEquals: (context, otherValue) => {
+      return createBooleanValue(!nativeEquals(context, otherValue));
+    },
   };
 };
 

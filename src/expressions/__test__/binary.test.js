@@ -36,9 +36,7 @@ describe('createBinaryExpression', () => {
 
         beforeEach(() => {
           const mockLeftExpression = {
-            evaluate: () => ({
-              asNativeBoolean: () => true
-            })
+            evaluate: () => createBooleanValue(true),
           };
           const expression = createBinaryExpression({}, mockLeftExpression, 'or', undefined);
           result = expression.evaluate({});
@@ -50,24 +48,29 @@ describe('createBinaryExpression', () => {
       });
 
       describe('when left expression evaluates to false', () => {
-        let result;
+        let mockLeftExpression;
 
         beforeEach(() => {
-          const mockLeftExpression = {
-            evaluate: () => ({
-              asNativeBoolean: () => false
-            })
+          mockLeftExpression = {
+            evaluate: () => createBooleanValue(false),
           };
-          const mockRightExpression = {
-            evaluate: () => ({
-              asNativeBoolean: () => false
-            })
-          };
-          const expression = createBinaryExpression({}, mockLeftExpression, 'or', mockRightExpression);
-          result = expression.evaluate({});
         });
 
-        it('returns boolean false', () => {
+        it('returns true if right expression is true', () => {
+          const mockRightExpression = {
+            evaluate: () => createBooleanValue(true),
+          };
+          const expression = createBinaryExpression({}, mockLeftExpression, 'or', mockRightExpression);
+          const result = expression.evaluate({});
+          return expect(result).to.eventually.satisfy(isBooleanValue(true));
+        });
+
+        it('returns false if right expression is false', () => {
+          const mockRightExpression = {
+            evaluate: () => createBooleanValue(false),
+          };
+          const expression = createBinaryExpression({}, mockLeftExpression, 'or', mockRightExpression);
+          const result = expression.evaluate({});
           return expect(result).to.eventually.satisfy(isBooleanValue(false));
         });
       });
@@ -93,25 +96,30 @@ describe('createBinaryExpression', () => {
       });
 
       describe('when left expression evaluates to true', () => {
-        let result;
+        let mockLeftExpression;
 
         beforeEach(() => {
-          const mockLeftExpression = {
-            evaluate: () => ({
-              asNativeBoolean: () => true
-            })
+          mockLeftExpression = {
+            evaluate: () => createBooleanValue(true),
           };
-          const mockRightExpression = {
-            evaluate: () => ({
-              asNativeBoolean: () => true
-            })
-          };
-          const expression = createBinaryExpression({}, mockLeftExpression, 'or', mockRightExpression);
-          result = expression.evaluate({});
         });
 
-        it('returns the right expression value', () => {
+        it('returns true if the right expression is true', () => {
+          const mockRightExpression = {
+            evaluate: () => createBooleanValue(true),
+          };
+          const expression = createBinaryExpression({}, mockLeftExpression, 'and', mockRightExpression);
+          const result = expression.evaluate({});
           return expect(result).to.eventually.satisfy(isBooleanValue(true));
+        });
+
+        it('returns false if the right expression is false', () => {
+          const mockRightExpression = {
+            evaluate: () => createBooleanValue(false),
+          };
+          const expression = createBinaryExpression({}, mockLeftExpression, 'and', mockRightExpression);
+          const result = expression.evaluate({});
+          return expect(result).to.eventually.satisfy(isBooleanValue(false));
         });
       });
     });
@@ -122,10 +130,7 @@ describe('createBinaryExpression', () => {
 
         beforeEach(() => {
           mockLeftExpression = {
-            evaluate: () => ({
-              type: valueTypes.STRING,
-              asNativeString: () => 'left value'
-            })
+            evaluate: () => createStringValue('left value'),
           };
         });
 
@@ -134,9 +139,7 @@ describe('createBinaryExpression', () => {
 
           beforeEach(() => {
             const mockRightExpression = {
-              evaluate: () => ({
-                asNativeString: () => 'right value'
-              })
+              evaluate: () => createStringValue('right value'),
             };
             const expression = createBinaryExpression({}, mockLeftExpression, '+', mockRightExpression);
             result = expression.evaluate();
@@ -163,10 +166,7 @@ describe('createBinaryExpression', () => {
 
         beforeEach(() => {
           mockLeftExpression = {
-            evaluate: () => ({
-              type: valueTypes.NUMBER,
-              asNativeNumber: () => 12
-            })
+            evaluate: () => createNumericValue(12),
           };
         });
 
@@ -175,10 +175,7 @@ describe('createBinaryExpression', () => {
 
           beforeEach(() => {
             const mockRightExpression = {
-              evaluate: () => ({
-                type: valueTypes.NUMBER,
-                asNativeNumber: () => 9
-              })
+              evaluate: () => createNumericValue(9),
             };
             const expression = createBinaryExpression({}, mockLeftExpression, '+', mockRightExpression);
             result = expression.evaluate({});
@@ -202,15 +199,13 @@ describe('createBinaryExpression', () => {
 
       it('throws when left side is not a string or a number', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            type: valueTypes.UNDEFINED
-          })
+          evaluate: () => createBooleanValue(true),
         };
         const mockRightExpression = {
           evaluate: () => undefined
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '+', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot add these values');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot add to BOOLEAN');
       });
     });
 
@@ -223,7 +218,7 @@ describe('createBinaryExpression', () => {
           evaluate: () => undefined
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '-', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot subtract these values');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot subtract from STRING');
       });
 
       it('throws if the right value cannot be converted to a number', () => {
@@ -234,7 +229,7 @@ describe('createBinaryExpression', () => {
           evaluate: () => createStringValue('Not subtractable'),
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '-', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot subtract these values');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot cast STRING to number');
       });
 
       describe('when both values are numeric', () => {
@@ -266,7 +261,7 @@ describe('createBinaryExpression', () => {
           evaluate: () => undefined
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '*', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot multiply these values');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot multiply BOOLEAN');
       });
 
       it('throws if the right value cannot be converted to a number', () => {
@@ -277,7 +272,7 @@ describe('createBinaryExpression', () => {
           evaluate: () => createBooleanValue(true),
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '*', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot multiply these values');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot cast BOOLEAN to number');
       });
 
       describe('when both values are numeric', () => {
@@ -303,44 +298,32 @@ describe('createBinaryExpression', () => {
     describe('/', () => {
       it('throws if the left value cannot be converted to a number', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => { throw new Error('Something went wrong'); }
-          })
+          evaluate: () => createBooleanValue(true),
         };
         const mockRightExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => 9
-          })
+          evaluate: () => undefined,
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '/', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot divide BOOLEAN');
       });
 
       it('throws if the right value cannot be converted to a number', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => 9
-          })
+          evaluate: () => createNumericValue(9),
         };
         const mockRightExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => { throw new Error('Something went wrong'); }
-          })
+          evaluate: () => createBooleanValue(true),
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '/', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot cast BOOLEAN to number');
       });
 
       it('throws if the right value is 0', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => 9
-          })
+          evaluate: () => createNumericValue(9),
         };
         const mockRightExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => 0
-          })
+          evaluate: () => createNumericValue(0),
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '/', mockRightExpression);
         return expect(expression.evaluate()).to.eventually.be.rejectedWith('Divide by zero');
@@ -351,14 +334,10 @@ describe('createBinaryExpression', () => {
 
         beforeEach(() => {
           const mockLeftExpression = {
-            evaluate: () => ({
-              asNativeNumber: () => 27
-            })
+            evaluate: () => createNumericValue(27),
           };
           const mockRightExpression = {
-            evaluate: () => ({
-              asNativeNumber: () => 9
-            })
+            evaluate: () => createNumericValue(9),
           };
           const expression = createBinaryExpression({}, mockLeftExpression, '/', mockRightExpression);
           result = expression.evaluate();
@@ -373,44 +352,32 @@ describe('createBinaryExpression', () => {
     describe('%', () => {
       it('throws if the left value cannot be converted to a number', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => { throw new Error('Something went wrong'); }
-          })
+          evaluate: () => createBooleanValue(true),
         };
         const mockRightExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => 9
-          })
+          evaluate: () => undefined,
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '%', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot modulo BOOLEAN');
       });
 
       it('throws if the right value cannot be converted to a number', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => 9
-          })
+          evaluate: () => createNumericValue(9),
         };
         const mockRightExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => { throw new Error('Something went wrong'); }
-          })
+          evaluate: () => createBooleanValue(true),
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '%', mockRightExpression);
-        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Something went wrong');
+        return expect(expression.evaluate()).to.eventually.be.rejectedWith('Cannot cast BOOLEAN to number');
       });
 
       it('throws if the right value is 0', () => {
         const mockLeftExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => 9
-          })
+          evaluate: () => createNumericValue(9),
         };
         const mockRightExpression = {
-          evaluate: () => ({
-            asNativeNumber: () => 0
-          })
+          evaluate: () => createNumericValue(0),
         };
         const expression = createBinaryExpression({}, mockLeftExpression, '%', mockRightExpression);
         return expect(expression.evaluate()).to.eventually.be.rejectedWith('Divide by zero');
@@ -421,14 +388,10 @@ describe('createBinaryExpression', () => {
 
         beforeEach(() => {
           const mockLeftExpression = {
-            evaluate: () => ({
-              asNativeNumber: () => 27
-            })
+            evaluate: () => createNumericValue(27),
           };
           const mockRightExpression = {
-            evaluate: () => ({
-              asNativeNumber: () => 5
-            })
+            evaluate: () => createNumericValue(5),
           };
           const expression = createBinaryExpression({}, mockLeftExpression, '%', mockRightExpression);
           result = expression.evaluate();
@@ -441,10 +404,10 @@ describe('createBinaryExpression', () => {
     });
 
     describe('==', () => {
-      it('defers to the equals method', () => {
+      xit('defers to the nativeEquals method', () => {
         const leftExpression = {
           evaluate: () => ({
-            equals: () => true
+            nativeEquals: () => true
           })
         };
       });

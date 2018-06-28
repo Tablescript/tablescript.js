@@ -15,8 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-export class TablescriptError {
+export class TablescriptError extends Error {
   constructor(name, message, context, trace) {
+    super(message);
     this.name = name;
     this.message = message;
     this.context = context;

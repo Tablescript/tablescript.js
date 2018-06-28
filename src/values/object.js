@@ -18,8 +18,7 @@
 import { defaultValue } from './default';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
-import { createArrayValue } from './array';
-import { createNativeFunctionValue } from './function';
+import { createBooleanValue } from './boolean';
 import { createUndefined } from './undefined';
 
 export const createObjectValue = o => {
@@ -33,7 +32,7 @@ export const createObjectValue = o => {
   const asNativeString = context => JSON.stringify(propertiesAsNativeValues(context, o));
   const asNativeBoolean = () => true;
   const asNativeObject = context => propertiesAsNativeValues(context, o);
-  const equals = (context, other) => {
+  const nativeEquals = (context, other) => {
     if (other.type !== valueTypes.OBJECT) {
       return false;
     }
@@ -45,7 +44,7 @@ export const createObjectValue = o => {
       if (!otherProperties[key]) {
         return false;
       }
-      return result && o[key].equals(context, otherProperties[key]);
+      return result && o[key].nativeEquals(context, otherProperties[key]);
     }, true);
   };
 
@@ -68,11 +67,14 @@ export const createObjectValue = o => {
     asNativeString,
     asNativeBoolean,
     asNativeObject,
-    equals,
+    nativeEquals,
     asString,
     asBoolean,
     asObject,
     getProperty,
     setProperty,
+    equals: (context, otherValue) => {
+      return createBooleanValue(nativeEquals(context, otherValue));
+    },
   };
 };

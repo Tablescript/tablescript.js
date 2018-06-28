@@ -36,8 +36,8 @@ describe('boolean', () => {
       expect(value.type).to.equal(valueTypes.BOOLEAN);
     });
 
-    it('has a numeric value of 1', () => {
-      expect(value.asNativeNumber()).to.equal(1);
+    it('cannot convert implicitly to number', () => {
+      expect(() => value.asNativeNumber()).to.throw('Cannot cast BOOLEAN to number');
     });
 
     it('has a string value of "true"', () => {
@@ -46,11 +46,11 @@ describe('boolean', () => {
 
     describe('equivalency', () => {
       it('equals another value that is also true', () => {
-        expect(value.equals({}, createBooleanValue(true))).to.be.true;
+        expect(value.nativeEquals({}, createBooleanValue(true))).to.be.true;
       });
 
       it('does not equal another value that is not true', () => {
-        expect(value.equals({}, createBooleanValue(false))).to.be.false;
+        expect(value.nativeEquals({}, createBooleanValue(false))).to.be.false;
       });
     });
 
@@ -82,8 +82,8 @@ describe('boolean', () => {
       expect(value.type).to.equal(valueTypes.BOOLEAN);
     });
 
-    it('has a numeric value of 0', () => {
-      expect(value.asNativeNumber()).to.equal(0);
+    it('cannot convert implicitly to number', () => {
+      expect(() => value.asNativeNumber()).to.throw('Cannot cast BOOLEAN to number');
     });
 
     it('has a string value of "false"', () => {
@@ -92,11 +92,11 @@ describe('boolean', () => {
 
     describe('equivalency', () => {
       it('equals another value that is also false', () => {
-        expect(value.equals({}, createBooleanValue(false))).to.be.true;
+        expect(value.nativeEquals({}, createBooleanValue(false))).to.be.true;
       });
 
       it('does not equal another value that is not false', () => {
-        expect(value.equals({}, createBooleanValue(true))).to.be.false;
+        expect(value.nativeEquals({}, createBooleanValue(true))).to.be.false;
       });
     });
 
