@@ -17,7 +17,7 @@
 
 import { createBooleanValue } from '../values/boolean';
 
-export const or = async (context, leftValue, rightExpression, scope) => {
+const or = async (context, leftValue, rightExpression, scope) => {
   if (leftValue.asNativeBoolean(context)) {
     return createBooleanValue(true);
   }
@@ -25,7 +25,7 @@ export const or = async (context, leftValue, rightExpression, scope) => {
   return createBooleanValue(rightValue.asNativeBoolean(context));
 };
 
-export const and = async (context, leftValue, rightExpression, scope) => {
+const and = async (context, leftValue, rightExpression, scope) => {
   if (!leftValue.asNativeBoolean(context)) {
     return createBooleanValue(false);
   }
@@ -45,28 +45,29 @@ const greaterThan = (context, leftValue, rightValue) => leftValue.greaterThan(co
 const lessThanOrEquals = (context, leftValue, rightValue) => leftValue.lessThanOrEquals(context, rightValue);
 const greaterThanOrEquals = (context, leftValue, rightValue) => leftValue.lessThan(context, rightValue);
 
-const evaluateLeft = f => (context, leftExpression, rightExpression) => async scope => {
+const evaluateLeft = f => async (context, leftExpression, rightExpression, scope) => {
   const leftValue = await leftExpression.evaluate(scope);
   return f(context, leftValue, rightExpression, scope);
 };
 
-const evaluateBoth = f => (context, leftExpression, rightExpression) => async scope => {
+const evaluateBoth = f => async (context, leftExpression, rightExpression, scope) => {
   const leftValue = await leftExpression.evaluate(scope);
   const rightValue = await rightExpression.evaluate(scope);
   return f(context, leftValue, rightValue);
 };
 
-export const orOperator = evaluateLeft(or);
-export const andOperator = evaluateLeft(and);
-
-export const plusOperator = evaluateBoth(plus);
-export const minusOperator = evaluateBoth(minus);
-export const multiplyOperator = evaluateBoth(multiply);
-export const divideOperator = evaluateBoth(divide);
-export const moduloOperator = evaluateBoth(modulo);
-export const equalsOperator = evaluateBoth(equals);
-export const notEqualsOperator = evaluateBoth(notEquals);
-export const lessThanOperator = evaluateBoth(lessThan);
-export const greaterThanOperator = evaluateBoth(greaterThan);
-export const lessThanOrEqualsOperator = evaluateBoth(lessThanOrEquals);
-export const greaterThanOrEqualsOperator = evaluateBoth(greaterThanOrEquals);
+export const allOperators = {
+  'or': evaluateLeft(or),
+  'and': evaluateLeft(and),
+  '+': evaluateBoth(plus),
+  '-': evaluateBoth(minus),
+  '*': evaluateBoth(multiply),
+  '/': evaluateBoth(divide),
+  '%': evaluateBoth(modulo),
+  '==': evaluateBoth(equals),
+  '!=': evaluateBoth(notEquals),
+  '<': evaluateBoth(lessThan),
+  '>': evaluateBoth(greaterThan),
+  '<=': evaluateBoth(lessThanOrEquals),
+  '>=': evaluateBoth(greaterThanOrEquals),
+};

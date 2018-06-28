@@ -15,62 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import R from 'ramda';
 import { defaultExpression } from './default';
 import { expressionTypes } from './types';
-import {
-  orOperator,
-  andOperator,
-  plusOperator,
-  minusOperator,
-  multiplyOperator,
-  divideOperator,
-  moduloOperator,
-  equalsOperator,
-  notEqualsOperator,
-  lessThanOperator,
-  greaterThanOperator,
-  lessThanOrEqualsOperator,
-  greaterThanOrEqualsOperator,
-} from './binary-operators';
-import { throwRuntimeError } from '../error';
+import { allOperators } from './binary-operators';
 
-const opTable = [
-  ['or', orOperator],
-  ['and', andOperator],
-  ['+', plusOperator],
-  ['-', minusOperator],
-  ['*', multiplyOperator],
-  ['/', divideOperator],
-  ['%', moduloOperator],
-  ['==', equalsOperator],
-  ['!=', notEqualsOperator],
-  ['<', lessThanOperator],
-  ['>', greaterThanOperator],
-  ['<=', lessThanOrEqualsOperator],
-  ['>=', greaterThanOrEqualsOperator],
-];
+export const createBinaryExpressionWithOperators = operators => (context, leftExpression, operator, rightExpression) => {
 
-const knownOperator = operator => opTable.map(R.head).includes(operator);
-
-const buildOperatorMap = (context, leftExpression, rightExpression) => {
-  return opTable.reduce((opMap, op) => ({
-    ...opMap,
-    [op[0]]: op[1](context, leftExpression, rightExpression)
-  }), {});
-};
-
-export const createBinaryExpression = (context, leftExpression, operator, rightExpression) => {
-
-  if (!knownOperator(operator)) {
-    throwRuntimeError(`Invalid operator ${operator}`, context);
-  }
-
-  const operators = buildOperatorMap(context, leftExpression, rightExpression);
-
-  const evaluate = async scope => await operators[operator](scope);
+  const evaluate = scope => operators[operator](context, leftExpression, rightExpression, scope);
 
   return {
     ...defaultExpression(expressionTypes.BINARY, evaluate)
   };
 };
+
+export const createBinaryExpression = createBinaryExpressionWithOperators(allOperators);
