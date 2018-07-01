@@ -19,7 +19,7 @@ import { createValue } from './default';
 import { valueTypes, isString } from './types';
 import { createBooleanValue } from './boolean';
 import { createUndefined } from './undefined';
-import { stringProperties } from './string-members';
+import { stringProperties } from './string-properties';
 
 export const createStringValueWithProperties = (value, properties) => {
 
