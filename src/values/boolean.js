@@ -15,27 +15,36 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { defaultValue } from './default';
+import R from 'ramda';
+import { createValue } from './default';
 import { valueTypes } from './types';
 import { createStringValue } from './string';
 
-export const createBooleanValue = value => {
-  const asNativeString = () => value ? 'true' : 'false';
-  const asNativeBoolean = () => value;
-  const nativeEquals = (context, other) => value === other.asNativeBoolean(context);
-  const asString = context => createStringValue(asNativeString(context));
-  const asBoolean = () => createBooleanValue(value);
-  const equals = (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
-  const notEquals = (context, otherValue) => createBooleanValue(!nativeEquals(context, otherValue));
+const asNativeString = value => () => value ? 'true' : 'false';
+const asNativeBoolean = value => () => value;
+const nativeEquals = value => (context, other) => value === other.asNativeBoolean(context);
+const asString = asNativeString => context => createStringValue(asNativeString(context));
+const asBoolean = value => () => createBooleanValue(value);
+const equals = nativeEquals => (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
+const notEquals = nativeEquals => (context, otherValue) => createBooleanValue(!nativeEquals(context, otherValue));
 
-  return {
-    ...defaultValue(valueTypes.BOOLEAN, asNativeBoolean),
-    asNativeString,
-    asNativeBoolean,
-    nativeEquals,
-    asString,
-    asBoolean,
-    equals,
-    notEquals,
-  };
+const methods = {
+  asNativeString,
+  asNativeBoolean,
+  nativeEquals,
+  asString: R.pipe(asNativeString, asString),
+  asBoolean,
+  equals: R.pipe(nativeEquals, equals),
+  notEquals: R.pipe(nativeEquals, notEquals),
 };
+
+const allMethods = value => Object.keys(methods).reduce((acc, m) => ({ ...acc, [m]: methods[m](value) }), {});
+
+export const createCustomBooleanValue = (value, properties, methods) => createValue(
+  valueTypes.BOOLEAN,
+  asNativeBoolean(value),
+  properties,
+  methods,
+);
+
+export const createBooleanValue = value => createCustomBooleanValue(value, [], allMethods(value));
