@@ -21,56 +21,52 @@ import { createBooleanValue } from './boolean';
 import { createUndefined } from './undefined';
 import { stringProperties } from './string-properties';
 
+const asNativeString = value => () => value;
+const asNativeBoolean = value => () => value === '' ? false : true;
+const nativeEquals = value => (context, other) => isString(other) && value === other.asNativeString(context);
+
+const asString = asNativeString => context => createStringValue(asNativeString(context));
+const asBoolean = asNativeBoolean => context => createBooleanValue(asNativeBoolean(context));
+const equals = nativeEquals => (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
+
+const getElement = value => (context, index) => {
+  let indexValue = index.asNativeNumber(context);
+  if (indexValue < 0) {
+    indexValue = value.length + indexValue;
+  }
+  if (indexValue < 0 || indexValue >= value.length) {
+    return createUndefined();
+  }
+  return createStringValue(value[indexValue]);
+};
+
+const add = asNativeString => (context, otherValue) => {
+  return createStringValue(asNativeString(context) + otherValue.asNativeString(context));
+};
+
+const multiplyBy = asNativeString => (context, otherValue) => {
+  return createStringValue(asNativeString().repeat(otherValue.asNativeNumber()));
+};
+
 export const createStringValueWithProperties = (value, properties) => {
-
-  // native values
-  const asNativeString = () => value;
-  const asNativeBoolean = () => value === '' ? false : true;
-  const nativeEquals = (context, other) => isString(other) && value === other.asNativeString(context);
-
-  // wrapped values
-  const asString = context => createStringValue(asNativeString(context));
-  const asBoolean = context => createBooleanValue(asNativeBoolean(context));
-  const equals = (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
-  
-  // elements and properties
-  const getElement = (context, index) => {
-    let indexValue = index.asNativeNumber(context);
-    if (indexValue < 0) {
-      indexValue = value.length + indexValue;
-    }
-    if (indexValue < 0 || indexValue >= value.length) {
-      return createUndefined();
-    }
-    return createStringValue(value[indexValue]);
-  };
-
-  // operators
-  const add = (context, otherValue) => {
-    return createStringValue(asNativeString(context) + otherValue.asNativeString(context));
-  };
-  const multiplyBy = (context, otherValue) => {
-    return createStringValue(asNativeString().repeat(otherValue.asNativeNumber()));
-  };
-
   return createValue(
     valueTypes.STRING,
-    asNativeString,
+    asNativeString(value),
     properties,
     {
       // native values
-      asNativeString,
-      asNativeBoolean,
-      nativeEquals,
+      asNativeString: asNativeString(value),
+      asNativeBoolean: asNativeBoolean(value),
+      nativeEquals: nativeEquals(value),
       // wrapped values
-      asString,
-      asBoolean,
-      equals,
+      asString: asString(asNativeString(value)),
+      asBoolean: asBoolean(asNativeBoolean(value)),
+      equals: equals(nativeEquals(value)),
       // elements and properties
-      getElement,
+      getElement: getElement(value),
       // operators
-      add,
-      multiplyBy,
+      add: add(asNativeString),
+      multiplyBy: multiplyBy(asNativeString),
     },
   );
 };

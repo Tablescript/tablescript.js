@@ -20,14 +20,13 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { stringProperties } from '../string-members';
+import { stringProperties } from '../string-properties';
 import { createNumericValue } from '../numeric';
-import { valueTypes, isString } from '../types';
 import { createStringValue } from '../string';
-import { isArrayValue, isStringValue, isBooleanValue, isNumericValue, isUndefined } from '../../__test__/util';
+import { isArrayValue, isStringValue, isBooleanValue, isNumericValue } from '../../__test__/util';
 import { createBooleanValue } from '../boolean';
 
-describe('string members', () => {
+describe('string properties', () => {
   describe('split', () => {
     describe('with a non-empty delimiter', () => {
       it('splits an empty string into an array of empty string', () => {
