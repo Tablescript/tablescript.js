@@ -56,8 +56,14 @@ const indexOf = value => (context, scope) => {
 
 const slice = value => (context, scope) => {
   const startValue = scope['start'];
+  if (!startValue || startValue.type !== valueTypes.NUMBER) {
+    throwRuntimeError(`slice(start, end) start must be a number`, context);
+  }
   const endValue = scope['end'];
   if (endValue) {
+    if (endValue.type !== valueTypes.NUMBER) {
+      throwRuntimeError(`slice(start, end) end must be a number`, context);
+    }
     return createStringValue(value.slice(startValue.asNativeNumber(context), endValue.asNativeNumber(context)));
   }
   return createStringValue(value.slice(startValue.asNativeNumber(context)));

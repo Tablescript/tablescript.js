@@ -22,7 +22,7 @@ const expect = chai.expect;
 
 import { stringProperties } from '../string-members';
 import { createNumericValue } from '../numeric';
-import { valueTypes } from '../types';
+import { valueTypes, isString } from '../types';
 import { createStringValue } from '../string';
 import { isArrayValue, isStringValue, isBooleanValue, isNumericValue, isUndefined } from '../../__test__/util';
 import { createBooleanValue } from '../boolean';
@@ -155,15 +155,94 @@ describe('string members', () => {
   });
 
   describe('slice', () => {
+    it('returns an empty string for an empty string with a start index', () => {
+      const slice = stringProperties('').slice;
+      return expect(slice.callFunction({}, {}, [createNumericValue(100)])).to.eventually.satisfy(isStringValue(''));
+    });
 
+    it('returns an empty string for an empty string with start and end indices', () => {
+      const slice = stringProperties('').slice;
+      return expect(slice.callFunction({}, {}, [createNumericValue(100), createNumericValue(200)])).to.eventually.satisfy(isStringValue(''));
+    });
+
+    it('returns the remainder of a string when passed only a start index', () => {
+      const slice = stringProperties('I have a ham radio').slice;
+      return expect(slice.callFunction({}, {}, [createNumericValue(7)])).to.eventually.satisfy(isStringValue('a ham radio'));
+    });
+
+    it('returns a substring when passed both start and end indices', () => {
+      const slice = stringProperties('I have a ham radio').slice;
+      return expect(slice.callFunction({}, {}, [createNumericValue(7), createNumericValue(12)])).to.eventually.satisfy(isStringValue('a ham'));
+    });
+
+    it('throws when start is not passed', () => {
+      const slice = stringProperties('I have a ham radio').slice;
+      return expect(slice.callFunction({}, {}, [])).to.eventually.be.rejectedWith('slice(start, end) start must be a number');
+    });
+
+    it('throws when start is not a number', () => {
+      const slice = stringProperties('I have a ham radio').slice;
+      return expect(slice.callFunction({}, {}, [createStringValue('not gonna work')])).to.eventually.be.rejectedWith('slice(start, end) start must be a number');
+    });
+
+    it('throws when end is passed but is not a number', () => {
+      const slice = stringProperties('I have a ham radio').slice;
+      return expect(slice.callFunction({}, {}, [createNumericValue(3), createStringValue('not gonna work')])).to.eventually.be.rejectedWith('slice(start, end) end must be a number');
+    });
   });
 
   describe('startsWith', () => {
+    it('returns true for an empty string starting with an empty string', () => {
+      const startsWith = stringProperties('').startsWith;
+      return expect(startsWith.callFunction({}, {}, [createStringValue('')])).to.eventually.satisfy(isBooleanValue(true));
+    });
 
+    it('returns true for a non-empty string starting with an empty string', () => {
+      const startsWith = stringProperties('abalone').startsWith;
+      return expect(startsWith.callFunction({}, {}, [createStringValue('')])).to.eventually.satisfy(isBooleanValue(true));
+    });
+
+    it('returns true if a non-empty string starts with a non-empty string', () => {
+      const startsWith = stringProperties('abalone').startsWith;
+      return expect(startsWith.callFunction({}, {}, [createStringValue('abalo')])).to.eventually.satisfy(isBooleanValue(true));
+    });
+
+    it('returns false if a non-empty string does not start with a non-empty string', () => {
+      const startsWith = stringProperties('abalone').startsWith;
+      return expect(startsWith.callFunction({}, {}, [createStringValue('nope')])).to.eventually.satisfy(isBooleanValue(false));
+    });
+
+    it('throws if passed a non-string', () => {
+      const startsWith = stringProperties('abalone').startsWith;
+      return expect(startsWith.callFunction({}, {}, [createBooleanValue(true)])).to.eventually.be.rejectedWith('startsWith(s) s must be a string');
+    });
   });
 
   describe('endsWith', () => {
+    it('returns true for an empty string ending with an empty string', () => {
+      const endsWith = stringProperties('').endsWith;
+      return expect(endsWith.callFunction({}, {}, [createStringValue('')])).to.eventually.satisfy(isBooleanValue(true));
+    });
 
+    it('returns true for a non-empty string ending with an empty string', () => {
+      const endsWith = stringProperties('abalone').endsWith;
+      return expect(endsWith.callFunction({}, {}, [createStringValue('')])).to.eventually.satisfy(isBooleanValue(true));
+    });
+
+    it('returns true if a non-empty string ends with a non-empty string', () => {
+      const endsWith = stringProperties('abalone').endsWith;
+      return expect(endsWith.callFunction({}, {}, [createStringValue('one')])).to.eventually.satisfy(isBooleanValue(true));
+    });
+
+    it('returns false if a non-empty string does not end with a non-empty string', () => {
+      const endsWith = stringProperties('abalone').endsWith;
+      return expect(endsWith.callFunction({}, {}, [createStringValue('nope')])).to.eventually.satisfy(isBooleanValue(false));
+    });
+
+    it('throws if passed a non-string', () => {
+      const endsWith = stringProperties('abalone').endsWith;
+      return expect(endsWith.callFunction({}, {}, [createBooleanValue(true)])).to.eventually.be.rejectedWith('endsWith(s) s must be a string');
+    });
   });
 
   describe('trim', () => {
