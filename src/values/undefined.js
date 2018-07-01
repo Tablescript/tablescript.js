@@ -31,6 +31,7 @@ const equals = (context, otherValue) => createBooleanValue(nativeEquals(context,
 export const createUndefined = () => createValue(
   valueTypes.UNDEFINED,
   asNativeValue,
+  [],
   {
     asNativeString,
     asNativeBoolean,

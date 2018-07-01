@@ -16,9 +16,17 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { valueTypeName } from './types';
-import { runtimeErrorThrower } from '../error';
+import { runtimeErrorThrower, throwRuntimeError } from '../error';
 
-const defaultMethods = (nativeValueFunction, getTypeName) => ({
+const getProperty = (properties, getTypeName) => (context, name) => {
+  const nameValue = name.asNativeString(context);
+  if (properties[nameValue]) {
+    return properties[nameValue];
+  }
+  throwRuntimeError(`${getTypeName()} has no member ${nameValue}`, context);
+};
+
+const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({
   asNativeValue: nativeValueFunction,
   asNativeNumber: runtimeErrorThrower(`Cannot cast ${getTypeName()} to number`),
   asNativeString: runtimeErrorThrower(`Cannot cast ${getTypeName()} to string`),
@@ -31,7 +39,7 @@ const defaultMethods = (nativeValueFunction, getTypeName) => ({
   asBoolean: runtimeErrorThrower(`Cannot cast ${getTypeName()} to boolean`),
   asArray: runtimeErrorThrower(`Cannot cast ${getTypeName()} to array`),
   asObject: runtimeErrorThrower(`Cannot cast ${getTypeName()} to object`),
-  getProperty: runtimeErrorThrower(`Cannot get property of ${getTypeName()}`),
+  getProperty: properties.length === 0 ? runtimeErrorThrower(`Cannot get property of ${getTypeName()}`) : getProperty(properties, getTypeName),
   setProperty: runtimeErrorThrower(`Cannot set property of ${getTypeName()}`),
   getElement: runtimeErrorThrower(`Cannot get element of ${getTypeName()}`),
   callFunction: runtimeErrorThrower(`${getTypeName()} is not callable`),
@@ -43,9 +51,9 @@ const defaultMethods = (nativeValueFunction, getTypeName) => ({
   equals: runtimeErrorThrower(`Cannot determine equality with ${getTypeName()}`),
 });
 
-export const createValue = (type, nativeValueFunction, methods) => ({
+export const createValue = (type, nativeValueFunction, properties, methods) => ({
   type,
-  ...defaultMethods(nativeValueFunction, () => valueTypeName(type)),
+  ...defaultMethods(nativeValueFunction, properties, () => valueTypeName(type)),
   ...methods,
 });
 

@@ -77,7 +77,7 @@ describe('string value', () => {
 
       describe('unrecognized...', () => {
         it('throws', () => {
-          expect(() => value.getProperty({}, createStringValue('unrecognized'))).to.throw('String has no member unrecognized');
+          expect(() => value.getProperty({}, createStringValue('unrecognized'))).to.throw('STRING has no member unrecognized');
         });
       });
     });
@@ -193,7 +193,7 @@ describe('string value', () => {
 
       describe('unrecognized...', () => {
         it('throws', () => {
-          expect(() => value.getProperty({}, createStringValue('unrecognized'))).to.throw('String has no member unrecognized');
+          expect(() => value.getProperty({}, createStringValue('unrecognized'))).to.throw('STRING has no member unrecognized');
         });
       });
     });
