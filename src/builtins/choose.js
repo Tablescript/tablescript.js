@@ -15,11 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createBuiltInFunctionValue } from '../values/default';
 import { throwRuntimeError } from '../error';
 import { randomNumber } from '../util/random';
 
-const callFunction = (context, scope, parameters) => {
+export const chooseBuiltIn = _ => (context, _, parameters) => {
   if (parameters.length !== 1) {
     throwRuntimeError('choose(items) takes a single array parameter', context);
   }
@@ -27,5 +26,3 @@ const callFunction = (context, scope, parameters) => {
   const roll = randomNumber(items.length) - 1;
   return items[roll];
 };
-
-export const createChooseBuiltin = () => createBuiltInFunctionValue('choose', callFunction);

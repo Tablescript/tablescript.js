@@ -15,11 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createBuiltInFunctionValue } from '../values/default';
 import { throwRuntimeError } from '../error';
 import { createUndefined } from '../values/undefined';
 
-const callFunction = async (context, scope, parameters) => {
+export const assertBuiltIn = _ => async (context, _, parameters) => {
   if (parameters.length < 1) {
     throwRuntimeError(`assert(condition, [message]) takes 1 or 2 parameters`, context);
   }
@@ -33,5 +32,3 @@ const callFunction = async (context, scope, parameters) => {
   }
   return createUndefined();
 };
-
-export const createAssertBuiltin = () => createBuiltInFunctionValue('assert', callFunction);

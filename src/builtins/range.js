@@ -20,7 +20,7 @@ import { throwRuntimeError } from '../error';
 import { createNumericValue } from '../values/numeric';
 import { createArrayValue } from '../values/array';
 
-const callFunction = (context, scope, parameters) => {
+export const rangeBuiltIn = _ => (context, _, parameters) => {
   let startValue = 0;
   let endValue;
   let stepValue = 1;
@@ -51,5 +51,3 @@ const callFunction = (context, scope, parameters) => {
   }
   return createArrayValue(result);
 };
-
-export const createRangeBuiltin = () => createBuiltInFunctionValue('range', callFunction);

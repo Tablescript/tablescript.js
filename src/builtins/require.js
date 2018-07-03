@@ -15,11 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createBuiltInFunctionValue } from '../values/default';
 import { throwRuntimeError } from '../error';
 import { run } from '../index';
 
-const callFunction = options => async (context, scope, parameters) => {
+export const requireBuiltIn = options => async (context, _, parameters) => {
   if (parameters.length < 1) {
     throwRuntimeError(`require(modulePath, ...) requires a modulePath`, context);
   }
@@ -27,5 +26,3 @@ const callFunction = options => async (context, scope, parameters) => {
   const args = parameters.slice(1);
   return await run(context, filename, args, options);
 };
-
-export const createRequireBuiltin = options => createBuiltInFunctionValue('require', callFunction(options));

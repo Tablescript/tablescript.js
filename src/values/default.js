@@ -87,19 +87,3 @@ export const defaultValue = (type, nativeValueFunction) => {
     equals: runtimeErrorThrower(`Cannot determine equality with ${typeName}`),
   };
 };
-
-export const createBuiltInFunctionValue = (name, callFunction) => {
-  const asNativeString = () => `builtin function(${name})`;
-  return createValue(
-    valueTypes.FUNCTION,
-    asNativeString,
-    [],
-    {
-      asNativeString,
-      asNativeBoolean: () => true,
-      asString: () => createStringValue(asNativeString()),
-      asBoolean: () => createBooleanValue(asNativeBoolean()),
-      callFunction,
-    }
-  );
-};

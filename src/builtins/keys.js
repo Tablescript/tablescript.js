@@ -15,12 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createBuiltInFunctionValue } from '../values/default';
 import { throwRuntimeError } from '../error';
 import { createArrayValue } from '../values/array';
 import { createStringValue } from '../values/string';
 
-const callFunction = (context, scope, parameters) => {
+export const keysBuiltIn = _ => (context, _, parameters) => {
   if (parameters.length != 1) {
     throwRuntimeError(`keys(object) takes a single object parameter`, context);
   }
@@ -29,5 +28,3 @@ const callFunction = (context, scope, parameters) => {
   keys.sort();
   return createArrayValue(keys.map(key => createStringValue(key)));
 };
-
-export const createKeysBuiltin = () => createBuiltInFunctionValue('keys', callFunction);
