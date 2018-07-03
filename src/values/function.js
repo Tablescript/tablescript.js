@@ -43,7 +43,7 @@ export const createNativeFunctionValue = (formalParameters, f) => {
   const nativeEquals = () => false;
   const asString = R.pipe(asNativeString, createStringValue);
   const asBoolean = R.pipe(asNativeBoolean, createBooleanValue);
-  const callFunction = async (context, scope, parameters) => await f(context, parametersToArguments(parameters));
+  const callFunction = async (context, parameters) => await f(context, parametersToArguments(parameters));
 
   return {
     ...defaultValue(valueTypes.FUNCTION, asNativeString),
@@ -64,7 +64,7 @@ export const createFunctionValue = (formalParameters, body, closure) => {
   const nativeEquals = () => false;
   const asString = R.pipe(asNativeString, createStringValue);
   const asBoolean = R.pipe(asNativeBoolean, createBooleanValue);
-  const callFunction = async (context, scope, parameters) => {
+  const callFunction = async (context, parameters) => {
     const localScope = {
       ...closure,
       ...parametersToArguments(parameters)

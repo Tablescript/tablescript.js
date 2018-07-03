@@ -133,7 +133,7 @@ describe('array', () => {
 
         describe('when called with no parameters', () => {
           beforeEach(() => {
-            result = method.callFunction({}, {}, []);
+            result = method.callFunction({}, []);
           });
 
           it('returns undefined', () => {
@@ -143,7 +143,7 @@ describe('array', () => {
 
         describe('when called with a parameter that matches an element', () => {
           beforeEach(() => {
-            result = method.callFunction({}, {}, [createStringValue('I have a ham radio')]);
+            result = method.callFunction({}, [createStringValue('I have a ham radio')]);
           });
 
           it('returns a boolean', () => {
@@ -161,7 +161,7 @@ describe('array', () => {
 
         describe('when called with a parameter that does not match an element', () => {
           beforeEach(() => {
-            result = method.callFunction({}, {}, [createStringValue('not there')]);
+            result = method.callFunction({}, [createStringValue('not there')]);
           });
 
           it('returns a boolean', () => {
@@ -190,7 +190,7 @@ describe('array', () => {
 
         describe('when called with no parameters', () => {
           beforeEach(() => {
-            result = method.callFunction({}, {}, []);
+            result = method.callFunction({}, []);
           });
 
           it('returns undefined', () => {
@@ -202,7 +202,7 @@ describe('array', () => {
 
         describe('when called with a parameter that does not match an element', () => {
           beforeEach(() => {
-            result = method.callFunction({}, {}, [createStringValue('not there')]);
+            result = method.callFunction({}, [createStringValue('not there')]);
           });
 
           it('returns a boolean', () => {
@@ -231,7 +231,7 @@ describe('array', () => {
           method = value.getProperty({}, createStringValue('map'));
           mockCallback = {
             callValues: [],
-            callFunction: (context, scope, parameters) => {
+            callFunction: (context, parameters) => {
               mockCallback.callValues.push(parameters);
               return createBooleanValue(true);
             }
@@ -243,7 +243,7 @@ describe('array', () => {
         });
 
         it('calls the callback once for each element', () => {
-          method.callFunction({}, {}, [mockCallback]).then(() => {
+          method.callFunction({}, [mockCallback]).then(() => {
             expect(mockCallback.callValues.length).to.equal(3);
           });
         });
@@ -253,7 +253,7 @@ describe('array', () => {
           let result;
 
           beforeEach(() => {
-            result = method.callFunction({}, {}, [mockCallback]);
+            result = method.callFunction({}, [mockCallback]);
           });
 
           it('calls with the first element', () => {
@@ -281,13 +281,13 @@ describe('array', () => {
           beforeEach(() => {
             mockCallback = {
               callCount: 0,
-              callFunction: (context, scope) => {
+              callFunction: _ => {
                 const result = mockCallback.callCount;
                 mockCallback.callCount += 1;
                 return createNumericValue(result);
               }
             };
-            result = method.callFunction({}, {}, [mockCallback]);
+            result = method.callFunction({}, [mockCallback]);
           });
 
           it('returns an array', () => {
@@ -310,7 +310,7 @@ describe('array', () => {
           method = value.getProperty({}, createStringValue('map'));
           mockCallback = {
             callValues: [],
-            callFunction: (context, scope, parameters) => {
+            callFunction: (context, parameters) => {
               mockCallback.callValues.push(parameters);
               return createBooleanValue(true);
             }
@@ -322,7 +322,7 @@ describe('array', () => {
         });
 
         it('does not call the callback', () => {
-          method.callFunction({}, {}, [mockCallback]);
+          method.callFunction({}, [mockCallback]);
           expect(mockCallback.callValues.length).to.equal(0);
         });
 
@@ -331,7 +331,7 @@ describe('array', () => {
 
           beforeEach(() => {
             mockCallback = {};
-            result = method.callFunction({}, {}, [mockCallback]);
+            result = method.callFunction({}, [mockCallback]);
           });
 
           it('returns an array', () => {
@@ -360,7 +360,7 @@ describe('array', () => {
           method = value.getProperty({}, createStringValue('reduce'));
           mockCallback = {
             callValues: [],
-            callFunction: (context, scope, parameters) => {
+            callFunction: (context, parameters) => {
               mockCallback.callValues.push(parameters);
               return parameters[1];
             }
@@ -372,7 +372,7 @@ describe('array', () => {
         });
 
         it('calls the callback once for each element', () => {
-          method.callFunction({}, {}, [mockCallback]).then(() => {
+          method.callFunction({}, [mockCallback]).then(() => {
             expect(mockCallback.callValues.length).to.equal(3);
           });
         });
@@ -383,7 +383,7 @@ describe('array', () => {
           let result;
 
           beforeEach(() => {
-            result = method.callFunction({}, {}, [mockCallback, createStringValue('first')]);
+            result = method.callFunction({}, [mockCallback, createStringValue('first')]);
           });
 
           it('calls with the initial value and first element', () => {
@@ -412,7 +412,7 @@ describe('array', () => {
           let result;
 
           beforeEach(() => {
-            result = method.callFunction({}, {}, [mockCallback, createUndefined()]);
+            result = method.callFunction({}, [mockCallback, createUndefined()]);
           });
 
           it('returns a boolean', () => {
@@ -435,7 +435,7 @@ describe('array', () => {
           method = value.getProperty({}, createStringValue('reduce'));
           mockCallback = {
             callValues: [],
-            callFunction: (context, scope, parameters) => {
+            callFunction: (context, parameters) => {
               mockCallback.callValues.push(parameters);
               return parameters[1];
             }
@@ -447,7 +447,7 @@ describe('array', () => {
         });
 
         it('never calls the callback', () => {
-          method.callFunction({}, {}, [mockCallback, createStringValue('initial value')]);
+          method.callFunction({}, [mockCallback, createStringValue('initial value')]);
           expect(mockCallback.callValues.length).to.equal(0);
         });
 
@@ -455,7 +455,7 @@ describe('array', () => {
           let result;
 
           beforeEach(() => {
-            result = method.callFunction({}, {}, [mockCallback, createStringValue('initial value')]);
+            result = method.callFunction({}, [mockCallback, createStringValue('initial value')]);
           });
 
           it('returns a string', () => {
@@ -484,7 +484,7 @@ describe('array', () => {
           method = value.getProperty({}, createStringValue('filter'));
           mockCallback = {
             callValues: [],
-            callFunction: (context, scope, parameters) => {
+            callFunction: (context, parameters) => {
               mockCallback.callValues.push(parameters);
               return createBooleanValue(true);
             }
@@ -496,7 +496,7 @@ describe('array', () => {
         });
 
         it('calls the callback once for each element', () => {
-          method.callFunction({}, {}, [mockCallback]).then(() => {
+          method.callFunction({}, [mockCallback]).then(() => {
             expect(mockCallback.callValues.length).to.equal(3);
           });
         });
@@ -506,7 +506,7 @@ describe('array', () => {
           let result;
 
           beforeEach(() => {
-            result = method.callFunction({}, {}, [mockCallback]);
+            result = method.callFunction({}, [mockCallback]);
           });
 
           it('calls with the first element', () => {
@@ -533,11 +533,11 @@ describe('array', () => {
 
           beforeEach(() => {
             mockCallback = {
-              callFunction: (context, scope, parameters) => {
+              callFunction: (context, parameters) => {
                 return createBooleanValue(parameters[0].asNativeString() === 'I have a ham radio');
               }
             };
-            result = method.callFunction({}, {}, [mockCallback]);
+            result = method.callFunction({}, [mockCallback]);
           });
 
           it('returns an array', () => {
@@ -560,7 +560,7 @@ describe('array', () => {
           method = value.getProperty({}, createStringValue('map'));
           mockCallback = {
             callValues: [],
-            callFunction: (context, scope, parameters) => {
+            callFunction: (context, parameters) => {
               mockCallback.callValues.push(parameters);
               return createBooleanValue(true);
             }
@@ -572,7 +572,7 @@ describe('array', () => {
         });
 
         it('does not call the callback', () => {
-          method.callFunction({}, {}, [mockCallback]);
+          method.callFunction({}, [mockCallback]);
           expect(mockCallback.callValues.length).to.equal(0);
         });
 
@@ -581,7 +581,7 @@ describe('array', () => {
 
           beforeEach(() => {
             mockCallback = {};
-            result = method.callFunction({}, {}, [mockCallback]);
+            result = method.callFunction({}, [mockCallback]);
           });
 
           it('returns an array', () => {

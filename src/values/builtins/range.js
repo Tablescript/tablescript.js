@@ -19,7 +19,7 @@ import { throwRuntimeError } from '../../error';
 import { createNumericValue } from '../numeric';
 import { createArrayValue } from '../array';
 
-export const rangeBuiltIn = _ => (context, _, parameters) => {
+export const rangeBuiltIn = _ => (context, parameters) => {
   let startValue = 0;
   let endValue;
   let stepValue = 1;

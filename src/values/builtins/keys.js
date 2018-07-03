@@ -19,7 +19,7 @@ import { throwRuntimeError } from '../../error';
 import { createArrayValue } from '../array';
 import { createStringValue } from '../string';
 
-export const keysBuiltIn = _ => (context, _, parameters) => {
+export const keysBuiltIn = _ => (context, parameters) => {
   if (parameters.length != 1) {
     throwRuntimeError(`keys(object) takes a single object parameter`, context);
   }

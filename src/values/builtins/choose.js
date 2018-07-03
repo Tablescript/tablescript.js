@@ -18,7 +18,7 @@
 import { throwRuntimeError } from '../../error';
 import { randomNumber } from '../../util/random';
 
-export const chooseBuiltIn = _ => (context, _, parameters) => {
+export const chooseBuiltIn = _ => (context, parameters) => {
   if (parameters.length !== 1) {
     throwRuntimeError('choose(items) takes a single array parameter', context);
   }

@@ -18,7 +18,7 @@
 import { throwRuntimeError } from '../../error';
 import { createUndefined } from '../undefined';
 
-export const assertBuiltIn = _ => async (context, _, parameters) => {
+export const assertBuiltIn = _ => async (context, parameters) => {
   if (parameters.length < 1) {
     throwRuntimeError(`assert(condition, [message]) takes 1 or 2 parameters`, context);
   }

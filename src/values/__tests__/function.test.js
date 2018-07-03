@@ -120,31 +120,31 @@ describe('function', () => {
 
       describe('when called', () => {
         it('evaluates the block', () => {
-          value.callFunction({}, {}, []);
+          value.callFunction({}, []);
           expect(callCount).to.equal(1);
         });
 
         it('returns the result of executing the body', () => {
-          value.callFunction({}, {}, []).then(result => {
+          value.callFunction({}, []).then(result => {
             expect(result).to.equal(97);
           });
         });
 
         it('overrides calling scope with closure scope', () => {
-          value.callFunction({}, { callingScope: 12 }, []);
+          value.callFunction({}, []);
           expect(calledScope).to.eql({});
         });
       });
 
       describe('when called with no parameters', () => {
         it('calls evaluate with proper scope', () => {
-          value.callFunction({}, { callingScope: 12 }, []);
+          value.callFunction({}, []);
           expect(calledScope).to.eql({});
         });
       });
 
       it('throws when called with too many parameters', () => {
-        value.callFunction({}, {}, [4, 4, 4]).catch(e => {
+        value.callFunction({}, [4, 4, 4]).catch(e => {
           expect(e).to.equal('function call expected 0 parameters but got 3');
         });
       });
@@ -166,12 +166,12 @@ describe('function', () => {
 
       describe('when called', () => {
         it('evaluates the block', () => {
-          value.callFunction({}, {}, []);
+          value.callFunction({}, []);
           expect(callCount).to.equal(1);
         });
 
         it('returns the result of executing the body', () => {
-          value.callFunction({}, {}, []).then(result => {
+          value.callFunction({}, []).then(result => {
             expect(result).to.equal(97);
           });
         });
@@ -179,20 +179,20 @@ describe('function', () => {
 
       describe('when called with no parameters', () => {
         it('calls evaluate with proper scope', () => {
-          value.callFunction({}, { callingScope: 12 }, []);
+          value.callFunction({}, []);
           expect(calledScope).to.eql({});
         });
       });
 
       describe('when called with the correct number of parameters', () => {
         it('calls evaluate with proper scope', () => {
-          value.callFunction({}, { callingScope: 12 }, ['I have a ham radio', 12]);
+          value.callFunction({}, ['I have a ham radio', 12]);
           expect(calledScope).to.eql({ a: 'I have a ham radio', b: 12 });
         });
       });
 
       it('throws when called with too many parameters', () => {
-        value.callFunction({}, {}, [4, 4, 4]).catch(e => {
+        value.callFunction({}, [4, 4, 4]).catch(e => {
           expect(e).to.equal('function call expected 2 parameters but got 3');
         });
       });
@@ -296,13 +296,13 @@ describe('function', () => {
           mockBody.evaluate = _ => {
             callCount += 1;
           };
-          value.callFunction({}, {}, []);
+          value.callFunction({}, []);
           expect(callCount).to.equal(1);
         });
 
         it('returns the result of executing the body', () => {
           mockBody.evaluate = () => 97;
-          value.callFunction({}, {}, []).then(result => {
+          value.callFunction({}, []).then(result => {
             expect(result).to.equal(97);
           });
         });
@@ -313,7 +313,7 @@ describe('function', () => {
           mockBody.evaluate = scope => {
             calledScope = scope;
           };
-          value.callFunction({}, { callingScope: 12 }, []);
+          value.callFunction({}, []);
           expect(calledScope).to.eql({ callingScope: 'overridden', closureScope: 63 });
         });
       });
@@ -324,13 +324,13 @@ describe('function', () => {
           mockBody.evaluate = scope => {
             calledScope = scope;
           };
-          value.callFunction({}, { callingScope: 12 }, []);
+          value.callFunction({}, []);
           expect(calledScope).to.eql({ closureScope: 63 });
         });
       });
 
       it('throws when called with too many parameters', () => {
-        value.callFunction({}, {}, [4, 4, 4]).catch(e => {
+        value.callFunction({}, [4, 4, 4]).catch(e => {
           expect(e).to.equal('function call expected 0 parameters but got 3');
         });
       });
@@ -354,13 +354,13 @@ describe('function', () => {
           mockBody.evaluate = _ => {
             callCount += 1;
           };
-          value.callFunction({}, {}, []);
+          value.callFunction({}, []);
           expect(callCount).to.equal(1);
         });
 
         it('returns the result of executing the body', () => {
           mockBody.evaluate = () => createNumericValue(97);
-          value.callFunction({}, {}, []).then(result => {
+          value.callFunction({}, []).then(result => {
             expect(result.asNativeNumber()).to.equal(97);
           });
         });
@@ -372,7 +372,7 @@ describe('function', () => {
           mockBody.evaluate = scope => {
             calledScope = scope;
           };
-          value.callFunction({}, { callingScope: 12 }, []);
+          value.callFunction({}, []);
           expect(calledScope).to.eql({ closureScope: 63 });
         });
       });
@@ -383,13 +383,13 @@ describe('function', () => {
           mockBody.evaluate = scope => {
             calledScope = scope;
           };
-          value.callFunction({}, { callingScope: 12 }, ['I have a ham radio', 12]);
+          value.callFunction({}, ['I have a ham radio', 12]);
           expect(calledScope).to.eql({ closureScope: 63, a: 'I have a ham radio', b: 12 });
         });
       });
 
       it('throws when called with too many parameters', () => {
-        value.callFunction({}, {}, [4, 4, 4]).catch(e => {
+        value.callFunction({}, [4, 4, 4]).catch(e => {
           expect(e).to.equal('function call expected 2 parameters but got 3');
         });
       });

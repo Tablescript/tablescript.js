@@ -18,7 +18,7 @@
 import { throwRuntimeError } from '../../error';
 import { run } from '../../index';
 
-export const requireBuiltIn = options => async (context, _, parameters) => {
+export const requireBuiltIn = options => async (context, parameters) => {
   if (parameters.length < 1) {
     throwRuntimeError(`require(modulePath, ...) requires a modulePath`, context);
   }

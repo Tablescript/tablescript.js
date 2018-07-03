@@ -57,7 +57,7 @@ const createLocalScope = (closure, args, extras) => ({
 });
 const getRolledEntry = (entries, roll) => entries.find((e, index) => e.rollApplies(roll, index + 1));
 
-const callFunction = (formalParameters, entries, closure) => async (context, scope, parameters) => {
+const callFunction = (formalParameters, entries, closure) => async (context, parameters) => {
   const roll = getTableRoll(entries);
   const rolledEntry = getRolledEntry(entries, roll);
   return await rolledEntry.evaluate(

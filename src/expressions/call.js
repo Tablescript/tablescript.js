@@ -32,7 +32,7 @@ export const createCallExpression = (context, callee, parameters) => {
   const evaluate = async scope => {
     const calleeValue = await callee.evaluate(scope);
     const parameterValues = await evaluateParameters(parameters, scope);
-    return await calleeValue.callFunction(context, scope, parameterValues);
+    return await calleeValue.callFunction(context, parameterValues);
   };
 
   return {

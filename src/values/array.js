@@ -83,7 +83,7 @@ export const createArrayValue = entries => {
     const initialValue = scope['initialValue'];
     let result = initialValue;
     for (let i = 0; i < entries.length; i++) {
-      result = await reducer.callFunction(context, scope, [result, entries[i]]);
+      result = await reducer.callFunction(context, [result, entries[i]]);
     }
     return result;
   });
@@ -92,7 +92,7 @@ export const createArrayValue = entries => {
     const f = scope['f'];
     const result = [];
     for (let i = 0; i < entries.length; i++) {
-      result.push(await f.callFunction(context, scope, [entries[i]]));
+      result.push(await f.callFunction(context, [entries[i]]));
     }
     return createArrayValue(result);
   });
@@ -101,7 +101,7 @@ export const createArrayValue = entries => {
     const f = scope['f'];
     const result = [];
     for (let i = 0; i < entries.length; i++) {
-      const testValue = await f.callFunction(context, scope, [entries[i]]);
+      const testValue = await f.callFunction(context, [entries[i]]);
       if (testValue.asNativeBoolean(context)) {
         result.push(entries[i]);
       }
@@ -130,7 +130,7 @@ export const createArrayValue = entries => {
   const find = createNativeFunctionValue(['f'], async (context, scope) => {
     const f = scope['f'];
     for (let i = 0; i < entries.length; i++) {
-      const testValue = await f.callFunction(context, scope, [entries[i]]);
+      const testValue = await f.callFunction(context, [entries[i]]);
       if (testValue.asNativeBoolean(context)) {
         return entries[i];
       }
@@ -141,7 +141,7 @@ export const createArrayValue = entries => {
   const findIndex = createNativeFunctionValue(['f'], async (context, scope) => {
     const f = scope['f'];
     for (let i = 0; i < entries.length; i++) {
-      const testValue = await f.callFunction(context, scope, [entries[i]]);
+      const testValue = await f.callFunction(context, [entries[i]]);
       if (testValue.asNativeBoolean(context)) {
         return createNumericValue(i);
       }
@@ -151,7 +151,7 @@ export const createArrayValue = entries => {
 
   const sort = createNativeFunctionValue(['f'], async (context, scope) => {
     const f = scope['f'];
-    return createArrayValue(await quickSort(context, scope, [...entries], f));
+    return createArrayValue(await quickSort(context, [...entries], f));
   });
 
   const join = createNativeFunctionValue(['separator'], (context, scope) => {
