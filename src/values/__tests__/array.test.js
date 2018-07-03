@@ -27,7 +27,7 @@ import { createBooleanValue } from '../boolean';
 import { createUndefined } from '../undefined';
 import { createArrayValue } from '../array';
 import { TablescriptError } from '../../error';
-import { isUndefined } from '../../__test__/util';
+import { isUndefined } from '../../__tests__/util';
 
 describe('array', () => {
   const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);

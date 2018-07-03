@@ -8,7 +8,7 @@
   },
   "main": "./dist/index.js",
   "scripts": {
-    "build": "node_modules/.bin/babel src --ignore __test__ --out-dir dist",
+    "build": "node_modules/.bin/babel src --ignore __tests__ --out-dir dist",
     "build:parser": "node_modules/.bin/pegjs --cache --output src/parser/peg-parser.js src/grammar/tablescript.pegjs",
     "build:tracing-parser": "node_modules/.bin/pegjs --trace --cache --output src/parser/peg-parser.js src/grammar/tablescript.pegjs",
     "lint": "node_modules/.bin/eslint src",

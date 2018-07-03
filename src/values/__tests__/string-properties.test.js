@@ -23,7 +23,7 @@ const expect = chai.expect;
 import { stringProperties } from '../string-properties';
 import { createNumericValue } from '../numeric';
 import { createStringValue } from '../string';
-import { isArrayValue, isStringValue, isBooleanValue, isNumericValue } from '../../__test__/util';
+import { isArrayValue, isStringValue, isBooleanValue, isNumericValue } from '../../__tests__/util';
 import { createBooleanValue } from '../boolean';
 
 describe('string properties', () => {

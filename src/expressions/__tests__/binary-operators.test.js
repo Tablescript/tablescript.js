@@ -21,7 +21,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 import { allOperators } from '../binary-operators';
-import { isBooleanValue, isNumericValue } from '../../__test__/util';
+import { isBooleanValue, isNumericValue } from '../../__tests__/util';
 import { createNumericValue } from '../../values/numeric';
 import { createBooleanValue } from '../../values/boolean';
 
