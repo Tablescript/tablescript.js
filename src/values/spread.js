@@ -16,25 +16,33 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { valueTypes } from './types';
-import { defaultValue } from './default';
+import { createValue } from './default';
 
-export const createArraySpread = a => {
-  return {
-    ...defaultValue(valueTypes.ARRAY_SPREAD),
+export const createArraySpread = a => createValue(
+  valueTypes.ARRAY_SPREAD,
+  null,
+  [],
+  {
     asArray: () => a.asArray(),
-  };
-};
+  },
+);
 
-export const createObjectSpread = o => {
-  return {
-    ...defaultValue(valueTypes.OBJECT_SPREAD),
+export const createObjectSpread = o => createValue(
+  valueTypes.OBJECT_SPREAD,
+  null,
+  [],
+  {
     asObject: () => o.asObject(),
-  };
-};
+  },
+);
 
 export const createTableSpread = t => {
-  return {
-    ...defaultValue(valueTypes.TABLE_SPREAD),
-    asArray: () => t.asArray(),
-  };
+  return createValue(
+    valueTypes.TABLE_SPREAD,
+    null,
+    [],
+    {
+      asArray: () => t.asArray(),
+    },
+  );
 };

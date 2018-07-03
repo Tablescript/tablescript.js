@@ -15,29 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../values/types';
-import { defaultValue } from '../values/default';
+import { createBuiltInFunctionValue } from '../values/default';
 import { createStringValue } from '../values/string';
 
-export const createPrintBuiltin = options => {
-  const asNativeString = () => 'builtin function(print)';
-  const asNativeBoolean = () => true;
-
-  const asString = () => createStringValue(asNativeString());
-  const asBoolean = () => createBooleanValue(asNativeBoolean());
-
-  const callFunction = async (context, scope, parameters) => {
-    const s = parameters.map(p => p.asNativeString(context)).join();
-    await options.output.print(s);
-    return createStringValue(s);
-  };
-
-  return {
-    ...defaultValue(valueTypes.FUNCTION, asNativeString),
-    asNativeString,
-    asNativeBoolean,
-    asString,
-    asBoolean,
-    callFunction,
-  };
+const callFunction = options => async (context, scope, parameters) => {
+  const s = parameters.map(p => p.asNativeString(context)).join();
+  await options.output.print(s);
+  return createStringValue(s);
 };
+
+export const createPrintBuiltin = options => createBuiltInFunctionValue(
+  'print',
+  callFunction(options),
+);

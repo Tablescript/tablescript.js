@@ -15,59 +15,41 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../values/types';
-import { defaultValue } from '../values/default';
+import { createBuiltInFunctionValue } from '../values/default';
 import { throwRuntimeError } from '../error';
-import { createStringValue } from '../values/string';
-import { createBooleanValue } from '../values/boolean';
 import { createNumericValue } from '../values/numeric';
 import { createArrayValue } from '../values/array';
 
-export const createRangeBuiltin = () => {
-  const asNativeString = () => 'builtin function(range)';
-  const asNativeBoolean = () => true;
-
-  const asString = () => createStringValue(asNativeString());
-  const asBoolean = () => createBooleanValue(asNativeBoolean());
-
-  const callFunction = (context, scope, parameters) => {
-    let startValue = 0;
-    let endValue;
-    let stepValue = 1;
-    if (parameters.length === 1) {
-      endValue = parameters[0].asNativeNumber(context);
-    } else if (parameters.length === 2) {
-      startValue = parameters[0].asNativeNumber(context);
-      endValue = parameters[1].asNativeNumber(context);
-      if (endValue < startValue) {
-        stepValue = -1;
-      }
-    } else if (parameters.length === 3) {
-      startValue = parameters[0].asNativeNumber(context);
-      endValue = parameters[1].asNativeNumber(context);
-      stepValue = parameters[2].asNativeNumber(context);
-      if (endValue < startValue && stepValue >= 0) {
-        throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be negative if end is less than start', context);
-      }
-      if (endValue > startValue && stepValue <= 0) {
-        throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be positive if start is less than end', context);
-      }
-    } else {
-      throwRuntimeError('range(end|[start, end]|[start, end, step]) takes 1, 2, or 3 numeric parameters', context);
+const callFunction = (context, scope, parameters) => {
+  let startValue = 0;
+  let endValue;
+  let stepValue = 1;
+  if (parameters.length === 1) {
+    endValue = parameters[0].asNativeNumber(context);
+  } else if (parameters.length === 2) {
+    startValue = parameters[0].asNativeNumber(context);
+    endValue = parameters[1].asNativeNumber(context);
+    if (endValue < startValue) {
+      stepValue = -1;
     }
-    const result = [];
-    for (let i = startValue; i < endValue; i += stepValue) {
-      result.push(createNumericValue(i));
+  } else if (parameters.length === 3) {
+    startValue = parameters[0].asNativeNumber(context);
+    endValue = parameters[1].asNativeNumber(context);
+    stepValue = parameters[2].asNativeNumber(context);
+    if (endValue < startValue && stepValue >= 0) {
+      throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be negative if end is less than start', context);
     }
-    return createArrayValue(result);
-  };
-
-  return {
-    ...defaultValue(valueTypes.FUNCTION, asNativeString),
-    asNativeString,
-    asNativeBoolean,
-    asString,
-    asBoolean,
-    callFunction,
-  };
+    if (endValue > startValue && stepValue <= 0) {
+      throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be positive if start is less than end', context);
+    }
+  } else {
+    throwRuntimeError('range(end|[start, end]|[start, end, step]) takes 1, 2, or 3 numeric parameters', context);
+  }
+  const result = [];
+  for (let i = startValue; i < endValue; i += stepValue) {
+    result.push(createNumericValue(i));
+  }
+  return createArrayValue(result);
 };
+
+export const createRangeBuiltin = () => createBuiltInFunctionValue('range', callFunction);

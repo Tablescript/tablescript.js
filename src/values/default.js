@@ -15,8 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypeName } from './types';
+import { valueTypeName, valueTypes } from './types';
 import { runtimeErrorThrower, throwRuntimeError } from '../error';
+import { createBooleanValue } from './boolean';
 
 const getProperty = (properties, getTypeName) => (context, name) => {
   const nameValue = name.asNativeString(context);
@@ -85,4 +86,20 @@ export const defaultValue = (type, nativeValueFunction) => {
     modulo: runtimeErrorThrower(`Cannot modulo ${typeName}`),
     equals: runtimeErrorThrower(`Cannot determine equality with ${typeName}`),
   };
+};
+
+export const createBuiltInFunctionValue = (name, callFunction) => {
+  const asNativeString = () => `builtin function(${name})`;
+  return createValue(
+    valueTypes.FUNCTION,
+    asNativeString,
+    [],
+    {
+      asNativeString,
+      asNativeBoolean: () => true,
+      asString: () => createStringValue(asNativeString()),
+      asBoolean: () => createBooleanValue(asNativeBoolean()),
+      callFunction,
+    }
+  );
 };

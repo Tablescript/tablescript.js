@@ -15,35 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../values/types';
-import { defaultValue } from '../values/default';
+import { createBuiltInFunctionValue } from '../values/default';
 import { throwRuntimeError } from '../error';
-import { createStringValue } from '../values/string';
-import { createBooleanValue } from '../values/boolean';
 import { run } from '../index';
 
-export const createRequireBuiltin = options => {
-  const asNativeString = () => 'builtin function(require)';
-  const asNativeBoolean = () => true;
-
-  const asString = () => createStringValue(asNativeString());
-  const asBoolean = () => createBooleanValue(asNativeBoolean());
-
-  const callFunction = async (context, scope, parameters) => {
-    if (parameters.length < 1) {
-      throwRuntimeError(`require(modulePath, ...) requires a modulePath`, context);
-    }
-    const filename = parameters[0].asNativeString(context);
-    const args = parameters.slice(1);
-    return await run(context, filename, args, options);
-  };
-
-  return {
-    ...defaultValue(valueTypes.FUNCTION, asNativeString),
-    asNativeString,
-    asNativeBoolean,
-    asString,
-    asBoolean,
-    callFunction,
-  };
+const callFunction = options => async (context, scope, parameters) => {
+  if (parameters.length < 1) {
+    throwRuntimeError(`require(modulePath, ...) requires a modulePath`, context);
+  }
+  const filename = parameters[0].asNativeString(context);
+  const args = parameters.slice(1);
+  return await run(context, filename, args, options);
 };
+
+export const createRequireBuiltin = options => createBuiltInFunctionValue('require', callFunction(options));

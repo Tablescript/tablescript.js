@@ -29,6 +29,7 @@ const nativeEquals = value => (context, other) => isString(other) && value === o
 const asString = asNativeString => context => createStringValue(asNativeString(context));
 const asBoolean = asNativeBoolean => context => createBooleanValue(asNativeBoolean(context));
 const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
+const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
 
 const getElement = value => (context, index) => {
   let indexValue = index.asNativeNumber(context);
@@ -51,6 +52,7 @@ const methods = {
   asString: R.pipe(asNativeString, asString),
   asBoolean: R.pipe(asNativeBoolean, asBoolean),
   equals: R.pipe(nativeEquals, equals),
+  notEquals: R.pipe(nativeEquals, notEquals),
   getElement,
   add: R.pipe(asNativeString, add),
   multiplyBy: R.pipe(asNativeString, multiplyBy),
