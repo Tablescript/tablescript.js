@@ -21,8 +21,8 @@ import { keysBuiltIn } from './keys';
 import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
 import { requireBuiltIn } from './require';
-import { valueTypes } from '../values/types';
-import { createValue } from '../values/default';
+import { valueTypes } from '../types';
+import { createValue } from '../default';
 
 const createBuiltInFunctionValue = (name, callFunction) => {
   const asNativeString = () => `builtin function(${name})`;

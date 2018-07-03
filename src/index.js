@@ -19,7 +19,7 @@
 
 import { parse } from './parser/parser';
 import { TablescriptError, throwRuntimeError } from './error';
-import { initializeBuiltins } from './builtins/builtins';
+import { initializeBuiltins } from './values/builtins/builtins';
 import { createStringValue } from './values/string';
 import { createArrayValue } from './values/array';
 import { createObjectValue } from './values/object';

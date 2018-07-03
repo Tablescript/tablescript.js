@@ -15,20 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../error';
-import { createUndefined } from '../values/undefined';
+import { throwRuntimeError } from '../../error';
+import { run } from '../../index';
 
-export const assertBuiltIn = _ => async (context, _, parameters) => {
+export const requireBuiltIn = options => async (context, _, parameters) => {
   if (parameters.length < 1) {
-    throwRuntimeError(`assert(condition, [message]) takes 1 or 2 parameters`, context);
+    throwRuntimeError(`require(modulePath, ...) requires a modulePath`, context);
   }
-  if (!parameters[0].asNativeBoolean(context)) {
-    if (parameters.length === 2) {
-      const message = parameters[1].asNativeString(context);
-      throwRuntimeError(`assertion failed: ${message}`, context);
-    } else {
-      throwRuntimeError('assertion failed', context);
-    }
-  }
-  return createUndefined();
+  const filename = parameters[0].asNativeString(context);
+  const args = parameters.slice(1);
+  return await run(context, filename, args, options);
 };

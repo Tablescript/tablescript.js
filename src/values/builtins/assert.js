@@ -15,14 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../error';
-import { randomNumber } from '../util/random';
+import { throwRuntimeError } from '../../error';
+import { createUndefined } from '../undefined';
 
-export const chooseBuiltIn = _ => (context, _, parameters) => {
-  if (parameters.length !== 1) {
-    throwRuntimeError('choose(items) takes a single array parameter', context);
+export const assertBuiltIn = _ => async (context, _, parameters) => {
+  if (parameters.length < 1) {
+    throwRuntimeError(`assert(condition, [message]) takes 1 or 2 parameters`, context);
   }
-  const items = parameters[0].asArray();
-  const roll = randomNumber(items.length) - 1;
-  return items[roll];
+  if (!parameters[0].asNativeBoolean(context)) {
+    if (parameters.length === 2) {
+      const message = parameters[1].asNativeString(context);
+      throwRuntimeError(`assertion failed: ${message}`, context);
+    } else {
+      throwRuntimeError('assertion failed', context);
+    }
+  }
+  return createUndefined();
 };

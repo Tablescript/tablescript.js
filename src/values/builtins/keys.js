@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../error';
-import { createArrayValue } from '../values/array';
-import { createStringValue } from '../values/string';
+import { throwRuntimeError } from '../../error';
+import { createArrayValue } from '../array';
+import { createStringValue } from '../string';
 
 export const keysBuiltIn = _ => (context, _, parameters) => {
   if (parameters.length != 1) {

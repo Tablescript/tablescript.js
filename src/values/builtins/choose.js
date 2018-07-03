@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../error';
-import { run } from '../index';
+import { throwRuntimeError } from '../../error';
+import { randomNumber } from '../../util/random';
 
-export const requireBuiltIn = options => async (context, _, parameters) => {
-  if (parameters.length < 1) {
-    throwRuntimeError(`require(modulePath, ...) requires a modulePath`, context);
+export const chooseBuiltIn = _ => (context, _, parameters) => {
+  if (parameters.length !== 1) {
+    throwRuntimeError('choose(items) takes a single array parameter', context);
   }
-  const filename = parameters[0].asNativeString(context);
-  const args = parameters.slice(1);
-  return await run(context, filename, args, options);
+  const items = parameters[0].asArray();
+  const roll = randomNumber(items.length) - 1;
+  return items[roll];
 };
