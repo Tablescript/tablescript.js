@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypeName, valueTypes } from './types';
-import { runtimeErrorThrower, throwRuntimeError } from '../error';
-import { createBooleanValue } from './boolean';
+import { valueTypeName } from './types';
+import { runtimeErrorThrower } from '../error';
+import { createUndefined } from './undefined';
 
 const getProperty = (properties, getTypeName) => (context, name) => {
   const nameValue = name.asNativeString(context);
   if (properties[nameValue]) {
     return properties[nameValue];
   }
-  throwRuntimeError(`${getTypeName()} has no member ${nameValue}`, context);
+  return createUndefined();
 };
 
 const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({

@@ -3,7 +3,7 @@ import { valueTypes } from '../values/types';
 
 export const isBooleanValue = expected => value => {
   if (value.type !== valueTypes.BOOLEAN) {
-    throw new Error('Expecting a BOOLEAN');
+    throw new Error(`Expecting a BOOLEAN but got ${value.type}`);
   }
   const actual = value.asNativeBoolean();
   if (actual !== expected) {
@@ -14,7 +14,7 @@ export const isBooleanValue = expected => value => {
 
 export const isNumericValue = expected => value => {
   if (value.type !== valueTypes.NUMBER) {
-    throw new Error('Expecting a NUMBER');
+    throw new Error(`Expecting a NUMBER but got ${value.type}`);
   }
   const actual = value.asNativeNumber();
   if (actual !== expected) {
@@ -25,7 +25,7 @@ export const isNumericValue = expected => value => {
 
 export const isStringValue = expected => value => {
   if (value.type !== valueTypes.STRING) {
-    throw new Error('Expecting a STRING');
+    throw new Error(`Expecting a STRING but got ${value.type}`);
   }
   const actual = value.asNativeString();
   if (actual !== expected) {
@@ -36,7 +36,7 @@ export const isStringValue = expected => value => {
 
 export const isArrayValue = expected => value => {
   if (value.type !== valueTypes.ARRAY) {
-    throw new Error('Expecting an ARRAY');
+    throw new Error(`Expecting an ARRAY but got ${value.type}`);
   }
   const actual = value.asNativeArray();
   if (!R.equals(actual, expected)) {
@@ -47,7 +47,7 @@ export const isArrayValue = expected => value => {
 
 export const isUndefined = value => {
   if (value.type !== valueTypes.UNDEFINED) {
-    throw new Error('Expecting a UNDEFINED');
+    throw new Error(`Expecting a UNDEFINED but got ${value.type}`);
   }
   return true;
 };
