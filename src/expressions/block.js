@@ -19,12 +19,12 @@ import { expressionTypes } from './types';
 import { defaultExpression } from './default';
 import { createUndefined } from '../values/undefined';
 
-export const createBlockExpression = statements => {
+export const createBlockExpression = expressions => {
   const evaluate = async scope => {
     const localScope = { ...scope };
     let result = createUndefined();
-    for (let i = 0; i < statements.length; i++) {
-      result = await statements[i].evaluate(localScope);
+    for (let i = 0; i < expressions.length; i++) {
+      result = await expressions[i].evaluate(localScope);
     }
     return result;
   };
