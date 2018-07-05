@@ -20,56 +20,48 @@ import { randomNumber } from '../util/random';
 import { createUndefined } from './undefined';
 import { createNumericValue } from './numeric';
 import { createTableValue } from './table';
+import { mapFunctionParameters } from '../util/parameters';
 
-const parametersToArguments = (formalParameters, parameters) => {
-  const o = {};
-  for (let i = 0; i < parameters.length; i++) {
-    o[formalParameters[i]] = parameters[i];
-  }
-  return o;
-};
 const asNativeString = (formalParameters, entries, closure) => () => 'table';
 const asNativeBoolean = (formalParameters, entries, closure) => () => true;
 const nativeEquals = (formalParameters, entries, closure) => () => false;
 const asString = asNativeString => () => createStringValue(asNativeString());
 const asBoolean = asNativeBoolean => () => createBooleanValue(asNativeBoolean());
 const asArray = (formalParameters, entries, closure) => () => entries;
+
+const tableEntryScope = (formalParameters, entries, closure, roll) => ({
+  'roll': createNumericValue(roll),
+  'this': createTableValue(formalParameters, entries, closure),
+});
+
 const getElement = (formalParameters, entries, closure) => async (context, index) => {
-  const indexValue = index.asNativeNumber(context);
-  const selectedEntry = entries.find((e, index) => e.rollApplies(indexValue, index + 1));
+  const roll = index.asNativeNumber(context);
+  const selectedEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
   if (selectedEntry) {
-    const localScope = {
+    return await selectedEntry.evaluate({
       ...closure,
-      roll: createNumericValue(indexValue),
-      'this': createTableValue(formalParameters, entries, closure),
-    };
-    return await selectedEntry.evaluate(localScope);
+      ...tableEntryScope(formalParameters, entries, closure, roll),
+    });
   }
   return createUndefined();
 };
+
 const getTableDie = entries => entries.reduce((max, entry, index) => Math.max(max, entry.getHighestSelector(index + 1)), 0);
+
 const getTableRoll = R.pipe(getTableDie, randomNumber);
-const createLocalScope = (closure, args, extras) => ({
-  ...closure,
-  ...args,
-  ...extras,
-});
+
 const getRolledEntry = (entries, roll) => entries.find((e, index) => e.rollApplies(roll, index + 1));
 
 const callFunction = (formalParameters, entries, closure) => async (context, parameters) => {
   const roll = getTableRoll(entries);
   const rolledEntry = getRolledEntry(entries, roll);
-  return await rolledEntry.evaluate(
-    createLocalScope(
-      closure,
-      parametersToArguments(formalParameters, parameters),
-      {
-        'roll': createNumericValue(roll),
-        'this': createTableValue(formalParameters, entries, closure),
-      }
-    )
-  );
+  return await rolledEntry.evaluate({
+    ...closure,
+    ...mapFunctionParameters(formalParameters, parameters),
+    ...tableEntryScope(formalParameters, entries, closure, roll),
+  });
 };
+
 const equals = nativeEquals => () => createBooleanValue(nativeEquals());
 
 const methods = {
