@@ -104,16 +104,15 @@ Expression "expression"
   }
 
 AssignmentExpression "assignment"
-  = l:LeftHandSideExpression __ '=' !'=' __ e:Expression {
-    return createAssignmentExpression(createContext(location(), options), l, '=', e);
-  }
-  / l:LeftHandSideExpression __ o:AssignmentOperator __ e:Expression {
+  = l:LeftHandSideExpression __ o:AssignmentOperator __ e:ConditionalExpression {
     return createAssignmentExpression(createContext(location(), options), l, o, e);
   }
   / ConditionalExpression
 
 AssignmentOperator "assignment operator"
-  = '+='
+  = '=' !'=' { return '='; }
+  / '=' !'>' { return '='; }
+  / '+='
   / '-='
   / '*='
   / '/='
@@ -241,7 +240,7 @@ MemberExpression "member expression"
   }
 
 FunctionExpression "function expression"
-  = '(' __ params:(FormalParameterList __)? ')' __ '=>' __ '{' __ body:FunctionBody __ '}' {
+  = FunctionToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ body:FunctionBody __ '}' {
     return createFunctionExpression(createContext(location(), options), params ? params[0] : [], body);
   }
 
@@ -492,6 +491,7 @@ ReservedWord
   / AndToken
   / OrToken
   / NotToken
+  / FunctionToken
   / TableToken
   / UndefinedToken
 
@@ -502,5 +502,6 @@ ElseToken = "else" !IdentifierPart
 AndToken = $("and" !IdentifierPart)
 OrToken = $("or" !IdentifierPart)
 NotToken = "not" !IdentifierPart { return 'not'; }
+FunctionToken = "fn" !IdentifierPart
 TableToken = "table" !IdentifierPart
 UndefinedToken = "undefined" !IdentifierPart

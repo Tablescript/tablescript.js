@@ -19,15 +19,11 @@ import { throwRuntimeError } from '../error';
 import { createLeftHandSideValue } from '../values/left-hand-side';
 import { defaultExpression } from './default';
 import { expressionTypes } from './types';
+import { createUndefined } from '../values/undefined';
 
 export const createVariableExpression = (context, name) => {
 
-  const evaluate = scope => {
-    if (scope[name]) {
-      return scope[name];
-    }
-    throwRuntimeError(`Symbol '${name}' not found`, context);
-  };
+  const evaluate = scope => scope[name] || createUndefined();
 
   const evaluateAsLeftHandSide = () => createLeftHandSideValue(name);
 

@@ -1,7 +1,7 @@
 o = {
   "foo": 9,
   "bar": "I have a ham radio",
-  "baz": (x, y) => {
+  "baz": fn(x, y) {
     x * y
   },
   flung: "flamber",
@@ -13,7 +13,7 @@ o = {
       b: 2
     }
   },
-  a: () => {
+  a: fn() {
     [10,11,12]
   }
 }
@@ -27,7 +27,7 @@ system.assert(o.goo == 12)
 system.assert(o['flung'] == 'flamber')
 
 system.assert(o.sub.subsubsubsub.b == 2)
-system.assert(o.a().map((x) => { x - 5 }) == [5,6,7])
+system.assert(o.a().map(fn(x) { x - 5 }) == [5,6,7])
 
 o = {
   a: 1,

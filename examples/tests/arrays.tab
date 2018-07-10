@@ -60,7 +60,7 @@ a = [
     'second'
     'third'
   },
-  (n) => { n * 3 }
+  fn(n) { n * 3 }
 ]
 
 assert(a[0] == 1)
@@ -74,7 +74,7 @@ assert(a[3][1] == 5)
 assert(a[3][2] == [6])
 assert(a[3][2][0] == 6)
 range(10)
-  .map(() => {
+  .map(fn() {
     assert(['first', 'second', 'third'].includes(a[4]()))
   })
 assert(a[5](2) == 6)
@@ -101,16 +101,16 @@ assert(not a.includes('abc'))
 # The map function applies a function to each member of the array. It's also
 # one of the Tablescript ways of "looping".
 a = [1, 2, 3, 4, 5]
-f = (n) => { n + 1 }
+f = fn(n) { n + 1 }
 assert(a.map(f) == [2, 3, 4, 5, 6])
 
 # Mapping functions can be "anonymous" and defined in place.
-assert(a.map((n) => { n * 2 }) == [2, 4, 6, 8, 10])
+assert(a.map(fn(n) { n * 2 }) == [2, 4, 6, 8, 10])
 
 # Use system.range to create an array of indices to loop over. This is the
 # same as a "for loop" in other languages.
 a = ['a', 'b', 'c', 'd', 'e']
-assert(range(5).map((n) => { a[-1 - n] }) == ['e', 'd', 'c', 'b', 'a'])
+assert(range(5).map(fn(n) { a[-1 - n] }) == ['e', 'd', 'c', 'b', 'a'])
 ############################################################################
 
 ############################################################################
@@ -121,7 +121,7 @@ assert(range(5).map((n) => { a[-1 - n] }) == ['e', 'd', 'c', 'b', 'a'])
 # value and then whatever your function returns - and the array element
 # itself. Let's start simple.
 a = [1, 2, 3, 4, 5]
-sum = (acc, n) => { acc + n}
+sum = fn(acc, n) { acc + n}
 assert(a.reduce(sum, 0) == 15)
 
 # This starts with 0, then calls the function with (0, 1), the accumulator
@@ -133,10 +133,10 @@ assert(a.reduce(sum, 0) == 15)
 # with (10, 5) and returns 15 - the sum of each element in the array.
 
 a = [5, 7, 2, 19, 4]
-min = (acc, n) => { n < acc ? n : acc }
+min = fn(acc, n) { n < acc ? n : acc }
 assert(a.reduce(min, 10000) == 2)
 
-max = (acc, n) => { n > acc ? n : acc }
+max = fn(acc, n) { n > acc ? n : acc }
 assert(a.reduce(max, -1) == 19)
 ############################################################################
 
@@ -200,11 +200,11 @@ assert(a.reverse() == [5, 4, 3, 2, 1])
 # The filter function returns a new array containing only the elements of
 # the original for which the passed function returns true.
 a = [1, 2, 3, 4, 5, 6]
-even = (n) => { n % 2 == 0 }
+even = fn(n) { n % 2 == 0 }
 assert(a.filter(even) == [2, 4, 6])
 
 a = ['red', 'orange', 'yellow', 'green', 'blue', 'violet', 'indigo']
-length_6 = (n) => { n.length == 6 }
+length_6 = fn(n) { n.length == 6 }
 assert(a.filter(length_6) == ['orange', 'yellow', 'violet', 'indigo'])
 ############################################################################
 
@@ -215,14 +215,14 @@ assert(a.filter(length_6) == ['orange', 'yellow', 'violet', 'indigo'])
 # passed function returns true.
 a = [1, 2, 3, 4, 5, 6]
 
-system.assert(a.find((n) => { n == 3 }) == 3)
-system.assert(a.find((n) => { n == 'abc' }) == undefined)
+system.assert(a.find(fn(n) { n == 3 }) == 3)
+system.assert(a.find(fn(n) { n == 'abc' }) == undefined)
 
-system.assert(a.findIndex((n) => { n == 3 }) == 2)
-system.assert(a.findIndex((n) => { n == 'abc' }) == -1)
+system.assert(a.findIndex(fn(n) { n == 3 }) == 2)
+system.assert(a.findIndex(fn(n) { n == 'abc' }) == -1)
 
 system.assert(a.indexOf(3) == 2)
 system.assert(a.indexOf(99) == -1)
 
-c = (a, b) => { a - b }
+c = fn(a, b) { a - b }
 system.assert([4,2,5,1,3].sort(c) == [1,2,3,4,5])

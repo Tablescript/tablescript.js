@@ -6,9 +6,9 @@ range = system.range
 #
 # test_rolls calls the passed roll function 100 times and asserts the result
 # is in the expected_values array.
-test_rolls = (roll, expected_values) => {
+test_rolls = fn(roll, expected_values) {
   range(100)
-    .map(() => {
+    .map(fn() {
       assert(expected_values.includes(roll()))
     })
 }
@@ -16,7 +16,7 @@ test_rolls = (roll, expected_values) => {
 # all_rolls_for_d creates an array of possible rolls for a die with
 # the passed number of sides. e.g. all_rolls_for_d(100) creates an array
 # of 1 to 100 inclusive.
-all_rolls_for_d = (count) => { range(count).map((n) => { n + 1 }) }
+all_rolls_for_d = fn(count) { range(count).map(fn(n) { n + 1 }) }
 ############################################################################
 
 ############################################################################
@@ -39,23 +39,23 @@ assert([2, 3, 4].includes(2d2))
 ############################################################################
 # "Standard" dice.
 #
-roll = () => { d4 }
+roll = fn() { d4 }
 expected_results = [1, 2, 3, 4]
 test_rolls(roll, expected_results)
 
-roll = () => { d6 }
+roll = fn() { d6 }
 expected_results = [1, 2, 3, 4, 5, 6]
 test_rolls(roll, expected_results)
 
-roll = () => { 2d6 }
+roll = fn() { 2d6 }
 expected_results = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 test_rolls(roll, expected_results)
 
-roll = () => { 1d12 }
+roll = fn() { 1d12 }
 expected_results = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 test_rolls(roll, expected_results)
 
-roll = () => { d20 }
+roll = fn() { d20 }
 expected_results = all_rolls_for_d(20)
 test_rolls(roll, expected_results)
 ############################################################################
@@ -64,11 +64,11 @@ test_rolls(roll, expected_results)
 # Use dice literals in mathematical expressions.
 #
 # Apply roll modifiers.
-roll = () => { 3d6 + 3 }
+roll = fn() { 3d6 + 3 }
 expected_results = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 test_rolls(roll, expected_results)
 
-roll = () => { 2d6 * 100 + 7 }
+roll = fn() { 2d6 * 100 + 7 }
 expected_results = [207, 307, 407, 507, 607, 707, 807, 907, 1007, 1107, 1207]
 test_rolls(roll, expected_results)
 ############################################################################
@@ -77,19 +77,19 @@ test_rolls(roll, expected_results)
 # Die is not limited to physical dice.
 #
 # Roll d100, d1000, d7, d43. Whatever you like.
-roll = () => { d100 }
+roll = fn() { d100 }
 expected_results = all_rolls_for_d(100)
 test_rolls(roll, expected_results)
 
-roll = () => { d1000 }
+roll = fn() { d1000 }
 expected_results = all_rolls_for_d(1000)
 test_rolls(roll, expected_results)
 
-roll = () => { d7 }
+roll = fn() { d7 }
 expected_results = [1, 2, 3, 4, 5, 6, 7]
 test_rolls(roll, expected_results)
 
-roll = () => { d43 }
+roll = fn() { d43 }
 expected_results = all_rolls_for_d(43)
 test_rolls(roll, expected_results)
 ############################################################################
@@ -102,16 +102,16 @@ test_rolls(roll, expected_results)
 # -h drops 1 die.
 expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 
-roll = () => { 4d6-l }
+roll = fn() { 4d6-l }
 test_rolls(roll, expected_results)
 
-roll = () => { 5d6-l2 }
+roll = fn() { 5d6-l2 }
 test_rolls(roll, expected_results)
 
-roll = () => { 4d6-h }
+roll = fn() { 4d6-h }
 test_rolls(roll, expected_results)
 
-roll = () => { 5d6-h2 }
+roll = fn() { 5d6-h2 }
 test_rolls(roll, expected_results)
 ############################################################################
 
@@ -123,16 +123,16 @@ test_rolls(roll, expected_results)
 # high rolls. +h re-adds 1 die.
 expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 
-roll = () => { 4d6-l }
+roll = fn() { 4d6-l }
 test_rolls(roll, expected_results)
 
-roll = () => { 5d6-l2 }
+roll = fn() { 5d6-l2 }
 test_rolls(roll, expected_results)
 
-roll = () => { 2d6+h }
+roll = fn() { 2d6+h }
 test_rolls(roll, expected_results)
 
-roll = () => { 3d4+h2 }
+roll = fn() { 3d4+h2 }
 expected_results = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 test_rolls(roll, expected_results)
 
@@ -142,7 +142,7 @@ assert(3d6-l100 == 0)
 
 # If you re-add more dice than were rolled, you get the sum of fewer rolls
 # than expected.
-roll = () => { 2d4+l5 }
+roll = fn() { 2d4+l5 }
 expected_results = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 test_rolls(roll, expected_results)
 ############################################################################
@@ -153,9 +153,9 @@ test_rolls(roll, expected_results)
 # 2d20-l means roll 2 d20s and drop the lowest. (2d20-h is "disadvantage".)
 expected_results = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
-roll = () => { 2d20-l }
+roll = fn() { 2d20-l }
 test_rolls(roll, expected_results)
 
-roll = () => { 2d20-h }
+roll = fn() { 2d20-h }
 test_rolls(roll, expected_results)
 ############################################################################
