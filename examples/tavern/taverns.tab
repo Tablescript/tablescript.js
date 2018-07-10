@@ -21,7 +21,7 @@ noun = table {
   things.instrument().capitalize()
 }
 
-join_and_capitalize = (words) => { words.map((w) => { w.capitalize() }).join(' ') }
+join_and_capitalize = fn(words) { words.map(fn(w) { w.capitalize() }).join(' ') }
 
 tavern_name = table {
   join_and_capitalize(['The', adjectives.adjective(), noun(), suffix()])
@@ -30,7 +30,7 @@ tavern_name = table {
   join_and_capitalize([adjectives.adjective(), noun()])
 }
 
-tavern = () => {
+tavern = fn() {
   {
     name: tavern_name(),
     owner: names.name(),

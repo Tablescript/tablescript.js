@@ -17,11 +17,11 @@ all_things = table {
 special_nouns = {
 }
 
-is_vowel = (letter) => {
+is_vowel = fn(letter) {
   ['a', 'e', 'i', 'o', 'u'].includes(letter.lowercase())
 }
 
-articlize = (thing) => {
+articlize = fn(thing) {
   if (special_nouns[thing]) {
     special_nouns[things].article
   } else {
@@ -33,7 +33,7 @@ articlize = (thing) => {
   }
 }
 
-possessivethize = (name) => {
+possessivethize = fn(name) {
   if (name[-1] == 's') {
     name + "'"
   } else {
@@ -41,7 +41,7 @@ possessivethize = (name) => {
   }
 }
 
-create_person = (name, lair, pronouns) => {
+create_person = fn(name, lair, pronouns) {
   {
     name: name,
     article: articlize(name),
@@ -111,7 +111,7 @@ relations = [
   'maid',
   'server',
   'landlord'
-].map((n) => { 'my ' + n })
+].map(fn(n) { 'my ' + n })
 
 roles = [
   'adventurer',
@@ -134,7 +134,7 @@ roles = [
   'witch',
   'wizard',
   'woman'
-].map((n) => {
+].map(fn(n) {
   description = system.choose([[], [person_description()]])
   ['the', ...description, n].join(' ')
 })
@@ -146,15 +146,15 @@ local = table {
   {
     name: names.name()
   }
-  ...relations.map((n) => { { name: n } })
-  ...roles.map((n) => { { name: n } })
+  ...relations.map(fn(n) { { name: n } })
+  ...roles.map(fn(n) { { name: n } })
 }
 
-create_thing = (thing, possible_adjectives) => {
+create_thing = fn(thing, possible_adjectives) {
   description = [(table {
     ...possible_adjectives
     ''
-  })(), thing].filter((w) => { w != '' }).join(' ')
+  })(), thing].filter(fn(w) { w != '' }).join(' ')
   {
     name: description,
     root: thing,
@@ -177,11 +177,11 @@ found_thing = table {
   create_thing('wagon', ['overturned'])
 }
 
-create_location = (name, areas, types) => {
+create_location = fn(name, areas, types) {
   description = [(table {
     ...types
     ''
-  })(), name].filter((w) => { w != '' }).join(' ')
+  })(), name].filter(fn(w) { w != '' }).join(' ')
   {
     name: description,
     area: [system.choose(areas), description].join(' ')
@@ -190,11 +190,11 @@ create_location = (name, areas, types) => {
 
 directions = ['north', 'south', 'east', 'west']
 
-area_modifiers = ['in the', 'near the', ...directions.map((d) => { 'on the ' + d + ' side of the' })]
-hill_modifiers = ['on the', 'near the', 'on the other side of the', ...directions.map((d) => { 'on the ' + d + ' side of the' })]
+area_modifiers = ['in the', 'near the', ...directions.map(fn(d) { 'on the ' + d + ' side of the' })]
+hill_modifiers = ['on the', 'near the', 'on the other side of the', ...directions.map(fn(d) { 'on the ' + d + ' side of the' })]
 mine_modifiers = [...area_modifiers, 'near the entrance to the', 'deep in the', 'just outside the']
-forest_modifiers = [...area_modifiers, 'near the edge of the', 'on the edge of the', 'just outside the', ...directions.map((d) => { 'at the ' + d + ' edge of the' })]
-river_modifiers = [...area_modifiers, 'on the edge of the', 'on the shore of the', ...directions.map((d) => { 'on the ' + d + ' shore of the' })]
+forest_modifiers = [...area_modifiers, 'near the edge of the', 'on the edge of the', 'just outside the', ...directions.map(fn(d) { 'at the ' + d + ' edge of the' })]
+river_modifiers = [...area_modifiers, 'on the edge of the', 'on the shore of the', ...directions.map(fn(d) { 'on the ' + d + ' shore of the' })]
 mine_types = ['diamond', 'gold', 'silver', 'platinum', 'copper', 'creepy', 'haunted']
 forest_types = ['pine', 'spruce', 'dark', 'creepy', 'haunted']
 building_types = ['ruined', 'crumbling', 'ancient', 'dark']
@@ -258,7 +258,7 @@ rumour_template = table {
     [subject.name, 'found', object.article, location.area]
   }
   {
-    password = system.range(d3).map(() => { all_things() }).join(' ')
+    password = system.range(d3).map(fn() { all_things() }).join(' ')
     ['the password is', '"' + password + '"']
   }
   {
@@ -276,13 +276,13 @@ prefix = table {
   11-20: []
 }
 
-rumour = () => {
+rumour = fn() {
   [...prefix(), ...rumour_template()].join(' ').capitalize() + '.'
 }
 
-rumours = (n) => {
+rumours = fn(n) {
   system.range(n)
-    .map(() => { rumour() })
+    .map(fn() { rumour() })
 }
 
 {
