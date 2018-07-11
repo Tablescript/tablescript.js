@@ -128,16 +128,16 @@ describe('function', () => {
       expect(value.type).to.equal(valueTypes.FUNCTION);
     });
 
-    it('has native value "function"', () => {
-      expect(value.asNativeValue()).to.equal('function');
+    it('has native value "function(tablescript)"', () => {
+      expect(value.asNativeValue()).to.equal('function(tablescript)');
     });
 
     it('throws when converted to a native number', () => {
       expect(() => value.asNativeNumber()).to.throw('Cannot cast FUNCTION to number');
     });
 
-    it('has native string value "function"', () => {
-      expect(value.asNativeString()).to.equal('function');
+    it('has native string value "function(tablescript)"', () => {
+      expect(value.asNativeString()).to.equal('function(tablescript)');
     });
 
     it('has native boolean value true', () => {
@@ -152,8 +152,8 @@ describe('function', () => {
       expect(() => value.asNumber()).to.throw('Cannot cast FUNCTION to number');
     });
 
-    it('has string value "function"', () => {
-      expect(value.asString()).to.satisfy(isStringValue('function'));
+    it('has string value "function(tablescript)"', () => {
+      expect(value.asString()).to.satisfy(isStringValue('function(tablescript)'));
     });
 
     it('has boolean value true', () => {

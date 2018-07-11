@@ -15,16 +15,56 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import R from 'ramda';
 import { createValue } from './default';
-import { valueTypes } from './types';
+import { valueTypes, isString } from './types';
 import { stringProperties } from './string-properties';
-import { stringMethods, asNativeValue } from './string-methods';
+import { createBooleanValue } from './boolean';
+import { createUndefined } from './undefined';
 
-export const createCustomStringValue = (value, properties, methods) => createValue(
+const asNativeString = value => () => value;
+const asNativeBoolean = value => () => value === '' ? false : true;
+const nativeEquals = value => (context, other) => isString(other) && value === other.asNativeString(context);
+
+const asString = asNativeString => context => createStringValue(asNativeString(context));
+const asBoolean = asNativeBoolean => context => createBooleanValue(asNativeBoolean(context));
+const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
+const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
+
+const getElement = value => (context, index) => {
+  let indexValue = index.asNativeNumber(context);
+  if (indexValue < 0) {
+    indexValue = value.length + indexValue;
+  }
+  if (indexValue < 0 || indexValue >= value.length) {
+    return createUndefined();
+  }
+  return createStringValue(value[indexValue]);
+};
+
+const add = asNativeString => (context, other) => createStringValue(asNativeString(context) + other.asNativeString(context));
+const multiplyBy = asNativeString => (context, other) => createStringValue(asNativeString(context).repeat(other.asNativeNumber(context)));
+
+const methods = {
+  asNativeString,
+  asNativeBoolean,
+  nativeEquals,
+  asString: R.pipe(asNativeString, asString),
+  asBoolean: R.pipe(asNativeBoolean, asBoolean),
+  equals: R.pipe(nativeEquals, equals),
+  notEquals: R.pipe(nativeEquals, notEquals),
+  getElement,
+  add: R.pipe(asNativeString, add),
+  multiplyBy: R.pipe(asNativeString, multiplyBy),
+};
+
+export const stringMethods = value => Object.keys(methods).reduce((acc, m) => ({ ...acc, [m]: methods[m](value) }), {});
+
+export const createCustomStringValue = (value, properties) => createValue(
   valueTypes.STRING,
-  asNativeValue(value),
+  asNativeString(value),
   properties,
-  methods
+  stringMethods(value),
 );
 
-export const createStringValue = value => createCustomStringValue(value, stringProperties(value), stringMethods(value));
+export const createStringValue = value => createCustomStringValue(value, stringProperties(value));

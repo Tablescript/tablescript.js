@@ -36,13 +36,11 @@ export const createObjectSpread = o => createValue(
   },
 );
 
-export const createTableSpread = t => {
-  return createValue(
-    valueTypes.TABLE_SPREAD,
-    null,
-    [],
-    {
-      asArray: () => t.asArray(),
-    },
-  );
-};
+export const createTableSpread = t => createValue(
+  valueTypes.TABLE_SPREAD,
+  null,
+  [],
+  {
+    asArray: () => t.asArray(),
+  },
+);

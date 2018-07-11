@@ -22,14 +22,17 @@ import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 import { mapFunctionParameters } from '../util/parameters';
 
+const sharedAsNativeString = type => () => `function(${type})`;
+const asNativeBoolean = () => true;
+const nativeEquals = () => false;
+const equals = () => createBooleanValue(false);
+const sharedAsString = type => R.pipe(sharedAsNativeString(type), createStringValue);
+const asBoolean = R.pipe(asNativeBoolean, createBooleanValue);
+
 export const createNativeFunctionValue = (formalParameters, f) => {
-  const asNativeString = () => 'function(native)';
-  const asNativeBoolean = () => true;
-  const nativeEquals = () => false;
-  const asString = R.pipe(asNativeString, createStringValue);
-  const asBoolean = R.pipe(asNativeBoolean, createBooleanValue);
+  const asNativeString = sharedAsNativeString('native');
+  const asString = sharedAsString('native');
   const callFunction = async (context, parameters) => await f(context, mapFunctionParameters(formalParameters, parameters));
-  const equals = () => createBooleanValue(false);
 
   return createValue(
     valueTypes.FUNCTION,
@@ -48,11 +51,8 @@ export const createNativeFunctionValue = (formalParameters, f) => {
 };
 
 export const createFunctionValue = (formalParameters, body, closure) => {
-  const asNativeString = () => 'function';
-  const asNativeBoolean = () => true;
-  const nativeEquals = () => false;
-  const asString = R.pipe(asNativeString, createStringValue);
-  const asBoolean = R.pipe(asNativeBoolean, createBooleanValue);
+  const asNativeString = sharedAsNativeString('tablescript');
+  const asString = sharedAsString('tablescript');
   const callFunction = async (context, parameters) => {
     const localScope = {
       ...closure,
@@ -60,7 +60,6 @@ export const createFunctionValue = (formalParameters, body, closure) => {
     };
     return await body.evaluate(localScope);
   };
-  const equals = () => createBooleanValue(false);
 
   return createValue(
     valueTypes.FUNCTION,
