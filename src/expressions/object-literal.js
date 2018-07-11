@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createObjectValue } from '../values/object';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 export const createObjectLiteral = (context, entries) => {
@@ -33,9 +33,7 @@ export const createObjectLiteral = (context, entries) => {
     return createObjectValue(result);
   };
 
-  return {
-    ...defaultExpression(expressionTypes.OBJECT, evaluate),
-  };
+  return createExpression(expressionTypes.OBJECT, evaluate);
 };
 
 export const createObjectLiteralPropertyExpression = (context, key, value) => {
@@ -44,7 +42,5 @@ export const createObjectLiteralPropertyExpression = (context, key, value) => {
     [key]: await value.evaluate(scope),
   });
 
-  return {
-    ...defaultExpression(expressionTypes.OBJECT_PROPERTY, evaluate),
-  };
+  return createExpression(expressionTypes.OBJECT_PROPERTY, evaluate);
 };

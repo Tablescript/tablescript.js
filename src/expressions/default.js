@@ -18,12 +18,13 @@
 import { expressionTypeName } from './types';
 import { runtimeErrorThrower } from '../error';
 
-export const defaultExpression = (type, evaluate) => {
-  const typeName = expressionTypeName(type);
+const defaultMethods = (evaluate, typeName) => ({
+  evaluate,
+  evaluateAsLeftHandSide: runtimeErrorThrower(`Cannot assign to ${typeName} expression`),
+});
 
-  return {
-    type,
-    evaluate,
-    evaluateAsLeftHandSide: runtimeErrorThrower(`Cannot assign to ${typeName} expression`),
-  };
-};
+export const createExpression = (type, evaluate, methods = {}) => ({
+  type,
+  ...defaultMethods(evaluate, expressionTypeName(type)),
+  ...methods,
+});

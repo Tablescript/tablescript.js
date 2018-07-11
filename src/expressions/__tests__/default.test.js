@@ -20,14 +20,14 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { defaultExpression } from '../default';
+import { createExpression } from '../default';
 import { expressionTypes } from '../types';
 
-describe('defaultExpression', () => {
+describe('createExpression', () => {
   let expression;
 
   beforeEach(() => {
-    expression = defaultExpression(expressionTypes.BOOLEAN, 'some function');
+    expression = createExpression(expressionTypes.BOOLEAN, 'some function');
   });
 
   it('stores the type', () => {

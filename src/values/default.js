@@ -57,33 +57,3 @@ export const createValue = (type, nativeValueFunction, properties, methods) => (
   ...defaultMethods(nativeValueFunction, properties, () => valueTypeName(type)),
   ...methods,
 });
-
-export const defaultValue = (type, nativeValueFunction) => {
-  const typeName = valueTypeName(type);
-  
-  return {
-    type,
-    asNativeValue: nativeValueFunction,
-    asNativeNumber: runtimeErrorThrower(`Cannot cast ${typeName} to number`),
-    asNativeString: runtimeErrorThrower(`Cannot cast ${typeName} to string`),
-    asNativeBoolean: runtimeErrorThrower(`Cannot cast ${typeName} to boolean`),
-    asNativeArray: runtimeErrorThrower(`Cannot cast ${typeName} to array`),
-    asNativeObject: runtimeErrorThrower(`Cannot cast ${typeName} to object`),
-    nativeEquals: runtimeErrorThrower(`${typeName} equality unimplemented`),
-    asNumber: runtimeErrorThrower(`Cannot cast ${typeName} to number`),
-    asString: runtimeErrorThrower(`Cannot cast ${typeName} to string`),
-    asBoolean: runtimeErrorThrower(`Cannot cast ${typeName} to boolean`),
-    asArray: runtimeErrorThrower(`Cannot cast ${typeName} to array`),
-    asObject: runtimeErrorThrower(`Cannot cast ${typeName} to object`),
-    getProperty: runtimeErrorThrower(`Cannot get property of ${typeName}`),
-    setProperty: runtimeErrorThrower(`Cannot set property of ${typeName}`),
-    getElement: runtimeErrorThrower(`Cannot get element of ${typeName}`),
-    callFunction: runtimeErrorThrower(`${typeName} is not callable`),
-    add: runtimeErrorThrower(`Cannot add to ${typeName}`),
-    subtract: runtimeErrorThrower(`Cannot subtract from ${typeName}`),
-    multiplyBy: runtimeErrorThrower(`Cannot multiply ${typeName}`),
-    divideBy: runtimeErrorThrower(`Cannot divide ${typeName}`),
-    modulo: runtimeErrorThrower(`Cannot modulo ${typeName}`),
-    equals: runtimeErrorThrower(`Cannot determine equality with ${typeName}`),
-  };
-};

@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError } from '../error';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { valueTypes } from '../values/types';
 import { createArraySpread, createObjectSpread, createTableSpread } from '../values/spread';
@@ -35,7 +35,5 @@ export const createSpreadExpression = (context, expression) => {
     throwRuntimeError('Spreads only apply to ARRAY, OBJECT, and TABLE', context);
   };
 
-  return {
-    ...defaultExpression(expressionTypes.SPREAD, evaluate),
-  };
+  return createExpression(expressionTypes.SPREAD, evaluate);
 };

@@ -16,14 +16,12 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { expressionTypes } from './types';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 
 export const createSimpleExpression = expression => {
   const evaluate = async scope => {
     return await expression.evaluate(scope);
   };
 
-  return {
-    ...defaultExpression(expressionTypes.SIMPLE, evaluate),
-  };
+  return createExpression(expressionTypes.SIMPLE, evaluate);
 };

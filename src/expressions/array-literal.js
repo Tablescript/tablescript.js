@@ -18,7 +18,7 @@
 import { valueTypes } from '../values/types';
 import { throwRuntimeError } from '../error';
 import { createArrayValue } from '../values/array';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 export const createArrayLiteral = (context, values) => {
@@ -44,9 +44,5 @@ export const createArrayLiteral = (context, values) => {
     return createArrayValue(result);
   };
 
-  return {
-    ...defaultExpression(expressionTypes.ARRAY, evaluate),
-  };
+  return createExpression(expressionTypes.ARRAY, evaluate);
 };
-
-  

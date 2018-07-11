@@ -25,7 +25,7 @@ import { valueTypes } from '../types';
 import { createValue } from '../default';
 
 const createBuiltInFunctionValue = (name, callFunction) => {
-  const asNativeString = () => `builtin function(${name})`;
+  const asNativeString = () => 'function(builtin)';
   return createValue(
     valueTypes.FUNCTION,
     asNativeString,

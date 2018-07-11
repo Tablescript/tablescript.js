@@ -16,14 +16,12 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createUndefined } from '../values/undefined';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 export const createUndefinedLiteral = context => {
 
   const evaluate = () => createUndefined();
 
-  return {
-    ...defaultExpression(expressionTypes.UNDEFINED, evaluate),
-  };
+  return createExpression(expressionTypes.UNDEFINED, evaluate);
 };

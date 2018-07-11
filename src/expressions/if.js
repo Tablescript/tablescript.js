@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createUndefined } from '../values/undefined';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 export const createIfExpression = (context, condition, ifBlock, elseBlock) => {
@@ -33,7 +33,5 @@ export const createIfExpression = (context, condition, ifBlock, elseBlock) => {
     }
   };
 
-  return {
-    ...defaultExpression(expressionTypes.IF, evaluate),
-  };
+  return createExpression(expressionTypes.IF, evaluate);
 };

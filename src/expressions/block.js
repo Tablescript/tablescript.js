@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { expressionTypes } from './types';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { createUndefined } from '../values/undefined';
 
 export const createBlockExpression = expressions => {
@@ -29,7 +29,5 @@ export const createBlockExpression = expressions => {
     return result;
   };
 
-  return {
-    ...defaultExpression(expressionTypes.BLOCK, evaluate),
-  };
+  return createExpression(expressionTypes.BLOCK, evaluate);
 };

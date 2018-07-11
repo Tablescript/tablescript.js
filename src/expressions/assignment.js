@@ -17,7 +17,7 @@
 
 import { valueTypes, valueTypeName } from '../values/types';
 import { throwRuntimeError } from '../error';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { createNumericValue } from '../values/numeric';
 import { createStringValue } from '../values/string';
@@ -92,7 +92,5 @@ export const createAssignmentExpression = (context, leftHandSideExpression, oper
     return value;
   };
 
-  return {
-    ...defaultExpression(expressionTypes.ASSIGNMENT, evaluate),
-  };
+  return createExpression(expressionTypes.ASSIGNMENT, evaluate);
 };

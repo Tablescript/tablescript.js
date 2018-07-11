@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { allOperators } from './binary-operators';
 
@@ -23,9 +23,7 @@ export const createBinaryExpressionWithOperators = operators => (context, leftEx
 
   const evaluate = scope => operators[operator](context, leftExpression, rightExpression, scope);
 
-  return {
-    ...defaultExpression(expressionTypes.BINARY, evaluate)
-  };
+  return createExpression(expressionTypes.BINARY, evaluate);
 };
 
 export const createBinaryExpression = createBinaryExpressionWithOperators(allOperators);

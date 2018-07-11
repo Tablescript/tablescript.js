@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createTableValue } from '../values/table';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 const expandEntries = async (scope, entries) => {
@@ -38,7 +38,5 @@ export const createTableExpression = (context, formalParameters, entries) => {
     );
   };
 
-  return {
-    ...defaultExpression(expressionTypes.TABLE, evaluate),
-  };
+  return createExpression(expressionTypes.TABLE, evaluate);
 };

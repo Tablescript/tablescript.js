@@ -16,14 +16,12 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createNumericValue } from '../values/numeric';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 export const createNumberLiteral = (context, n) => {
 
   const evaluate = scope => createNumericValue(n);
 
-  return {
-    ...defaultExpression(expressionTypes.NUMBER, evaluate),
-  };
+  return createExpression(expressionTypes.NUMBER, evaluate);
 };

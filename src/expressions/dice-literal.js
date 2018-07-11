@@ -17,16 +17,14 @@
 
 import { rollDice } from '../util/random';
 import { createNumericValue } from '../values/numeric';
-import { defaultExpression } from './default';
+import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 export const createDiceLiteral = (context, count, die, suffix) => {
 
   const evaluate = scope => createNumericValue(rollDice(count, die, suffix));
 
-  return {
-    ...defaultExpression(expressionTypes.DICE, evaluate),
-  };
+  return createExpression(expressionTypes.DICE, evaluate);
 };
 
 export const createDiceLiteralSuffix = (operator, specifier, count) => ({
