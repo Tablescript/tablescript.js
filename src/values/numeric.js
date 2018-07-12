@@ -17,7 +17,7 @@
 
 import R from 'ramda';
 import { createValue } from './default';
-import { valueTypes, isNumeric } from './types';
+import { valueTypes, isNumeric, isString } from './types';
 import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 import { throwRuntimeError } from '../error';
@@ -30,6 +30,9 @@ const asNumber = value => context => createNumericValue(value);
 const asString = asNativeString => context => createStringValue(asNativeString(context));
 const asBoolean = asNativeBoolean => context => createBooleanValue(asNativeBoolean(context));
 const add = value => (context, other) => {
+  if (isString(other)) {
+    return createStringValue(value.toString() + other.asNativeString());
+  }
   return createNumericValue(value + other.asNativeNumber(context));
 };
 const subtract = value => (context, other) => {

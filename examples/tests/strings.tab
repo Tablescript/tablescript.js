@@ -37,3 +37,5 @@ system.assert('cucumber'.slice(3) == 'umber')
 system.assert('cucumber'.slice(1, 4) == 'ucu')
 
 system.assert('cucumber' * 3 == 'cucumbercucumbercucumber')
+
+system.assert(123 + 'abc' == '123abc')
