@@ -18,10 +18,6 @@
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 
-export const createSimpleExpression = expression => {
-  const evaluate = async scope => {
-    return await expression.evaluate(scope);
-  };
+const evaluate = expression => scope => expression.evaluate(scope);
 
-  return createExpression(expressionTypes.SIMPLE, evaluate);
-};
+export const createSimpleExpression = expression => createExpression(expressionTypes.SIMPLE, evaluate(expression));

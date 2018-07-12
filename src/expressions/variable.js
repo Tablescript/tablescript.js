@@ -15,23 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../error';
-import { createLeftHandSideValue } from '../values/left-hand-side';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { createLeftHandSideValue } from '../values/left-hand-side';
 import { createUndefined } from '../values/undefined';
 
-export const createVariableExpression = (context, name) => {
+const evaluate = name => scope => Promise.resolve(scope[name] || createUndefined());
+const evaluateAsLeftHandSide = name => () => createLeftHandSideValue(name);
 
-  const evaluate = scope => scope[name] || createUndefined();
-
-  const evaluateAsLeftHandSide = () => createLeftHandSideValue(name);
-
-  return createExpression(
-    expressionTypes.VARIABLE,
-    evaluate,
-    {
-      evaluateAsLeftHandSide,
-    },
-  );
-};
+export const createVariableExpression = name => createExpression(expressionTypes.VARIABLE, evaluate(name), evaluateAsLeftHandSide(name));

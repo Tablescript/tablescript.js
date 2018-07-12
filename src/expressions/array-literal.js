@@ -21,28 +21,25 @@ import { createArrayValue } from '../values/array';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-export const createArrayLiteral = (context, values) => {
-
-  const evaluate = async scope => {
-    let result = [];
-    for (let i = 0; i < values.length; i++) {
-      const value = await values[i].evaluate(scope);
-      if (value.type === valueTypes.ARRAY_SPREAD) {
-        result = [
-          ...result,
-          ...value.asArray(context)
-        ];
-      } else if (value.type === valueTypes.OBJECT_SPREAD) {
-        throwRuntimeError('Cannot spread object into array', context);
-      } else {
-        result = [
-          ...result,
-          value
-        ];
-      }
+const evaluate = (context, values) => async scope => {
+  let result = [];
+  for (let i = 0; i < values.length; i++) {
+    const value = await values[i].evaluate(scope);
+    if (value.type === valueTypes.ARRAY_SPREAD) {
+      result = [
+        ...result,
+        ...value.asArray(context)
+      ];
+    } else if (value.type === valueTypes.OBJECT_SPREAD) {
+      throwRuntimeError('Cannot spread object into array', context);
+    } else {
+      result = [
+        ...result,
+        value
+      ];
     }
-    return createArrayValue(result);
-  };
-
-  return createExpression(expressionTypes.ARRAY, evaluate);
+  }
+  return createArrayValue(result);
 };
+
+export const createArrayLiteral = (context, values) => createExpression(expressionTypes.ARRAY, evaluate(context, values));

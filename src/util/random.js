@@ -51,15 +51,11 @@ const applySuffix = (rolls, suffix) => {
     const count = suffix.count || 1;
     if (suffix.operator === '-') {
       return dropRolls(sortedRolls, suffix, count);
-    } else {
-      return reAddRolls(sortedRolls, suffix, count);
     }
-  } else {
-    return rolls;
+    return reAddRolls(sortedRolls, suffix, count);
   }
+  return rolls;
 };
 
-export const rollDice = (count, die, suffix) => {
-  return applySuffix(createRollSet(count, die), suffix)
-    .reduce((sum, roll) => sum + roll, 0);
-};
+export const rollDice = (count, die, suffix) => applySuffix(createRollSet(count, die), suffix)
+  .reduce((sum, roll) => sum + roll, 0);

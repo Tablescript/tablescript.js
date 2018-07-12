@@ -19,9 +19,6 @@ import { createStringValue } from '../values/string';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-export const createStringLiteral = (context, s) => {
+const evaluate = s => () => Promise.resolve(createStringValue(s));
 
-  const evaluate = scope => createStringValue(s);
-
-  return createExpression(expressionTypes.STRING, evaluate);
-};
+export const createStringLiteral = s => createExpression(expressionTypes.STRING, evaluate(s));

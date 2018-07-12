@@ -15,26 +15,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import { createExpression } from './default';
 import { createNumericValue } from '../values/numeric';
 import { createBooleanValue } from '../values/boolean';
 import { throwRuntimeError } from '../error';
+import { expressionTypes } from './types';
 
-export const createUnaryExpression = (context, operator, argument) => {
-  return {
-    evaluate: async scope => {
-      const value = await argument.evaluate(scope);
-      if (operator === '-') {
-        return createNumericValue(-1 * value.asNativeNumber(context));
-      } else if (operator === '+') {
-        return createNumericValue(value.asNativeNumber(context));
-      } else if (operator === 'not') {
-        return createBooleanValue(!value.asNativeBoolean(context));
-      } else {
-        throwRuntimeError(`Invalid operator ${operator}`, context);
-      }
-    },
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to unary expression', context);
-    },
-  };
+const evaluate = (context, operator, argument) => async scope => {
+  const value = await argument.evaluate(scope);
+  if (operator === '-') {
+    return createNumericValue(-1 * value.asNativeNumber(context));
+  }
+  if (operator === '+') {
+    return createNumericValue(value.asNativeNumber(context));
+  }
+  if (operator === 'not') {
+    return createBooleanValue(!value.asNativeBoolean(context));
+  }
+  throwRuntimeError(`Invalid operator ${operator}`, context);
 };
+
+export const createUnaryExpression = (context, operator, argument) => createExpression(expressionTypes.UNARY, evaluate(context, operator, argument));

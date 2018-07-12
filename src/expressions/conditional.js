@@ -15,20 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../error';
+import { expressionTypes } from './types';
+import { createExpression } from './default';
+
+const evaluate = (context, testExpression, consequentExpression, alternateExpression) => async scope => {
+  const testValue = await testExpression.evaluate(scope);
+  if (testValue.asNativeBoolean(context)) {
+    return consequentExpression.evaluate(scope);
+  }
+  return alternateExpression.evaluate(scope);
+};
 
 export const createConditionalExpression = (context, testExpression, consequentExpression, alternateExpression) => {
-  return {
-    evaluate: async scope => {
-      const testValue = await testExpression.evaluate(scope);
-      if (testValue.asNativeBoolean(context)) {
-        return await consequentExpression.evaluate(scope);
-      } else {
-        return await alternateExpression.evaluate(scope);
-      }
-    },
-    evaluateAsLeftHandSide: async () => {
-      throwRuntimeError('Cannot assign to conditional expression', context);
-    }
-  };
+  return createExpression(expressionTypes.CONDITIONAL, evaluate(context, testExpression, consequentExpression, alternateExpression));
 };

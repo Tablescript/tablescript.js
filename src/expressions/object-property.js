@@ -15,36 +15,41 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import { expressionTypes } from './types';
 import { valueTypes } from '../values/types';
 import {
   createArrayElementLeftHandSideValue,
   createObjectPropertyLeftHandSideValue
 } from '../values/left-hand-side';
 import { throwRuntimeError } from '../error';
+import { createExpression } from './default';
 
-export const createObjectPropertyExpression = (context, objectExpression, propertyNameExpression) => {
-  return {
-    evaluate: async scope => {
-      const objectValue = await objectExpression.evaluate(scope);
-      const propertyNameValue = await propertyNameExpression.evaluate(scope);
-      if (propertyNameValue.type === valueTypes.NUMBER) {
-        return await objectValue.getElement(context, propertyNameValue);
-      }
-      return objectValue.getProperty(context, propertyNameValue);
-    },
-    evaluateAsLeftHandSide: async (context, scope) => {
-      const objectValue = await objectExpression.evaluate(scope);
-      if (!(objectValue.type === valueTypes.OBJECT || objectValue.type === valueTypes.ARRAY)) {
-        throwRuntimeError('Cannot assign to non-object non-array type', context);
-      }
-      const propertyNameValue = await propertyNameExpression.evaluate(scope);
-      if (propertyNameValue.type === valueTypes.NUMBER) {
-        return createArrayElementLeftHandSideValue(objectValue, propertyNameValue);
-      } else if (propertyNameValue.type === valueTypes.STRING) {
-        return createObjectPropertyLeftHandSideValue(objectValue, propertyNameValue);
-      } else {
-        throwRuntimeError('Cannot access property or element', context);
-      }
-    },
-  };
+const evaluate = (context, objectExpression, propertyNameExpression) => async scope => {
+  const objectValue = await objectExpression.evaluate(scope);
+  const propertyNameValue = await propertyNameExpression.evaluate(scope);
+  if (propertyNameValue.type === valueTypes.NUMBER) {
+    return await objectValue.getElement(context, propertyNameValue);
+  }
+  return objectValue.getProperty(context, propertyNameValue);
 };
+
+const evaluateAsLeftHandSide = (objectExpression, propertyNameExpression) => async (context, scope) => {
+  const objectValue = await objectExpression.evaluate(scope);
+  if (!(objectValue.type === valueTypes.OBJECT || objectValue.type === valueTypes.ARRAY)) {
+    throwRuntimeError('Cannot assign to non-object non-array type', context);
+  }
+  const propertyNameValue = await propertyNameExpression.evaluate(scope);
+  if (propertyNameValue.type === valueTypes.NUMBER) {
+    return createArrayElementLeftHandSideValue(objectValue, propertyNameValue);
+  }
+  if (propertyNameValue.type === valueTypes.STRING) {
+    return createObjectPropertyLeftHandSideValue(objectValue, propertyNameValue);
+  }
+  throwRuntimeError('Cannot access property or element', context);
+};
+
+export const createObjectPropertyExpression = (context, objectExpression, propertyNameExpression) => createExpression(
+  expressionTypes.OBJECT_PROPERTY,
+  evaluate(context, objectExpression, propertyNameExpression),
+  evaluateAsLeftHandSide(objectExpression, propertyNameExpression),
+);

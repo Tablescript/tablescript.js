@@ -26,7 +26,7 @@ import { createUndefined } from './undefined';
 
 const entriesAsNativeValues = (context, entries) => entries.map(e => e.asNativeValue(context));
 const asNativeString = entries => context => JSON.stringify(entriesAsNativeValues(context, entries));
-const asNativeBoolean = entries => () => true;
+const asNativeBoolean = () => () => true;
 const asNativeArray = entries => context => entriesAsNativeValues(context, entries);
 const nativeEquals = entries => (context, other) => {
   if (other.type !== valueTypes.ARRAY) {

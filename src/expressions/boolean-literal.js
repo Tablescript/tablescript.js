@@ -19,9 +19,6 @@ import { createBooleanValue } from '../values/boolean';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-export const createBooleanLiteral = (context, value) => {
+const evaluate = value => () => Promise.resolve(createBooleanValue(value));
 
-  const evaluate = scope => createBooleanValue(value);
-
-  return createExpression(expressionTypes.BOOLEAN, evaluate);
-};
+export const createBooleanLiteral = value => createExpression(expressionTypes.BOOLEAN, evaluate(value));

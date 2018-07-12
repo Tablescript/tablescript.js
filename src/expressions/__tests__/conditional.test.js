@@ -20,21 +20,22 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
+import { createNumericValue } from '../../values/numeric';
+import { createBooleanValue } from '../../values/boolean';
 import { createConditionalExpression } from '../conditional';
+import { isNumericValue } from '../../__tests__/util';
 
 describe('createConditionalExpression', () => {
   describe('evaluate', () => {
     it('returns the consequent value when test expression is true', () => {
       const mockTestExpression = {
-        evaluate: () => ({
-          asNativeBoolean: () => true
-        })
+        evaluate: () => createBooleanValue(true),
       };
       const mockConsequentExpression = {
-        evaluate: () => 9
+        evaluate: () => createNumericValue(9),
       };
       const expression = createConditionalExpression({}, mockTestExpression, mockConsequentExpression, undefined);
-      return expect(expression.evaluate({})).to.eventually.equal(9);
+      return expect(expression.evaluate({})).to.eventually.satisfy(isNumericValue(9));
     });
 
     it('returns the alternate value when test expression is true', () => {
@@ -53,6 +54,6 @@ describe('createConditionalExpression', () => {
 
   it('throws when evaluated as a lhs', () => {
     const expression = createConditionalExpression({}, {}, {}, {});
-    return expect(expression.evaluateAsLeftHandSide()).to.eventually.be.rejectedWith('Cannot assign to conditional expression');
+    expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to conditional expression');
   });
 });

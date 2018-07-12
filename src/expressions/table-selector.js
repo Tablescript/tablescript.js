@@ -15,16 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-export const createRangeTableSelector = (rangeStart, rangeEnd) => {
-  return {
-    highestSelector: rangeEnd,
-    rollApplies: actualRoll => actualRoll >= rangeStart && actualRoll <= rangeEnd,
-  };
-};
+export const createRangeTableSelector = (rangeStart, rangeEnd) => ({
+  highestSelector: rangeEnd,
+  rollApplies: actualRoll => actualRoll >= rangeStart && actualRoll <= rangeEnd,
+});
 
-export const createExactTableSelector = roll => {
-  return {
-    highestSelector: roll,
-    rollApplies: actualRoll => actualRoll === roll,
-  };
-};
+export const createExactTableSelector = roll => ({
+  highestSelector: roll,
+  rollApplies: actualRoll => actualRoll === roll,
+});

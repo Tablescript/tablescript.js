@@ -248,7 +248,7 @@ function peg$parse(input, options) {
       peg$c78 = ".",
       peg$c79 = peg$literalExpectation(".", false),
       peg$c80 = function(head, property) {
-            return { 'type': 'member', property: createStringLiteral(createContext(location(), options), property) };
+            return { 'type': 'member', property: createStringLiteral(property) };
           },
       peg$c81 = function(head, tail) {
           return tail.reduce((result, element) => {
@@ -275,14 +275,14 @@ function peg$parse(input, options) {
             return { property };
           },
       peg$c91 = function(head, property) {
-            return { property: createStringLiteral(createContext(location(), options), property) };
+            return { property: createStringLiteral(property) };
           },
       peg$c92 = function(head, tail) {
           return tail.reduce((result, element) => createObjectPropertyExpression(createContext(location(), options), result, element.property), head);
         },
       peg$c93 = peg$otherExpectation("function expression"),
       peg$c94 = function(params, body) {
-          return createFunctionExpression(createContext(location(), options), params ? params[0] : [], body);
+          return createFunctionExpression(params ? params[0] : [], body);
         },
       peg$c95 = peg$otherExpectation("formal parameter list"),
       peg$c96 = peg$otherExpectation("function body"),
@@ -291,10 +291,10 @@ function peg$parse(input, options) {
         },
       peg$c98 = peg$otherExpectation("table expression"),
       peg$c99 = function(params, entries) {
-          return createTableExpression(createContext(location(), options), params ? params[0] : [], entries);
+          return createTableExpression(params ? params[0] : [], entries);
         },
       peg$c100 = function(entries) {
-          return createTableExpression(createContext(location(), options), [], entries);
+          return createTableExpression([], entries);
         },
       peg$c101 = peg$otherExpectation("table entries"),
       peg$c102 = function(head, tail) {
@@ -333,7 +333,7 @@ function peg$parse(input, options) {
           return createSpreadExpression(createContext(location(), options), e);
         },
       peg$c119 = function(i) {
-          return createVariableExpression(createContext(location(), options), i);
+          return createVariableExpression(i);
         },
       peg$c120 = peg$otherExpectation("undefined"),
       peg$c121 = function() {
@@ -341,10 +341,10 @@ function peg$parse(input, options) {
         },
       peg$c122 = peg$otherExpectation("boolean"),
       peg$c123 = function() {
-          return createBooleanLiteral(createContext(location(), options), true);
+          return createBooleanLiteral(true);
         },
       peg$c124 = function() {
-          return createBooleanLiteral(createContext(location(), options), false);
+          return createBooleanLiteral(false);
         },
       peg$c125 = peg$otherExpectation("array"),
       peg$c126 = function(e) {
@@ -358,10 +358,10 @@ function peg$parse(input, options) {
         },
       peg$c129 = peg$otherExpectation("object"),
       peg$c130 = function(p) {
-          return createObjectLiteral(createContext(location(), options), p);
+          return createObjectLiteral(p);
         },
       peg$c131 = function() {
-          return createObjectLiteral(createContext(location(), options), []);
+          return createObjectLiteral([]);
         },
       peg$c132 = function(head, tail) {
           return composeList(head, tail);
@@ -373,7 +373,7 @@ function peg$parse(input, options) {
       peg$c135 = ",",
       peg$c136 = peg$literalExpectation(",", false),
       peg$c137 = function(key, value) {
-          return createObjectLiteralPropertyExpression(createContext(location(), options), key, value);
+          return createObjectLiteralPropertyExpression(key, value);
         },
       peg$c138 = peg$otherExpectation("dice"),
       peg$c139 = "d",
@@ -381,10 +381,10 @@ function peg$parse(input, options) {
       peg$c141 = "D",
       peg$c142 = peg$literalExpectation("D", false),
       peg$c143 = function(count, die, suffix) {
-          return createDiceLiteral(createContext(location(), options), count, die, suffix);
+          return createDiceLiteral(count, die, suffix);
         },
       peg$c144 = function(die, suffix) {
-          return createDiceLiteral(createContext(location(), options), 1, die, suffix);
+          return createDiceLiteral(1, die, suffix);
         },
       peg$c145 = function(operator, specifier, count) {
           return createDiceLiteralSuffix(operator, specifier.toLowerCase(), count);
@@ -413,7 +413,7 @@ function peg$parse(input, options) {
       peg$c167 = peg$anyExpectation(),
       peg$c168 = peg$otherExpectation("integer"),
       peg$c169 = function(i) {
-          return createNumberLiteral(createContext(location(), options), i);
+          return createNumberLiteral(i);
         },
       peg$c170 = "0",
       peg$c171 = peg$literalExpectation("0", false),
@@ -438,7 +438,7 @@ function peg$parse(input, options) {
       peg$c182 = peg$classExpectation(["_", ["a", "z"], ["A", "Z"]], false, false),
       peg$c183 = peg$otherExpectation("string"),
       peg$c184 = function(s) {
-          return createStringLiteral(createContext(location(), options), s);
+          return createStringLiteral(s);
         },
       peg$c185 = "\"",
       peg$c186 = peg$literalExpectation("\"", false),

@@ -27,7 +27,7 @@ const asNativeBoolean = () => true;
 const nativeEquals = () => false;
 const equals = () => createBooleanValue(false);
 const sharedAsString = type => R.pipe(sharedAsNativeString(type), createStringValue);
-const asBoolean = R.pipe(asNativeBoolean, createBooleanValue);
+const asBoolean = () => createBooleanValue(asNativeBoolean()); // asBoolean = R.pipe(asNativeBoolean, createBooleanValue) does not work wat
 
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');

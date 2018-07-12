@@ -20,12 +20,9 @@ import { createNumericValue } from '../values/numeric';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-export const createDiceLiteral = (context, count, die, suffix) => {
+const evaluate = (count, die, suffix) => () => Promise.resolve(createNumericValue(rollDice(count, die, suffix)));
 
-  const evaluate = scope => createNumericValue(rollDice(count, die, suffix));
-
-  return createExpression(expressionTypes.DICE, evaluate);
-};
+export const createDiceLiteral = (count, die, suffix) => createExpression(expressionTypes.DICE, evaluate(count, die, suffix));
 
 export const createDiceLiteralSuffix = (operator, specifier, count) => ({
   operator,

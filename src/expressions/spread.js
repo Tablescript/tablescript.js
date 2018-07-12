@@ -21,19 +21,18 @@ import { expressionTypes } from './types';
 import { valueTypes } from '../values/types';
 import { createArraySpread, createObjectSpread, createTableSpread } from '../values/spread';
 
-export const createSpreadExpression = (context, expression) => {
-
-  const evaluate = async scope => {
-    const value = await expression.evaluate(scope);
-    if (value.type === valueTypes.ARRAY) {
-      return createArraySpread(value);
-    } else if (value.type === valueTypes.OBJECT) {
-      return createObjectSpread(value);
-    } else if (value.type === valueTypes.TABLE) {
-      return createTableSpread(value);
-    }
-    throwRuntimeError('Spreads only apply to ARRAY, OBJECT, and TABLE', context);
-  };
-
-  return createExpression(expressionTypes.SPREAD, evaluate);
+const evaluate = (context, expression) => async scope => {
+  const value = await expression.evaluate(scope);
+  if (value.type === valueTypes.ARRAY) {
+    return createArraySpread(value);
+  }
+  if (value.type === valueTypes.OBJECT) {
+    return createObjectSpread(value);
+  }
+  if (value.type === valueTypes.TABLE) {
+    return createTableSpread(value);
+  }
+  throwRuntimeError('Spreads only apply to ARRAY, OBJECT, and TABLE', context);
 };
+
+export const createSpreadExpression = (context, expression) => createExpression(expressionTypes.SPREAD, evaluate(context, expression));

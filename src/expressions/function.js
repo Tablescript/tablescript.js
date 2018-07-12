@@ -16,15 +16,9 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createFunctionValue } from '../values/function';
-import { throwRuntimeError } from '../error';
+import { createExpression } from './default';
+import { expressionTypes } from './types';
 
-export const createFunctionExpression = (context, formalParameters, body) => {
-  return {
-    evaluate: scope => {
-      return createFunctionValue(formalParameters, body, { ...scope });
-    },
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to function', context);
-    },
-  };
-};
+const evaluate = (formalParameters, body) => scope => Promise.resolve(createFunctionValue(formalParameters, body, { ...scope }));
+
+export const createFunctionExpression = (formalParameters, body) => createExpression(expressionTypes.FUNCTION, evaluate(formalParameters, body));

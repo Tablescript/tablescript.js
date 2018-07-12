@@ -19,46 +19,40 @@ import { valueTypes } from '../values/types';
 import { throwRuntimeError } from '../error';
 
 const createTableEntry = (selector, body) => ({
-  evaluate: async scope => {
-    return await body.evaluate(scope);
-  },
+  evaluate: async scope => await body.evaluate(scope),
   getHighestSelector: () => selector.highestSelector,
   rollApplies: actualRoll => selector.rollApplies(actualRoll),
 });
 
-export const createTableEntryExpression = (selector, body) => ({
-  expand: () => ([createTableEntry(selector, body)]),
-});
-
 const createSimpleTableEntry = body => ({
-  evaluate: async scope => {
-    return await body.evaluate(scope);
-  },
+  evaluate: async scope => await body.evaluate(scope),
   getHighestSelector: index => index,
   rollApplies: (actualRoll, index) => (actualRoll === index),
-});
-
-export const createSimpleTableEntryExpression = body => ({
-  expand: () => ([createSimpleTableEntry(body)]),
 });
 
 const createLiteralTableEntry = value => ({
-  evaluate: async scope => {
-    return value;
-  },
+  evaluate: () => value,
   getHighestSelector: index => index,
   rollApplies: (actualRoll, index) => (actualRoll === index),
 });
+
+export const createTableEntryExpression = (selector, body) => ({
+  expand: () => Promise.resolve([createTableEntry(selector, body)]),
+});
+
+export const createSimpleTableEntryExpression = body => ({
+  expand: () => Promise.resolve([createSimpleTableEntry(body)]),
+});  
 
 export const createSpreadTableEntryExpression = spread => ({
   expand: async scope => {
     const spreadValue = await spread.evaluate(scope);
     if (spreadValue.type === valueTypes.ARRAY_SPREAD) {
       return spreadValue.asArray().map(entry => createLiteralTableEntry(entry));
-    } else if (spreadValue.type === valueTypes.TABLE_SPREAD) {
-      return spreadValue.asArray();
-    } else {
-      throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`);
     }
+    if (spreadValue.type === valueTypes.TABLE_SPREAD) {
+      return spreadValue.asArray();
+    }
+    throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`);
   },
 });

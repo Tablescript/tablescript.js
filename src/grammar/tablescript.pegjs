@@ -202,7 +202,7 @@ CallExpression "call expression"
       return { 'type': 'member', property };
     }
     / __ '.' __ property:Identifier {
-      return { 'type': 'member', property: createStringLiteral(createContext(location(), options), property) };
+      return { 'type': 'member', property: createStringLiteral(property) };
     }
   )* {
     return tail.reduce((result, element) => {
@@ -233,7 +233,7 @@ MemberExpression "member expression"
       return { property };
     }
     / __ '.' __ property:Identifier {
-      return { property: createStringLiteral(createContext(location(), options), property) };
+      return { property: createStringLiteral(property) };
     }
   )* {
     return tail.reduce((result, element) => createObjectPropertyExpression(createContext(location(), options), result, element.property), head);
@@ -241,7 +241,7 @@ MemberExpression "member expression"
 
 FunctionExpression "function expression"
   = FunctionToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ body:FunctionBody __ '}' {
-    return createFunctionExpression(createContext(location(), options), params ? params[0] : [], body);
+    return createFunctionExpression(params ? params[0] : [], body);
   }
 
 FormalParameterList "formal parameter list"
@@ -256,10 +256,10 @@ FunctionBody "function body"
 
 TableExpression "table expression"
   = TableToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ entries:TableEntries __ '}' {
-    return createTableExpression(createContext(location(), options), params ? params[0] : [], entries);
+    return createTableExpression(params ? params[0] : [], entries);
   }
   / TableToken __ '{' __ entries:TableEntries __ '}' {
-    return createTableExpression(createContext(location(), options), [], entries);
+    return createTableExpression([], entries);
   }
 
 TableEntries "table entries"
@@ -311,7 +311,7 @@ SpreadExpression "spread"
 PrimaryExpression
   = Literal
   / i:Identifier __ {
-    return createVariableExpression(createContext(location(), options), i);
+    return createVariableExpression(i);
   }
   / FunctionExpression
   / TableExpression
@@ -337,10 +337,10 @@ UndefinedLiteral "undefined"
 
 BooleanLiteral "boolean"
   = TrueToken {
-    return createBooleanLiteral(createContext(location(), options), true);
+    return createBooleanLiteral(true);
   }
   / FalseToken {
-    return createBooleanLiteral(createContext(location(), options), false);
+    return createBooleanLiteral(false);
   }
 
 ArrayLiteral "array"
@@ -361,10 +361,10 @@ ArrayEntries
 
 ObjectLiteral "object"
   = '{' __ p:ObjectProperties __ '}' {
-    return createObjectLiteral(createContext(location(), options), p);
+    return createObjectLiteral(p);
   }
   / '{' __ '}' {
-    return createObjectLiteral(createContext(location(), options), []);
+    return createObjectLiteral([]);
   }
 
 ObjectProperties
@@ -380,19 +380,19 @@ Comma ","
 
 ObjectProperty
   = key:String __ ':' __ value:Expression {
-    return createObjectLiteralPropertyExpression(createContext(location(), options), key, value);
+    return createObjectLiteralPropertyExpression(key, value);
   }
   / key:Identifier __ ':' __ value:Expression {
-    return createObjectLiteralPropertyExpression(createContext(location(), options), key, value);
+    return createObjectLiteralPropertyExpression(key, value);
   }
   / SpreadExpression
 
 DiceLiteral "dice"
   = count:NonZeroInteger ('d' / 'D') die:NonZeroInteger suffix:DiceLiteralSuffix? {
-    return createDiceLiteral(createContext(location(), options), count, die, suffix);
+    return createDiceLiteral(count, die, suffix);
   }
   / ('d' / 'D') die:NonZeroInteger suffix:DiceLiteralSuffix? {
-    return createDiceLiteral(createContext(location(), options), 1, die, suffix);
+    return createDiceLiteral(1, die, suffix);
   }
 
 DiceLiteralSuffix
@@ -426,7 +426,7 @@ __
 
 IntegerLiteral "integer"
   = i:Integer {
-    return createNumberLiteral(createContext(location(), options), i);
+    return createNumberLiteral(i);
   }
 
 Integer
@@ -462,7 +462,7 @@ IdentifierPart
 
 StringLiteral "string"
   = s:String {
-    return createStringLiteral(createContext(location(), options), s);
+    return createStringLiteral(s);
   }
 
 String

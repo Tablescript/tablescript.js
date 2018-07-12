@@ -19,9 +19,6 @@ import { createNumericValue } from '../values/numeric';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-export const createNumberLiteral = (context, n) => {
+const evaluate = n => () => Promise.resolve(createNumericValue(n));
 
-  const evaluate = scope => createNumericValue(n);
-
-  return createExpression(expressionTypes.NUMBER, evaluate);
-};
+export const createNumberLiteral = n => createExpression(expressionTypes.NUMBER, evaluate(n));

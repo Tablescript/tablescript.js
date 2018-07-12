@@ -15,30 +15,38 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../error';
+import { expressionTypes } from './types';
+import { createExpression } from './default';
 
-export const createCallExpression = (context, callee, parameters) => {
-  const evaluateParameters = async (parameters, scope) => {
-    let result = []
-    for (let i = 0; i < parameters.length; i++) {
-      result = [
-        ...result,
-        await parameters[i].evaluate(scope)
-      ];
-    }
-    return result;
-  };
-
-  const evaluate = async scope => {
-    const calleeValue = await callee.evaluate(scope);
-    const parameterValues = await evaluateParameters(parameters, scope);
-    return await calleeValue.callFunction(context, parameterValues);
-  };
-
-  return {
-    evaluate,
-    evaluateAsLeftHandSide: () => {
-      throwRuntimeError('Cannot assign to call expression', context);
-    }
-  };
+const parameterEvaluator = scope => (p, parameter) => {
+  return p.then(acc => new Promise(resolve => {
+    parameter.evaluate(scope).then(value => {
+      resolve([
+        ...acc,
+        value,
+      ]);
+    });
+  }));
 };
+
+const evaluateParameters = (parameters, scope) => parameters.reduce(parameterEvaluator(scope), Promise.resolve([]));
+
+/*
+const evaluateParameters = async (parameters, scope) => {
+  let result = []
+  for (let i = 0; i < parameters.length; i++) {
+    result = [
+      ...result,
+      await parameters[i].evaluate(scope)
+    ];
+  }
+  return result;
+};
+*/
+
+const evaluate = (context, callee, parameters) => async scope => {
+  const calleeValue = await callee.evaluate(scope);
+  return calleeValue.callFunction(context, await evaluateParameters(parameters, scope));
+};
+
+export const createCallExpression = (context, callee, parameters) => createExpression(expressionTypes.CALL, evaluate(context, callee, parameters));

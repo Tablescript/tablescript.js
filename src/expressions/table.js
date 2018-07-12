@@ -15,28 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createTableValue } from '../values/table';
-import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { createExpression } from './default';
+import { createTableValue } from '../values/table';
 
-const expandEntries = async (scope, entries) => {
-  let results = [];
-  for (let i = 0; i < entries.length; i++) {
-    const expandedEntries = await entries[i].expand(scope);
-    results = [ ...results, ...expandedEntries];
-  }
-  return results;
+const entryExpander = scope => (p, entry) => {
+  return p.then(acc => new Promise(resolve => {
+    entry.expand(scope).then(expandedEntries => {
+      resolve([
+        ...acc,
+        ...expandedEntries,
+      ]);
+    });
+  }));
 };
 
-export const createTableExpression = (context, formalParameters, entries) => {
-  const evaluate = async scope => {
-    const expandedEntries = await expandEntries(scope, entries);
-    return createTableValue(
-      formalParameters,
-      expandedEntries,
-      { ...scope }
-    );
-  };
-
-  return createExpression(expressionTypes.TABLE, evaluate);
+const expandEntries = (scope, entries) => {
+  return entries.reduce(entryExpander(scope), Promise.resolve([]));
 };
+
+const evaluate = (formalParameters, entries) => async scope => createTableValue(formalParameters, await expandEntries(scope, entries), scope);
+
+export const createTableExpression = (formalParameters, entries) => createExpression(expressionTypes.TABLE, evaluate(formalParameters, entries));
