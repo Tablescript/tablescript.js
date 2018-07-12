@@ -20,15 +20,12 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { valueTypes } from '../types';
 import { createNativeFunctionValue } from '../function';
 import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
 import { createBooleanValue } from '../boolean';
-import { createUndefined } from '../undefined';
 import { createArrayValue } from '../array';
-import { TablescriptError } from '../../error';
-import { isUndefined, isNumericValue, isBooleanValue, isArrayValue } from '../../__tests__/util';
+import { isNumericValue, isBooleanValue, isArrayValue } from '../../__tests__/util';
 
 describe('array', () => {
   const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);

@@ -21,7 +21,6 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 import { createNumericValue } from '../numeric';
-import { createStringValue } from '../string';
 import { valueTypes } from '../types';
 
 describe('numeric value', () => {

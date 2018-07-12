@@ -20,7 +20,7 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { valueTypes, isNumeric } from '../types';
+import { valueTypes } from '../types';
 import { createNumericValue } from '../numeric';
 import { createStringValue } from '../string';
 import { createNativeFunctionValue, createFunctionValue } from '../function';

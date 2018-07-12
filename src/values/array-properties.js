@@ -23,7 +23,6 @@ import { createBooleanValue } from './boolean';
 import { createStringValue } from './string';
 import { valueTypes } from './types';
 import { quickSort } from '../util/sort';
-import { createArrayElementLeftHandSideValue } from './left-hand-side';
 
 const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], async (context, scope) => {
   const reducer = scope['reducer'];
