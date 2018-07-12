@@ -15,7 +15,6 @@ jobs:
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
@@ -35,7 +34,7 @@ jobs:
       - run:
           name: Build package
           command: yarn build
-          
+
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -65,7 +64,7 @@ workflows:
   version: 2
   test-deploy:
     jobs:
-      - build:
+      - build
       - test:
           requires:
             - build
