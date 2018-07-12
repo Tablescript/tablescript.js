@@ -31,19 +31,6 @@ const parameterEvaluator = scope => (p, parameter) => {
 
 const evaluateParameters = (parameters, scope) => parameters.reduce(parameterEvaluator(scope), Promise.resolve([]));
 
-/*
-const evaluateParameters = async (parameters, scope) => {
-  let result = []
-  for (let i = 0; i < parameters.length; i++) {
-    result = [
-      ...result,
-      await parameters[i].evaluate(scope)
-    ];
-  }
-  return result;
-};
-*/
-
 const evaluate = (context, callee, parameters) => async scope => {
   const calleeValue = await callee.evaluate(scope);
   return calleeValue.callFunction(context, await evaluateParameters(parameters, scope));
