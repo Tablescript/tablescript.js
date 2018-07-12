@@ -337,7 +337,7 @@ function peg$parse(input, options) {
         },
       peg$c120 = peg$otherExpectation("undefined"),
       peg$c121 = function() {
-          return createUndefinedLiteral(createContext(location(), options));
+          return createUndefinedLiteral();
         },
       peg$c122 = peg$otherExpectation("boolean"),
       peg$c123 = function() {

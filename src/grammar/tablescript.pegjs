@@ -332,7 +332,7 @@ Literal
 
 UndefinedLiteral "undefined"
   = UndefinedToken {
-    return createUndefinedLiteral(createContext(location(), options));
+    return createUndefinedLiteral();
   }
 
 BooleanLiteral "boolean"
