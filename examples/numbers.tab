@@ -14,3 +14,7 @@ system.assert(x == 60)
 
 x %= 7
 system.assert(x == 4)
+
+x = 3.14159
+system.assert(x == 3.14159)
+system.assert(x != 12)

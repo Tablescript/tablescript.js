@@ -425,8 +425,19 @@ __
   = (Whitespace / Comment)*
 
 IntegerLiteral "integer"
-  = i:Integer {
+  = f:Float {
+    return createNumberLiteral(f);
+  }
+  / i:Integer {
     return createNumberLiteral(i);
+  }
+
+Float
+  = "0." DecimalDigit* {
+    return parseFloat(text());
+  }
+  / NonZeroDigit DecimalDigit* "." DecimalDigit+ {
+    return parseFloat(text());
   }
 
 Integer
