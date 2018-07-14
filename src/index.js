@@ -20,6 +20,7 @@
 import { parse } from './parser/parser';
 import { TablescriptError, throwRuntimeError } from './error';
 import { initializeBuiltins } from './values/builtins/builtins';
+import { initializeMath } from './values/math/math';
 import { createStringValue } from './values/string';
 import { createArrayValue } from './values/array';
 import { createObjectValue } from './values/object';
@@ -31,8 +32,11 @@ const expandArguments = args => ({
 const initializeScope = (args, options) => ({
   system: createObjectValue({
     ...expandArguments(args),
-    ...initializeBuiltins(options)
-  })
+    ...initializeBuiltins(options),
+  }),
+  math: createObjectValue({
+    ...initializeMath(options),
+  }),
 });
 
 const evaluateAllExpressions = async (expressions, scope) => {

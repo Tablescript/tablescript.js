@@ -1,33 +1,13 @@
-system.print(1 * 2 + 3 * 4 + 5 / 6 + 7 - 8)
-system.print(5 % 1)
-system.print(5 % 2)
-system.print(5 % 3)
-system.print(5 % 4)
-system.print(5 % 5)
-system.print(-1)
-system.print(true and true)
-system.print(true and false)
-system.print(true or true)
-system.print(true or false)
-system.print(not true)
-system.print(not false)
-system.print(true ? 1 : 2)
-system.print(false ? 1 : 2)
-system.print(1 == 2)
-system.print(9 == 9)
-system.print("abc" == "def")
-system.print("ghi" == "ghi")
-system.print(1 < 2)
-system.print(2 < 1)
-system.print(1 > 2)
-system.print(2 > 1)
-system.print(1 >= 2)
-system.print(2 >= 2)
-system.print(3 >= 2)
-system.print(1 <= 2)
-system.print(2 <= 2)
-system.print(3 <= 2)
+assert = system.assert
 
-y = 1
-x = y = 6
-system.print(x, y)
+a = [1,2,3,4,5]
+assert(math.max(...a) == 5)
+assert(math.min(...a) == 1)
+
+assert(math.round(3.14159) == 3)
+assert(math.round(2.75) == 3)
+
+assert(math.floor(3.14159) == 3)
+assert(math.ceil(3.14159) == 4)
+
+assert(math.pow(2, 10) == 1024)
