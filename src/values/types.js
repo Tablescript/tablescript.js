@@ -63,3 +63,4 @@ export const valueTypeName = type => {
 
 export const isNumeric = o => o.type === valueTypes.NUMBER;
 export const isString = o => o.type === valueTypes.STRING;
+export const isArraySpread = o => o.type === valueTypes.ARRAY_SPREAD;

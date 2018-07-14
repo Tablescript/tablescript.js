@@ -17,14 +17,22 @@
 
 import { expressionTypes } from './types';
 import { createExpression } from './default';
+import { isArraySpread } from '../values/types';
 
 const parameterEvaluator = scope => (p, parameter) => {
   return p.then(acc => new Promise(resolve => {
     parameter.evaluate(scope).then(value => {
-      resolve([
-        ...acc,
-        value,
-      ]);
+      if (isArraySpread(value)) {
+        resolve([
+          ...acc,
+          ...value.asArray(),
+        ]);
+      } else {
+        resolve([
+          ...acc,
+          value,
+        ]);
+      }
     });
   }));
 };
