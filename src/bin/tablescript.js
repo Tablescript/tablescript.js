@@ -63,15 +63,11 @@ try {
   }).catch(e => {
     if (e instanceof TablescriptError) {
       console.log(e.toString());
-      console.log(e.stack);
-      if (e.trace) {
-        console.log(e.trace);
-      }
     } else {
       console.log(e);
     }
     process.exit(1);
   });
 } catch (e) {
-  console.log(`RuntimeError: Unable to read ${filename}`);
+  console.log(`[RuntimeError]: Unable to read ${filename}`);
 }

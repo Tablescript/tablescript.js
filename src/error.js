@@ -22,15 +22,16 @@ export class TablescriptError extends Error {
     this.message = message;
     this.context = context;
     this.trace = trace;
+    Object.setPrototypeOf(this, TablescriptError.prototype);
   }
 
   toString() {
-    return `${this.contextToString()}[${this.name}] ${this.message}`;
+    return `[${this.name}] ${this.contextToString()}: ${this.message}`;
   }
 
   contextToString() {
     if (this.context) {
-      return `${this.context.path} (line ${this.context.line} column ${this.context.column}): `;
+      return `${this.context.path} (line ${this.context.line} column ${this.context.column})`;
     }
     return '';
   }
