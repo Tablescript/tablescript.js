@@ -1,10 +1,10 @@
 o = {
-  "foo": 9,
-  "bar": "I have a ham radio",
-  "baz": fn(x, y) {
+  'foo': 9,
+  'bar': 'I have a ham radio',
+  'baz': fn(x, y) {
     x * y
   },
-  flung: "flamber",
+  flung: 'flamber',
   sub: {
     subsub: 1,
     subsubsub: [3,4,5],

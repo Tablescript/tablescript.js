@@ -80,10 +80,10 @@ range(10)
 #
 # The 'roll' value is provided when evaluating the table entry.
 t1 = table {
-  1-2: 'first ' + roll
-  3: 'second ' + roll
-  4-5: 'third ' + roll
-  6-10: 'fourth ' + roll
+  1-2: "first #{roll}"
+  3: "second #{roll}"
+  4-5: "third #{roll}"
+  6-10: "fourth #{roll}"
 }
 
 assert(t1[1] == 'first 1')
@@ -103,9 +103,9 @@ range(10)
   })
 
 t1 = table {
-  "first " + roll
-  "second " + roll
-  "third " + roll
+  "first #{roll}"
+  "second #{roll}"
+  "third #{roll}"
 }
 
 expected_value = ['first 1', 'second 2', 'third 3', 'fourth 4']
@@ -159,11 +159,11 @@ assert(t2[6] == 'third')
 ############################################################################
 # Table entries are evaluated when the table is called.
 t1 = table {
-  'first ' + roll
-  'second ' + roll
+  "first #{roll}"
+  "second #{roll}"
 }
 t2 = table {
-  'third ' + roll
+  "third #{roll}"
   ...t1
 }
 
@@ -198,8 +198,8 @@ t1 = table {
 }
 
 t2 = table {
-  t1() + ' from first'
-  t1() + ' from second'
+  "#{t1()} from first"
+  "#{t1()} from second"
 }
 
 expected_values = [
@@ -221,8 +221,8 @@ range(10)
 #
 # You can define parameters to be passed into tables when called.
 t1 = table(p1, p2) {
-  'first ' + p1
-  'second ' + p2
+  "first #{p1}"
+  "second #{p2}"
 }
 
 expected_values = [

@@ -1,2 +1,2 @@
 src/parser/peg-parser.js
-
+src/parser/template-string-parser.js

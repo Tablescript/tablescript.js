@@ -16,25 +16,11 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 {
-  const { createBlockExpression } = require('../expressions/block');
-  const { createSimpleExpression } = require('../expressions/simple');
-  const { createAssignmentExpression } = require('../expressions/assignment');
   const { createConditionalExpression } = require('../expressions/conditional');
   const { createBinaryExpression } = require('../expressions/binary');
   const { createUnaryExpression } = require('../expressions/unary');
   const { createCallExpression } = require('../expressions/call');
   const { createObjectPropertyExpression } = require('../expressions/object-property');
-  const { createFunctionExpression } = require('../expressions/function');
-  const { createTableExpression } = require('../expressions/table');
-  const {
-    createTableEntryExpression,
-    createSimpleTableEntryExpression,
-    createSpreadTableEntryExpression,
-  } = require('../expressions/table-entry');
-  const {
-    createRangeTableSelector,
-    createExactTableSelector,
-  } = require('../expressions/table-selector');
   const { createVariableExpression } = require('../expressions/variable');
   const { createBooleanLiteral } = require('../expressions/boolean-literal');
   const { createArrayLiteral } = require('../expressions/array-literal');
@@ -48,20 +34,17 @@
   } = require('../expressions/dice-literal');
   const { createNumberLiteral } = require('../expressions/number-literal');
   const { createStringLiteral } = require('../expressions/string-literal');
-  const { createTemplateStringLiteral } = require('../expressions/template-string-literal');
+  const { createCompoundStringExpression } = require('../expressions/compound-string');
   const { createUndefinedLiteral } = require('../expressions/undefined-literal');
-  const { createIfExpression } = require('../expressions/if');
   const { createSpreadExpression } = require('../expressions/spread');
 
   const composeBinaryExpression = (context, head, tail) => {
     return tail.reduce((result, element) => createBinaryExpression(context, result, element[1], element[3]), head);
   };
 
-  const optionalList = (list) => list ? list : [];
-  const extractOptional = (optional, index) => optional ? optional[index] : null;
   const extractList = (list, index) => list.map(e => e[index]);
   const composeList = (head, tail) => [head, ...tail];
-  const buildList = (head, tail, index) => [head, ...extractList(tail, index)];
+  const flatten = (list) => list.reduce((acc, e) => ([...acc, ...e]), []);
 
   const createContext = (location, options) => ({
     path: options.path,
@@ -71,53 +54,29 @@
 }
 
 Start
-  = __ p:Program __ {
-    return p;
+  = head:RawText tail:(TemplateString RawText)* {
+    return createCompoundStringExpression([head, ...flatten(tail)]);
   }
 
-Program
-  = body:Statements? {
-    return optionalList(body);
+RawText
+  = RawChar* {
+    return createStringLiteral(text());
   }
 
-Statements
-  = head:Statement tail:(__ Statement)* {
-    return buildList(head, tail, 1);
+RawChar
+  = !("#{") . {
+    return text();
   }
 
-Statement
-  = Block
-  / ExpressionStatement
-
-Block "block"
-  = '{' __ body:(Statements __)? '}' {
-    return createBlockExpression(optionalList(extractOptional(body, 0)));
-  }
-
-ExpressionStatement "simple expression"
-  = e:Expression {
-    return createSimpleExpression(e);
-  }
-
-Expression "expression"
-  = e:AssignmentExpression __ {
+TemplateString
+  = '#{' __ e:Expression __ '}' {
     return e;
   }
 
-AssignmentExpression "assignment"
-  = l:LeftHandSideExpression __ o:AssignmentOperator __ e:ConditionalExpression {
-    return createAssignmentExpression(createContext(location(), options), l, o, e);
+Expression "expression"
+  = e:ConditionalExpression __ {
+    return e;
   }
-  / ConditionalExpression
-
-AssignmentOperator "assignment operator"
-  = '=' !'=' { return '='; }
-  / '=' !'>' { return '='; }
-  / '+='
-  / '-='
-  / '*='
-  / '/='
-  / '%='
 
 ConditionalExpression "conditional"
   = test:LogicalOrExpression __ '?' __ consequent:Expression __ ':' __ alternate:Expression {
@@ -221,7 +180,7 @@ Arguments "arguments"
   }
 
 ArgumentList
-  = head:AssignmentExpression tail:(__ Comma __ AssignmentExpression)* {
+  = head:Expression tail:(__ Comma __ Expression)* {
     return composeList(head, extractList(tail, 3));
   }
 
@@ -240,70 +199,6 @@ MemberExpression "member expression"
     return tail.reduce((result, element) => createObjectPropertyExpression(createContext(location(), options), result, element.property), head);
   }
 
-FunctionExpression "function expression"
-  = FunctionToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ body:FunctionBody __ '}' {
-    return createFunctionExpression(params ? params[0] : [], body);
-  }
-
-FormalParameterList "formal parameter list"
-  = head:Identifier tail:(__ Comma __ Identifier)* {
-    return composeList(head, extractList(tail, 3));
-  }
-
-FunctionBody "function body"
-  = body:Statements? {
-    return createBlockExpression(optionalList(body));
-  }
-
-TableExpression "table expression"
-  = TableToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ entries:TableEntries __ '}' {
-    return createTableExpression(params ? params[0] : [], entries);
-  }
-  / TableToken __ '{' __ entries:TableEntries __ '}' {
-    return createTableExpression([], entries);
-  }
-
-TableEntries "table entries"
-  = head:TableEntry tail:(__ TableEntry)* {
-    return composeList(head, extractList(tail, 1));
-  }
-  / head:SimpleTableEntry tail:(__ SimpleTableEntry)* {
-    return composeList(head, extractList(tail, 1));
-  }
-
-SimpleTableEntry "simple table entry"
-  = spread:SpreadExpression {
-    return createSpreadTableEntryExpression(spread);
-  }
-  / body:TableEntryBody {
-    return createSimpleTableEntryExpression(body);
-  }
-
-TableEntry "table entry"
-  = selector:TableEntrySelector __ ':' __ body:TableEntryBody {
-    return createTableEntryExpression(selector, body);
-  }
-
-TableEntrySelector "table entry selector"
-  = start:Integer __ '-' __ end:Integer {
-    return createRangeTableSelector(start, end);
-  }
-  / roll:Integer {
-    return createExactTableSelector(roll);
-  }
-
-TableEntryBody "table entry body"
-  = Expression
-  / Block
-
-IfExpression "if expression"
-  = IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Statement __ ElseToken __ elseBlock:Statement {
-    return createIfExpression(createContext(location(), options), e, ifBlock, elseBlock);
-  }
-  / IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Statement {
-    return createIfExpression(createContext(location(), options), e, ifBlock);
-  }
-
 SpreadExpression "spread"
   = '...' e:Expression {
     return createSpreadExpression(createContext(location(), options), e);
@@ -314,12 +209,9 @@ PrimaryExpression
   / i:Identifier __ {
     return createVariableExpression(i);
   }
-  / FunctionExpression
-  / TableExpression
   / '(' __ e:AdditiveExpression __ ')' {
     return e;
   }
-  / IfExpression
   / SpreadExpression
 
 Literal
@@ -411,19 +303,11 @@ DiceLiteralSuffixSpecifier
   / 'h'
   / 'H'
 
-LineTerminator "end of line"
-  = "\n"
-  / "\r\n"
-  / "\r"
-
 Whitespace "whitespace"
   = [ \t\n\r]
 
-Comment "comment"
-  = '#' (!LineTerminator .)*
-  
 __
-  = (Whitespace / Comment)*
+  = Whitespace*
 
 IntegerLiteral "integer"
   = f:Float {
@@ -476,12 +360,12 @@ StringLiteral "string"
   = s:String {
     return createStringLiteral(s);
   }
-  / '"' s:DoubleQuoteStringCharacter* '"' {
-    return createTemplateStringLiteral(s.join(''));
-  }
 
 String
   = "'" s:SingleQuoteStringCharacter* "'" {
+    return s.join('');
+  }
+  / '"' s:DoubleQuoteStringCharacter* '"' {
     return s.join('');
   }
 
@@ -498,22 +382,14 @@ SingleQuoteStringCharacter
 ReservedWord
   = TrueToken
   / FalseToken
-  / IfToken
-  / ElseToken
   / AndToken
   / OrToken
   / NotToken
-  / FunctionToken
-  / TableToken
   / UndefinedToken
 
 TrueToken = "true" !IdentifierPart
 FalseToken = "false" !IdentifierPart
-IfToken = "if" !IdentifierPart
-ElseToken = "else" !IdentifierPart
 AndToken = $("and" !IdentifierPart)
 OrToken = $("or" !IdentifierPart)
 NotToken = "not" !IdentifierPart { return 'not'; }
-FunctionToken = "fn" !IdentifierPart
-TableToken = "table" !IdentifierPart
 UndefinedToken = "undefined" !IdentifierPart

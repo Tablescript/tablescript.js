@@ -20,6 +20,8 @@ export const expressionTypes = {
   SPREAD: Symbol('SPREAD'),
   UNDEFINED: Symbol('UNDEFINED'),
   STRING: Symbol('STRING'),
+  TEMPLATE_STRING: Symbol('TEMPLATE_STRING'),
+  COMPOUND_STRING: Symbol('COMPOUND_STRING'),
   NUMBER: Symbol('NUMBER'),
   DICE: Symbol('DICE'),
   OBJECT_PROPERTY: Symbol('OBJECT_PROPERTY'),
@@ -43,6 +45,10 @@ export const expressionTypeName = type => {
       return 'undefined';
     case expressionTypes.STRING:
       return 'string';
+    case expressionTypes.TEMPLATE_STRING:
+      return 'string';
+    case expressionTypes.COMPOUND_STRING:
+      return 'compound string';
     case expressionTypes.NUMBER:
       return 'number';
     case expressionTypes.DICE:

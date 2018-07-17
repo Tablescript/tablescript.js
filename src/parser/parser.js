@@ -18,6 +18,7 @@
 import Tracer from 'pegjs-backtrace';
 
 import parser from './peg-parser';
+import templateStringParser from './template-string-parser.js';
 import { TablescriptError } from '../error';
 
 export const parse = (filePath, program) => {
@@ -34,6 +35,21 @@ export const parse = (filePath, program) => {
         column: e.location ? e.location.start.column: 0,
       },
       tracer.getBacktraceString()
+    );
+  }
+};
+
+export const parseTemplateString = e => {
+  try {
+    return templateStringParser.parse(e);
+  } catch (e) {
+    throw new TablescriptError(
+      e.name,
+      e.message,
+      {
+        line: e.location ? e.location.start.line : 0,
+        column: e.location ? e.location.start.column: 0,
+      },
     );
   }
 };
