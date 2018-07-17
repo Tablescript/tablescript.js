@@ -18,6 +18,7 @@
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { createTableValue } from '../values/table';
+import { TablescriptError } from '../error';
 
 const entryExpander = scope => (p, entry) => {
   return p.then(acc => new Promise(resolve => {
@@ -30,10 +31,35 @@ const entryExpander = scope => (p, entry) => {
   }));
 };
 
-const expandEntries = (scope, entries) => {
-  return entries.reduce(entryExpander(scope), Promise.resolve([]));
+const validateEntries = (context, entries) => {
+  const allSelectors = entries.reduce((acc, e, i) => {
+    const low = e.getLowestSelector(i + 1);
+    const high = e.getHighestSelector(i + 1);
+    let result = acc.set;
+    for (let j = low; j <= high; j += 1) {
+      result = result.add(j);
+    }
+    return {
+      max: Math.max(acc.max, high),
+      set: result,
+    };
+  }, {
+    max: 0,
+    set: new Set(),
+  });
+  for (let i = 1; i <= allSelectors.max; i += 1) {
+    if (!allSelectors.set.has(i)) {
+      throw new TablescriptError('RuntimeError', `Table missing entry for ${i}`, context);
+    }
+  }
 };
 
-const evaluate = (formalParameters, entries) => async scope => createTableValue(formalParameters, await expandEntries(scope, entries), scope);
+const expandEntries = async (context, scope, entries) => {
+  const expandedEntries = await entries.reduce(entryExpander(scope), Promise.resolve([]));
+  validateEntries(context, expandedEntries);
+  return expandedEntries;
+};
 
-export const createTableExpression = (formalParameters, entries) => createExpression(expressionTypes.TABLE, evaluate(formalParameters, entries));
+const evaluate = (context, formalParameters, entries) => async scope => createTableValue(formalParameters, await expandEntries(context, scope, entries), scope);
+
+export const createTableExpression = (context, formalParameters, entries) => createExpression(expressionTypes.TABLE, evaluate(context, formalParameters, entries));

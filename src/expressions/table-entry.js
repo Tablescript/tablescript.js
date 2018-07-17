@@ -20,18 +20,21 @@ import { throwRuntimeError } from '../error';
 
 const createTableEntry = (selector, body) => ({
   evaluate: async scope => await body.evaluate(scope),
+  getLowestSelector: () => selector.lowestSelector,
   getHighestSelector: () => selector.highestSelector,
   rollApplies: actualRoll => selector.rollApplies(actualRoll),
 });
 
 const createSimpleTableEntry = body => ({
   evaluate: async scope => await body.evaluate(scope),
+  getLowestSelector: index => index,
   getHighestSelector: index => index,
   rollApplies: (actualRoll, index) => (actualRoll === index),
 });
 
 const createLiteralTableEntry = value => ({
   evaluate: () => value,
+  getLowestSelector: index => index,
   getHighestSelector: index => index,
   rollApplies: (actualRoll, index) => (actualRoll === index),
 });

@@ -257,10 +257,10 @@ FunctionBody "function body"
 
 TableExpression "table expression"
   = TableToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ entries:TableEntries __ '}' {
-    return createTableExpression(params ? params[0] : [], entries);
+    return createTableExpression(createContext(location(), options), params ? params[0] : [], entries);
   }
   / TableToken __ '{' __ entries:TableEntries __ '}' {
-    return createTableExpression([], entries);
+    return createTableExpression(createContext(location(), options), [], entries);
   }
 
 TableEntries "table entries"
@@ -271,25 +271,25 @@ TableEntries "table entries"
     return composeList(head, extractList(tail, 1));
   }
 
+TableEntry "table entry"
+  = selector:TableEntrySelector ':' __ body:TableEntryBody {
+    return createTableEntryExpression(selector, body);
+  }
+
+TableEntrySelector "table entry selector"
+  = start:NonZeroInteger '-' end:NonZeroInteger {
+    return createRangeTableSelector(start, end);
+  }
+  / roll:NonZeroInteger {
+    return createExactTableSelector(roll);
+  }
+
 SimpleTableEntry "simple table entry"
   = spread:SpreadExpression {
     return createSpreadTableEntryExpression(spread);
   }
   / body:TableEntryBody {
     return createSimpleTableEntryExpression(body);
-  }
-
-TableEntry "table entry"
-  = selector:TableEntrySelector __ ':' __ body:TableEntryBody {
-    return createTableEntryExpression(selector, body);
-  }
-
-TableEntrySelector "table entry selector"
-  = start:Integer __ '-' __ end:Integer {
-    return createRangeTableSelector(start, end);
-  }
-  / roll:Integer {
-    return createExactTableSelector(roll);
   }
 
 TableEntryBody "table entry body"
