@@ -19,13 +19,13 @@ import { createUndefined } from '../values/undefined';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = (context, condition, ifBlock, elseBlock) => async scope => {
-  const expressionValue = await condition.evaluate(scope);
+const evaluate = (context, condition, ifBlock, elseBlock) => async (scope, options) => {
+  const expressionValue = await condition.evaluate(scope, options);
   if (expressionValue.asNativeBoolean(context)) {
-    return ifBlock.evaluate(scope);
+    return ifBlock.evaluate(scope, options);
   } else {
     if (elseBlock) {
-      return elseBlock.evaluate(scope);
+      return elseBlock.evaluate(scope, options);
     }
     return createUndefined();
   }

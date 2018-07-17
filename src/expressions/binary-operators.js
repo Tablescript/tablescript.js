@@ -17,19 +17,19 @@
 
 import { createBooleanValue } from '../values/boolean';
 
-const or = async (context, leftValue, rightExpression, scope) => {
+const or = async (context, leftValue, rightExpression, scope, options) => {
   if (leftValue.asNativeBoolean(context)) {
     return createBooleanValue(true);
   }
-  const rightValue = await rightExpression.evaluate(scope);
+  const rightValue = await rightExpression.evaluate(scope, options);
   return createBooleanValue(rightValue.asNativeBoolean(context));
 };
 
-const and = async (context, leftValue, rightExpression, scope) => {
+const and = async (context, leftValue, rightExpression, scope, options) => {
   if (!leftValue.asNativeBoolean(context)) {
     return createBooleanValue(false);
   }
-  const rightValue = await rightExpression.evaluate(scope);
+  const rightValue = await rightExpression.evaluate(scope, options);
   return createBooleanValue(rightValue.asNativeBoolean(context));
 };
 
@@ -45,14 +45,14 @@ const greaterThan = (context, leftValue, rightValue) => leftValue.greaterThan(co
 const lessThanOrEquals = (context, leftValue, rightValue) => leftValue.lessThanOrEquals(context, rightValue);
 const greaterThanOrEquals = (context, leftValue, rightValue) => leftValue.lessThan(context, rightValue);
 
-const evaluateLeft = f => async (context, leftExpression, rightExpression, scope) => {
-  const leftValue = await leftExpression.evaluate(scope);
-  return f(context, leftValue, rightExpression, scope);
+const evaluateLeft = f => async (context, leftExpression, rightExpression, scope, options) => {
+  const leftValue = await leftExpression.evaluate(scope, options);
+  return f(context, leftValue, rightExpression, scope, options);
 };
 
-const evaluateBoth = f => async (context, leftExpression, rightExpression, scope) => {
-  const leftValue = await leftExpression.evaluate(scope);
-  const rightValue = await rightExpression.evaluate(scope);
+const evaluateBoth = f => async (context, leftExpression, rightExpression, scope, options) => {
+  const leftValue = await leftExpression.evaluate(scope, options);
+  const rightValue = await rightExpression.evaluate(scope, options);
   return f(context, leftValue, rightValue);
 };
 

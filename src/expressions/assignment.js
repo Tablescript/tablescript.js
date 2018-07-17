@@ -41,14 +41,14 @@ const operators = {
   },
 };
 
-const evaluate = (context, leftHandSideExpression, operator, valueExpression) => async scope => {
-  const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(context, scope);
+const evaluate = (context, leftHandSideExpression, operator, valueExpression) => async (scope, options) => {
+  const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(context, scope, options);
   if (leftHandSideValue.type !== valueTypes.LEFT_HAND_SIDE) {
     throwRuntimeError('Cannot assign to a non-left-hand-side type', context);
   }
-  const value = await valueExpression.evaluate(scope);
+  const value = await valueExpression.evaluate(scope, options);
   if (operators[operator]) {
-    const leftValue = (operator === '=') ? undefined : await leftHandSideExpression.evaluate(scope);
+    const leftValue = (operator === '=') ? undefined : await leftHandSideExpression.evaluate(scope, options);
     operators[operator](context, scope, leftHandSideValue, leftValue, value);
   } else {
     throwRuntimeError(`Unknown operator ${operator}`, context);

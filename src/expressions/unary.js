@@ -21,8 +21,8 @@ import { createBooleanValue } from '../values/boolean';
 import { throwRuntimeError } from '../error';
 import { expressionTypes } from './types';
 
-const evaluate = (context, operator, argument) => async scope => {
-  const value = await argument.evaluate(scope);
+const evaluate = (context, operator, argument) => async (scope, options) => {
+  const value = await argument.evaluate(scope, options);
   if (operator === '-') {
     return createNumericValue(-1 * value.asNativeNumber(context));
   }

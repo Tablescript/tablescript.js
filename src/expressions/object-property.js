@@ -24,21 +24,21 @@ import {
 import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
 
-const evaluate = (context, objectExpression, propertyNameExpression) => async scope => {
-  const objectValue = await objectExpression.evaluate(scope);
-  const propertyNameValue = await propertyNameExpression.evaluate(scope);
+const evaluate = (context, objectExpression, propertyNameExpression) => async (scope, options) => {
+  const objectValue = await objectExpression.evaluate(scope, options);
+  const propertyNameValue = await propertyNameExpression.evaluate(scope, options);
   if (propertyNameValue.type === valueTypes.NUMBER) {
     return await objectValue.getElement(context, propertyNameValue);
   }
   return objectValue.getProperty(context, propertyNameValue);
 };
 
-const evaluateAsLeftHandSide = (objectExpression, propertyNameExpression) => async (context, scope) => {
-  const objectValue = await objectExpression.evaluate(scope);
+const evaluateAsLeftHandSide = (objectExpression, propertyNameExpression) => async (context, scope, options) => {
+  const objectValue = await objectExpression.evaluate(scope, options);
   if (!(objectValue.type === valueTypes.OBJECT || objectValue.type === valueTypes.ARRAY)) {
     throwRuntimeError('Cannot assign to non-object non-array type', context);
   }
-  const propertyNameValue = await propertyNameExpression.evaluate(scope);
+  const propertyNameValue = await propertyNameExpression.evaluate(scope, options);
   if (propertyNameValue.type === valueTypes.NUMBER) {
     return createArrayElementLeftHandSideValue(objectValue, propertyNameValue);
   }

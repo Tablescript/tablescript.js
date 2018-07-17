@@ -50,7 +50,7 @@ export const createNativeFunctionValue = (formalParameters, f) => {
   );
 };
 
-export const createFunctionValue = (formalParameters, body, closure) => {
+export const createFunctionValue = (formalParameters, body, closure, options) => {
   const asNativeString = sharedAsNativeString('tablescript');
   const asString = sharedAsString('tablescript');
   const callFunction = async (context, parameters) => {
@@ -58,7 +58,7 @@ export const createFunctionValue = (formalParameters, body, closure) => {
       ...closure,
       ...mapFunctionParameters(formalParameters, parameters)
     };
-    return await body.evaluate(localScope);
+    return await body.evaluate(localScope, options);
   };
 
   return createValue(

@@ -19,6 +19,6 @@ import { createFunctionValue } from '../values/function';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = (formalParameters, body) => scope => Promise.resolve(createFunctionValue(formalParameters, body, { ...scope }));
+const evaluate = (formalParameters, body) => (scope, options) => Promise.resolve(createFunctionValue(formalParameters, body, { ...scope }, options));
 
 export const createFunctionExpression = (formalParameters, body) => createExpression(expressionTypes.FUNCTION, evaluate(formalParameters, body));

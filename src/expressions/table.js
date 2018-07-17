@@ -20,9 +20,9 @@ import { createExpression } from './default';
 import { createTableValue } from '../values/table';
 import { TablescriptError } from '../error';
 
-const entryExpander = scope => (p, entry) => {
+const entryExpander = (scope, options) => (p, entry) => {
   return p.then(acc => new Promise(resolve => {
-    entry.expand(scope).then(expandedEntries => {
+    entry.expand(scope, options).then(expandedEntries => {
       resolve([
         ...acc,
         ...expandedEntries,
@@ -54,12 +54,14 @@ const validateEntries = (context, entries) => {
   }
 };
 
-const expandEntries = async (context, scope, entries) => {
-  const expandedEntries = await entries.reduce(entryExpander(scope), Promise.resolve([]));
-  validateEntries(context, expandedEntries);
+const expandEntries = async (context, scope, options, entries) => {
+  const expandedEntries = await entries.reduce(entryExpander(scope, options), Promise.resolve([]));
+  if (options.flags.validateTables) {
+    validateEntries(context, expandedEntries);
+  }
   return expandedEntries;
 };
 
-const evaluate = (context, formalParameters, entries) => async scope => createTableValue(formalParameters, await expandEntries(context, scope, entries), scope);
+const evaluate = (context, formalParameters, entries) => async (scope, options) => createTableValue(formalParameters, await expandEntries(context, scope, options, entries), scope, options);
 
 export const createTableExpression = (context, formalParameters, entries) => createExpression(expressionTypes.TABLE, evaluate(context, formalParameters, entries));

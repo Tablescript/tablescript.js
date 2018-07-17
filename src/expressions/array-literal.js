@@ -21,10 +21,10 @@ import { createArrayValue } from '../values/array';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = (context, values) => async scope => {
+const evaluate = (context, values) => async (scope, options) => {
   let result = [];
   for (let i = 0; i < values.length; i++) {
-    const value = await values[i].evaluate(scope);
+    const value = await values[i].evaluate(scope, options);
     if (value.type === valueTypes.ARRAY_SPREAD) {
       result = [
         ...result,

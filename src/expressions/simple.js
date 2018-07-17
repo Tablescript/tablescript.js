@@ -18,6 +18,6 @@
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 
-const evaluate = expression => scope => expression.evaluate(scope);
+const evaluate = expression => (scope, options) => expression.evaluate(scope, options);
 
 export const createSimpleExpression = expression => createExpression(expressionTypes.SIMPLE, evaluate(expression));

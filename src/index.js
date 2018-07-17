@@ -39,17 +39,17 @@ const initializeScope = (args, options) => ({
   }),
 });
 
-const evaluateAllExpressions = async (expressions, scope) => {
+const evaluateAllExpressions = async (expressions, scope, options) => {
   let value;
   for (let i = 0; i < expressions.length; i++) {
-    value = await expressions[i].evaluate(scope);
+    value = await expressions[i].evaluate(scope, options);
   }
   return value;
 }
 
 export const interpret = async (ast, args, options) => {
   const scope = initializeScope(args, options);
-  return await evaluateAllExpressions(ast, scope);
+  return await evaluateAllExpressions(ast, scope, options);
 };
 
 const runProgram = async (context, program, args, options) => {

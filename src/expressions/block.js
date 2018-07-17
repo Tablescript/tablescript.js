@@ -19,11 +19,11 @@ import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { createUndefined } from '../values/undefined';
 
-const evaluate = expressions => async scope => {
+const evaluate = expressions => async (scope, options) => {
   const localScope = { ...scope };
   let result = createUndefined();
   for (let i = 0; i < expressions.length; i++) {
-    result = await expressions[i].evaluate(localScope);
+    result = await expressions[i].evaluate(localScope, options);
   }
   return result;
 };

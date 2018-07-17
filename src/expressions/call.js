@@ -19,9 +19,9 @@ import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { isArraySpread } from '../values/types';
 
-const parameterEvaluator = scope => (p, parameter) => {
+const parameterEvaluator = (scope, options) => (p, parameter) => {
   return p.then(acc => new Promise(resolve => {
-    parameter.evaluate(scope).then(value => {
+    parameter.evaluate(scope, options).then(value => {
       if (isArraySpread(value)) {
         resolve([
           ...acc,
@@ -37,11 +37,11 @@ const parameterEvaluator = scope => (p, parameter) => {
   }));
 };
 
-const evaluateParameters = (parameters, scope) => parameters.reduce(parameterEvaluator(scope), Promise.resolve([]));
+const evaluateParameters = (parameters, scope, options) => parameters.reduce(parameterEvaluator(scope, options), Promise.resolve([]));
 
-const evaluate = (context, callee, parameters) => async scope => {
-  const calleeValue = await callee.evaluate(scope);
-  return calleeValue.callFunction(context, await evaluateParameters(parameters, scope));
+const evaluate = (context, callee, parameters) => async (scope, options) => {
+  const calleeValue = await callee.evaluate(scope, options);
+  return calleeValue.callFunction(context, await evaluateParameters(parameters, scope, options));
 };
 
 export const createCallExpression = (context, callee, parameters) => createExpression(expressionTypes.CALL, evaluate(context, callee, parameters));

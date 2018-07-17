@@ -29,6 +29,7 @@ options
   .version('0.0.1')
   .usage('[options] <file> [...args]')
   .option('-p, --print-last-value', 'Print the last evaluated value')
+  .option('-v, --no-table-validation', 'Disable table entry validation')
   .parse(process.argv);
 
 const filename = options.args[0];
@@ -43,6 +44,9 @@ const interpreterOptions = {
       console.log(s);
     },
   },
+  flags: {
+    validateTables: options.tableValidation,
+  }
 };
 
 try {
