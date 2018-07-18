@@ -56,24 +56,24 @@ export const interpret = async (expressions, args, options) => {
   return await evaluateAllExpressions(expressions, context);
 };
 
-const runProgram = async (location, program, args, options) => {
-  const expressions = parse(location.path, program);
+const runProgram = async (filePath, program, args, options) => {
+  const expressions = parse(filePath, program);
   return await interpret(expressions, args, options);
 }  
 
-const loadProgram = async (loaders, location, filename) => {
+const loadProgram = async (loaders, context, filename) => {
   for (let i = 0; i < loaders.length; i++) {
-    const result = await loaders[i](location, filename);
+    const result = await loaders[i](context, filename);
     if (result) {
       return result;
     }  
   }  
-  throwRuntimeError(`Unable to load ${filename}`, location);
+  throwRuntimeError(`Unable to load ${filename}`, context);
 };  
 
-const run = async (location, filename, args, options) => {
-  const program = await loadProgram(options.input.loaders, location, filename);
-  return await runProgram({ path: program.path }, program.body, args, options);
+const run = async (context, filename, args, options) => {
+  const program = await loadProgram(options.input.loaders, context, filename);
+  return await runProgram(program.path, program.body, args, options);
 };    
 
 export {

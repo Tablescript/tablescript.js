@@ -26,7 +26,7 @@ export class TablescriptError extends Error {
   }
 
   toString() {
-    return `[${this.name}] ${this.contextToString()}: ${this.message}`;
+    return `[${this.name}] ${this.message}\n${this.contextToString()}`;
   }
 
   contextToString() {
