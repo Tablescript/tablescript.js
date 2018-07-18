@@ -24,15 +24,15 @@ import { createUndefined } from './undefined';
 
 const asNativeString = value => () => value;
 const asNativeBoolean = value => () => value === '' ? false : true;
-const nativeEquals = value => (context, other) => isString(other) && value === other.asNativeString(context);
+const nativeEquals = value => (location, other) => isString(other) && value === other.asNativeString(location);
 
-const asString = asNativeString => context => createStringValue(asNativeString(context));
-const asBoolean = asNativeBoolean => context => createBooleanValue(asNativeBoolean(context));
-const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
-const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
+const asString = asNativeString => location => createStringValue(asNativeString(location));
+const asBoolean = asNativeBoolean => location => createBooleanValue(asNativeBoolean(location));
+const equals = nativeEquals => (location, other) => createBooleanValue(nativeEquals(location, other));
+const notEquals = nativeEquals => (location, other) => createBooleanValue(!nativeEquals(location, other));
 
-const getElement = value => (context, index) => {
-  let indexValue = index.asNativeNumber(context);
+const getElement = value => (location, index) => {
+  let indexValue = index.asNativeNumber(location);
   if (indexValue < 0) {
     indexValue = value.length + indexValue;
   }
@@ -42,8 +42,8 @@ const getElement = value => (context, index) => {
   return createStringValue(value[indexValue]);
 };
 
-const add = asNativeString => (context, other) => createStringValue(asNativeString(context) + other.asNativeString(context));
-const multiplyBy = asNativeString => (context, other) => createStringValue(asNativeString(context).repeat(other.asNativeNumber(context)));
+const add = asNativeString => (location, other) => createStringValue(asNativeString(location) + other.asNativeString(location));
+const multiplyBy = asNativeString => (location, other) => createStringValue(asNativeString(location).repeat(other.asNativeNumber(location)));
 
 const methods = {
   asNativeString,

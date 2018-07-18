@@ -23,10 +23,10 @@ import { createBooleanValue } from './boolean';
 const asNativeValue = () => undefined;
 const asNativeString = () => 'undefined';
 const asNativeBoolean = () => false;
-const nativeEquals = (context, other) => other.type === valueTypes.UNDEFINED;
-const asString = context => createStringValue(asNativeString(context));
-const asBoolean = context => createBooleanValue(asNativeBoolean(context));
-const equals = (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
+const nativeEquals = (location, other) => other.type === valueTypes.UNDEFINED;
+const asString = location => createStringValue(asNativeString(location));
+const asBoolean = location => createBooleanValue(asNativeBoolean(location));
+const equals = (location, otherValue) => createBooleanValue(nativeEquals(location, otherValue));
 
 export const createUndefined = () => createValue(
   valueTypes.UNDEFINED,

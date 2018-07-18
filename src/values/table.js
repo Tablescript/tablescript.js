@@ -23,26 +23,30 @@ import { createUndefined } from './undefined';
 import { createNumericValue } from './numeric';
 import { mapFunctionParameters } from '../util/parameters';
 
-const asNativeString = (formalParameters, entries, closure, options) => () => 'table';
-const asNativeBoolean = (formalParameters, entries, closure, options) => () => true;
-const nativeEquals = (formalParameters, entries, closure, options) => () => false;
+const asNativeString = (formalParameters, entries, context) => () => 'table';
+const asNativeBoolean = (formalParameters, entries, context) => () => true;
+const nativeEquals = (formalParameters, entries, context) => () => false;
 const asString = asNativeString => () => createStringValue(asNativeString());
 const asBoolean = asNativeBoolean => () => createBooleanValue(asNativeBoolean());
-const asArray = (formalParameters, entries, closure, options) => () => entries;
+const asArray = (formalParameters, entries, context) => () => entries;
 
-const tableEntryScope = (formalParameters, entries, closure, roll) => ({
+const tableEntryScope = (formalParameters, entries, context, roll) => ({
   'roll': createNumericValue(roll),
-  'this': createTableValue(formalParameters, entries, closure),
+  'this': createTableValue(formalParameters, entries, context),
 });
 
-const getElement = (formalParameters, entries, closure, options) => async (context, index) => {
-  const roll = index.asNativeNumber(context);
+const getElement = (formalParameters, entries, context) => async (location, index) => {
+  const roll = index.asNativeNumber(location);
   const selectedEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
   if (selectedEntry) {
-    return await selectedEntry.evaluate({
-      ...closure,
-      ...tableEntryScope(formalParameters, entries, closure, roll),
-    }, options);
+    const localContext = {
+      ...context,
+      scope: {
+        ...context.scope,
+        ...tableEntryScope(formalParameters, entries, context, roll),
+      },
+    };
+    return await selectedEntry.evaluate(localContext);
   }
   return createUndefined();
 };
@@ -53,14 +57,18 @@ const getTableRoll = R.pipe(getTableDie, randomNumber);
 
 const getRolledEntry = (entries, roll) => entries.find((e, index) => e.rollApplies(roll, index + 1));
 
-const callFunction = (formalParameters, entries, closure, options) => async (context, parameters) => {
+const callFunction = (formalParameters, entries, context) => async (location, parameters) => {
   const roll = getTableRoll(entries);
   const rolledEntry = getRolledEntry(entries, roll);
-  return await rolledEntry.evaluate({
-    ...closure,
-    ...mapFunctionParameters(formalParameters, parameters),
-    ...tableEntryScope(formalParameters, entries, closure, roll),
-  }, options);
+  const localContext = {
+    ...context,
+    scope: {
+      ...context.scope,
+      ...mapFunctionParameters(formalParameters, parameters),
+      ...tableEntryScope(formalParameters, entries, context, roll),  
+    },
+  };
+  return await rolledEntry.evaluate(localContext);
 };
 
 const equals = nativeEquals => () => createBooleanValue(nativeEquals());
@@ -77,13 +85,13 @@ const methods = {
   equals: R.pipe(nativeEquals, equals),
 };
 
-export const tableMethods = (formalParameters, entries, closure, options) => Object.keys(methods).reduce((acc, m) => ({ ...acc, [m]: methods[m](formalParameters, entries, closure, options) }), {});
+export const tableMethods = (formalParameters, entries, context) => Object.keys(methods).reduce((acc, m) => ({ ...acc, [m]: methods[m](formalParameters, entries, context) }), {});
 
-export const createCustomTableValue = (formalParameters, entries, closure, options) => createValue(
+export const createCustomTableValue = (formalParameters, entries, context) => createValue(
   valueTypes.TABLE,
-  asNativeString(formalParameters, entries, closure),
+  asNativeString(),
   [],
-  tableMethods(formalParameters, entries, closure, options),
+  tableMethods(formalParameters, entries, context),
 );
 
-export const createTableValue = (formalParameters, entries, closure, options) => createCustomTableValue(formalParameters, entries, closure, options);
+export const createTableValue = (formalParameters, entries, context) => createCustomTableValue(formalParameters, entries, context);

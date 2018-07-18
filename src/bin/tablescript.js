@@ -50,15 +50,15 @@ const interpreterOptions = {
 };
 
 try {
-  const context = {
+  const location = {
     path: filename,
     line: 0,
     column: 0,
   };
   const program = fs.readFileSync(filename, 'utf8');
-  runProgram(context, program, args, interpreterOptions).then(value => {
+  runProgram(location, program, args, interpreterOptions).then(value => {
     if (options.printLastValue) {
-      console.log(value.asNativeValue(context));
+      console.log(value.asNativeValue(location));
     }
   }).catch(e => {
     if (e instanceof TablescriptError) {

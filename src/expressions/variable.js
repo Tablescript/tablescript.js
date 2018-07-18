@@ -20,7 +20,7 @@ import { expressionTypes } from './types';
 import { createLeftHandSideValue } from '../values/left-hand-side';
 import { createUndefined } from '../values/undefined';
 
-const evaluate = name => scope => Promise.resolve(scope[name] || createUndefined());
+const evaluate = name => context => Promise.resolve(context.scope[name] || createUndefined());
 const evaluateAsLeftHandSide = name => () => createLeftHandSideValue(name);
 
 export const createVariableExpression = name => createExpression(expressionTypes.VARIABLE, evaluate(name), evaluateAsLeftHandSide(name));

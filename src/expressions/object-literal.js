@@ -19,9 +19,9 @@ import { createObjectValue } from '../values/object';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluator = (scope, options) => (p, entry) => {
+const evaluator = context => (p, entry) => {
   return p.then(acc => new Promise(resolve => {
-    entry.evaluate(scope, options).then(value => {
+    entry.evaluate(context).then(value => {
       resolve({
         ...acc,
         ...value.asObject(),
@@ -30,12 +30,12 @@ const evaluator = (scope, options) => (p, entry) => {
   }));
 };
 
-const evaluate = entries => async (scope, options) => createObjectValue(await entries.reduce(evaluator(scope, options), Promise.resolve({})));
+const evaluate = entries => async context => createObjectValue(await entries.reduce(evaluator(context), Promise.resolve({})));
 
 export const createObjectLiteral = entries => createExpression(expressionTypes.OBJECT, evaluate(entries));
 
-const evaluateObjectProperty = (key, value) => async (scope, options) => createObjectValue({
-  [key]: await value.evaluate(scope, options),
+const evaluateObjectProperty = (key, value) => async context => createObjectValue({
+  [key]: await value.evaluate(context),
 });
 
 export const createObjectLiteralPropertyExpression = (key, value) => createExpression(expressionTypes.OBJECT_PROPERTY, evaluateObjectProperty(key, value));

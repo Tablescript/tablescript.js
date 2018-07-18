@@ -19,8 +19,8 @@ import { valueTypeName } from './types';
 import { runtimeErrorThrower } from '../error';
 import { createUndefined } from './undefined';
 
-const getProperty = (properties, getTypeName) => (context, name) => {
-  const nameValue = name.asNativeString(context);
+const getProperty = properties => (location, name) => {
+  const nameValue = name.asNativeString(location);
   if (properties[nameValue]) {
     return properties[nameValue];
   }
@@ -40,7 +40,7 @@ const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({
   asBoolean: runtimeErrorThrower(`Cannot cast ${getTypeName()} to boolean`),
   asArray: runtimeErrorThrower(`Cannot cast ${getTypeName()} to array`),
   asObject: runtimeErrorThrower(`Cannot cast ${getTypeName()} to object`),
-  getProperty: properties.length === 0 ? runtimeErrorThrower(`Cannot get property of ${getTypeName()}`) : getProperty(properties, getTypeName),
+  getProperty: properties.length === 0 ? runtimeErrorThrower(`Cannot get property of ${getTypeName()}`) : getProperty(properties),
   setProperty: runtimeErrorThrower(`Cannot set property of ${getTypeName()}`),
   getElement: runtimeErrorThrower(`Cannot get element of ${getTypeName()}`),
   callFunction: runtimeErrorThrower(`${getTypeName()} is not callable`),

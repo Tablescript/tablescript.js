@@ -18,12 +18,12 @@
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 
-const evaluate = (location, testExpression, consequentExpression, alternateExpression) => async (scope, options) => {
-  const testValue = await testExpression.evaluate(scope, options);
+const evaluate = (location, testExpression, consequentExpression, alternateExpression) => async context => {
+  const testValue = await testExpression.evaluate(context);
   if (testValue.asNativeBoolean(location)) {
-    return consequentExpression.evaluate(scope, options);
+    return consequentExpression.evaluate(context);
   }
-  return alternateExpression.evaluate(scope, options);
+  return alternateExpression.evaluate(context);
 };
 
 export const createConditionalExpression = (location, testExpression, consequentExpression, alternateExpression) => {

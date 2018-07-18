@@ -23,13 +23,13 @@ import { createArrayValue } from './array';
 import { createNativeFunctionValue } from './function';
 import { createStringValue } from './string';
 
-const split = value => (context, scope) => {
+const split = value => (location, scope) => {
   const separator = scope['separator'];
   if (separator) {
     if (separator.type !== valueTypes.STRING) {
-      throwRuntimeError(`split(separator) separator must be a string`, context);
+      throwRuntimeError(`split(separator) separator must be a string`, location);
     }
-    return createArrayValue(value.split(separator.asNativeString(context)).map(s => createStringValue(s)));
+    return createArrayValue(value.split(separator.asNativeString(location)).map(s => createStringValue(s)));
   }
   return createArrayValue(value.split().map(s => createStringValue(s)));
 };
@@ -38,51 +38,51 @@ const capitalize = value => () => createStringValue(value.length === 0 ? value :
 const uppercase = value => () => createStringValue(value.toUpperCase());
 const lowercase = value => () => createStringValue(value.toLowerCase());
 
-const includes = value => (context, scope) => {
+const includes = value => (location, scope) => {
   const s = scope['s'];
   if (s.type !== valueTypes.STRING) {
-    throwRuntimeError(`includes(s) s must be a string`, context);
+    throwRuntimeError(`includes(s) s must be a string`, location);
   }
-  return createBooleanValue(value.includes(s.asNativeString(context)));
+  return createBooleanValue(value.includes(s.asNativeString(location)));
 };
 
-const indexOf = value => (context, scope) => {
+const indexOf = value => (location, scope) => {
   const s = scope['s'];
   if (s.type !== valueTypes.STRING) {
-    throwRuntimeError(`indexOf(s) s must be a string`, context);
+    throwRuntimeError(`indexOf(s) s must be a string`, location);
   }
-  return createNumericValue(value.indexOf(s.asNativeString(context)));
+  return createNumericValue(value.indexOf(s.asNativeString(location)));
 };
 
-const slice = value => (context, scope) => {
+const slice = value => (location, scope) => {
   const startValue = scope['start'];
   if (!startValue || startValue.type !== valueTypes.NUMBER) {
-    throwRuntimeError(`slice(start, end) start must be a number`, context);
+    throwRuntimeError(`slice(start, end) start must be a number`, location);
   }
   const endValue = scope['end'];
   if (endValue) {
     if (endValue.type !== valueTypes.NUMBER) {
-      throwRuntimeError(`slice(start, end) end must be a number`, context);
+      throwRuntimeError(`slice(start, end) end must be a number`, location);
     }
-    return createStringValue(value.slice(startValue.asNativeNumber(context), endValue.asNativeNumber(context)));
+    return createStringValue(value.slice(startValue.asNativeNumber(location), endValue.asNativeNumber(location)));
   }
-  return createStringValue(value.slice(startValue.asNativeNumber(context)));
+  return createStringValue(value.slice(startValue.asNativeNumber(location)));
 };
 
-const startsWith = value => (context, scope) => {
+const startsWith = value => (location, scope) => {
   const s = scope['s'];
   if (s.type !== valueTypes.STRING) {
-    throwRuntimeError(`startsWith(s) s must be a string`, context);
+    throwRuntimeError(`startsWith(s) s must be a string`, location);
   }
-  return createBooleanValue(value.startsWith(s.asNativeString(context)));
+  return createBooleanValue(value.startsWith(s.asNativeString(location)));
 };
 
-const endsWith = value => (context, scope) => {
+const endsWith = value => (location, scope) => {
   const s = scope['s'];
   if (s.type !== valueTypes.STRING) {
-    throwRuntimeError(`endsWith(s) s must be a string`, context);
+    throwRuntimeError(`endsWith(s) s must be a string`, location);
   }
-  return createBooleanValue(value.endsWith(s.asNativeString(context)));
+  return createBooleanValue(value.endsWith(s.asNativeString(location)));
 };
 
 const trim = value => () => createStringValue(value.trim());

@@ -17,19 +17,19 @@
 
 import { createBooleanValue } from '../values/boolean';
 
-const or = async (location, leftValue, rightExpression, scope, options) => {
+const or = async (location, leftValue, rightExpression, context) => {
   if (leftValue.asNativeBoolean(location)) {
     return createBooleanValue(true);
   }
-  const rightValue = await rightExpression.evaluate(scope, options);
+  const rightValue = await rightExpression.evaluate(context);
   return createBooleanValue(rightValue.asNativeBoolean(location));
 };
 
-const and = async (location, leftValue, rightExpression, scope, options) => {
+const and = async (location, leftValue, rightExpression, context) => {
   if (!leftValue.asNativeBoolean(location)) {
     return createBooleanValue(false);
   }
-  const rightValue = await rightExpression.evaluate(scope, options);
+  const rightValue = await rightExpression.evaluate(context);
   return createBooleanValue(rightValue.asNativeBoolean(location));
 };
 
@@ -45,14 +45,14 @@ const greaterThan = (location, leftValue, rightValue) => leftValue.greaterThan(l
 const lessThanOrEquals = (location, leftValue, rightValue) => leftValue.lessThanOrEquals(location, rightValue);
 const greaterThanOrEquals = (location, leftValue, rightValue) => leftValue.lessThan(location, rightValue);
 
-const evaluateLeft = f => async (location, leftExpression, rightExpression, scope, options) => {
-  const leftValue = await leftExpression.evaluate(scope, options);
-  return f(location, leftValue, rightExpression, scope, options);
+const evaluateLeft = f => async (location, leftExpression, rightExpression, context) => {
+  const leftValue = await leftExpression.evaluate(context);
+  return f(location, leftValue, rightExpression, context);
 };
 
-const evaluateBoth = f => async (location, leftExpression, rightExpression, scope, options) => {
-  const leftValue = await leftExpression.evaluate(scope, options);
-  const rightValue = await rightExpression.evaluate(scope, options);
+const evaluateBoth = f => async (location, leftExpression, rightExpression, context) => {
+  const leftValue = await leftExpression.evaluate(context);
+  const rightValue = await rightExpression.evaluate(context);
   return f(location, leftValue, rightValue);
 };
 

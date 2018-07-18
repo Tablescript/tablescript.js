@@ -39,36 +39,36 @@ const initializeScope = (args, options) => ({
   }),
 });
 
-const evaluateAllExpressions = async (expressions, scope, options) => {
+const evaluateAllExpressions = async (expressions, context) => {
   let value;
   for (let i = 0; i < expressions.length; i++) {
-    value = await expressions[i].evaluate(scope, options);
+    value = await expressions[i].evaluate(context);
   }
   return value;
 }
 
 export const interpret = async (ast, args, options) => {
   const scope = initializeScope(args, options);
-  return await evaluateAllExpressions(ast, scope, options);
+  return await evaluateAllExpressions(ast, { stack: [], scope, options });
 };
 
-const runProgram = async (context, program, args, options) => {
-  const expressions = parse(context.path, program);
+const runProgram = async (location, program, args, options) => {
+  const expressions = parse(location.path, program);
   return await interpret(expressions, args, options);
 }  
 
-const loadProgram = async (loaders, context, filename) => {
+const loadProgram = async (loaders, location, filename) => {
   for (let i = 0; i < loaders.length; i++) {
-    const result = await loaders[i](context, filename);
+    const result = await loaders[i](location, filename);
     if (result) {
       return result;
     }  
   }  
-  throwRuntimeError(`Unable to load ${filename}`, context);
+  throwRuntimeError(`Unable to load ${filename}`, location);
 };  
 
-const run = async (context, filename, args, options) => {
-  const program = await loadProgram(options.input.loaders, context, filename);
+const run = async (location, filename, args, options) => {
+  const program = await loadProgram(options.input.loaders, location, filename);
   return await runProgram({ path: program.path }, program.body, args, options);
 };    
 

@@ -32,7 +32,7 @@ const asBoolean = () => createBooleanValue(asNativeBoolean()); // asBoolean = R.
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');
   const asString = sharedAsString('native');
-  const callFunction = async (context, parameters) => await f(context, mapFunctionParameters(formalParameters, parameters));
+  const callFunction = async (location, parameters) => await f(location, mapFunctionParameters(formalParameters, parameters));
 
   return createValue(
     valueTypes.FUNCTION,
@@ -50,15 +50,18 @@ export const createNativeFunctionValue = (formalParameters, f) => {
   );
 };
 
-export const createFunctionValue = (formalParameters, body, closure, options) => {
+export const createFunctionValue = (formalParameters, body, context) => {
   const asNativeString = sharedAsNativeString('tablescript');
   const asString = sharedAsString('tablescript');
-  const callFunction = async (context, parameters) => {
-    const localScope = {
-      ...closure,
-      ...mapFunctionParameters(formalParameters, parameters)
+  const callFunction = async (_, parameters) => {
+    const localContext = {
+      ...context,
+      scope: {
+        ...context.scope,
+        ...mapFunctionParameters(formalParameters, parameters),
+      }
     };
-    return await body.evaluate(localScope, options);
+    return await body.evaluate(localContext);
   };
 
   return createValue(

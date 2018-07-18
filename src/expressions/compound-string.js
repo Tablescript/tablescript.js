@@ -19,10 +19,10 @@ import { createStringValue } from '../values/string';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = elements => async (scope, options) => {
+const evaluate = elements => async context => {
   let s = '';
   for (let e of elements) {
-    const value = await e.evaluate(scope, options);
+    const value = await e.evaluate(context);
     s = s + value.asNativeString();
   }
   return createStringValue(s);

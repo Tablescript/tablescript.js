@@ -21,8 +21,8 @@ import { expressionTypes } from './types';
 import { valueTypes } from '../values/types';
 import { createArraySpread, createObjectSpread, createTableSpread } from '../values/spread';
 
-const evaluate = (location, expression) => async (scope, options) => {
-  const value = await expression.evaluate(scope, options);
+const evaluate = (location, expression) => async context => {
+  const value = await expression.evaluate(context);
   if (value.type === valueTypes.ARRAY) {
     return createArraySpread(value);
   }

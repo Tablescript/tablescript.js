@@ -22,11 +22,11 @@ import { createStringValue } from './string';
 
 const asNativeString = value => () => value ? 'true' : 'false';
 const asNativeBoolean = value => () => value;
-const nativeEquals = value => (context, other) => value === other.asNativeBoolean(context);
-const asString = asNativeString => context => createStringValue(asNativeString(context));
+const nativeEquals = value => (location, other) => value === other.asNativeBoolean(location);
+const asString = asNativeString => location => createStringValue(asNativeString(location));
 const asBoolean = value => () => createBooleanValue(value);
-const equals = nativeEquals => (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
-const notEquals = nativeEquals => (context, otherValue) => createBooleanValue(!nativeEquals(context, otherValue));
+const equals = nativeEquals => (location, otherValue) => createBooleanValue(nativeEquals(location, otherValue));
+const notEquals = nativeEquals => (location, otherValue) => createBooleanValue(!nativeEquals(location, otherValue));
 
 const methods = {
   asNativeString,

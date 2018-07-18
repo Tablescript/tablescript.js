@@ -19,14 +19,14 @@ import { valueTypes } from '../values/types';
 import { throwRuntimeError } from '../error';
 
 const createTableEntry = (selector, body) => ({
-  evaluate: async (scope, options) => await body.evaluate(scope, options),
+  evaluate: body.evaluate,
   getLowestSelector: () => selector.lowestSelector,
   getHighestSelector: () => selector.highestSelector,
   rollApplies: actualRoll => selector.rollApplies(actualRoll),
 });
 
 const createSimpleTableEntry = body => ({
-  evaluate: async (scope, options) => await body.evaluate(scope, options),
+  evaluate: body.evaluate,
   getLowestSelector: index => index,
   getHighestSelector: index => index,
   rollApplies: (actualRoll, index) => (actualRoll === index),
@@ -48,8 +48,8 @@ export const createSimpleTableEntryExpression = body => ({
 });  
 
 export const createSpreadTableEntryExpression = spread => ({
-  expand: async (scope, options) => {
-    const spreadValue = await spread.evaluate(scope, options);
+  expand: async context => {
+    const spreadValue = await spread.evaluate(context);
     if (spreadValue.type === valueTypes.ARRAY_SPREAD) {
       return spreadValue.asArray().map(entry => createLiteralTableEntry(entry));
     }

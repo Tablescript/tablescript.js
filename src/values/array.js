@@ -24,11 +24,11 @@ import { createBooleanValue } from './boolean';
 import { createStringValue } from './string';
 import { createUndefined } from './undefined';
 
-const entriesAsNativeValues = (context, entries) => entries.map(e => e.asNativeValue(context));
-const asNativeString = entries => context => JSON.stringify(entriesAsNativeValues(context, entries));
+const entriesAsNativeValues = (location, entries) => entries.map(e => e.asNativeValue(location));
+const asNativeString = entries => location => JSON.stringify(entriesAsNativeValues(location, entries));
 const asNativeBoolean = () => () => true;
-const asNativeArray = entries => context => entriesAsNativeValues(context, entries);
-const nativeEquals = entries => (context, other) => {
+const asNativeArray = entries => location => entriesAsNativeValues(location, entries);
+const nativeEquals = entries => (location, other) => {
   if (other.type !== valueTypes.ARRAY) {
     return false;
   }
@@ -36,24 +36,24 @@ const nativeEquals = entries => (context, other) => {
   if (otherEntries.length !== entries.length) {
     return false;
   }
-  return entries.reduce((result, entry, index) => result && entry.nativeEquals(context, otherEntries[index]), true);
+  return entries.reduce((result, entry, index) => result && entry.nativeEquals(location, otherEntries[index]), true);
 };
-const asString = asNativeString => context => createStringValue(asNativeString(context));
+const asString = asNativeString => location => createStringValue(asNativeString(location));
 const asBoolean = asNativeBoolean => () => createBooleanValue(asNativeBoolean());
 const asArray = entries => () => entries;
-const setProperty = entries => (context, index, value) => {
-  let indexValue = index.asNativeNumber(context);
+const setProperty = entries => (location, index, value) => {
+  let indexValue = index.asNativeNumber(location);
   if (indexValue < 0) {
     indexValue = entries.length + indexValue;
   }
   if (indexValue < 0 || indexValue >= entries.length) {
-    throwRuntimeError('Index out of range', context);
+    throwRuntimeError('Index out of range', location);
   }
   entries[indexValue] = value;
   return value;
 };
-const getElement = entries => (context, index) => {
-  let indexValue = index.asNativeNumber(context);
+const getElement = entries => (location, index) => {
+  let indexValue = index.asNativeNumber(location);
   if (indexValue < 0) {
     indexValue = entries.length + indexValue;
   }
@@ -62,10 +62,10 @@ const getElement = entries => (context, index) => {
   }
   return entries[indexValue];
 };
-const add = entries => (context, other) => createArrayValue([...entries, other]);
-const multiplyBy = entries => (context, other) => createArrayValue(R.range(0, other.asNativeNumber(context)).reduce((all,n) => ([...all, ...entries]), []));
-const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
-const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
+const add = entries => (location, other) => createArrayValue([...entries, other]);
+const multiplyBy = entries => (location, other) => createArrayValue(R.range(0, other.asNativeNumber(location)).reduce((all,n) => ([...all, ...entries]), []));
+const equals = nativeEquals => (location, other) => createBooleanValue(nativeEquals(location, other));
+const notEquals = nativeEquals => (location, other) => createBooleanValue(!nativeEquals(location, other));
 
 const methods = {
   asNativeString,
