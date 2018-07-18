@@ -21,6 +21,7 @@ import { valueTypes } from './types';
 import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 import { mapFunctionParameters } from '../util/parameters';
+import { replaceScope, pushStack } from '../context';
 
 const sharedAsNativeString = type => () => `function(${type})`;
 const asNativeBoolean = () => true;
@@ -32,10 +33,10 @@ const asBoolean = () => createBooleanValue(asNativeBoolean()); // asBoolean = R.
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');
   const asString = sharedAsString('native');
-  const callFunction = (context, parameters) => f({
-    ...context,
-    scope: mapFunctionParameters(formalParameters, parameters),
-  });
+  const callFunction = async (context, parameters) => {
+    const localContext = replaceScope(context, mapFunctionParameters(formalParameters, parameters));
+    return await f(localContext);
+  };
 
   return createValue(
     valueTypes.FUNCTION,
@@ -57,13 +58,10 @@ export const createFunctionValue = (formalParameters, body, closure) => {
   const asNativeString = sharedAsNativeString('tablescript');
   const asString = sharedAsString('tablescript');
   const callFunction = async (context, parameters) => {
-    const localContext = {
-      ...context,
-      scope: {
-        ...closure,
-        ...mapFunctionParameters(formalParameters, parameters),
-      }
-    };
+    const localContext = pushStack(replaceScope(context, {
+      ...closure,
+      ...mapFunctionParameters(formalParameters, parameters),
+    }));
     return await body.evaluate(localContext);
   };
 

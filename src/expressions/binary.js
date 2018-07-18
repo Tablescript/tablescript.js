@@ -18,9 +18,10 @@
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { allOperators } from './binary-operators';
+import { updateStack } from '../context';
 
 const evaluate = (location, operators, leftExpression, operator, rightExpression) => context => {
-  const localContext = { ...context, location };
+  const localContext = updateStack(context, location);
   return operators[operator](localContext, leftExpression, rightExpression);
 };
 

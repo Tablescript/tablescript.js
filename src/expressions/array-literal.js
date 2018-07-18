@@ -20,9 +20,10 @@ import { throwRuntimeError } from '../error';
 import { createArrayValue } from '../values/array';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { updateStack } from '../context';
 
 const evaluate = (location, values) => async context => {
-  const localContext = { ...context, location };
+  const localContext = updateStack(context, location);
   let result = [];
   for (let i = 0; i < values.length; i++) {
     const value = await values[i].evaluate(localContext);

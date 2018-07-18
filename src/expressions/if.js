@@ -18,14 +18,16 @@
 import { createUndefined } from '../values/undefined';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { updateStack } from '../context';
 
 const evaluate = (location, condition, ifBlock, elseBlock) => async context => {
-  const expressionValue = await condition.evaluate(context);
-  if (expressionValue.asNativeBoolean(location)) {
-    return ifBlock.evaluate(context);
+  const localContext = updateStack(context, location);
+  const expressionValue = await condition.evaluate(localContext);
+  if (expressionValue.asNativeBoolean(localContext)) {
+    return ifBlock.evaluate(localContext);
   } else {
     if (elseBlock) {
-      return elseBlock.evaluate(context);
+      return elseBlock.evaluate(localContext);
     }
     return createUndefined();
   }

@@ -18,12 +18,10 @@
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { createUndefined } from '../values/undefined';
+import { copyScope } from '../context';
 
 const evaluate = expressions => async context => {
-  const localContext = {
-    ...context,
-    scope: { ...context.scope },
-  };
+  const localContext = copyScope(context);
   let result = createUndefined();
   for (let i = 0; i < expressions.length; i++) {
     result = await expressions[i].evaluate(localContext);

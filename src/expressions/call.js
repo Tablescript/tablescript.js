@@ -18,6 +18,7 @@
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { isArraySpread } from '../values/types';
+import { updateStack } from '../context';
 
 const parameterEvaluator = context => (p, parameter) => {
   return p.then(acc => new Promise(resolve => {
@@ -40,7 +41,7 @@ const parameterEvaluator = context => (p, parameter) => {
 const evaluateParameters = (context, parameters) => parameters.reduce(parameterEvaluator(context), Promise.resolve([]));
 
 const evaluate = (location, callee, parameters) => async context => {
-  const localContext = { ...context, location };
+  const localContext = updateStack(context, location);
   const calleeValue = await callee.evaluate(localContext);
   return calleeValue.callFunction(localContext, await evaluateParameters(localContext, parameters));
 };

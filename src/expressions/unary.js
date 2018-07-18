@@ -20,9 +20,10 @@ import { createNumericValue } from '../values/numeric';
 import { createBooleanValue } from '../values/boolean';
 import { throwRuntimeError } from '../error';
 import { expressionTypes } from './types';
+import { updateStack } from '../context';
 
 const evaluate = (location, operator, argument) => async context => {
-  const localContext = { ...context, location };
+  const localContext = updateStack(context, location);
   const value = await argument.evaluate(localContext);
   if (operator === '-') {
     return createNumericValue(-1 * value.asNativeNumber(localContext));

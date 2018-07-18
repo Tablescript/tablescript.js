@@ -19,6 +19,7 @@ import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { createTableValue } from '../values/table';
 import { TablescriptError } from '../error';
+import { updateStack, closureFromScope } from '../context';
 
 const entryExpander = context => (p, entry) => {
   return p.then(acc => new Promise(resolve => {
@@ -63,8 +64,8 @@ const expandEntries = async (context, entries) => {
 };
 
 const evaluate = (location, formalParameters, entries) => async context => {
-  const localContext = { ...context, location };
-  return createTableValue(formalParameters, await expandEntries(localContext, entries), { ...context.scope });
+  const localContext = updateStack(context, location);
+  return createTableValue(formalParameters, await expandEntries(localContext, entries), closureFromScope(context));
 };
 
 export const createTableExpression = (location, formalParameters, entries) => createExpression(expressionTypes.TABLE, evaluate(location, formalParameters, entries));

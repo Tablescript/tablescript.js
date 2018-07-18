@@ -23,9 +23,10 @@ import {
 } from '../values/left-hand-side';
 import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
+import { updateStack } from '../context';
 
 const evaluate = (location, objectExpression, propertyNameExpression) => async context => {
-  const localContext = { ...context, location };
+  const localContext = updateStack(context, location);
   const objectValue = await objectExpression.evaluate(localContext);
   const propertyNameValue = await propertyNameExpression.evaluate(localContext);
   if (propertyNameValue.type === valueTypes.NUMBER) {
@@ -35,10 +36,7 @@ const evaluate = (location, objectExpression, propertyNameExpression) => async c
 };
 
 const evaluateAsLeftHandSide = (location, objectExpression, propertyNameExpression) => async context => {
-  const localContext = {
-    ...context,
-    location,
-  };
+  const localContext = updateStack(context, location);
   const objectValue = await objectExpression.evaluate(localContext);
   if (!(objectValue.type === valueTypes.OBJECT || objectValue.type === valueTypes.ARRAY)) {
     throwRuntimeError('Cannot assign to non-object non-array type', localContext);

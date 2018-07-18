@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+const locationToString = (location, i) => `[${i + 1}] ${location.path} (line ${location.line} column ${location.column})`;
+
 export class TablescriptError extends Error {
   constructor(name, message, context, trace) {
     super(message);
@@ -26,12 +28,12 @@ export class TablescriptError extends Error {
   }
 
   toString() {
-    return `[${this.name}] ${this.message}\n${this.contextToString()}`;
+    return `${this.name}: ${this.message} at:\n${this.stackTraceToString()}`;
   }
 
-  contextToString() {
-    if (this.context) {
-      return `${this.context.location.path} (line ${this.context.location.line} column ${this.context.location.column})`;
+  stackTraceToString() {
+    if (this.context && this.context.stack) {
+      return this.context.stack.map(locationToString).join('\n');
     }
     return '';
   }

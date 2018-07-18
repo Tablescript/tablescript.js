@@ -22,6 +22,7 @@ import { randomNumber } from '../util/random';
 import { createUndefined } from './undefined';
 import { createNumericValue } from './numeric';
 import { mapFunctionParameters } from '../util/parameters';
+import { replaceScope, pushStack } from '../context';
 
 const asNativeString = (formalParameters, entries, closure) => () => 'table';
 const asNativeBoolean = (formalParameters, entries, closure) => () => true;
@@ -39,13 +40,10 @@ const getElement = (formalParameters, entries, closure) => async (context, index
   const roll = index.asNativeNumber(context);
   const selectedEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
   if (selectedEntry) {
-    const localContext = {
-      ...context,
-      scope: {
-        ...closure,
-        ...tableEntryScope(formalParameters, entries, closure, roll),
-      },
-    };
+    const localContext = pushStack(replaceScope(context, {
+      ...closure,
+      ...tableEntryScope(formalParameters, entries, closure, roll),
+    }));
     return await selectedEntry.evaluate(localContext);
   }
   return createUndefined();
@@ -60,14 +58,11 @@ const getRolledEntry = (entries, roll) => entries.find((e, index) => e.rollAppli
 const callFunction = (formalParameters, entries, closure) => async (context, parameters) => {
   const roll = getTableRoll(entries);
   const rolledEntry = getRolledEntry(entries, roll);
-  const localContext = {
-    ...context,
-    scope: {
-      ...closure,
-      ...mapFunctionParameters(formalParameters, parameters),
-      ...tableEntryScope(formalParameters, entries, closure, roll),  
-    },
-  };
+  const localContext = pushStack(replaceScope(context, {
+    ...closure,
+    ...mapFunctionParameters(formalParameters, parameters),
+    ...tableEntryScope(formalParameters, entries, closure, roll),  
+  }));
   return await rolledEntry.evaluate(localContext);
 };
 

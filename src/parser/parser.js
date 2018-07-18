@@ -27,12 +27,14 @@ export const parse = (filePath, program) => {
       'SyntaxError',
       e.message,
       {
-        location: {
-          path: filePath,
-          line: e.location ? e.location.start.line : 0,
-          column: e.location ? e.location.start.column: 0,
-          location: e.location,
-        },
+        stack: [
+          {
+            path: filePath,
+            line: e.location ? e.location.start.line : 0,
+            column: e.location ? e.location.start.column: 0,
+            location: e.location,
+          },
+        ],
       },
     );
   }
@@ -46,11 +48,13 @@ export const parseTemplateString = e => {
       'SyntaxError',
       e.message,
       {
-        location: {
-          line: e.location ? e.location.start.line : 0,
-          column: e.location ? e.location.start.column: 0,
-          location: e.location,
-        },
+        stack: [
+          {
+            line: e.location ? e.location.start.line : 0,
+            column: e.location ? e.location.start.column: 0,
+            location: e.location,
+          },
+        ],
       },
     );
   }

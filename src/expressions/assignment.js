@@ -19,6 +19,7 @@ import { valueTypes } from '../values/types';
 import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { updateStack } from '../context';
 
 const operators = {
   '=': (context, leftHandSideValue, leftValue, value) => {
@@ -42,10 +43,7 @@ const operators = {
 };
 
 const evaluate = (location, leftHandSideExpression, operator, valueExpression) => async context => {
-  const localContext = {
-    ...context,
-    location
-  };
+  const localContext = updateStack(context, location);
   const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(localContext);
   if (leftHandSideValue.type !== valueTypes.LEFT_HAND_SIDE) {
     throwRuntimeError('Cannot assign to a non-left-hand-side type', localContext);
