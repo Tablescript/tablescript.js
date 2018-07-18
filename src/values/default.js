@@ -19,8 +19,8 @@ import { valueTypeName } from './types';
 import { runtimeErrorThrower } from '../error';
 import { createUndefined } from './undefined';
 
-const getProperty = properties => (location, name) => {
-  const nameValue = name.asNativeString(location);
+const getProperty = properties => (context, name) => {
+  const nameValue = name.asNativeString(context);
   if (properties[nameValue]) {
     return properties[nameValue];
   }

@@ -22,16 +22,16 @@ import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 import { createUndefined } from './undefined';
 
-const propertiesAsNativeValues = (location, properties) => {
+const propertiesAsNativeValues = (context, properties) => {
   return Object.keys(properties).reduce((result, key) => ({
     ...result,
-    [key]: properties[key].asNativeValue(location)
+    [key]: properties[key].asNativeValue(context)
   }), {});
 };
-const asNativeString = o => location => JSON.stringify(propertiesAsNativeValues(location, o));
+const asNativeString = o => context => JSON.stringify(propertiesAsNativeValues(context, o));
 const asNativeBoolean = () => () => true;
-const asNativeObject = o => location => propertiesAsNativeValues(location, o);
-const nativeEquals = o => (location, other) => {
+const asNativeObject = o => context => propertiesAsNativeValues(context, o);
+const nativeEquals = o => (context, other) => {
   if (other.type !== valueTypes.OBJECT) {
     return false;
   }
@@ -43,23 +43,23 @@ const nativeEquals = o => (location, other) => {
     if (!otherProperties[key]) {
       return false;
     }
-    return result && o[key].nativeEquals(location, otherProperties[key]);
+    return result && o[key].nativeEquals(context, otherProperties[key]);
   }, true);
 };
-const asString = asNativeString => location => createStringValue(asNativeString(location));
+const asString = asNativeString => context => createStringValue(asNativeString(context));
 const asBoolean = asNativeBoolean => () => createBooleanValue(asNativeBoolean());
 const asObject = o => () => o;
-const getProperty = o => (location, name) => {
-  const propertyName = name.asNativeString(location);
+const getProperty = o => (context, name) => {
+  const propertyName = name.asNativeString(context);
   if (o[propertyName]) {
     return o[propertyName];
   }
   return createUndefined();
 };
-const setProperty = o => (location, name, value) => {
-  o[name.asNativeString(location)] = value;
+const setProperty = o => (context, name, value) => {
+  o[name.asNativeString(context)] = value;
 };
-const equals = nativeEquals => (location, other) => createBooleanValue(nativeEquals(location, other));
+const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
 
 const methods = {
   asNativeString,

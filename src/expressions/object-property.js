@@ -25,31 +25,36 @@ import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
 
 const evaluate = (location, objectExpression, propertyNameExpression) => async context => {
-  const objectValue = await objectExpression.evaluate(context);
-  const propertyNameValue = await propertyNameExpression.evaluate(context);
+  const localContext = { ...context, location };
+  const objectValue = await objectExpression.evaluate(localContext);
+  const propertyNameValue = await propertyNameExpression.evaluate(localContext);
   if (propertyNameValue.type === valueTypes.NUMBER) {
-    return await objectValue.getElement(location, propertyNameValue);
+    return await objectValue.getElement(localContext, propertyNameValue);
   }
-  return objectValue.getProperty(location, propertyNameValue);
+  return objectValue.getProperty(localContext, propertyNameValue);
 };
 
-const evaluateAsLeftHandSide = (objectExpression, propertyNameExpression) => async (location, context) => {
-  const objectValue = await objectExpression.evaluate(context);
+const evaluateAsLeftHandSide = (location, objectExpression, propertyNameExpression) => async context => {
+  const localContext = {
+    ...context,
+    location,
+  };
+  const objectValue = await objectExpression.evaluate(localContext);
   if (!(objectValue.type === valueTypes.OBJECT || objectValue.type === valueTypes.ARRAY)) {
-    throwRuntimeError('Cannot assign to non-object non-array type', location);
+    throwRuntimeError('Cannot assign to non-object non-array type', localContext);
   }
-  const propertyNameValue = await propertyNameExpression.evaluate(context);
+  const propertyNameValue = await propertyNameExpression.evaluate(localContext);
   if (propertyNameValue.type === valueTypes.NUMBER) {
     return createArrayElementLeftHandSideValue(objectValue, propertyNameValue);
   }
   if (propertyNameValue.type === valueTypes.STRING) {
     return createObjectPropertyLeftHandSideValue(objectValue, propertyNameValue);
   }
-  throwRuntimeError('Cannot access property or element', location);
+  throwRuntimeError('Cannot access property or element', localContext);
 };
 
 export const createObjectPropertyExpression = (location, objectExpression, propertyNameExpression) => createExpression(
   expressionTypes.OBJECT_PROPERTY,
   evaluate(location, objectExpression, propertyNameExpression),
-  evaluateAsLeftHandSide(objectExpression, propertyNameExpression),
+  evaluateAsLeftHandSide(location, objectExpression, propertyNameExpression),
 );

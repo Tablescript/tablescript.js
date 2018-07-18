@@ -25,44 +25,44 @@ import { throwRuntimeError } from '../error';
 const asNativeNumber = value => () => value;
 const asNativeString = value => () => value.toString();
 const asNativeBoolean = value => () => value == 0 ? false : true;
-const nativeEquals = value => (location, other) => isNumeric(other) && value === other.asNativeNumber(location);
-const asNumber = value => location => createNumericValue(value);
-const asString = asNativeString => location => createStringValue(asNativeString(location));
-const asBoolean = asNativeBoolean => location => createBooleanValue(asNativeBoolean(location));
-const add = value => (location, other) => {
+const nativeEquals = value => (context, other) => isNumeric(other) && value === other.asNativeNumber(context);
+const asNumber = value => context => createNumericValue(value);
+const asString = asNativeString => context => createStringValue(asNativeString(context));
+const asBoolean = asNativeBoolean => context => createBooleanValue(asNativeBoolean(context));
+const add = value => (context, other) => {
   if (isString(other)) {
     return createStringValue(value.toString() + other.asNativeString());
   }
-  return createNumericValue(value + other.asNativeNumber(location));
+  return createNumericValue(value + other.asNativeNumber(context));
 };
-const subtract = value => (location, other) => {
-  return createNumericValue(value - other.asNativeNumber(location));
+const subtract = value => (context, other) => {
+  return createNumericValue(value - other.asNativeNumber(context));
 };
-const multiplyBy = value => (location, other) => {
-  return createNumericValue(value * other.asNativeNumber(location));
+const multiplyBy = value => (context, other) => {
+  return createNumericValue(value * other.asNativeNumber(context));
 };
-const divideBy = value => (location, other) => {
-  if (other.asNativeNumber(location) === 0) {
-    throwRuntimeError('Divide by zero', location);
+const divideBy = value => (context, other) => {
+  if (other.asNativeNumber(context) === 0) {
+    throwRuntimeError('Divide by zero', context);
   }
-  return createNumericValue(value / other.asNativeNumber(location));
+  return createNumericValue(value / other.asNativeNumber(context));
 };
-const modulo = value => (location, other) => {
-  if (other.asNativeNumber(location) === 0) {
-    throwRuntimeError('Divide by zero', location);
+const modulo = value => (context, other) => {
+  if (other.asNativeNumber(context) === 0) {
+    throwRuntimeError('Divide by zero', context);
   }
-  return createNumericValue(value % other.asNativeNumber(location));
+  return createNumericValue(value % other.asNativeNumber(context));
 };
-const equals = nativeEquals => (location, other) => createBooleanValue(nativeEquals(location, other));
-const notEquals = nativeEquals => (location, other) => createBooleanValue(!nativeEquals(location, other));
-const lessThan = value => (location, other) => {
-  return createBooleanValue(value < other.asNativeNumber(location));
+const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
+const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
+const lessThan = value => (context, other) => {
+  return createBooleanValue(value < other.asNativeNumber(context));
 };
-const greaterThan = value => (location, other) => {
-  return createBooleanValue(value > other.asNativeNumber(location));
+const greaterThan = value => (context, other) => {
+  return createBooleanValue(value > other.asNativeNumber(context));
 };
-const lessThanOrEquals = greaterThan => (location, other) => createBooleanValue(!greaterThan(location, other));
-const greaterThanOrEquals = lessThan => (location, other) => createBooleanValue(!lessThan(location, other));
+const lessThanOrEquals = greaterThan => (context, other) => createBooleanValue(!greaterThan(context, other));
+const greaterThanOrEquals = lessThan => (context, other) => createBooleanValue(!lessThan(context, other));
 
 const methods = {
   asNativeNumber,

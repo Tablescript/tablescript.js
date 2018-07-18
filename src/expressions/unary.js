@@ -22,17 +22,18 @@ import { throwRuntimeError } from '../error';
 import { expressionTypes } from './types';
 
 const evaluate = (location, operator, argument) => async context => {
-  const value = await argument.evaluate(context);
+  const localContext = { ...context, location };
+  const value = await argument.evaluate(localContext);
   if (operator === '-') {
-    return createNumericValue(-1 * value.asNativeNumber(location));
+    return createNumericValue(-1 * value.asNativeNumber(localContext));
   }
   if (operator === '+') {
-    return createNumericValue(value.asNativeNumber(location));
+    return createNumericValue(value.asNativeNumber(localContext));
   }
   if (operator === 'not') {
-    return createBooleanValue(!value.asNativeBoolean(location));
+    return createBooleanValue(!value.asNativeBoolean(localContext));
   }
-  throwRuntimeError(`Invalid operator ${operator}`, location);
+  throwRuntimeError(`Invalid operator ${operator}`, localContext);
 };
 
 export const createUnaryExpression = (location, operator, argument) => createExpression(expressionTypes.UNARY, evaluate(location, operator, argument));

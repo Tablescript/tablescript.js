@@ -37,11 +37,12 @@ const parameterEvaluator = context => (p, parameter) => {
   }));
 };
 
-const evaluateParameters = (parameters, context) => parameters.reduce(parameterEvaluator(context), Promise.resolve([]));
+const evaluateParameters = (context, parameters) => parameters.reduce(parameterEvaluator(context), Promise.resolve([]));
 
 const evaluate = (location, callee, parameters) => async context => {
-  const calleeValue = await callee.evaluate(context);
-  return calleeValue.callFunction(location, await evaluateParameters(parameters, context));
+  const localContext = { ...context, location };
+  const calleeValue = await callee.evaluate(localContext);
+  return calleeValue.callFunction(localContext, await evaluateParameters(localContext, parameters));
 };
 
 export const createCallExpression = (location, callee, parameters) => createExpression(expressionTypes.CALL, evaluate(location, callee, parameters));

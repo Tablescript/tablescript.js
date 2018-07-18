@@ -22,16 +22,17 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 const evaluate = (location, values) => async context => {
+  const localContext = { ...context, location };
   let result = [];
   for (let i = 0; i < values.length; i++) {
-    const value = await values[i].evaluate(context);
+    const value = await values[i].evaluate(localContext);
     if (value.type === valueTypes.ARRAY_SPREAD) {
       result = [
         ...result,
         ...value.asArray(location)
       ];
     } else if (value.type === valueTypes.OBJECT_SPREAD) {
-      throwRuntimeError('Cannot spread object into array', location);
+      throwRuntimeError('Cannot spread object into array', localContext);
     } else {
       result = [
         ...result,

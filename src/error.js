@@ -31,7 +31,7 @@ export class TablescriptError extends Error {
 
   contextToString() {
     if (this.context) {
-      return `${this.context.path} (line ${this.context.line} column ${this.context.column})`;
+      return `${this.context.location.path} (line ${this.context.location.line} column ${this.context.location.column})`;
     }
     return '';
   }

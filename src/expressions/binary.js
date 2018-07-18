@@ -19,7 +19,10 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { allOperators } from './binary-operators';
 
-const evaluate = (location, operators, leftExpression, operator, rightExpression) => context => operators[operator](location, leftExpression, rightExpression, context);
+const evaluate = (location, operators, leftExpression, operator, rightExpression) => context => {
+  const localContext = { ...context, location };
+  return operators[operator](localContext, leftExpression, rightExpression);
+};
 
 export const createBinaryExpressionWithOperators = operators => (location, leftExpression, operator, rightExpression) => {
   return createExpression(expressionTypes.BINARY, evaluate(location, operators, leftExpression, operator, rightExpression));

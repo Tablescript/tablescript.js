@@ -24,95 +24,95 @@ import { createStringValue } from './string';
 import { valueTypes } from './types';
 import { quickSort } from '../util/sort';
 
-const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], async (location, scope) => {
-  const reducer = scope['reducer'];
-  const initialValue = scope['initialValue'];
+const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], async context => {
+  const reducer = context.scope['reducer'];
+  const initialValue = context.scope['initialValue'];
   let result = initialValue;
   for (let i = 0; i < entries.length; i++) {
-    result = await reducer.callFunction(location, [result, entries[i]]);
+    result = await reducer.callFunction(context, [result, entries[i]]);
   }
   return result;
 });
 
-const map = entries => createNativeFunctionValue(['f'], async (location, scope) => {
-  const f = scope['f'];
+const map = entries => createNativeFunctionValue(['f'], async context => {
+  const f = context.scope['f'];
   const result = [];
   for (let i = 0; i < entries.length; i++) {
-    result.push(await f.callFunction(location, [entries[i]]));
+    result.push(await f.callFunction(context, [entries[i]]));
   }
   return createArrayValue(result);
 });
 
-const filter = entries => createNativeFunctionValue(['f'], async (location, scope) => {
-  const f = scope['f'];
+const filter = entries => createNativeFunctionValue(['f'], async context => {
+  const f = context.scope['f'];
   const result = [];
   for (let i = 0; i < entries.length; i++) {
-    const testValue = await f.callFunction(location, [entries[i]]);
-    if (testValue.asNativeBoolean(location)) {
+    const testValue = await f.callFunction(context, [entries[i]]);
+    if (testValue.asNativeBoolean(context)) {
       result.push(entries[i]);
     }
   }
   return createArrayValue(result);
 });
 
-const includes = entries => createNativeFunctionValue(['value'], (location, scope) => {
-  const value = scope['value'];
+const includes = entries => createNativeFunctionValue(['value'], context => {
+  const value = context.scope['value'];
   if (value) {
-    return createBooleanValue(entries.reduce((result, entry) => result || entry.nativeEquals(location, value), false));
+    return Promise.resolve(createBooleanValue(entries.reduce((result, entry) => result || entry.nativeEquals(context, value), false)));
   }
-  return createUndefined();
+  return Promise.resolve(createUndefined());
 });
 
-const indexOf = entries => createNativeFunctionValue(['value'], (location, scope) => {
-  const value = scope['value'];
+const indexOf = entries => createNativeFunctionValue(['value'], context => {
+  const value = context.scope['value'];
   for (let i = 0; i < entries.length; i++) {
-    if (entries[i].nativeEquals(location, value)) {
-      return createNumericValue(i);
+    if (entries[i].nativeEquals(context, value)) {
+      return Promise.resolve(createNumericValue(i));
     }
   }
-  return createNumericValue(-1);
+  return Promise.resolve(createNumericValue(-1));
 });
 
-const find = entries => createNativeFunctionValue(['f'], async (location, scope) => {
-  const f = scope['f'];
+const find = entries => createNativeFunctionValue(['f'], async context => {
+  const f = context.scope['f'];
   for (let i = 0; i < entries.length; i++) {
-    const testValue = await f.callFunction(location, [entries[i]]);
-    if (testValue.asNativeBoolean(location)) {
+    const testValue = await f.callFunction(context, [entries[i]]);
+    if (testValue.asNativeBoolean(context)) {
       return entries[i];
     }
   }
   return createUndefined();
 });
 
-const findIndex = entries => createNativeFunctionValue(['f'], async (location, scope) => {
-  const f = scope['f'];
+const findIndex = entries => createNativeFunctionValue(['f'], async context => {
+  const f = context.scope['f'];
   for (let i = 0; i < entries.length; i++) {
-    const testValue = await f.callFunction(location, [entries[i]]);
-    if (testValue.asNativeBoolean(location)) {
+    const testValue = await f.callFunction(context, [entries[i]]);
+    if (testValue.asNativeBoolean(context)) {
       return createNumericValue(i);
     }
   }
   return createNumericValue(-1);
 });
 
-const sort = entries => createNativeFunctionValue(['f'], async (location, scope) => {
-  const f = scope['f'];
-  return createArrayValue(await quickSort(location, [...entries], f));
+const sort = entries => createNativeFunctionValue(['f'], async context => {
+  const f = context.scope['f'];
+  return createArrayValue(await quickSort(context, [...entries], f));
 });
 
-const join = entries => createNativeFunctionValue(['separator'], (location, scope) => {
-  const separator = scope['separator'];
+const join = entries => createNativeFunctionValue(['separator'], context => {
+  const separator = context.scope['separator'];
   if (separator) {
     if (separator.type !== valueTypes.STRING) {
-      throwRuntimeError(`join([separator]) separator must be a string`, location);
+      throwRuntimeError(`join([separator]) separator must be a string`, context);
     }
-    return createStringValue(entries.map(e => e.asNativeString(location)).join(separator.asNativeString(location)));
+    return Promise.resolve(createStringValue(entries.map(e => e.asNativeString(context)).join(separator.asNativeString(context))));
   }
-  return createStringValue(entries.map(e => e.asNativeString(location)).join());
+  return Promise.resolve(createStringValue(entries.map(e => e.asNativeString(context)).join()));
 });
 
-const reverse = entries => createNativeFunctionValue([], (location, scope) => {
-  return createArrayValue([...entries].reverse());
+const reverse = entries => createNativeFunctionValue([], context => {
+  return Promise.resolve(createArrayValue([...entries].reverse()));
 });
 
 const methods = {
