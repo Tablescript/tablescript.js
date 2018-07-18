@@ -168,7 +168,7 @@ function peg$parse(input, options) {
         },
       peg$c13 = peg$otherExpectation("assignment"),
       peg$c14 = function(l, o, e) {
-          return createAssignmentExpression(createContext(location(), options), l, o, e);
+          return createAssignmentExpression(createLocation(location(), options), l, o, e);
         },
       peg$c15 = peg$otherExpectation("assignment operator"),
       peg$c16 = "=",
@@ -192,11 +192,11 @@ function peg$parse(input, options) {
       peg$c34 = ":",
       peg$c35 = peg$literalExpectation(":", false),
       peg$c36 = function(test, consequent, alternate) {
-          return createConditionalExpression(createContext(location(), options), test, consequent, alternate);
+          return createConditionalExpression(createLocation(location(), options), test, consequent, alternate);
         },
       peg$c37 = peg$otherExpectation("logical or expression"),
       peg$c38 = function(head, tail) {
-          return composeBinaryExpression(createContext(location(), options), head, tail);
+          return composeBinaryExpression(createLocation(location(), options), head, tail);
         },
       peg$c39 = peg$otherExpectation("logical and expression"),
       peg$c40 = peg$otherExpectation("equality expression"),
@@ -227,13 +227,13 @@ function peg$parse(input, options) {
       peg$c65 = peg$literalExpectation("%", false),
       peg$c66 = peg$otherExpectation("unary expression"),
       peg$c67 = function(operator, argument) {
-          return createUnaryExpression(createContext(location(), options), operator, argument);
+          return createUnaryExpression(createLocation(location(), options), operator, argument);
         },
       peg$c68 = peg$otherExpectation("unary operator"),
       peg$c69 = peg$otherExpectation("left-hand side"),
       peg$c70 = peg$otherExpectation("call expression"),
       peg$c71 = function(callee, args) {
-            return createCallExpression(createContext(location(), options), callee, args);
+            return createCallExpression(createLocation(location(), options), callee, args);
           },
       peg$c72 = function(head, args) {
             return { type: 'call', args }
@@ -253,9 +253,9 @@ function peg$parse(input, options) {
       peg$c81 = function(head, tail) {
           return tail.reduce((result, element) => {
             if (element.type === 'call') {
-              return createCallExpression(createContext(location(), options), result, element.args);
+              return createCallExpression(createLocation(location(), options), result, element.args);
             } else {
-              return createObjectPropertyExpression(createContext(location(), options), result, element.property);
+              return createObjectPropertyExpression(createLocation(location(), options), result, element.property);
             }
           }, head);
         },
@@ -278,7 +278,7 @@ function peg$parse(input, options) {
             return { property: createStringLiteral(property) };
           },
       peg$c92 = function(head, tail) {
-          return tail.reduce((result, element) => createObjectPropertyExpression(createContext(location(), options), result, element.property), head);
+          return tail.reduce((result, element) => createObjectPropertyExpression(createLocation(location(), options), result, element.property), head);
         },
       peg$c93 = peg$otherExpectation("function expression"),
       peg$c94 = function(params, body) {
@@ -291,10 +291,10 @@ function peg$parse(input, options) {
         },
       peg$c98 = peg$otherExpectation("table expression"),
       peg$c99 = function(params, entries) {
-          return createTableExpression(createContext(location(), options), params ? params[0] : [], entries);
+          return createTableExpression(createLocation(location(), options), params ? params[0] : [], entries);
         },
       peg$c100 = function(entries) {
-          return createTableExpression(createContext(location(), options), [], entries);
+          return createTableExpression(createLocation(location(), options), [], entries);
         },
       peg$c101 = peg$otherExpectation("table entries"),
       peg$c102 = function(head, tail) {
@@ -321,16 +321,16 @@ function peg$parse(input, options) {
       peg$c111 = peg$otherExpectation("table entry body"),
       peg$c112 = peg$otherExpectation("if expression"),
       peg$c113 = function(e, ifBlock, elseBlock) {
-          return createIfExpression(createContext(location(), options), e, ifBlock, elseBlock);
+          return createIfExpression(createLocation(location(), options), e, ifBlock, elseBlock);
         },
       peg$c114 = function(e, ifBlock) {
-          return createIfExpression(createContext(location(), options), e, ifBlock);
+          return createIfExpression(createLocation(location(), options), e, ifBlock);
         },
       peg$c115 = peg$otherExpectation("spread"),
       peg$c116 = "...",
       peg$c117 = peg$literalExpectation("...", false),
       peg$c118 = function(e) {
-          return createSpreadExpression(createContext(location(), options), e);
+          return createSpreadExpression(createLocation(location(), options), e);
         },
       peg$c119 = function(i) {
           return createVariableExpression(i);
@@ -348,10 +348,10 @@ function peg$parse(input, options) {
         },
       peg$c125 = peg$otherExpectation("array"),
       peg$c126 = function(e) {
-          return createArrayLiteral(createContext(location(), options), e);
+          return createArrayLiteral(createLocation(location(), options), e);
         },
       peg$c127 = function() {
-          return createArrayLiteral(createContext(location(), options), []);
+          return createArrayLiteral(createLocation(location(), options), []);
         },
       peg$c128 = function(e) {
           return [e];
@@ -6416,7 +6416,7 @@ function peg$parse(input, options) {
     const composeList = (head, tail) => [head, ...tail];
     const buildList = (head, tail, index) => [head, ...extractList(tail, index)];
 
-    const createContext = (location, options) => ({
+    const createLocation = (location, options) => ({
       path: options.path,
       line: location.start.line,
       column: location.start.column,

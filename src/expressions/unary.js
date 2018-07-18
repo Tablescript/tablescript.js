@@ -21,18 +21,18 @@ import { createBooleanValue } from '../values/boolean';
 import { throwRuntimeError } from '../error';
 import { expressionTypes } from './types';
 
-const evaluate = (context, operator, argument) => async (scope, options) => {
+const evaluate = (location, operator, argument) => async (scope, options) => {
   const value = await argument.evaluate(scope, options);
   if (operator === '-') {
-    return createNumericValue(-1 * value.asNativeNumber(context));
+    return createNumericValue(-1 * value.asNativeNumber(location));
   }
   if (operator === '+') {
-    return createNumericValue(value.asNativeNumber(context));
+    return createNumericValue(value.asNativeNumber(location));
   }
   if (operator === 'not') {
-    return createBooleanValue(!value.asNativeBoolean(context));
+    return createBooleanValue(!value.asNativeBoolean(location));
   }
-  throwRuntimeError(`Invalid operator ${operator}`, context);
+  throwRuntimeError(`Invalid operator ${operator}`, location);
 };
 
-export const createUnaryExpression = (context, operator, argument) => createExpression(expressionTypes.UNARY, evaluate(context, operator, argument));
+export const createUnaryExpression = (location, operator, argument) => createExpression(expressionTypes.UNARY, evaluate(location, operator, argument));

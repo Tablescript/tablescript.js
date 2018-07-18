@@ -31,7 +31,7 @@ const entryExpander = (scope, options) => (p, entry) => {
   }));
 };
 
-const validateEntries = (context, entries) => {
+const validateEntries = (location, entries) => {
   const allSelectors = entries.reduce((acc, e, i) => {
     const low = e.getLowestSelector(i + 1);
     const high = e.getHighestSelector(i + 1);
@@ -49,19 +49,19 @@ const validateEntries = (context, entries) => {
   });
   for (let i = 1; i <= allSelectors.max; i += 1) {
     if (!allSelectors.set.has(i)) {
-      throw new TablescriptError('RuntimeError', `Table missing entry for ${i}`, context);
+      throw new TablescriptError('RuntimeError', `Table missing entry for ${i}`, location);
     }
   }
 };
 
-const expandEntries = async (context, scope, options, entries) => {
+const expandEntries = async (location, scope, options, entries) => {
   const expandedEntries = await entries.reduce(entryExpander(scope, options), Promise.resolve([]));
   if (options.flags.validateTables) {
-    validateEntries(context, expandedEntries);
+    validateEntries(location, expandedEntries);
   }
   return expandedEntries;
 };
 
-const evaluate = (context, formalParameters, entries) => async (scope, options) => createTableValue(formalParameters, await expandEntries(context, scope, options, entries), scope, options);
+const evaluate = (location, formalParameters, entries) => async (scope, options) => createTableValue(formalParameters, await expandEntries(location, scope, options, entries), scope, options);
 
-export const createTableExpression = (context, formalParameters, entries) => createExpression(expressionTypes.TABLE, evaluate(context, formalParameters, entries));
+export const createTableExpression = (location, formalParameters, entries) => createExpression(expressionTypes.TABLE, evaluate(location, formalParameters, entries));

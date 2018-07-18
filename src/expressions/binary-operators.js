@@ -17,43 +17,43 @@
 
 import { createBooleanValue } from '../values/boolean';
 
-const or = async (context, leftValue, rightExpression, scope, options) => {
-  if (leftValue.asNativeBoolean(context)) {
+const or = async (location, leftValue, rightExpression, scope, options) => {
+  if (leftValue.asNativeBoolean(location)) {
     return createBooleanValue(true);
   }
   const rightValue = await rightExpression.evaluate(scope, options);
-  return createBooleanValue(rightValue.asNativeBoolean(context));
+  return createBooleanValue(rightValue.asNativeBoolean(location));
 };
 
-const and = async (context, leftValue, rightExpression, scope, options) => {
-  if (!leftValue.asNativeBoolean(context)) {
+const and = async (location, leftValue, rightExpression, scope, options) => {
+  if (!leftValue.asNativeBoolean(location)) {
     return createBooleanValue(false);
   }
   const rightValue = await rightExpression.evaluate(scope, options);
-  return createBooleanValue(rightValue.asNativeBoolean(context));
+  return createBooleanValue(rightValue.asNativeBoolean(location));
 };
 
-const plus = (context, leftValue, rightValue) => leftValue.add(context, rightValue);
-const minus = (context, leftValue, rightValue) => leftValue.subtract(context, rightValue);
-const multiply = (context, leftValue, rightValue) => leftValue.multiplyBy(context, rightValue);
-const divide = (context, leftValue, rightValue) => leftValue.divideBy(context, rightValue);
-const modulo = (context, leftValue, rightValue) => leftValue.modulo(context, rightValue);
-const equals = (context, leftValue, rightValue) => leftValue.equals(context, rightValue);
-const notEquals = (context, leftValue, rightValue) => leftValue.notEquals(context, rightValue);
-const lessThan = (context, leftValue, rightValue) => leftValue.lessThan(context, rightValue);
-const greaterThan = (context, leftValue, rightValue) => leftValue.greaterThan(context, rightValue);
-const lessThanOrEquals = (context, leftValue, rightValue) => leftValue.lessThanOrEquals(context, rightValue);
-const greaterThanOrEquals = (context, leftValue, rightValue) => leftValue.lessThan(context, rightValue);
+const plus = (location, leftValue, rightValue) => leftValue.add(location, rightValue);
+const minus = (location, leftValue, rightValue) => leftValue.subtract(location, rightValue);
+const multiply = (location, leftValue, rightValue) => leftValue.multiplyBy(location, rightValue);
+const divide = (location, leftValue, rightValue) => leftValue.divideBy(location, rightValue);
+const modulo = (location, leftValue, rightValue) => leftValue.modulo(location, rightValue);
+const equals = (location, leftValue, rightValue) => leftValue.equals(location, rightValue);
+const notEquals = (location, leftValue, rightValue) => leftValue.notEquals(location, rightValue);
+const lessThan = (location, leftValue, rightValue) => leftValue.lessThan(location, rightValue);
+const greaterThan = (location, leftValue, rightValue) => leftValue.greaterThan(location, rightValue);
+const lessThanOrEquals = (location, leftValue, rightValue) => leftValue.lessThanOrEquals(location, rightValue);
+const greaterThanOrEquals = (location, leftValue, rightValue) => leftValue.lessThan(location, rightValue);
 
-const evaluateLeft = f => async (context, leftExpression, rightExpression, scope, options) => {
+const evaluateLeft = f => async (location, leftExpression, rightExpression, scope, options) => {
   const leftValue = await leftExpression.evaluate(scope, options);
-  return f(context, leftValue, rightExpression, scope, options);
+  return f(location, leftValue, rightExpression, scope, options);
 };
 
-const evaluateBoth = f => async (context, leftExpression, rightExpression, scope, options) => {
+const evaluateBoth = f => async (location, leftExpression, rightExpression, scope, options) => {
   const leftValue = await leftExpression.evaluate(scope, options);
   const rightValue = await rightExpression.evaluate(scope, options);
-  return f(context, leftValue, rightValue);
+  return f(location, leftValue, rightValue);
 };
 
 export const allOperators = {

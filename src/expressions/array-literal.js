@@ -21,17 +21,17 @@ import { createArrayValue } from '../values/array';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = (context, values) => async (scope, options) => {
+const evaluate = (location, values) => async (scope, options) => {
   let result = [];
   for (let i = 0; i < values.length; i++) {
     const value = await values[i].evaluate(scope, options);
     if (value.type === valueTypes.ARRAY_SPREAD) {
       result = [
         ...result,
-        ...value.asArray(context)
+        ...value.asArray(location)
       ];
     } else if (value.type === valueTypes.OBJECT_SPREAD) {
-      throwRuntimeError('Cannot spread object into array', context);
+      throwRuntimeError('Cannot spread object into array', location);
     } else {
       result = [
         ...result,
@@ -42,4 +42,4 @@ const evaluate = (context, values) => async (scope, options) => {
   return createArrayValue(result);
 };
 
-export const createArrayLiteral = (context, values) => createExpression(expressionTypes.ARRAY, evaluate(context, values));
+export const createArrayLiteral = (location, values) => createExpression(expressionTypes.ARRAY, evaluate(location, values));

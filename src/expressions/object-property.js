@@ -24,19 +24,19 @@ import {
 import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
 
-const evaluate = (context, objectExpression, propertyNameExpression) => async (scope, options) => {
+const evaluate = (location, objectExpression, propertyNameExpression) => async (scope, options) => {
   const objectValue = await objectExpression.evaluate(scope, options);
   const propertyNameValue = await propertyNameExpression.evaluate(scope, options);
   if (propertyNameValue.type === valueTypes.NUMBER) {
-    return await objectValue.getElement(context, propertyNameValue);
+    return await objectValue.getElement(location, propertyNameValue);
   }
-  return objectValue.getProperty(context, propertyNameValue);
+  return objectValue.getProperty(location, propertyNameValue);
 };
 
-const evaluateAsLeftHandSide = (objectExpression, propertyNameExpression) => async (context, scope, options) => {
+const evaluateAsLeftHandSide = (objectExpression, propertyNameExpression) => async (location, scope, options) => {
   const objectValue = await objectExpression.evaluate(scope, options);
   if (!(objectValue.type === valueTypes.OBJECT || objectValue.type === valueTypes.ARRAY)) {
-    throwRuntimeError('Cannot assign to non-object non-array type', context);
+    throwRuntimeError('Cannot assign to non-object non-array type', location);
   }
   const propertyNameValue = await propertyNameExpression.evaluate(scope, options);
   if (propertyNameValue.type === valueTypes.NUMBER) {
@@ -45,11 +45,11 @@ const evaluateAsLeftHandSide = (objectExpression, propertyNameExpression) => asy
   if (propertyNameValue.type === valueTypes.STRING) {
     return createObjectPropertyLeftHandSideValue(objectValue, propertyNameValue);
   }
-  throwRuntimeError('Cannot access property or element', context);
+  throwRuntimeError('Cannot access property or element', location);
 };
 
-export const createObjectPropertyExpression = (context, objectExpression, propertyNameExpression) => createExpression(
+export const createObjectPropertyExpression = (location, objectExpression, propertyNameExpression) => createExpression(
   expressionTypes.OBJECT_PROPERTY,
-  evaluate(context, objectExpression, propertyNameExpression),
+  evaluate(location, objectExpression, propertyNameExpression),
   evaluateAsLeftHandSide(objectExpression, propertyNameExpression),
 );

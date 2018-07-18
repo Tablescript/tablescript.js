@@ -39,9 +39,9 @@ const parameterEvaluator = (scope, options) => (p, parameter) => {
 
 const evaluateParameters = (parameters, scope, options) => parameters.reduce(parameterEvaluator(scope, options), Promise.resolve([]));
 
-const evaluate = (context, callee, parameters) => async (scope, options) => {
+const evaluate = (location, callee, parameters) => async (scope, options) => {
   const calleeValue = await callee.evaluate(scope, options);
-  return calleeValue.callFunction(context, await evaluateParameters(parameters, scope, options));
+  return calleeValue.callFunction(location, await evaluateParameters(parameters, scope, options));
 };
 
-export const createCallExpression = (context, callee, parameters) => createExpression(expressionTypes.CALL, evaluate(context, callee, parameters));
+export const createCallExpression = (location, callee, parameters) => createExpression(expressionTypes.CALL, evaluate(location, callee, parameters));

@@ -63,7 +63,7 @@
   const composeList = (head, tail) => [head, ...tail];
   const buildList = (head, tail, index) => [head, ...extractList(tail, index)];
 
-  const createContext = (location, options) => ({
+  const createLocation = (location, options) => ({
     path: options.path,
     line: location.start.line,
     column: location.start.column,
@@ -106,7 +106,7 @@ Expression "expression"
 
 AssignmentExpression "assignment"
   = l:LeftHandSideExpression __ o:AssignmentOperator __ e:ConditionalExpression {
-    return createAssignmentExpression(createContext(location(), options), l, o, e);
+    return createAssignmentExpression(createLocation(location(), options), l, o, e);
   }
   / ConditionalExpression
 
@@ -121,23 +121,23 @@ AssignmentOperator "assignment operator"
 
 ConditionalExpression "conditional"
   = test:LogicalOrExpression __ '?' __ consequent:Expression __ ':' __ alternate:Expression {
-    return createConditionalExpression(createContext(location(), options), test, consequent, alternate);
+    return createConditionalExpression(createLocation(location(), options), test, consequent, alternate);
   }
   / LogicalOrExpression
 
 LogicalOrExpression "logical or expression"
   = head:LogicalAndExpression tail:(__ OrToken __ LogicalAndExpression)* {
-    return composeBinaryExpression(createContext(location(), options), head, tail);
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
   }
 
 LogicalAndExpression "logical and expression"
   = head:EqualityExpression tail:(__ AndToken __ EqualityExpression)* {
-    return composeBinaryExpression(createContext(location(), options), head, tail);
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
   }
 
 EqualityExpression "equality expression"
   = head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* {
-    return composeBinaryExpression(createContext(location(), options), head, tail);
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
   }
 
 EqualityOperator "equality operator"
@@ -146,7 +146,7 @@ EqualityOperator "equality operator"
 
 RelationalExpression "relational expression"
   = head:AdditiveExpression tail:(__ RelationalOperator __ AdditiveExpression)* {
-    return composeBinaryExpression(createContext(location(), options), head, tail);
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
   }
 
 RelationalOperator "relational operator"
@@ -157,7 +157,7 @@ RelationalOperator "relational operator"
 
 AdditiveExpression
   = head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* {
-    return composeBinaryExpression(createContext(location(), options), head, tail);
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
   }
 
 AdditiveOperator "addition or subtraction operator"
@@ -166,7 +166,7 @@ AdditiveOperator "addition or subtraction operator"
 
 MultiplicativeExpression
   = head:UnaryExpression tail:(__ MultiplicativeOperator __ UnaryExpression)* {
-    return composeBinaryExpression(createContext(location(), options), head, tail);
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
   }
 
 MultiplicativeOperator "multiply, divide, or modulo operator"
@@ -177,7 +177,7 @@ MultiplicativeOperator "multiply, divide, or modulo operator"
 UnaryExpression "unary expression"
   = LeftHandSideExpression
   / operator:UnaryOperator __ argument:UnaryExpression {
-    return createUnaryExpression(createContext(location(), options), operator, argument);
+    return createUnaryExpression(createLocation(location(), options), operator, argument);
   }
 
 UnaryOperator "unary operator"
@@ -192,7 +192,7 @@ LeftHandSideExpression "left-hand side"
 CallExpression "call expression"
   = head:(
     callee:MemberExpression __ args:Arguments {
-      return createCallExpression(createContext(location(), options), callee, args);
+      return createCallExpression(createLocation(location(), options), callee, args);
     }
   )
   tail:(
@@ -208,9 +208,9 @@ CallExpression "call expression"
   )* {
     return tail.reduce((result, element) => {
       if (element.type === 'call') {
-        return createCallExpression(createContext(location(), options), result, element.args);
+        return createCallExpression(createLocation(location(), options), result, element.args);
       } else {
-        return createObjectPropertyExpression(createContext(location(), options), result, element.property);
+        return createObjectPropertyExpression(createLocation(location(), options), result, element.property);
       }
     }, head);
   }
@@ -237,7 +237,7 @@ MemberExpression "member expression"
       return { property: createStringLiteral(property) };
     }
   )* {
-    return tail.reduce((result, element) => createObjectPropertyExpression(createContext(location(), options), result, element.property), head);
+    return tail.reduce((result, element) => createObjectPropertyExpression(createLocation(location(), options), result, element.property), head);
   }
 
 FunctionExpression "function expression"
@@ -257,10 +257,10 @@ FunctionBody "function body"
 
 TableExpression "table expression"
   = TableToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ entries:TableEntries __ '}' {
-    return createTableExpression(createContext(location(), options), params ? params[0] : [], entries);
+    return createTableExpression(createLocation(location(), options), params ? params[0] : [], entries);
   }
   / TableToken __ '{' __ entries:TableEntries __ '}' {
-    return createTableExpression(createContext(location(), options), [], entries);
+    return createTableExpression(createLocation(location(), options), [], entries);
   }
 
 TableEntries "table entries"
@@ -298,15 +298,15 @@ TableEntryBody "table entry body"
 
 IfExpression "if expression"
   = IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Statement __ ElseToken __ elseBlock:Statement {
-    return createIfExpression(createContext(location(), options), e, ifBlock, elseBlock);
+    return createIfExpression(createLocation(location(), options), e, ifBlock, elseBlock);
   }
   / IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Statement {
-    return createIfExpression(createContext(location(), options), e, ifBlock);
+    return createIfExpression(createLocation(location(), options), e, ifBlock);
   }
 
 SpreadExpression "spread"
   = '...' e:Expression {
-    return createSpreadExpression(createContext(location(), options), e);
+    return createSpreadExpression(createLocation(location(), options), e);
   }
 
 PrimaryExpression
@@ -346,10 +346,10 @@ BooleanLiteral "boolean"
 
 ArrayLiteral "array"
   = '[' __ e:ArrayEntries __ ']' {
-    return createArrayLiteral(createContext(location(), options), e);
+    return createArrayLiteral(createLocation(location(), options), e);
   }
   / '[' __ ']' {
-    return createArrayLiteral(createContext(location(), options), []);
+    return createArrayLiteral(createLocation(location(), options), []);
   }
 
 ArrayEntries

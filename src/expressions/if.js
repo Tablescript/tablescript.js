@@ -19,9 +19,9 @@ import { createUndefined } from '../values/undefined';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = (context, condition, ifBlock, elseBlock) => async (scope, options) => {
+const evaluate = (location, condition, ifBlock, elseBlock) => async (scope, options) => {
   const expressionValue = await condition.evaluate(scope, options);
-  if (expressionValue.asNativeBoolean(context)) {
+  if (expressionValue.asNativeBoolean(location)) {
     return ifBlock.evaluate(scope, options);
   } else {
     if (elseBlock) {
@@ -31,4 +31,4 @@ const evaluate = (context, condition, ifBlock, elseBlock) => async (scope, optio
   }
 };
 
-export const createIfExpression = (context, condition, ifBlock, elseBlock) => createExpression(expressionTypes.IF, evaluate(context, condition, ifBlock, elseBlock));
+export const createIfExpression = (location, condition, ifBlock, elseBlock) => createExpression(expressionTypes.IF, evaluate(location, condition, ifBlock, elseBlock));

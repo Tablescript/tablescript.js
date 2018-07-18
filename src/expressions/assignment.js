@@ -21,41 +21,41 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 const operators = {
-  '=': (context, scope, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, scope, value);
+  '=': (location, scope, leftHandSideValue, leftValue, value) => {
+    leftHandSideValue.assignFrom(location, scope, value);
   },
-  '+=': (context, scope, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, scope, leftValue.add(context, value));
+  '+=': (location, scope, leftHandSideValue, leftValue, value) => {
+    leftHandSideValue.assignFrom(location, scope, leftValue.add(location, value));
   },
-  '-=': (context, scope, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, scope, leftValue.subtract(context, value));
+  '-=': (location, scope, leftHandSideValue, leftValue, value) => {
+    leftHandSideValue.assignFrom(location, scope, leftValue.subtract(location, value));
   },
-  '*=': (context, scope, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, scope, leftValue.multiplyBy(context, value));
+  '*=': (location, scope, leftHandSideValue, leftValue, value) => {
+    leftHandSideValue.assignFrom(location, scope, leftValue.multiplyBy(location, value));
   },
-  '/=': (context, scope, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, scope, leftValue.divideBy(context, value));
+  '/=': (location, scope, leftHandSideValue, leftValue, value) => {
+    leftHandSideValue.assignFrom(location, scope, leftValue.divideBy(location, value));
   },
-  '%=': (context, scope, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, scope, leftValue.modulo(context, value));
+  '%=': (location, scope, leftHandSideValue, leftValue, value) => {
+    leftHandSideValue.assignFrom(location, scope, leftValue.modulo(location, value));
   },
 };
 
-const evaluate = (context, leftHandSideExpression, operator, valueExpression) => async (scope, options) => {
-  const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(context, scope, options);
+const evaluate = (location, leftHandSideExpression, operator, valueExpression) => async (scope, options) => {
+  const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(location, scope, options);
   if (leftHandSideValue.type !== valueTypes.LEFT_HAND_SIDE) {
-    throwRuntimeError('Cannot assign to a non-left-hand-side type', context);
+    throwRuntimeError('Cannot assign to a non-left-hand-side type', location);
   }
   const value = await valueExpression.evaluate(scope, options);
   if (operators[operator]) {
     const leftValue = (operator === '=') ? undefined : await leftHandSideExpression.evaluate(scope, options);
-    operators[operator](context, scope, leftHandSideValue, leftValue, value);
+    operators[operator](location, scope, leftHandSideValue, leftValue, value);
   } else {
-    throwRuntimeError(`Unknown operator ${operator}`, context);
+    throwRuntimeError(`Unknown operator ${operator}`, location);
   }
   return value;
 };
 
-export const createAssignmentExpression = (context, leftHandSideExpression, operator, valueExpression) => {
-  return createExpression(expressionTypes.ASSIGNMENT, evaluate(context, leftHandSideExpression, operator, valueExpression));
+export const createAssignmentExpression = (location, leftHandSideExpression, operator, valueExpression) => {
+  return createExpression(expressionTypes.ASSIGNMENT, evaluate(location, leftHandSideExpression, operator, valueExpression));
 };
