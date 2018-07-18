@@ -47,9 +47,13 @@ const evaluateAllExpressions = async (expressions, context) => {
   return value;
 }
 
-export const interpret = async (ast, args, options) => {
-  const scope = initializeScope(args, options);
-  return await evaluateAllExpressions(ast, { stack: [], scope, options });
+export const interpret = async (expressions, args, options) => {
+  const context = {
+    stack: [],
+    scope: initializeScope(args, options),
+    options,
+  };
+  return await evaluateAllExpressions(expressions, context);
 };
 
 const runProgram = async (location, program, args, options) => {
