@@ -1,14 +1,14 @@
-compose = (x, y) => {
-  (a) => {
+compose = fn(x, y) {
+  fn(a) {
     y(x(a))
   }
 }
 
-double = (n) => {
+double = fn(n) {
   n * 2
 }
 
-addThirty = (n) => {
+addThirty = fn(n) {
   n + 30
 }
 

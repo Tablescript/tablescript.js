@@ -1,8 +1,8 @@
-baz = () => {
-  foo = () => {
+baz = fn() {
+  foo = fn() {
     'foo'
   }
-  bar = () => {
+  bar = fn() {
     foo()
   }
 

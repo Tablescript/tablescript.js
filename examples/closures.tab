@@ -1,5 +1,5 @@
-add = (x) => {
-  addX = (y) => {
+add = fn(x) {
+  addX = fn(y) {
     x + y
   }
   addX

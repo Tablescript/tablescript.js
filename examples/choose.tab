@@ -1,4 +1,4 @@
 choices = ['red', 'green', 'blue']
 system.assert(choices.includes(system.choose(choices)))
 
-system.print(system.range(5).map((i) => { system.choose(choices) }))
+system.print(system.range(5).map(fn(i) { system.choose(choices) }))

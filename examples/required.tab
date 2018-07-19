@@ -1,5 +1,5 @@
 a = 'I also have a ham radio'
-double = (x) => {
+double = fn(x) {
   x * 2
 }
 t = table {
