@@ -16,61 +16,73 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 export const expressionTypes = {
-  IF: Symbol('IF'),
-  SPREAD: Symbol('SPREAD'),
-  UNDEFINED: Symbol('UNDEFINED'),
-  STRING: Symbol('STRING'),
-  TEMPLATE_STRING: Symbol('TEMPLATE_STRING'),
-  COMPOUND_STRING: Symbol('COMPOUND_STRING'),
-  NUMBER: Symbol('NUMBER'),
-  DICE: Symbol('DICE'),
-  OBJECT_PROPERTY: Symbol('OBJECT_PROPERTY'),
   ARRAY: Symbol('ARRAY'),
-  BOOLEAN: Symbol('BOOLEAN'),
-  VARIABLE: Symbol('VARIABLE'),
-  TABLE: Symbol('TABLE'),
   ASSIGNMENT: Symbol('ASSIGNMENT'),
-  UNARY: Symbol('UNARY'),
   BINARY: Symbol('BINARY'),
+  BOOLEAN: Symbol('BOOLEAN'),
+  BLOCK: Symbol('BLOCK'),
+  CALL: Symbol('CALL'),
+  COMPOUND_STRING: Symbol('COMPOUND_STRING'),
   CONDITIONAL: Symbol('CONDITIONAL'),
+  DICE: Symbol('DICE'),
+  FUNCTION: Symbol('FUNCTION'),
+  IF: Symbol('IF'),
+  NUMBER: Symbol('NUMBER'),
+  OBJECT: Symbol('OBJECT'),
+  OBJECT_PROPERTY: Symbol('OBJECT_PROPERTY'),
+  SPREAD: Symbol('SPREAD'),
+  STRING: Symbol('STRING'),
+  TABLE: Symbol('TABLE'),
+  TEMPLATE_STRING: Symbol('TEMPLATE_STRING'),
+  UNARY: Symbol('UNARY'),
+  UNDEFINED: Symbol('UNDEFINED'),
+  VARIABLE: Symbol('VARIABLE'),
 };
 
 export const expressionTypeName = type => {
   switch (type) {
-    case expressionTypes.IF:
-      return 'if';
-    case expressionTypes.SPREAD:
-      return 'spread';
-    case expressionTypes.UNDEFINED:
-      return 'undefined';
-    case expressionTypes.STRING:
-      return 'string';
-    case expressionTypes.TEMPLATE_STRING:
-      return 'string';
-    case expressionTypes.COMPOUND_STRING:
-      return 'compound string';
-    case expressionTypes.NUMBER:
-      return 'number';
-    case expressionTypes.DICE:
-      return 'dice';
-    case expressionTypes.OBJECT_PROPERTY:
-      return 'object property';
     case expressionTypes.ARRAY:
       return 'array';
-    case expressionTypes.BOOLEAN:
-      return 'boolean';
-    case expressionTypes.VARIABLE:
-      return 'variable';
-    case expressionTypes.TABLE:
-      return 'table';
     case expressionTypes.ASSIGNMENT:
       return 'assignment';
-    case expressionTypes.UNARY:
-      return 'unary';
     case expressionTypes.BINARY:
       return 'binary';
+    case expressionTypes.BLOCK:
+      return 'block';
+    case expressionTypes.BOOLEAN:
+      return 'boolean';
+    case expressionTypes.CALL:
+      return 'call';
+    case expressionTypes.COMPOUND_STRING:
+      return 'compound string';
     case expressionTypes.CONDITIONAL:
       return 'conditional';
+    case expressionTypes.DICE:
+      return 'dice';
+    case expressionTypes.FUNCTION:
+      return 'funtion';
+    case expressionTypes.IF:
+      return 'if';
+    case expressionTypes.NUMBER:
+      return 'number';
+    case expressionTypes.OBJECT:
+      return 'object';
+    case expressionTypes.OBJECT_PROPERTY:
+      return 'object property';
+    case expressionTypes.SPREAD:
+      return 'spread';
+    case expressionTypes.STRING:
+      return 'string';
+    case expressionTypes.TABLE:
+      return 'table';
+    case expressionTypes.TEMPLATE_STRING:
+      return 'string';
+    case expressionTypes.UNARY:
+      return 'unary';
+    case expressionTypes.UNDEFINED:
+      return 'undefined';
+    case expressionTypes.VARIABLE:
+      return 'variable';
     default:
       return '<TYPE UNSET>';
   }
