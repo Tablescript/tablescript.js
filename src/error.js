@@ -28,7 +28,10 @@ export class TablescriptError extends Error {
   }
 
   toString() {
-    return `${this.name}: ${this.message} at:\n${this.stackTraceToString()}`;
+    if (this.context) {
+      return `${this.name}: ${this.message} at:\n${this.stackTraceToString()}`;
+    }
+    return `${this.name}: ${this.message}`;
   }
 
   stackTraceToString() {

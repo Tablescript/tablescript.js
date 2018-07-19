@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 // Copyright 2017 Jamie Hale
 //
 // This file is part of Tablescript.js.
@@ -18,6 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { parse } from './parser/parser';
+import { evaluateAllExpressions } from './interpreter';
 import { TablescriptError, throwRuntimeError } from './error';
 import { initializeBuiltins } from './values/builtins/builtins';
 import { initializeMath } from './values/math/math';
@@ -38,14 +37,6 @@ const initializeScope = (args, options) => ({
     ...initializeMath(options),
   }),
 });
-
-const evaluateAllExpressions = async (expressions, context) => {
-  let value;
-  for (let i = 0; i < expressions.length; i++) {
-    value = await expressions[i].evaluate(context);
-  }
-  return value;
-}
 
 export const interpret = async (expressions, args, options) => {
   const context = {

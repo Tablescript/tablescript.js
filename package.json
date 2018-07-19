@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "commander": "^2.11.0",
+    "pkginfo": "^0.4.1",
     "ramda": "^0.25.0"
   }
 }

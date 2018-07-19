@@ -17,7 +17,6 @@
 
 {
   const { createBlockExpression } = require('../expressions/block');
-  const { createSimpleExpression } = require('../expressions/simple');
   const { createAssignmentExpression } = require('../expressions/assignment');
   const { createConditionalExpression } = require('../expressions/conditional');
   const { createBinaryExpression } = require('../expressions/binary');
@@ -95,9 +94,7 @@ Block "block"
   }
 
 ExpressionStatement "simple expression"
-  = e:Expression {
-    return createSimpleExpression(e);
-  }
+  = Expression
 
 Expression "expression"
   = e:AssignmentExpression __ {

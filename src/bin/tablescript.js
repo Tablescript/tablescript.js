@@ -21,19 +21,20 @@ import 'babel-polyfill';
 import options from 'commander';
 import fs from 'fs';
 import { runProgram } from '../index';
+import { repl } from '../repl';
 import { loadFsFile } from '../fs-loader';
 import { loadHttpFile } from '../http-loader';
 import { TablescriptError } from '../error';
+import pkginfo from 'pkginfo';
+
+pkginfo(module, 'version');
 
 options
-  .version('0.0.1')
+  .version(`Tablescript v${module.exports.version}`)
   .usage('[options] <file> [...args]')
   .option('-p, --print-last-value', 'Print the last evaluated value')
   .option('-v, --no-table-validation', 'Disable table entry validation')
   .parse(process.argv);
-
-const filename = options.args[0];
-const args = options.args.slice(1);
 
 const interpreterOptions = {
   input: {
@@ -49,20 +50,27 @@ const interpreterOptions = {
   }
 };
 
-try {
-  const program = fs.readFileSync(filename, 'utf8');
-  runProgram(filename, program, args, interpreterOptions).then(value => {
-    if (options.printLastValue) {
-      console.log(value.asNativeValue({ path: filename, line: 0, column: 0 }));
-    }
-  }).catch(e => {
-    if (e instanceof TablescriptError) {
-      console.log(e.toString());
-    } else {
-      console.log(e);
-    }
-    process.exit(1);
-  });
-} catch (e) {
-  console.log(`[RuntimeError]: Unable to read ${filename}`);
+const filename = options.args[0];
+if (!filename) {
+  repl(interpreterOptions);
+} else {
+  const args = options.args.slice(1);
+
+  try {
+    const program = fs.readFileSync(filename, 'utf8');
+    runProgram(filename, program, args, interpreterOptions).then(value => {
+      if (options.printLastValue) {
+        console.log(value.asNativeValue({ path: filename, line: 0, column: 0 }));
+      }
+    }).catch(e => {
+      if (e instanceof TablescriptError) {
+        console.log(e.toString());
+      } else {
+        console.log(e);
+      }
+      process.exit(1);
+    });
+  } catch (e) {
+    console.log(`[RuntimeError]: Unable to read ${filename}`);
+  }
 }

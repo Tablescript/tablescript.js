@@ -19,7 +19,7 @@ import fs from 'fs';
 import path from 'path';
 
 const isPathed = p => p.split('/').length > 1;
-const contextPath = (context, filename) => isPathed(filename) ? [path.dirname(context.location.path)] : [];
+const contextPath = (context, filename) => isPathed(filename) ? [path.dirname(context.stack[0].path)] : [];
 const environmentPaths = () => (process.env.TS_PATH || '').split(':');
 
 const allPaths = (context, filename) => ([
