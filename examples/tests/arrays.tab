@@ -111,6 +111,10 @@ assert(a.map(fn(n) { n * 2 }) == [2, 4, 6, 8, 10])
 # same as a "for loop" in other languages.
 a = ['a', 'b', 'c', 'd', 'e']
 assert(range(5).map(fn(n) { a[-1 - n] }) == ['e', 'd', 'c', 'b', 'a'])
+
+# The map function can also take a 2nd parameter that is the 0-based index
+# of the array member passed as the 1st parameter.
+assert(a.map(fn(s, i) { s + i }) == ['a0', 'b1', 'c2', 'd3', 'e4'])
 ############################################################################
 
 ############################################################################
@@ -138,6 +142,11 @@ assert(a.reduce(min, 10000) == 2)
 
 max = fn(acc, n) { n > acc ? n : acc }
 assert(a.reduce(max, -1) == 19)
+
+# The reducer function can also take a 3rd parameter that is the 0-based
+# index of the array member passed as the 2nd parameter.
+product = fn(acc, n, i) { acc + n * i }
+assert(a.reduce(product, 0) == 84)
 ############################################################################
 
 ############################################################################
@@ -206,6 +215,11 @@ assert(a.filter(even) == [2, 4, 6])
 a = ['red', 'orange', 'yellow', 'green', 'blue', 'violet', 'indigo']
 length_6 = fn(n) { n.length == 6 }
 assert(a.filter(length_6) == ['orange', 'yellow', 'violet', 'indigo'])
+
+# The filter function can also take a 2nd parameter that is the 0-based
+# index of the array member passed as the 1st parameter.
+every_third = fn(n, i) { i % 3 == 0 }
+assert(a.filter(every_third) == ['red', 'green', 'indigo'])
 ############################################################################
 
 ############################################################################

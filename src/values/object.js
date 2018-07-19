@@ -22,15 +22,19 @@ import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 import { createUndefined } from './undefined';
 
-const propertiesAsNativeValues = (context, properties) => {
-  return Object.keys(properties).reduce((result, key) => ({
+const propertiesAsNativeValues = (context, o) => {
+  return Object.keys(o).reduce((result, key) => ({
     ...result,
-    [key]: properties[key].asNativeValue(context)
+    [key]: o[key].asNativeValue(context)
   }), {});
 };
+
 const asNativeString = o => context => JSON.stringify(propertiesAsNativeValues(context, o));
-const asNativeBoolean = () => () => true;
+
+const asNativeBoolean = () => true;
+
 const asNativeObject = o => context => propertiesAsNativeValues(context, o);
+
 const nativeEquals = o => (context, other) => {
   if (!isObject(other)) {
     return false;
@@ -46,9 +50,13 @@ const nativeEquals = o => (context, other) => {
     return result && o[key].nativeEquals(context, otherProperties[key]);
   }, true);
 };
+
 const asString = asNativeString => context => createStringValue(asNativeString(context));
-const asBoolean = asNativeBoolean => () => createBooleanValue(asNativeBoolean());
+
+const asBoolean = () => createBooleanValue(asNativeBoolean());
+
 const asObject = o => () => o;
+
 const getProperty = o => (context, name) => {
   const propertyName = name.asNativeString(context);
   if (o[propertyName]) {
@@ -56,33 +64,27 @@ const getProperty = o => (context, name) => {
   }
   return createUndefined();
 };
+
 const setProperty = o => (context, name, value) => {
   o[name.asNativeString(context)] = value;
 };
+
 const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
 
-const methods = {
-  asNativeString,
-  asNativeBoolean,
-  asNativeObject,
-  nativeEquals,
-  asString: R.pipe(asNativeString, asString),
-  asBoolean: R.pipe(asNativeBoolean, asBoolean),
-  asObject,
-  getProperty,
-  setProperty,
-  equals: R.pipe(nativeEquals, equals),
-};
-
-const allMethods = o => Object.keys(methods).reduce((acc, m) => ({ ...acc, [m]: methods[m](o) }), {});
-
-export const createCustomObjectValue = (o, methods) => {
-  return createValue(
-    valueTypes.OBJECT,
-    asNativeObject(o),
-    [],
-    methods,
-  );
-};
-
-export const createObjectValue = o => createCustomObjectValue(o, allMethods(o));
+export const createObjectValue = o => createValue(
+  valueTypes.OBJECT,
+  asNativeObject(o),
+  [],
+  {
+    asNativeString: asNativeString(o),
+    asNativeBoolean,
+    asNativeObject: asNativeObject(o),
+    nativeEquals: nativeEquals(o),
+    asString: R.pipe(asNativeString, asString)(o),
+    asBoolean,
+    asObject: asObject(o),
+    getProperty: getProperty(o),
+    setProperty: setProperty(o),
+    equals: R.pipe(nativeEquals, equals)(o),
+  },
+);
