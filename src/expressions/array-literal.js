@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../values/types';
+import { isArraySpread, isObjectSpread } from '../values/types';
 import { throwRuntimeError } from '../error';
 import { createArrayValue } from '../values/array';
 import { createExpression } from './default';
@@ -27,12 +27,12 @@ const evaluate = (location, values) => async context => {
   let result = [];
   for (let i = 0; i < values.length; i++) {
     const value = await values[i].evaluate(localContext);
-    if (value.type === valueTypes.ARRAY_SPREAD) {
+    if (isArraySpread(value)) {
       result = [
         ...result,
         ...value.asArray(location)
       ];
-    } else if (value.type === valueTypes.OBJECT_SPREAD) {
+    } else if (isObjectSpread(value)) {
       throwRuntimeError('Cannot spread object into array', localContext);
     } else {
       result = [

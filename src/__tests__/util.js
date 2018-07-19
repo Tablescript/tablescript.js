@@ -16,10 +16,10 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import R from 'ramda';
-import { valueTypes } from '../values/types';
+import { isBoolean, isNumber, isString, isArray, isUndefined } from '../values/types';
 
-export const isBooleanValue = expected => value => {
-  if (value.type !== valueTypes.BOOLEAN) {
+export const booleanValue = expected => value => {
+  if (!isBoolean(value)) {
     throw new Error(`Expecting a BOOLEAN but got ${value.type}`);
   }
   const actual = value.asNativeBoolean();
@@ -29,8 +29,8 @@ export const isBooleanValue = expected => value => {
   return true;
 };
 
-export const isNumericValue = expected => value => {
-  if (value.type !== valueTypes.NUMBER) {
+export const numericValue = expected => value => {
+  if (!isNumber(value)) {
     throw new Error(`Expecting a NUMBER but got ${value.type}`);
   }
   const actual = value.asNativeNumber();
@@ -40,8 +40,8 @@ export const isNumericValue = expected => value => {
   return true;
 };
 
-export const isStringValue = expected => value => {
-  if (value.type !== valueTypes.STRING) {
+export const stringValue = expected => value => {
+  if (!isString(value)) {
     throw new Error(`Expecting a STRING but got ${value.type}`);
   }
   const actual = value.asNativeString();
@@ -51,8 +51,8 @@ export const isStringValue = expected => value => {
   return true;
 };
 
-export const isArrayValue = expected => value => {
-  if (value.type !== valueTypes.ARRAY) {
+export const arrayValue = expected => value => {
+  if (!isArray(value)) {
     throw new Error(`Expecting an ARRAY but got ${value.type}`);
   }
   const actual = value.asNativeArray();
@@ -62,8 +62,8 @@ export const isArrayValue = expected => value => {
   return true;
 };
 
-export const isUndefined = value => {
-  if (value.type !== valueTypes.UNDEFINED) {
+export const undefinedValue = value => {
+  if (!isUndefined(value)) {
     throw new Error(`Expecting a UNDEFINED but got ${value.type}`);
   }
   return true;

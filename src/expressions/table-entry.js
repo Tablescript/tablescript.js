@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../values/types';
+import { isArraySpread, isTableSpread } from '../values/types';
 import { throwRuntimeError } from '../error';
 
 const createTableEntry = (selector, body) => ({
@@ -50,10 +50,10 @@ export const createSimpleTableEntryExpression = body => ({
 export const createSpreadTableEntryExpression = spread => ({
   expand: async context => {
     const spreadValue = await spread.evaluate(context);
-    if (spreadValue.type === valueTypes.ARRAY_SPREAD) {
+    if (isArraySpread(spreadValue)) {
       return spreadValue.asArray().map(entry => createLiteralTableEntry(entry));
     }
-    if (spreadValue.type === valueTypes.TABLE_SPREAD) {
+    if (isTableSpread(spreadValue)) {
       return spreadValue.asArray();
     }
     throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`);

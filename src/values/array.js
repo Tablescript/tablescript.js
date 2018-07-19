@@ -17,7 +17,7 @@
 
 import R from 'ramda';
 import { createValue } from './default';
-import { valueTypes } from './types';
+import { valueTypes, isArray } from './types';
 import { arrayProperties } from './array-properties';
 import { throwRuntimeError } from '../error';
 import { createBooleanValue } from './boolean';
@@ -29,7 +29,7 @@ const asNativeString = entries => context => JSON.stringify(entriesAsNativeValue
 const asNativeBoolean = () => () => true;
 const asNativeArray = entries => context => entriesAsNativeValues(context, entries);
 const nativeEquals = entries => (context, other) => {
-  if (other.type !== valueTypes.ARRAY) {
+  if (!isArray(other)) {
     return false;
   }
   const otherEntries = other.asArray();

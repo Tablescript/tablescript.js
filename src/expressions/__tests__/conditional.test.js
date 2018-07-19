@@ -23,7 +23,7 @@ const expect = chai.expect;
 import { createNumericValue } from '../../values/numeric';
 import { createBooleanValue } from '../../values/boolean';
 import { createConditionalExpression } from '../conditional';
-import { isNumericValue } from '../../__tests__/util';
+import { numericValue } from '../../__tests__/util';
 
 describe('createConditionalExpression', () => {
   describe('evaluate', () => {
@@ -35,7 +35,7 @@ describe('createConditionalExpression', () => {
         evaluate: () => createNumericValue(9),
       };
       const expression = createConditionalExpression({}, mockTestExpression, mockConsequentExpression, undefined);
-      return expect(expression.evaluate({})).to.eventually.satisfy(isNumericValue(9));
+      return expect(expression.evaluate({})).to.eventually.satisfy(numericValue(9));
     });
 
     it('returns the alternate value when test expression is true', () => {

@@ -17,7 +17,7 @@
 
 import R from 'ramda';
 import { createValue } from './default';
-import { valueTypes } from './types';
+import { valueTypes, isObject } from './types';
 import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 import { createUndefined } from './undefined';
@@ -32,7 +32,7 @@ const asNativeString = o => context => JSON.stringify(propertiesAsNativeValues(c
 const asNativeBoolean = () => () => true;
 const asNativeObject = o => context => propertiesAsNativeValues(context, o);
 const nativeEquals = o => (context, other) => {
-  if (other.type !== valueTypes.OBJECT) {
+  if (!isObject(other)) {
     return false;
   }
   const otherProperties = other.asObject();

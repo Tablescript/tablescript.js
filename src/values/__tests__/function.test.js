@@ -24,7 +24,7 @@ import { valueTypes } from '../types';
 import { createNumericValue } from '../numeric';
 import { createStringValue } from '../string';
 import { createNativeFunctionValue, createFunctionValue } from '../function';
-import { isStringValue, isNumericValue, isBooleanValue, isArrayValue } from '../../__tests__/util';
+import { stringValue, numericValue, booleanValue, arrayValue } from '../../__tests__/util';
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
 import { createUndefined } from '../undefined';
@@ -66,11 +66,11 @@ describe('function', () => {
     });
 
     it('has string value "function(native)"', () => {
-      expect(value.asString()).to.satisfy(isStringValue('function(native)'));
+      expect(value.asString()).to.satisfy(stringValue('function(native)'));
     });
 
     it('has boolean value true', () => {
-      expect(value.asBoolean()).to.satisfy(isBooleanValue(true));
+      expect(value.asBoolean()).to.satisfy(booleanValue(true));
     });
 
     it('throws when asked for a property', () => {
@@ -89,29 +89,29 @@ describe('function', () => {
       describe('with no formal parameters', () => {
         it('sets the arguments variable', () => {
           const f = createNativeFunctionValue([], (context, scope) => scope['arguments']);
-          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])).to.eventually.satisfy(isArrayValue(['string', 12, true]));
+          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])).to.eventually.satisfy(arrayValue(['string', 12, true]));
         });
 
         it('returns the result of the call', () => {
           const f = createNativeFunctionValue([], (context, scope) => createNumericValue(12));
-          return expect(f.callFunction({}, [])).to.eventually.satisfy(isNumericValue(12));
+          return expect(f.callFunction({}, [])).to.eventually.satisfy(numericValue(12));
         });
       });
 
       describe('with formal parameters', () => {
         it('sets the arguments variable', () => {
           const f = createNativeFunctionValue(['p1', 'p2'], (context, scope) => scope['arguments']);
-          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])).to.eventually.satisfy(isArrayValue(['string', 12, true]));
+          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])).to.eventually.satisfy(arrayValue(['string', 12, true]));
         });
 
         it('sets the parameters', () => {
           const f = createNativeFunctionValue(['p1', 'p2'], (context, scope) => createArrayValue([scope['p1'], scope['p2']]));
-          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12)])).to.eventually.satisfy(isArrayValue(['string', 12]));
+          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12)])).to.eventually.satisfy(arrayValue(['string', 12]));
         });
 
         it('does not set un-passed parameters', () => {
           const f = createNativeFunctionValue(['p1', 'p2'], (context, scope) => createArrayValue([scope['p1'], scope['p2'] || createUndefined()]));
-          return expect(f.callFunction({}, [createStringValue('string')])).to.eventually.satisfy(isArrayValue(['string', undefined]));
+          return expect(f.callFunction({}, [createStringValue('string')])).to.eventually.satisfy(arrayValue(['string', undefined]));
         });
       });
     });
@@ -153,11 +153,11 @@ describe('function', () => {
     });
 
     it('has string value "function(tablescript)"', () => {
-      expect(value.asString()).to.satisfy(isStringValue('function(tablescript)'));
+      expect(value.asString()).to.satisfy(stringValue('function(tablescript)'));
     });
 
     it('has boolean value true', () => {
-      expect(value.asBoolean()).to.satisfy(isBooleanValue(true));
+      expect(value.asBoolean()).to.satisfy(booleanValue(true));
     });
 
     it('throws when asked for a property', () => {
@@ -176,44 +176,44 @@ describe('function', () => {
       describe('with no formal parameters', () => {
         it('sets the arguments variable', () => {
           const f = createFunctionValue([], { evaluate: scope => scope['arguments'] }, {});
-          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])).to.eventually.satisfy(isArrayValue(['string', 12, true]));
+          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])).to.eventually.satisfy(arrayValue(['string', 12, true]));
         });
 
         it('sets scope from closure', () => {
           const f = createFunctionValue([], { evaluate: scope => scope['fromClosure'] }, { fromClosure: createNumericValue(12) });
-          return expect(f.callFunction({}, [])).to.eventually.satisfy(isNumericValue(12));
+          return expect(f.callFunction({}, [])).to.eventually.satisfy(numericValue(12));
         });
 
         it('overrides closure scope with parameters', () => {
           const f = createFunctionValue([], { evaluate: scope => scope['arguments'] }, { 'arguments': createNumericValue(12) });
-          return expect(f.callFunction({}, [createNumericValue(13)])).to.eventually.satisfy(isArrayValue([13]));
+          return expect(f.callFunction({}, [createNumericValue(13)])).to.eventually.satisfy(arrayValue([13]));
         });
       });
 
       describe('with formal parameters', () => {
         it('sets the arguments variable', () => {
           const f = createFunctionValue(['p1', 'p2'], { evaluate: scope => scope['arguments'] }, {});
-          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])).to.eventually.satisfy(isArrayValue(['string', 12, true]));
+          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])).to.eventually.satisfy(arrayValue(['string', 12, true]));
         });
 
         it('sets the parameters', () => {
           const f = createFunctionValue(['p1', 'p2'], { evaluate: scope => createArrayValue([scope['p1'], scope['p2']]) }, {});
-          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12)])).to.eventually.satisfy(isArrayValue(['string', 12]));
+          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12)])).to.eventually.satisfy(arrayValue(['string', 12]));
         });
 
         it('does not set un-passed parameters', () => {
           const f = createFunctionValue(['p1', 'p2'], { evaluate: scope => createArrayValue([scope['p1'], scope['p2'] || createUndefined()]) }, {});
-          return expect(f.callFunction({}, [createStringValue('string')])).to.eventually.satisfy(isArrayValue(['string', undefined]));
+          return expect(f.callFunction({}, [createStringValue('string')])).to.eventually.satisfy(arrayValue(['string', undefined]));
         });
 
         it('overrides closure scope with parameters', () => {
           const f = createFunctionValue(['p1', 'p2'], { evaluate: scope => createArrayValue([scope['p1'], scope['p2']]) }, { p2: createStringValue('not this') });
-          return expect(f.callFunction({}, [createNumericValue(12), createNumericValue(13)])).to.eventually.satisfy(isArrayValue([12, 13]));
+          return expect(f.callFunction({}, [createNumericValue(12), createNumericValue(13)])).to.eventually.satisfy(arrayValue([12, 13]));
         });
 
         it('does not override closure scope with un-passed parameters', () => {
           const f = createFunctionValue(['p1', 'p2'], { evaluate: scope => createArrayValue([scope['p1'], scope['p2']]) }, { p2: createStringValue('this') });
-          return expect(f.callFunction({}, [createNumericValue(12)])).to.eventually.satisfy(isArrayValue([12, 'this']));
+          return expect(f.callFunction({}, [createNumericValue(12)])).to.eventually.satisfy(arrayValue([12, 'this']));
         });
       });
     });

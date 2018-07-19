@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from './types';
+import { valueTypes, isUndefined } from './types';
 import { createValue } from './default';
 import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
@@ -23,7 +23,7 @@ import { createBooleanValue } from './boolean';
 const asNativeValue = () => undefined;
 const asNativeString = () => 'undefined';
 const asNativeBoolean = () => false;
-const nativeEquals = (context, other) => other.type === valueTypes.UNDEFINED;
+const nativeEquals = (context, other) => isUndefined(other);
 const asString = context => createStringValue(asNativeString(context));
 const asBoolean = context => createBooleanValue(asNativeBoolean(context));
 const equals = (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));

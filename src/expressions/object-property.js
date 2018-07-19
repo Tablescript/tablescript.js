@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { expressionTypes } from './types';
-import { valueTypes } from '../values/types';
+import { isArray, isNumber, isObject, isString } from '../values/types';
 import {
   createArrayElementLeftHandSideValue,
   createObjectPropertyLeftHandSideValue
@@ -29,7 +29,7 @@ const evaluate = (location, objectExpression, propertyNameExpression) => async c
   const localContext = updateStack(context, location);
   const objectValue = await objectExpression.evaluate(localContext);
   const propertyNameValue = await propertyNameExpression.evaluate(localContext);
-  if (propertyNameValue.type === valueTypes.NUMBER) {
+  if (isNumber(propertyNameValue)) {
     return await objectValue.getElement(localContext, propertyNameValue);
   }
   return objectValue.getProperty(localContext, propertyNameValue);
@@ -38,14 +38,14 @@ const evaluate = (location, objectExpression, propertyNameExpression) => async c
 const evaluateAsLeftHandSide = (location, objectExpression, propertyNameExpression) => async context => {
   const localContext = updateStack(context, location);
   const objectValue = await objectExpression.evaluate(localContext);
-  if (!(objectValue.type === valueTypes.OBJECT || objectValue.type === valueTypes.ARRAY)) {
+  if (!(isObject(objectValue) || isArray(objectValue))) {
     throwRuntimeError('Cannot assign to non-object non-array type', localContext);
   }
   const propertyNameValue = await propertyNameExpression.evaluate(localContext);
-  if (propertyNameValue.type === valueTypes.NUMBER) {
+  if (isNumber(propertyNameValue)) {
     return createArrayElementLeftHandSideValue(objectValue, propertyNameValue);
   }
-  if (propertyNameValue.type === valueTypes.STRING) {
+  if (isString(propertyNameValue)) {
     return createObjectPropertyLeftHandSideValue(objectValue, propertyNameValue);
   }
   throwRuntimeError('Cannot access property or element', localContext);

@@ -17,7 +17,7 @@
 
 import R from 'ramda';
 import { createValue } from './default';
-import { valueTypes, isNumeric, isString } from './types';
+import { valueTypes, isNumber, isString } from './types';
 import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 import { throwRuntimeError } from '../error';
@@ -25,7 +25,7 @@ import { throwRuntimeError } from '../error';
 const asNativeNumber = value => () => value;
 const asNativeString = value => () => value.toString();
 const asNativeBoolean = value => () => value == 0 ? false : true;
-const nativeEquals = value => (context, other) => isNumeric(other) && value === other.asNativeNumber(context);
+const nativeEquals = value => (context, other) => isNumber(other) && value === other.asNativeNumber(context);
 const asNumber = value => context => createNumericValue(value);
 const asString = asNativeString => context => createStringValue(asNativeString(context));
 const asBoolean = asNativeBoolean => context => createBooleanValue(asNativeBoolean(context));

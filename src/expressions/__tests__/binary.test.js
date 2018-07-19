@@ -21,7 +21,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 import { createBinaryExpression, createBinaryExpressionWithOperators } from '../binary';
-import { isNumericValue } from '../../__tests__/util';
+import { numericValue } from '../../__tests__/util';
 import { createNumericValue } from '../../values/numeric';
 import { expressionTypes } from '../types';
 
@@ -63,6 +63,6 @@ describe('createBinaryExpression', () => {
       evaluate: () => createNumericValue(12),
     };
     const expression = createBinaryExpression({}, leftExpression, '+', rightExpression);
-    return expect(expression.evaluate({})).to.eventually.satisfy(isNumericValue(21));
+    return expect(expression.evaluate({})).to.eventually.satisfy(numericValue(21));
   });
 });

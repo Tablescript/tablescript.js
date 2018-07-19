@@ -21,7 +21,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 import { allOperators } from '../binary-operators';
-import { isBooleanValue, isNumericValue } from '../../__tests__/util';
+import { booleanValue, numericValue } from '../../__tests__/util';
 import { createNumericValue } from '../../values/numeric';
 import { createBooleanValue } from '../../values/boolean';
 
@@ -48,7 +48,7 @@ describe('binary-operators', () => {
         const rightExpression = {
           evaluate: () => createBooleanValue(b),
         };
-        return expect(operator({}, leftExpression, rightExpression, {})).to.eventually.satisfy(isBooleanValue(expected));
+        return expect(operator({}, leftExpression, rightExpression, {})).to.eventually.satisfy(booleanValue(expected));
       });
     });
 
@@ -83,7 +83,7 @@ describe('binary-operators', () => {
         const rightExpression = {
           evaluate: () => createBooleanValue(b),
         };
-        return expect(operator({}, leftExpression, rightExpression, {})).to.eventually.satisfy(isBooleanValue(expected));
+        return expect(operator({}, leftExpression, rightExpression, {})).to.eventually.satisfy(booleanValue(expected));
       });
     });
 
@@ -128,7 +128,7 @@ describe('binary-operators', () => {
       });
 
       it('adds the operands', () => {
-        return expect(operator(mockContext, leftExpression, rightExpression, {})).to.eventually.satisfy(isNumericValue(36));
+        return expect(operator(mockContext, leftExpression, rightExpression, {})).to.eventually.satisfy(numericValue(36));
       });
     });
 
@@ -143,7 +143,7 @@ describe('binary-operators', () => {
       });
 
       it('subtracts the operands', () => {
-        return expect(operator(mockContext, leftExpression, rightExpression, {})).to.eventually.satisfy(isNumericValue(18));
+        return expect(operator(mockContext, leftExpression, rightExpression, {})).to.eventually.satisfy(numericValue(18));
       });
     });
 
@@ -158,7 +158,7 @@ describe('binary-operators', () => {
       });
 
       it('multiplies the operands', () => {
-        return expect(operator(mockContext, leftExpression, rightExpression, {})).to.eventually.satisfy(isNumericValue(243));
+        return expect(operator(mockContext, leftExpression, rightExpression, {})).to.eventually.satisfy(numericValue(243));
       });
     });
 
@@ -173,7 +173,7 @@ describe('binary-operators', () => {
       });
 
       it('divides the operands', () => {
-        return expect(operator(mockContext, leftExpression, rightExpression, {})).to.eventually.satisfy(isNumericValue(3));
+        return expect(operator(mockContext, leftExpression, rightExpression, {})).to.eventually.satisfy(numericValue(3));
       });
     });
 
@@ -188,7 +188,7 @@ describe('binary-operators', () => {
       });
 
       it('modulos the operands', () => {
-        return expect(operator(mockContext, leftExpression, rightExpression, {})).to.eventually.satisfy(isNumericValue(0));
+        return expect(operator(mockContext, leftExpression, rightExpression, {})).to.eventually.satisfy(numericValue(0));
       });
     });
   });

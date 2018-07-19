@@ -24,7 +24,6 @@ const expect = chai.expect;
 
 import { valueTypes } from '../../values/types';
 import { createAssignmentExpression } from '../assignment';
-import { isBooleanValue, isNumericValue, isStringValue } from '../../__tests__/util';
 
 const recordCall = (calls, name, args = []) => {
   if (calls[name]) {

@@ -25,7 +25,7 @@ import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
-import { isNumericValue, isBooleanValue, isArrayValue } from '../../__tests__/util';
+import { numericValue, booleanValue, arrayValue } from '../../__tests__/util';
 
 describe('array', () => {
   const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);
@@ -37,11 +37,11 @@ describe('array', () => {
       const memberName = createStringValue('length');
 
       it('knows the length of non-empty arrays', () => {
-        expect(nonEmptyArray().getProperty({}, memberName)).to.satisfy(isNumericValue(3));
+        expect(nonEmptyArray().getProperty({}, memberName)).to.satisfy(numericValue(3));
       });
 
       it('knows the length of empty arrays', () => {
-        expect(emptyArray().getProperty({}, memberName)).to.satisfy(isNumericValue(0));
+        expect(emptyArray().getProperty({}, memberName)).to.satisfy(numericValue(0));
       });
     });
 
@@ -50,17 +50,17 @@ describe('array', () => {
 
       it('returns false for empty arrays', () => {
         const f = emptyArray().getProperty({}, methodName);
-        return expect(f.callFunction({}, [createStringValue('Not gonna find it')])).to.eventually.satisfy(isBooleanValue(false));
+        return expect(f.callFunction({}, [createStringValue('Not gonna find it')])).to.eventually.satisfy(booleanValue(false));
       });
 
       it('returns false for non-empty arrays without a matching value', () => {
         const f = nonEmptyArray().getProperty({}, methodName);
-        return expect(f.callFunction({}, [createStringValue('Not gonna find it')])).to.eventually.satisfy(isBooleanValue(false));
+        return expect(f.callFunction({}, [createStringValue('Not gonna find it')])).to.eventually.satisfy(booleanValue(false));
       });
 
       it('returns true for non-empty arrays with a matching value', () => {
         const f = nonEmptyArray().getProperty({}, methodName);
-        return expect(f.callFunction({}, [createNumericValue(12)])).to.eventually.satisfy(isBooleanValue(true));
+        return expect(f.callFunction({}, [createNumericValue(12)])).to.eventually.satisfy(booleanValue(true));
       });
     });
 
@@ -83,7 +83,7 @@ describe('array', () => {
         });
 
         it('returns an empty array when called on an empty array', () => {
-          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(isArrayValue([]));
+          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(arrayValue([]));
         });
 
         it('does not call the callback', async () => {
@@ -101,7 +101,7 @@ describe('array', () => {
         });
 
         it('returns an array of values mapped from the original array', () => {
-          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(isArrayValue([5, 6, 7]));
+          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(arrayValue([5, 6, 7]));
         });
 
         it('calls the callback 3 times', async () => {
@@ -132,7 +132,7 @@ describe('array', () => {
         });
 
         it('returns the initial value when called on an empty array', () => {
-          return expect(f.callFunction({}, [callback, createNumericValue(0)])).to.eventually.satisfy(isNumericValue(0));
+          return expect(f.callFunction({}, [callback, createNumericValue(0)])).to.eventually.satisfy(numericValue(0));
         });
 
         it('does not call the callback', async () => {
@@ -150,7 +150,7 @@ describe('array', () => {
         });
 
         it('returns the reduced value from the original array', () => {
-          return expect(f.callFunction({}, [callback, createNumericValue(0)])).to.eventually.satisfy(isNumericValue(6));
+          return expect(f.callFunction({}, [callback, createNumericValue(0)])).to.eventually.satisfy(numericValue(6));
         });
 
         it('calls the callback 3 times', async () => {
@@ -180,7 +180,7 @@ describe('array', () => {
         });
 
         it('returns an empty array when called on an empty array', () => {
-          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(isArrayValue([]));
+          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(arrayValue([]));
         });
 
         it('does not call the callback', async () => {
@@ -198,7 +198,7 @@ describe('array', () => {
         });
 
         it('returns an array of values mapped from the original array', () => {
-          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(isArrayValue([4, 6]));
+          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(arrayValue([4, 6]));
         });
 
         it('calls the callback 3 times', async () => {

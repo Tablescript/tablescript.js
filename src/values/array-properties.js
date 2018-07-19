@@ -21,7 +21,7 @@ import { createNumericValue } from './numeric';
 import { createUndefined } from './undefined';
 import { createBooleanValue } from './boolean';
 import { createStringValue } from './string';
-import { valueTypes } from './types';
+import { isString } from './types';
 import { quickSort } from '../util/sort';
 
 const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], async context => {
@@ -103,7 +103,7 @@ const sort = entries => createNativeFunctionValue(['f'], async context => {
 const join = entries => createNativeFunctionValue(['separator'], context => {
   const separator = context.scope['separator'];
   if (separator) {
-    if (separator.type !== valueTypes.STRING) {
+    if (!isString(separator)) {
       throwRuntimeError(`join([separator]) separator must be a string`, context);
     }
     return Promise.resolve(createStringValue(entries.map(e => e.asNativeString(context)).join(separator.asNativeString(context))));
