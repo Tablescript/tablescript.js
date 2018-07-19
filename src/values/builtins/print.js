@@ -17,8 +17,8 @@
 
 import { createStringValue } from '../string';
 
-export const printBuiltIn = options => async (context, parameters) => {
+export const printBuiltIn = async (context, parameters) => {
   const s = parameters.map(p => p.asNativeString(context)).join();
-  await options.output.print(s);
+  await context.options.output.print(s);
   return createStringValue(s);
 };

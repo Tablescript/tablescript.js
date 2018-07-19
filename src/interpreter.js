@@ -15,10 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-export const evaluateAllExpressions = async (expressions, context) => {
+const evaluateAllExpressions = async (expressions, context) => {
   let value;
   for (let i = 0; i < expressions.length; i++) {
     value = await expressions[i].evaluate(context);
   }
   return value;
+};
+
+export const interpret = async (expressions, context, args) => {
+  return await evaluateAllExpressions(expressions, context);
 };

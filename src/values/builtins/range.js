@@ -19,7 +19,7 @@ import { throwRuntimeError } from '../../error';
 import { createNumericValue } from '../numeric';
 import { createArrayValue } from '../array';
 
-export const rangeBuiltIn = _ => (context, parameters) => {
+export const rangeBuiltIn = (context, parameters) => {
   let startValue = 0;
   let endValue;
   let stepValue = 1;
@@ -48,5 +48,5 @@ export const rangeBuiltIn = _ => (context, parameters) => {
   for (let i = startValue; i < endValue; i += stepValue) {
     result.push(createNumericValue(i));
   }
-  return createArrayValue(result);
+  return Promise.resolve(createArrayValue(result));
 };

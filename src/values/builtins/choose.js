@@ -18,11 +18,11 @@
 import { throwRuntimeError } from '../../error';
 import { randomNumber } from '../../util/random';
 
-export const chooseBuiltIn = _ => (context, parameters) => {
+export const chooseBuiltIn = (context, parameters) => {
   if (parameters.length !== 1) {
     throwRuntimeError('choose(items) takes a single array parameter', context);
   }
   const items = parameters[0].asArray();
   const roll = randomNumber(items.length) - 1;
-  return items[roll];
+  return Promise.resolve(items[roll]);
 };

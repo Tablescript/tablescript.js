@@ -16,59 +16,25 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { parse } from './parser/parser';
-import { evaluateAllExpressions } from './interpreter';
-import { TablescriptError, throwRuntimeError } from './error';
-import { initializeBuiltins } from './values/builtins/builtins';
-import { initializeMath } from './values/math/math';
-import { createStringValue } from './values/string';
-import { createArrayValue } from './values/array';
-import { createObjectValue } from './values/object';
+import { interpret } from './interpreter';
+import { throwRuntimeError } from './error';
 
-const expandArguments = args => ({
-  arguments: createArrayValue(args.map(a => (typeof a === 'string') ? createStringValue(a) : a))
-});
+export const runScript = async (context, script, scriptPath, args) => {
+  const expressions = parse(script, scriptPath);
+  return await interpret(expressions, context, args);
+}
 
-const initializeScope = (args, options) => ({
-  system: createObjectValue({
-    ...expandArguments(args),
-    ...initializeBuiltins(options),
-  }),
-  math: createObjectValue({
-    ...initializeMath(options),
-  }),
-});
-
-export const interpret = async (expressions, args, options) => {
-  const context = {
-    stack: [],
-    scope: initializeScope(args, options),
-    options,
-  };
-  return await evaluateAllExpressions(expressions, context);
+const loadScript = async (context, scriptPath) => {
+  for (const loader of context.options.input.loaders) {
+    const script = await loader(context, scriptPath);
+    if (script) {
+      return script;
+    }
+  }
+  throwRuntimeError(`Unable to load ${scriptPath}`, context);
 };
 
-const runProgram = async (filePath, program, args, options) => {
-  const expressions = parse(filePath, program);
-  return await interpret(expressions, args, options);
-}  
-
-const loadProgram = async (loaders, context, filename) => {
-  for (let i = 0; i < loaders.length; i++) {
-    const result = await loaders[i](context, filename);
-    if (result) {
-      return result;
-    }  
-  }  
-  throwRuntimeError(`Unable to load ${filename}`, context);
-};  
-
-const run = async (context, filename, args, options) => {
-  const program = await loadProgram(options.input.loaders, context, filename);
-  return await runProgram(program.path, program.body, args, options);
-};    
-
-export {
-  run,
-  runProgram,
-  TablescriptError
-}
+export const loadAndRunScript = async (context, scriptPath, args) => {
+  const script = await loadScript(context, scriptPath);
+  return await runScript(context, script.body, script.path, args);
+};

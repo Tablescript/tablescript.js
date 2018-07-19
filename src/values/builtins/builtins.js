@@ -49,10 +49,10 @@ const builtIns = {
   'require': requireBuiltIn,
 };
 
-export const initializeBuiltins = options => Object.keys(builtIns).reduce(
+export const initializeBuiltins = () => Object.keys(builtIns).reduce(
   (acc, b) => ({
     ...acc,
-    [b]: createBuiltInFunctionValue(b, builtIns[b](options))
+    [b]: createBuiltInFunctionValue(b, builtIns[b])
   }),
   {},
 );

@@ -42,6 +42,21 @@ export class TablescriptError extends Error {
   }
 }
 
+TablescriptError.fromParserError = (e, filePath) => new TablescriptError(
+  'SyntaxError',
+  e.message,
+  {
+    stack: [
+      {
+        path: filePath,
+        line: e.location ? e.location.start.line : 0,
+        column: e.location ? e.location.start.column: 0,
+        location: e.location,
+      },
+    ],
+  },
+);
+
 export const throwRuntimeError = (message, context) => {
   throw new TablescriptError('RuntimeError', message, context);
 };

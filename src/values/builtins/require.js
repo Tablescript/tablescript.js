@@ -16,13 +16,14 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError } from '../../error';
-import { run } from '../../index';
+import { loadAndRunScript } from '../../index';
+import { replaceScope, initializeScope } from '../../context';
 
-export const requireBuiltIn = options => async (context, parameters) => {
+export const requireBuiltIn = async (context, parameters) => {
   if (parameters.length < 1) {
     throwRuntimeError(`require(modulePath, ...) requires a modulePath`, context);
   }
   const filename = parameters[0].asNativeString(context);
   const args = parameters.slice(1);
-  return await run(context, filename, args, options);
+  return await loadAndRunScript(replaceScope(context, initializeScope(args, context.options)), filename, args);
 };

@@ -19,30 +19,17 @@ import parser from './peg-parser';
 import templateStringParser from './template-string-parser.js';
 import { TablescriptError } from '../error';
 
-export const parse = (filePath, program) => {
+export const parse = (script, scriptPath) => {
   try {
-    return parser.parse(program, { path: filePath });
+    return parser.parse(script, { path: scriptPath });
   } catch (e) {
-    throw new TablescriptError(
-      'SyntaxError',
-      e.message,
-      {
-        stack: [
-          {
-            path: filePath,
-            line: e.location ? e.location.start.line : 0,
-            column: e.location ? e.location.start.column: 0,
-            location: e.location,
-          },
-        ],
-      },
-    );
+    throw TablescriptError.fromParserError(e, scriptPath);
   }
 };
 
-export const parseTemplateString = e => {
+export const parseTemplateString = s => {
   try {
-    return templateStringParser.parse(e);
+    return templateStringParser.parse(s);
   } catch (e) {
     throw new TablescriptError(
       'SyntaxError',

@@ -19,12 +19,12 @@ import { throwRuntimeError } from '../../error';
 import { createArrayValue } from '../array';
 import { createStringValue } from '../string';
 
-export const keysBuiltIn = _ => (context, parameters) => {
+export const keysBuiltIn = (context, parameters) => {
   if (parameters.length != 1) {
     throwRuntimeError(`keys(object) takes a single object parameter`, context);
   }
   const object = parameters[0].asObject();
   const keys = Object.keys(object)
   keys.sort();
-  return createArrayValue(keys.map(key => createStringValue(key)));
+  return Promise.resolve(createArrayValue(keys.map(key => createStringValue(key))));
 };

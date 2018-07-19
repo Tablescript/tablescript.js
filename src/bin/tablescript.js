@@ -20,8 +20,9 @@
 import 'babel-polyfill';
 import options from 'commander';
 import fs from 'fs';
-import { runProgram } from '../index';
+import { runScript } from '../index';
 import { repl } from '../repl';
+import { initializeContext } from '../context';
 import { loadFsFile } from '../fs-loader';
 import { loadHttpFile } from '../http-loader';
 import { TablescriptError } from '../error';
@@ -57,10 +58,11 @@ if (!filename) {
   const args = options.args.slice(1);
 
   try {
-    const program = fs.readFileSync(filename, 'utf8');
-    runProgram(filename, program, args, interpreterOptions).then(value => {
+    const script = fs.readFileSync(filename, 'utf8');
+    const context = initializeContext(args, interpreterOptions);
+    runScript(context, script, filename, args).then(value => {
       if (options.printLastValue) {
-        console.log(value.asNativeValue({ path: filename, line: 0, column: 0 }));
+        console.log(value.asNativeValue(context));
       }
     }).catch(e => {
       if (e instanceof TablescriptError) {

@@ -15,6 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import { initializeBuiltins } from './values/builtins/builtins';
+import { initializeMath } from './values/math/math';
+import { createStringValue } from './values/string';
+import { createArrayValue } from './values/array';
+import { createObjectValue } from './values/object';
+
 export const updateStack = (context, location) => ({
   ...context,
   stack: [
@@ -44,3 +50,23 @@ export const replaceScope = (context, scope) => ({
 });
 
 export const closureFromScope = context => ({ ...context.scope });
+
+const expandArguments = args => ({
+  arguments: createArrayValue(args.map(a => (typeof a === 'string') ? createStringValue(a) : a))
+});
+
+export const initializeScope = (args, options) => ({
+  system: createObjectValue({
+    ...expandArguments(args),
+    ...initializeBuiltins(options),
+  }),
+  math: createObjectValue({
+    ...initializeMath(options),
+  }),
+});
+
+export const initializeContext = (args, options) => ({
+  stack: [],
+  scope: initializeScope(args, options),
+  options,
+});
