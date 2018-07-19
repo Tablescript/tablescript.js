@@ -15,6 +15,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+/*
+
+asNativeValue(context) : any<native>;
+asNativeNumber(context) : number;
+asNativeString(context) : string;
+asNativeBoolean(context) : boolean;
+asNativeArray(context) : array[any<native>];
+asNativeObject(context) : object<string => any<native>];
+nativeEquals(context, other : VALUE) : boolean;
+asNumber(context) : NUMBER;
+asString(context) : STRING;
+asBoolean(context) : BOOLEAN;
+asArray(context) : ARRAY<VALUE>;
+asObject(context) : OBJECT;
+equals(context, other : VALUE) : BOOLEAN;
+getProperty(context, name : STRING) : VALUE | UNDEFINED;
+setProperty(context, name : STRING, value : VALUE) : VALUE;
+getElement(context, index : NUMBER) : VALUE | UNDEFINED;
+callFunction(context, parameters : ARRAY<VALUE>) : Promise<VALUE>;
+add(context, other : NUMBER | STRING) : NUMBER | STRING;
+subtract(context, other) : NUMBER;
+multiplyBy(context, other) : NUMBER;
+divideBy(context, other) | NUMBER;
+modulo(context, other) | NUMBER;
+
+*/
+
 import { valueTypeName } from './types';
 import { runtimeErrorThrower } from '../error';
 import { createUndefined } from './undefined';
@@ -40,6 +67,7 @@ const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({
   asBoolean: runtimeErrorThrower(`Cannot cast ${getTypeName()} to boolean`),
   asArray: runtimeErrorThrower(`Cannot cast ${getTypeName()} to array`),
   asObject: runtimeErrorThrower(`Cannot cast ${getTypeName()} to object`),
+  equals: runtimeErrorThrower(`Cannot determine equality with ${getTypeName()}`),
   getProperty: properties.length === 0 ? runtimeErrorThrower(`Cannot get property of ${getTypeName()}`) : getProperty(properties),
   setProperty: runtimeErrorThrower(`Cannot set property of ${getTypeName()}`),
   getElement: runtimeErrorThrower(`Cannot get element of ${getTypeName()}`),
@@ -49,7 +77,6 @@ const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({
   multiplyBy: runtimeErrorThrower(`Cannot multiply ${getTypeName()}`),
   divideBy: runtimeErrorThrower(`Cannot divide ${getTypeName()}`),
   modulo: runtimeErrorThrower(`Cannot modulo ${getTypeName()}`),
-  equals: runtimeErrorThrower(`Cannot determine equality with ${getTypeName()}`),
 });
 
 export const createValue = (type, nativeValueFunction, properties, methods) => ({
