@@ -17,13 +17,13 @@
 
 import nodeRepl from 'repl';
 import { parse } from './parser/parser';
-import { evaluateAllExpressions } from './interpreter';
+import { interpret } from './interpreter';
 import { TablescriptError } from './error';
 
 const evaluate = (cmd, context, filename, callback) => {
   try {
     const expressions = parse(cmd, '');
-    evaluateAllExpressions(expressions, context).then(value => {
+    interpret(expressions, context).then(value => {
       context.scope._ = value;
       callback(null, value.asNativeValue(context));
     }).catch(e => {

@@ -25,5 +25,5 @@ export const requireBuiltIn = async (context, parameters) => {
   }
   const filename = parameters[0].asNativeString(context);
   const args = parameters.slice(1);
-  return await loadAndRunScript(replaceScope(context, initializeScope(args, context.options)), filename, args);
+  return await loadAndRunScript(replaceScope(context, initializeScope(args, context.options)), filename);
 };

@@ -19,9 +19,9 @@ import { parse } from './parser/parser';
 import { interpret } from './interpreter';
 import { throwRuntimeError } from './error';
 
-export const runScript = async (context, script, scriptPath, args) => {
+export const runScript = async (context, script, scriptPath) => {
   const expressions = parse(script, scriptPath);
-  return await interpret(expressions, context, args);
+  return await interpret(expressions, context);
 }
 
 const loadScript = async (context, scriptPath) => {

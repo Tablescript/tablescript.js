@@ -60,7 +60,7 @@ if (!filename) {
   try {
     const script = fs.readFileSync(filename, 'utf8');
     const context = initializeContext(args, interpreterOptions);
-    runScript(context, script, filename, args).then(value => {
+    runScript(context, script, filename).then(value => {
       if (options.printLastValue) {
         console.log(value.asNativeValue(context));
       }
