@@ -53,7 +53,7 @@ const evaluate = (location, leftHandSideExpression, operator, valueExpression) =
     const leftValue = (operator === '=') ? undefined : await leftHandSideExpression.evaluate(localContext);
     operators[operator](localContext, leftHandSideValue, leftValue, value);
   } else {
-    throwRuntimeError(`Unknown operator ${operator}`, location);
+    throwRuntimeError(`Unknown operator ${operator}`, localContext);
   }
   return value;
 };

@@ -18,6 +18,13 @@
 import { expressionTypeName } from './types';
 import { runtimeErrorThrower } from '../error';
 
+/*
+
+evaluate(context) : VALUE;
+evaluateAsLeftHandSide(context) : LEFT_HAND_SIDE;
+
+*/
+
 const defaultEvaluateAsLeftHandSide = typeName => runtimeErrorThrower(`Cannot assign to ${typeName} expression`);
 
 export const createExpression = (type, evaluate, evaluateAsLeftHandSide) => ({

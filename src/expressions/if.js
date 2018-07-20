@@ -29,8 +29,8 @@ const evaluate = (location, condition, ifBlock, elseBlock) => async context => {
     if (elseBlock) {
       return elseBlock.evaluate(localContext);
     }
-    return createUndefined();
   }
+  return createUndefined();
 };
 
 export const createIfExpression = (location, condition, ifBlock, elseBlock) => createExpression(expressionTypes.IF, evaluate(location, condition, ifBlock, elseBlock));

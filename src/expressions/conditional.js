@@ -22,7 +22,7 @@ import { updateStack } from '../context';
 const evaluate = (location, testExpression, consequentExpression, alternateExpression) => async context => {
   const localContext = updateStack(context, location);
   const testValue = await testExpression.evaluate(localContext);
-  if (testValue.asNativeBoolean(location)) {
+  if (testValue.asNativeBoolean(localContext)) {
     return consequentExpression.evaluate(localContext);
   }
   return alternateExpression.evaluate(localContext);

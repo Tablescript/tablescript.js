@@ -56,6 +56,6 @@ export const createSpreadTableEntryExpression = spread => ({
     if (isTableSpread(spreadValue)) {
       return spreadValue.asArray();
     }
-    throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`);
+    throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`, context);
   },
 });

@@ -65,7 +65,7 @@ const expandEntries = async (context, entries) => {
 
 const evaluate = (location, formalParameters, entries) => async context => {
   const localContext = updateStack(context, location);
-  return createTableValue(formalParameters, await expandEntries(localContext, entries), closureFromScope(context));
+  return createTableValue(formalParameters, await expandEntries(localContext, entries), closureFromScope(localContext));
 };
 
 export const createTableExpression = (location, formalParameters, entries) => createExpression(expressionTypes.TABLE, evaluate(location, formalParameters, entries));

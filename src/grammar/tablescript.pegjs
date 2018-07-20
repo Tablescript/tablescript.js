@@ -90,7 +90,7 @@ Statement
 
 Block "block"
   = '{' __ body:(Statements __)? '}' {
-    return createBlockExpression(optionalList(extractOptional(body, 0)));
+    return createBlockExpression(createLocation(location(), options), optionalList(extractOptional(body, 0)));
   }
 
 ExpressionStatement "simple expression"
@@ -239,7 +239,7 @@ MemberExpression "member expression"
 
 FunctionExpression "function expression"
   = FunctionToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ body:FunctionBody __ '}' {
-    return createFunctionExpression(params ? params[0] : [], body);
+    return createFunctionExpression(createLocation(location(), options), params ? params[0] : [], body);
   }
 
 FormalParameterList "formal parameter list"
@@ -249,7 +249,7 @@ FormalParameterList "formal parameter list"
 
 FunctionBody "function body"
   = body:Statements? {
-    return createBlockExpression(optionalList(body));
+    return createBlockExpression(createLocation(location(), options), optionalList(body));
   }
 
 TableExpression "table expression"
@@ -359,10 +359,10 @@ ArrayEntries
 
 ObjectLiteral "object"
   = '{' __ p:ObjectProperties __ '}' {
-    return createObjectLiteral(p);
+    return createObjectLiteral(createLocation(location(), options), p);
   }
   / '{' __ '}' {
-    return createObjectLiteral([]);
+    return createObjectLiteral(createLocation(location(), options), []);
   }
 
 ObjectProperties

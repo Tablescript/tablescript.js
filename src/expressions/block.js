@@ -18,15 +18,15 @@
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { createUndefined } from '../values/undefined';
-import { copyScope } from '../context';
+import { copyScope, updateStack } from '../context';
 
-const evaluate = expressions => async context => {
-  const localContext = copyScope(context);
+const evaluate = (location, expressions) => async context => {
+  const localContext = copyScope(updateStack(context, location));
   let result = createUndefined();
-  for (let i = 0; i < expressions.length; i++) {
-    result = await expressions[i].evaluate(localContext);
+  for (const expression of expressions) {
+    result = await expression.evaluate(localContext);
   }
   return result;
 };
 
-export const createBlockExpression = expressions => createExpression(expressionTypes.BLOCK, evaluate(expressions));
+export const createBlockExpression = (location, expressions) => createExpression(expressionTypes.BLOCK, evaluate(location, expressions));

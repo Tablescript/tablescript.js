@@ -156,7 +156,7 @@ function peg$parse(input, options) {
       peg$c6 = "}",
       peg$c7 = peg$literalExpectation("}", false),
       peg$c8 = function(body) {
-          return createBlockExpression(optionalList(extractOptional(body, 0)));
+          return createBlockExpression(createLocation(location(), options), optionalList(extractOptional(body, 0)));
         },
       peg$c9 = peg$otherExpectation("simple expression"),
       peg$c10 = peg$otherExpectation("expression"),
@@ -279,12 +279,12 @@ function peg$parse(input, options) {
         },
       peg$c92 = peg$otherExpectation("function expression"),
       peg$c93 = function(params, body) {
-          return createFunctionExpression(params ? params[0] : [], body);
+          return createFunctionExpression(createLocation(location(), options), params ? params[0] : [], body);
         },
       peg$c94 = peg$otherExpectation("formal parameter list"),
       peg$c95 = peg$otherExpectation("function body"),
       peg$c96 = function(body) {
-          return createBlockExpression(optionalList(body));
+          return createBlockExpression(createLocation(location(), options), optionalList(body));
         },
       peg$c97 = peg$otherExpectation("table expression"),
       peg$c98 = function(params, entries) {
@@ -355,10 +355,10 @@ function peg$parse(input, options) {
         },
       peg$c128 = peg$otherExpectation("object"),
       peg$c129 = function(p) {
-          return createObjectLiteral(p);
+          return createObjectLiteral(createLocation(location(), options), p);
         },
       peg$c130 = function() {
-          return createObjectLiteral([]);
+          return createObjectLiteral(createLocation(location(), options), []);
         },
       peg$c131 = function(head, tail) {
           return composeList(head, tail);

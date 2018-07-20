@@ -30,7 +30,7 @@ const evaluate = (location, values) => async context => {
     if (isArraySpread(value)) {
       result = [
         ...result,
-        ...value.asArray(location)
+        ...value.asArray(context)
       ];
     } else if (isObjectSpread(value)) {
       throwRuntimeError('Cannot spread object into array', localContext);
