@@ -32,6 +32,8 @@ export const requiredParameter = (context, name) => {
 
 export const optionalParameter = (context, name) => context.scope[name];
 
+export const optionalParameterOr = (context, name, value) => context.scope[name] ? context.scope[name] : value;
+
 const sharedAsNativeString = type => () => `function(${type})`;
 const asNativeBoolean = () => true;
 const nativeEquals = () => false;

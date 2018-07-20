@@ -38,7 +38,7 @@ const evaluate = (cmd, context, filename, callback) => {
   }
 };
 
-export const repl = options => {
+export const repl = context => {
   const r = nodeRepl.start({
     prompt: '> ',
     eval: evaluate
@@ -53,7 +53,5 @@ export const repl = options => {
       this.displayPrompt();
     },
   });
-  r.context.scope = {};
-  r.context.stack = [];
-  r.context.options = options;
+  r.context = context;
 };

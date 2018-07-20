@@ -15,7 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createNativeFunctionValue, requiredParameter } from '../function';
+import { norm } from './norm';
+import { createNativeFunctionValue, requiredParameter, optionalParameterOr } from '../function';
 import { createNumericValue } from '../numeric';
 
 const parametersAsNativeNumbers = context => requiredParameter(context, 'arguments').asArray().map(p => p.asNativeNumber(context));
@@ -28,6 +29,24 @@ const mathRound = createNativeFunctionValue(['n'], context => promisifyNumeric(M
 const mathFloor = createNativeFunctionValue(['n'], context =>promisifyNumeric(Math.floor(requiredParameter(context, 'n').asNativeNumber(context))));
 const mathCeil = createNativeFunctionValue(['n'], context => promisifyNumeric(Math.ceil(requiredParameter(context, 'n').asNativeNumber(context))));
 const mathPow = createNativeFunctionValue(['x', 'y'], context => promisifyNumeric(Math.pow(requiredParameter(context, 'x').asNativeNumber(context), requiredParameter(context, 'y').asNativeNumber(context))));
+const mathNorm = createNativeFunctionValue(['mean', 'stdev'], context => 
+  promisifyNumeric(
+    norm(
+      requiredParameter(context, 'mean').asNativeNumber(context),
+      optionalParameterOr(context, 'stdev', createNumericValue(1.0)).asNativeNumber(context),
+    )
+  )
+);
+const mathNormI = createNativeFunctionValue(['mean', 'stdev'], context => 
+  promisifyNumeric(
+    Math.round(
+      norm(
+        requiredParameter(context, 'mean').asNativeNumber(context),
+        optionalParameterOr(context, 'stdev', createNumericValue(1.0)).asNativeNumber(context),
+      )
+    )
+  )
+);
 
 export const initializeMath = () => ({
   max: mathMax,
@@ -36,4 +55,6 @@ export const initializeMath = () => ({
   floor: mathFloor,
   ceil: mathCeil,
   pow: mathPow,
+  norm: mathNorm,
+  normI: mathNormI,
 });

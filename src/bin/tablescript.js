@@ -52,14 +52,14 @@ const interpreterOptions = {
 };
 
 const filename = options.args[0];
-if (!filename) {
-  repl(interpreterOptions);
-} else {
-  const args = options.args.slice(1);
+const args = options.args.slice(1);
+const context = initializeContext(args, interpreterOptions);
 
+if (!filename) {
+  repl(context);
+} else {
   try {
     const script = fs.readFileSync(filename, 'utf8');
-    const context = initializeContext(args, interpreterOptions);
     runScript(context, script, filename).then(value => {
       if (options.printLastValue) {
         console.log(value.asNativeValue(context));
