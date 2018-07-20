@@ -23,75 +23,85 @@ import { createBooleanValue } from './boolean';
 import { throwRuntimeError } from '../error';
 
 const asNativeNumber = value => () => value;
+
 const asNativeString = value => () => value.toString();
+
 const asNativeBoolean = value => () => value == 0 ? false : true;
+
 const nativeEquals = value => (context, other) => isNumber(other) && value === other.asNativeNumber(context);
+
 const asNumber = value => context => createNumericValue(value);
+
 const asString = asNativeString => context => createStringValue(asNativeString(context));
+
 const asBoolean = asNativeBoolean => context => createBooleanValue(asNativeBoolean(context));
+
 const add = value => (context, other) => {
   if (isString(other)) {
     return createStringValue(value.toString() + other.asNativeString());
   }
   return createNumericValue(value + other.asNativeNumber(context));
 };
-const subtract = value => (context, other) => {
-  return createNumericValue(value - other.asNativeNumber(context));
-};
-const multiplyBy = value => (context, other) => {
-  return createNumericValue(value * other.asNativeNumber(context));
-};
+
+const subtract = value => (context, other) => createNumericValue(value - other.asNativeNumber(context));
+
+const multiplyBy = value => (context, other) => createNumericValue(value * other.asNativeNumber(context));
+
 const divideBy = value => (context, other) => {
   if (other.asNativeNumber(context) === 0) {
     throwRuntimeError('Divide by zero', context);
   }
   return createNumericValue(value / other.asNativeNumber(context));
 };
+
 const modulo = value => (context, other) => {
   if (other.asNativeNumber(context) === 0) {
     throwRuntimeError('Divide by zero', context);
   }
   return createNumericValue(value % other.asNativeNumber(context));
 };
+
 const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
+
 const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
-const lessThan = value => (context, other) => {
-  return createBooleanValue(value < other.asNativeNumber(context));
-};
-const greaterThan = value => (context, other) => {
-  return createBooleanValue(value > other.asNativeNumber(context));
-};
-const lessThanOrEquals = greaterThan => (context, other) => createBooleanValue(!greaterThan(context, other));
-const greaterThanOrEquals = lessThan => (context, other) => createBooleanValue(!lessThan(context, other));
 
-const methods = {
-  asNativeNumber,
-  asNativeString,
-  asNativeBoolean,
-  nativeEquals,
-  asNumber,
-  asString: R.pipe(asNativeString, asString),
-  asBoolean: R.pipe(asNativeBoolean, asBoolean),
-  add,
-  subtract,
-  multiplyBy,
-  divideBy,
-  modulo,
-  equals: R.pipe(nativeEquals, equals),
-  notEquals: R.pipe(nativeEquals, notEquals),
-  lessThan,
-  greaterThan,
-  lessThanOrEquals: R.pipe(greaterThan, lessThanOrEquals),
-  greaterThanOrEquals: R.pipe(lessThan, greaterThanOrEquals),
-};
+const lessThan = value => (context, other) => createBooleanValue(value < other.asNativeNumber(context));
 
-const allMethods = value => Object.keys(methods).reduce((acc, m) => ({ ...acc, [m]: methods[m](value) }), {});
+const greaterThan = value => (context, other) => createBooleanValue(value > other.asNativeNumber(context));
+
+const lessThanOrEquals = greaterThan => (context, other) => createBooleanValue(value <= other.asNativeNumber(context));
+
+const greaterThanOrEquals = lessThan => (context, other) => createBooleanValue(value >= other.asNativeNumber(context));
 
 export const createCustomNumericValue = (value, methods) => createValue(
   valueTypes.NUMBER,
   asNativeNumber(value),
-  [],
+  {},
   methods,
 );
 
-export const createNumericValue = value => createCustomNumericValue(value, allMethods(value));
+export const createNumericValue = value => createValue(
+  valueTypes.NUMBER,
+  asNativeNumber(value),
+  {},
+  {
+    asNativeNumber: asNativeNumber(value),
+    asNativeString: asNativeString(value),
+    asNativeBoolean: asNativeBoolean(value),
+    nativeEquals: nativeEquals(value),
+    asNumber: asNumber(value),
+    asString: R.pipe(asNativeString, asString)(value),
+    asBoolean: R.pipe(asNativeBoolean, asBoolean)(value),
+    add: add(value),
+    subtract: subtract(value),
+    multiplyBy: multiplyBy(value),
+    divideBy: divideBy(value),
+    modulo: modulo(value),
+    equals: R.pipe(nativeEquals, equals)(value),
+    notEquals: R.pipe(nativeEquals, notEquals)(value),
+    lessThan: lessThan(value),
+    greaterThan: greaterThan(value),
+    lessThanOrEquals: R.pipe(greaterThan, lessThanOrEquals)(value),
+    greaterThanOrEquals: R.pipe(lessThan, greaterThanOrEquals)(value),
+  },
+);

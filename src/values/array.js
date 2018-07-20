@@ -23,7 +23,7 @@ import { createNumericValue } from './numeric';
 import { createBooleanValue } from './boolean';
 import { createStringValue } from './string';
 import { createUndefined } from './undefined';
-import { createNativeFunctionValue } from './function';
+import { createNativeFunctionValue, requiredParameter, optionalParameter } from './function';
 import { quickSort } from '../util/sort';
 
 const entriesAsNativeValues = (context, entries) => entries.map(e => e.asNativeValue(context));
@@ -85,15 +85,6 @@ const multiplyBy = entries => (context, other) => createArrayValue(R.range(0, ot
 const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
 
 const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
-
-const requiredParameter = (context, name) => {
-  if (context.scope[name]) {
-    return context.scope[name];
-  }
-  throwRuntimeError(`Missing required parameter ${name}`, context);
-};
-
-const optionalParameter = (context, name) => context.scope[name];
 
 const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], async context => {
   const reducer = requiredParameter(context, 'reducer');

@@ -21,30 +21,30 @@ import { valueTypes } from './types';
 import { createStringValue } from './string';
 
 const asNativeString = value => () => value ? 'true' : 'false';
+
 const asNativeBoolean = value => () => value;
+
 const nativeEquals = value => (context, other) => value === other.asNativeBoolean(context);
+
 const asString = asNativeString => context => createStringValue(asNativeString(context));
+
 const asBoolean = value => () => createBooleanValue(value);
-const equals = nativeEquals => (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
-const notEquals = nativeEquals => (context, otherValue) => createBooleanValue(!nativeEquals(context, otherValue));
 
-const methods = {
-  asNativeString,
-  asNativeBoolean,
-  nativeEquals,
-  asString: R.pipe(asNativeString, asString),
-  asBoolean,
-  equals: R.pipe(nativeEquals, equals),
-  notEquals: R.pipe(nativeEquals, notEquals),
-};
+const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
 
-const allMethods = value => Object.keys(methods).reduce((acc, m) => ({ ...acc, [m]: methods[m](value) }), {});
+const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
 
-export const createCustomBooleanValue = (value, properties, methods) => createValue(
+export const createBooleanValue = value => createValue(
   valueTypes.BOOLEAN,
   asNativeBoolean(value),
-  properties,
-  methods,
+  {},
+  {
+    asNativeString: asNativeString(value),
+    asNativeBoolean: asNativeBoolean(value),
+    nativeEquals: nativeEquals(value),
+    asString: R.pipe(asNativeString, asString)(value),
+    asBoolean: asBoolean(value),
+    equals: R.pipe(nativeEquals, equals)(value),
+    notEquals: R.pipe(nativeEquals, notEquals)(value),
+  },
 );
-
-export const createBooleanValue = value => createCustomBooleanValue(value, [], allMethods(value));

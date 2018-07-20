@@ -20,8 +20,8 @@ import { createValue } from './default';
 
 export const createArraySpread = a => createValue(
   valueTypes.ARRAY_SPREAD,
-  null,
-  [],
+  a.asNativeValue,
+  {},
   {
     asArray: () => a.asArray(),
   },
@@ -29,8 +29,8 @@ export const createArraySpread = a => createValue(
 
 export const createObjectSpread = o => createValue(
   valueTypes.OBJECT_SPREAD,
-  null,
-  [],
+  o.asNativeValue,
+  {},
   {
     asObject: () => o.asObject(),
   },
@@ -38,8 +38,8 @@ export const createObjectSpread = o => createValue(
 
 export const createTableSpread = t => createValue(
   valueTypes.TABLE_SPREAD,
-  null,
-  [],
+  t.asNativeValue,
+  {},
   {
     asArray: () => t.asArray(),
   },

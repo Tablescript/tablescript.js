@@ -29,7 +29,6 @@ asString(context) : STRING;
 asBoolean(context) : BOOLEAN;
 asArray(context) : ARRAY<VALUE>;
 asObject(context) : OBJECT;
-equals(context, other : VALUE) : BOOLEAN;
 getProperty(context, name : STRING) : VALUE | UNDEFINED;
 setProperty(context, name : STRING, value : VALUE) : VALUE;
 getElement(context, index : NUMBER) : VALUE | UNDEFINED;
@@ -39,6 +38,12 @@ subtract(context, other) : NUMBER;
 multiplyBy(context, other) : NUMBER;
 divideBy(context, other) | NUMBER;
 modulo(context, other) | NUMBER;
+equals(context, other : VALUE) : BOOLEAN;
+notEquals(context, other : VALUE) : BOOLEAN;
+lessThan(context, other : VALUE) : BOOLEAN;
+greaterThan(context, other : VALUE) : BOOLEAN;
+lessThanOrEquals(context, other : VALUE) : BOOLEAN;
+greaterThanOrEquals(context, other : VALUE) : BOOLEAN;
 
 */
 
@@ -67,8 +72,7 @@ const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({
   asBoolean: runtimeErrorThrower(`Cannot cast ${getTypeName()} to boolean`),
   asArray: runtimeErrorThrower(`Cannot cast ${getTypeName()} to array`),
   asObject: runtimeErrorThrower(`Cannot cast ${getTypeName()} to object`),
-  equals: runtimeErrorThrower(`Cannot determine equality with ${getTypeName()}`),
-  getProperty: properties.length === 0 ? runtimeErrorThrower(`Cannot get property of ${getTypeName()}`) : getProperty(properties),
+  getProperty: Object.keys(properties).length === 0 ? runtimeErrorThrower(`Cannot get property of ${getTypeName()}`) : getProperty(properties),
   setProperty: runtimeErrorThrower(`Cannot set property of ${getTypeName()}`),
   getElement: runtimeErrorThrower(`Cannot get element of ${getTypeName()}`),
   callFunction: runtimeErrorThrower(`${getTypeName()} is not callable`),
@@ -77,6 +81,12 @@ const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({
   multiplyBy: runtimeErrorThrower(`Cannot multiply ${getTypeName()}`),
   divideBy: runtimeErrorThrower(`Cannot divide ${getTypeName()}`),
   modulo: runtimeErrorThrower(`Cannot modulo ${getTypeName()}`),
+  equals: runtimeErrorThrower(`Cannot determine equality with ${getTypeName()}`),
+  notEquals: runtimeErrorThrower(`Cannot determine inequality with ${getTypeName()}`),
+  lessThan: runtimeErrorThrower(`Cannot compare (<) with ${getTypeName()}`),
+  greaterThan: runtimeErrorThrower(`Cannot compare (>) with ${getTypeName()}`),
+  lessThanOrEquals: runtimeErrorThrower(`Cannot compare (<=) with ${getTypeName()}`),
+  greaterThanOrEquals: runtimeErrorThrower(`Cannot compare (>=) with ${getTypeName()}`),
 });
 
 export const createValue = (type, nativeValueFunction, properties, methods) => ({

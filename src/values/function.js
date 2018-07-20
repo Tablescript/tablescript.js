@@ -23,6 +23,15 @@ import { createBooleanValue } from './boolean';
 import { mapFunctionParameters } from '../util/parameters';
 import { replaceScope, pushStack } from '../context';
 
+export const requiredParameter = (context, name) => {
+  if (context.scope[name]) {
+    return context.scope[name];
+  }
+  throwRuntimeError(`Missing required parameter ${name}`, context);
+};
+
+export const optionalParameter = (context, name) => context.scope[name];
+
 const sharedAsNativeString = type => () => `function(${type})`;
 const asNativeBoolean = () => true;
 const nativeEquals = () => false;

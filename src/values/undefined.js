@@ -21,17 +21,23 @@ import { createStringValue } from './string';
 import { createBooleanValue } from './boolean';
 
 const asNativeValue = () => undefined;
+
 const asNativeString = () => 'undefined';
+
 const asNativeBoolean = () => false;
+
 const nativeEquals = (context, other) => isUndefined(other);
+
 const asString = context => createStringValue(asNativeString(context));
+
 const asBoolean = context => createBooleanValue(asNativeBoolean(context));
-const equals = (context, otherValue) => createBooleanValue(nativeEquals(context, otherValue));
+
+const equals = (context, other) => createBooleanValue(nativeEquals(context, other));
 
 export const createUndefined = () => createValue(
   valueTypes.UNDEFINED,
   asNativeValue,
-  [],
+  {},
   {
     asNativeString,
     asNativeBoolean,

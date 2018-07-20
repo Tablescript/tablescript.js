@@ -74,7 +74,7 @@ const equals = nativeEquals => (context, other) => createBooleanValue(nativeEqua
 export const createObjectValue = o => createValue(
   valueTypes.OBJECT,
   asNativeObject(o),
-  [],
+  {},
   {
     asNativeString: asNativeString(o),
     asNativeBoolean,

@@ -24,12 +24,17 @@ import { createNumericValue } from './numeric';
 import { mapFunctionParameters } from '../util/parameters';
 import { replaceScope, pushStack } from '../context';
 
-const asNativeString = (formalParameters, entries, closure) => () => 'table';
-const asNativeBoolean = (formalParameters, entries, closure) => () => true;
-const nativeEquals = (formalParameters, entries, closure) => () => false;
+const asNativeString = () => 'table';
+
+const asNativeBoolean = () => true;
+
+const nativeEquals = () => false;
+
 const asString = asNativeString => () => createStringValue(asNativeString());
+
 const asBoolean = asNativeBoolean => () => createBooleanValue(asNativeBoolean());
-const asArray = (formalParameters, entries, closure) => () => entries;
+
+const asArray = entries => () => entries;
 
 const tableEntryScope = (formalParameters, entries, closure, roll) => ({
   'roll': createNumericValue(roll),
@@ -66,27 +71,21 @@ const callFunction = (formalParameters, entries, closure) => async (context, par
   return await rolledEntry.evaluate(localContext);
 };
 
-const equals = nativeEquals => () => createBooleanValue(nativeEquals());
+const equals = () => createBooleanValue(false);
 
-const methods = {
-  asNativeString,
-  asNativeBoolean,
-  nativeEquals,
-  asString: R.pipe(asNativeString, asString),
-  asBoolean: R.pipe(asNativeBoolean, asBoolean),
-  asArray,
-  getElement,
-  callFunction,
-  equals: R.pipe(nativeEquals, equals),
-};
-
-export const tableMethods = (formalParameters, entries, closure) => Object.keys(methods).reduce((acc, m) => ({ ...acc, [m]: methods[m](formalParameters, entries, closure) }), {});
-
-export const createCustomTableValue = (formalParameters, entries, closure) => createValue(
+export const createTableValue = (formalParameters, entries, closure) => createValue(
   valueTypes.TABLE,
   asNativeString(),
-  [],
-  tableMethods(formalParameters, entries, closure),
+  {},
+  {
+    asNativeString,
+    asNativeBoolean,
+    nativeEquals,
+    asString: R.pipe(asNativeString, asString)(),
+    asBoolean: R.pipe(asNativeBoolean, asBoolean)(),
+    asArray: asArray(entries),
+    getElement: getElement(formalParameters, entries, closure),
+    callFunction: callFunction(formalParameters, entries, closure),
+    equals,
+  },
 );
-
-export const createTableValue = (formalParameters, entries, closure) => createCustomTableValue(formalParameters, entries, closure);
