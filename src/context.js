@@ -61,7 +61,7 @@ export const initializeScope = (args, options) => ({
     ...initializeBuiltins(options),
   }),
   math: createObjectValue({
-    ...initializeMath(options),
+    ...initializeMath(),
   }),
 });
 

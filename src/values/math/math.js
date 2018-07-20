@@ -15,32 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createNativeFunctionValue } from '../function';
+import { createNativeFunctionValue, requiredParameter } from '../function';
 import { createNumericValue } from '../numeric';
 
-const parametersAsNativeNumbers = parameters => parameters.asArray().map(p => p.asNativeNumber());
+const parametersAsNativeNumbers = context => requiredParameter(context, 'arguments').asArray().map(p => p.asNativeNumber(context));
+
 const promisifyNumeric = n => Promise.resolve(createNumericValue(n));
 
-const mathMax = _ => (_, scope) => promisifyNumeric(Math.max(...parametersAsNativeNumbers(scope['arguments'])));
-const mathMin = _ => (_, scope) => promisifyNumeric(Math.min(...parametersAsNativeNumbers(scope['arguments'])));
-const mathRound = _ => (_, scope) => promisifyNumeric(Math.round(scope['n'].asNativeNumber()));
-const mathFloor = _ => (_, scope) => promisifyNumeric(Math.floor(scope['n'].asNativeNumber()));
-const mathCeil = _ => (_, scope) => promisifyNumeric(Math.ceil(scope['n'].asNativeNumber()));
-const mathPow = _ => (_, scope) => promisifyNumeric(Math.pow(scope['x'].asNativeNumber(), scope['y'].asNativeNumber()));
+const mathMax = createNativeFunctionValue([], context => promisifyNumeric(Math.max(...parametersAsNativeNumbers(context))));
+const mathMin = createNativeFunctionValue([], context => promisifyNumeric(Math.min(...parametersAsNativeNumbers(context))));
+const mathRound = createNativeFunctionValue(['n'], context => promisifyNumeric(Math.round(requiredParameter(context, 'n').asNativeNumber(context))));
+const mathFloor = createNativeFunctionValue(['n'], context =>promisifyNumeric(Math.floor(requiredParameter(context, 'n').asNativeNumber(context))));
+const mathCeil = createNativeFunctionValue(['n'], context => promisifyNumeric(Math.ceil(requiredParameter(context, 'n').asNativeNumber(context))));
+const mathPow = createNativeFunctionValue(['x', 'y'], context => promisifyNumeric(Math.pow(requiredParameter(context, 'x').asNativeNumber(context), requiredParameter(context, 'y').asNativeNumber(context))));
 
-const math = {
-  max: [mathMax, []],
-  min: [mathMin, []],
-  round: [mathRound, ['n']],
-  floor: [mathFloor, ['n']],
-  ceil: [mathCeil, ['n']],
-  pow: [mathPow, ['x', 'y']],
-};
-
-export const initializeMath = options => Object.keys(math).reduce(
-  (acc, b) => ({
-    ...acc,
-    [b]: createNativeFunctionValue(math[b][1], math[b][0](options))
-  }),
-  {},
-);
+export const initializeMath = () => ({
+  max: mathMax,
+  min: mathMin,
+  round: mathRound,
+  floor: mathFloor,
+  ceil: mathCeil,
+  pow: mathPow,
+});
