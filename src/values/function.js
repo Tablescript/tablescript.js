@@ -70,6 +70,7 @@ export const createFunctionValue = (formalParameters, body, closure) => {
   const asString = sharedAsString('tablescript');
   const callFunction = async (context, parameters) => {
     const localContext = pushStack(replaceScope(context, {
+      ...context.scope,
       ...closure,
       ...mapFunctionParameters(formalParameters, parameters),
     }));

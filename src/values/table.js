@@ -46,6 +46,7 @@ const getElement = (formalParameters, entries, closure) => async (context, index
   const selectedEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
   if (selectedEntry) {
     const localContext = pushStack(replaceScope(context, {
+      ...context.scope,
       ...closure,
       ...tableEntryScope(formalParameters, entries, closure, roll),
     }));
@@ -64,6 +65,7 @@ const callFunction = (formalParameters, entries, closure) => async (context, par
   const roll = getTableRoll(entries);
   const rolledEntry = getRolledEntry(entries, roll);
   const localContext = pushStack(replaceScope(context, {
+    ...context.scope,
     ...closure,
     ...mapFunctionParameters(formalParameters, parameters),
     ...tableEntryScope(formalParameters, entries, closure, roll),  
