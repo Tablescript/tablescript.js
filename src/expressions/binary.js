@@ -20,7 +20,7 @@ import { expressionTypes } from './types';
 import { allOperators } from './binary-operators';
 import { updateStack } from '../context';
 
-const evaluate = (location, operators, leftExpression, operator, rightExpression) => context => {
+const evaluate = (location, operators, leftExpression, operator, rightExpression) => async context => {
   const localContext = updateStack(context, location);
   return operators[operator](localContext, leftExpression, rightExpression);
 };

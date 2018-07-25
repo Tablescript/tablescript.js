@@ -28,6 +28,12 @@ import { loadHttpFile } from '../http-loader';
 import { TablescriptError } from '../error';
 import pkginfo from 'pkginfo';
 
+import { initializeBuiltins } from '../values/builtins/builtins';
+import { initializeMath } from '../values/math/math';
+import { createStringValue } from '../values/string';
+import { createArrayValue } from '../values/array';
+import { createObjectValue } from '../values/object';
+
 pkginfo(module, 'version');
 
 options
@@ -53,7 +59,22 @@ const interpreterOptions = {
 
 const filename = options.args[0];
 const args = options.args.slice(1);
-const context = initializeContext(args, interpreterOptions);
+
+const expandArguments = args => ({
+  arguments: createArrayValue(args.map(a => (typeof a === 'string') ? createStringValue(a) : a))
+});
+
+const initializeScope = (args, options) => ({
+  system: createObjectValue({
+    ...expandArguments(args),
+    ...initializeBuiltins(options),
+  }),
+  math: createObjectValue({
+    ...initializeMath(),
+  }),
+});
+
+const context = initializeContext(initializeScope(args, interpreterOptions), interpreterOptions);
 
 if (!filename) {
   repl(context);

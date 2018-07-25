@@ -20,9 +20,9 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { updateStack } from '../context';
 
-const evaluate = (location, formalParameters, body) => context => {
+const evaluate = (location, formalParameters, body) => async context => {
   const localContext = updateStack(context, location);
-  return Promise.resolve(createFunctionValue(formalParameters, body, { ...localContext.scope }));
+  return createFunctionValue(formalParameters, body, { ...localContext.scope });
 };
 
 export const createFunctionExpression = (location, formalParameters, body) => createExpression(expressionTypes.FUNCTION, evaluate(location, formalParameters, body));

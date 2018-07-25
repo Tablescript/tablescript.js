@@ -18,35 +18,39 @@
 import { throwRuntimeError } from '../../error';
 import { createNumericValue } from '../numeric';
 import { createArrayValue } from '../array';
+import { requiredParameter } from '../function';
 
-export const rangeBuiltIn = (context, parameters) => {
-  let startValue = 0;
-  let endValue;
-  let stepValue = 1;
-  if (parameters.length === 1) {
-    endValue = parameters[0].asNativeNumber(context);
-  } else if (parameters.length === 2) {
-    startValue = parameters[0].asNativeNumber(context);
-    endValue = parameters[1].asNativeNumber(context);
-    if (endValue < startValue) {
-      stepValue = -1;
-    }
-  } else if (parameters.length === 3) {
-    startValue = parameters[0].asNativeNumber(context);
-    endValue = parameters[1].asNativeNumber(context);
-    stepValue = parameters[2].asNativeNumber(context);
-    if (endValue < startValue && stepValue >= 0) {
-      throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be negative if end is less than start', context);
-    }
-    if (endValue > startValue && stepValue <= 0) {
-      throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be positive if start is less than end', context);
+const createRangeArray = (start, end, step) => {
+  const result = [];
+  if (step > 0) {
+    for (let i = start; i < end; i += step) {
+      result.push(createNumericValue(i));
     }
   } else {
-    throwRuntimeError('range(end|[start, end]|[start, end, step]) takes 1, 2, or 3 numeric parameters', context);
+    for (let i = start; i > end; i += step) {
+      result.push(createNumericValue(i));
+    }
   }
-  const result = [];
-  for (let i = startValue; i < endValue; i += stepValue) {
-    result.push(createNumericValue(i));
+
+  return createArrayValue(result);
+};
+
+export const rangeBuiltIn = async context => {
+  const args = requiredParameter(context, 'arguments').asArray(context);
+  const startValue = requiredParameter(context, 'start').asNativeNumber(context);
+  if (args.length === 1) {
+    return createRangeArray(0, startValue, startValue > 0 ? 1 : -1);
   }
-  return Promise.resolve(createArrayValue(result));
+  const endValue = requiredParameter(context, 'end').asNativeNumber(context);
+  if (args.length === 2) {
+    return createRangeArray(startValue, endValue, startValue <= endValue ? 1 : -1);
+  }
+  const stepValue = requiredParameter(context, 'step').asNativeNumber(context);
+  if (endValue < startValue && stepValue >= 0) {
+    throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be negative if end is less than start', context);
+  }
+  if (endValue > startValue && stepValue <= 0) {
+    throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be positive if start is less than end', context);
+  }
+  return createRangeArray(startValue, endValue, stepValue);
 };

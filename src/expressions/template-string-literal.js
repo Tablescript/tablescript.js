@@ -19,9 +19,6 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { parseTemplateString } from '../parser/parser';
 
-const evaluate = s => async context => {
-  const expression = parseTemplateString(s);
-  return await expression.evaluate(context);
-};
+const evaluate = s => async context => parseTemplateString(s).evaluate(context);
 
 export const createTemplateStringLiteral = s => createExpression(expressionTypes.TEMPLATE_STRING, evaluate(s));

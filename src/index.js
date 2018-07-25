@@ -21,8 +21,8 @@ import { throwRuntimeError } from './error';
 
 export const runScript = async (context, script, scriptPath) => {
   const expressions = parse(script, scriptPath);
-  return await interpret(expressions, context);
-}
+  return interpret(expressions, context);
+};
 
 const loadScript = async (context, scriptPath) => {
   for (const loader of context.options.input.loaders) {
@@ -36,5 +36,5 @@ const loadScript = async (context, scriptPath) => {
 
 export const loadAndRunScript = async (context, scriptPath, args) => {
   const script = await loadScript(context, scriptPath);
-  return await runScript(context, script.body, script.path, args);
+  return runScript(context, script.body, script.path, args);
 };

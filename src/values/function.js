@@ -46,7 +46,7 @@ export const createNativeFunctionValue = (formalParameters, f) => {
   const asString = sharedAsString('native');
   const callFunction = async (context, parameters) => {
     const localContext = replaceScope(context, mapFunctionParameters(formalParameters, parameters));
-    return await f(localContext);
+    return f(localContext);
   };
 
   return createValue(
@@ -74,7 +74,7 @@ export const createFunctionValue = (formalParameters, body, closure) => {
       ...closure,
       ...mapFunctionParameters(formalParameters, parameters),
     }));
-    return await body.evaluate(localContext);
+    return body.evaluate(localContext);
   };
 
   return createValue(

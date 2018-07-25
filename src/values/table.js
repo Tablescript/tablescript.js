@@ -50,7 +50,7 @@ const getElement = (formalParameters, entries, closure) => async (context, index
       ...closure,
       ...tableEntryScope(formalParameters, entries, closure, roll),
     }));
-    return await selectedEntry.evaluate(localContext);
+    return selectedEntry.evaluate(localContext);
   }
   return createUndefined();
 };
@@ -70,7 +70,7 @@ const callFunction = (formalParameters, entries, closure) => async (context, par
     ...mapFunctionParameters(formalParameters, parameters),
     ...tableEntryScope(formalParameters, entries, closure, roll),  
   }));
-  return await rolledEntry.evaluate(localContext);
+  return rolledEntry.evaluate(localContext);
 };
 
 const equals = () => createBooleanValue(false);

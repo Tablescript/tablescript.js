@@ -17,18 +17,18 @@
 
 import { throwRuntimeError } from '../../error';
 import { createUndefined } from '../undefined';
+import { requiredParameter, optionalParameter } from '../function';
 
-export const assertBuiltIn = (context, parameters) => {
-  if (parameters.length < 1) {
-    throwRuntimeError(`assert(condition, [message]) takes 1 or 2 parameters`, context);
-  }
-  if (!parameters[0].asNativeBoolean(context)) {
-    if (parameters.length === 2) {
-      const message = parameters[1].asNativeString(context);
-      throwRuntimeError(`assertion failed: ${message}`, context);
+export const assertBuiltIn = async context => {
+  const condition = requiredParameter(context, 'condition');
+  const message = optionalParameter(context, 'message');
+  if (!condition.asNativeBoolean(context)) {
+    if (message) {
+      const messageText = message.asNativeString(context);
+      throwRuntimeError(`assertion failed: ${messageText}`, context);
     } else {
       throwRuntimeError('assertion failed', context);
     }
   }
-  return Promise.resolve(createUndefined());
+  return createUndefined();
 };

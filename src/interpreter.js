@@ -15,8 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import { createUndefined } from './values/undefined';
+
 export const interpret = async (expressions, context) => {
-  let value;
+  let value = createUndefined();
   for (const expression of expressions) {
     value = await expression.evaluate(context);
   }

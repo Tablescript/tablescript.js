@@ -1,12 +1,37 @@
+f1 = fn() {
+  f2()
+}
+
+f2 = fn() {
+  9
+}
+
+system.assert(f1() == 9)
+
 baz = fn() {
+  bar = fn(foo) {
+    fn() {
+      foo()
+    }
+  }
   foo = fn() {
     'foo'
   }
-  bar = fn() {
-    foo()
+  nan = fn() {
+    'wabble'
   }
-
-  bar()
+  bar(nan)()
 }
 
-system.print(baz())
+system.assert(baz() == 'wabble')
+
+if (true) {
+  x = 9
+}
+system.assert(x == undefined)
+
+x = 'abc'
+if (true) {
+  x = 9
+}
+system.assert(x == 'abc')

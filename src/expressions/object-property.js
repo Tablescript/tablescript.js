@@ -30,7 +30,7 @@ const evaluate = (location, objectExpression, propertyNameExpression) => async c
   const objectValue = await objectExpression.evaluate(localContext);
   const propertyNameValue = await propertyNameExpression.evaluate(localContext);
   if (isNumber(propertyNameValue)) {
-    return await objectValue.getElement(localContext, propertyNameValue);
+    return objectValue.getElement(localContext, propertyNameValue);
   }
   return objectValue.getProperty(localContext, propertyNameValue);
 };

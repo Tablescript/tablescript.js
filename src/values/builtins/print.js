@@ -16,9 +16,13 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createStringValue } from '../string';
+import { requiredParameter } from '../function';
 
-export const printBuiltIn = async (context, parameters) => {
-  const s = parameters.map(p => p.asNativeString(context)).join();
+export const printBuiltIn = async context => {
+  const s = requiredParameter(context, 'arguments')
+    .asArray()
+    .map(p => p.asNativeString(context))
+    .join();
   await context.options.output.print(s);
   return createStringValue(s);
 };

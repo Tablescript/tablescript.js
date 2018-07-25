@@ -15,16 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../../error';
 import { createArrayValue } from '../array';
 import { createStringValue } from '../string';
+import { requiredParameter } from '../function';
 
-export const keysBuiltIn = (context, parameters) => {
-  if (parameters.length != 1) {
-    throwRuntimeError(`keys(object) takes a single object parameter`, context);
-  }
-  const object = parameters[0].asObject();
+export const keysBuiltIn = async context => {
+  const object = requiredParameter(context, 'o').asObject();
   const keys = Object.keys(object)
   keys.sort();
-  return Promise.resolve(createArrayValue(keys.map(key => createStringValue(key))));
+  return createArrayValue(keys.map(key => createStringValue(key)));
 };

@@ -21,38 +21,13 @@ import { keysBuiltIn } from './keys';
 import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
 import { requireBuiltIn } from './require';
-import { valueTypes } from '../types';
-import { createValue } from '../default';
+import { createNativeFunctionValue } from '../function';
 
-const createBuiltInFunctionValue = (name, callFunction) => {
-  const asNativeString = () => 'function(builtin)';
-  return createValue(
-    valueTypes.FUNCTION,
-    asNativeString,
-    [],
-    {
-      asNativeString,
-      asNativeBoolean: () => true,
-      asString: () => createStringValue(asNativeString()),
-      asBoolean: () => createBooleanValue(asNativeBoolean()),
-      callFunction,
-    }
-  );
-};
-
-const builtIns = {
-  'assert': assertBuiltIn,
-  choose: chooseBuiltIn,
-  keys: keysBuiltIn,
-  print: printBuiltIn,
-  range: rangeBuiltIn,
-  'require': requireBuiltIn,
-};
-
-export const initializeBuiltins = () => Object.keys(builtIns).reduce(
-  (acc, b) => ({
-    ...acc,
-    [b]: createBuiltInFunctionValue(b, builtIns[b])
-  }),
-  {},
-);
+export const initializeBuiltins = () => ({
+  'assert': createNativeFunctionValue(['condition', 'message'], assertBuiltIn),
+  choose: createNativeFunctionValue(['items'], chooseBuiltIn),
+  keys: createNativeFunctionValue(['o'], keysBuiltIn),
+  print: createNativeFunctionValue([], printBuiltIn),
+  range: createNativeFunctionValue(['start', 'end', 'step'], rangeBuiltIn),
+  'require': createNativeFunctionValue(['filename'], requireBuiltIn),
+});

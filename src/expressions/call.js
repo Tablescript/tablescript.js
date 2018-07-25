@@ -21,7 +21,7 @@ import { isArraySpread } from '../values/types';
 import { updateStack } from '../context';
 
 const parameterEvaluator = context => (p, parameter) => {
-  return p.then(acc => new Promise(resolve => {
+  return p.then(acc => new Promise((resolve, reject) => {
     parameter.evaluate(context).then(value => {
       if (isArraySpread(value)) {
         resolve([
@@ -34,16 +34,17 @@ const parameterEvaluator = context => (p, parameter) => {
           value,
         ]);
       }
-    });
+    }).catch(reject);
   }));
 };
 
-const evaluateParameters = (context, parameters) => parameters.reduce(parameterEvaluator(context), Promise.resolve([]));
+const evaluateParameters = async (context, parameters) => parameters.reduce(parameterEvaluator(context), Promise.resolve([]));
 
 const evaluate = (location, callee, parameters) => async context => {
   const localContext = updateStack(context, location);
   const calleeValue = await callee.evaluate(localContext);
-  return calleeValue.callFunction(localContext, await evaluateParameters(localContext, parameters));
+  const evaluatedParameters = await evaluateParameters(localContext, parameters);
+  return calleeValue.callFunction(localContext, evaluatedParameters);
 };
 
 export const createCallExpression = (location, callee, parameters) => createExpression(expressionTypes.CALL, evaluate(location, callee, parameters));

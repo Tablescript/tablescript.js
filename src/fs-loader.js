@@ -50,6 +50,4 @@ const tryAllPaths = async (paths, filename) => {
   return undefined;
 };
 
-export const loadFsFile = async (context, filename) => {
-  return await tryAllPaths(allPaths(context, filename), filename);
-};
+export const loadFsFile = async (context, filename) => tryAllPaths(allPaths(context, filename), filename);
