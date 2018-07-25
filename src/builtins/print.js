@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createStringValue } from '../string';
-import { requiredParameter } from '../function';
+import { createStringValue } from '../values/string';
+import { requiredParameter } from '../values/function';
 
 export const printBuiltIn = async context => {
   const s = requiredParameter(context, 'arguments')

@@ -28,8 +28,8 @@ import { loadHttpFile } from '../http-loader';
 import { TablescriptError } from '../error';
 import pkginfo from 'pkginfo';
 
-import { initializeBuiltins } from '../values/builtins/builtins';
-import { initializeMath } from '../values/math/math';
+import { initializeBuiltins } from '../builtins/builtins';
+import { initializeMath } from '../builtins/math';
 import { createStringValue } from '../values/string';
 import { createArrayValue } from '../values/array';
 import { createObjectValue } from '../values/object';

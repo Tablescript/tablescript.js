@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../../error';
-import { createUndefined } from '../undefined';
-import { requiredParameter, optionalParameter } from '../function';
+import { throwRuntimeError } from '../error';
+import { createUndefined } from '../values/undefined';
+import { requiredParameter, optionalParameter } from '../values/function';
 
 export const assertBuiltIn = async context => {
   const condition = requiredParameter(context, 'condition');

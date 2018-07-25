@@ -15,13 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createArrayValue } from '../array';
-import { createStringValue } from '../string';
-import { requiredParameter } from '../function';
+import { randomNumber } from '../util/random';
+import { requiredParameter } from '../values/function';
 
-export const keysBuiltIn = async context => {
-  const object = requiredParameter(context, 'o').asObject();
-  const keys = Object.keys(object)
-  keys.sort();
-  return createArrayValue(keys.map(key => createStringValue(key)));
+export const chooseBuiltIn = async context => {
+  const items = requiredParameter(context, 'items').asArray();
+  const roll = randomNumber(items.length) - 1;
+  return items[roll];
 };

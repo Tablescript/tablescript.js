@@ -15,10 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../../error';
-import { createNumericValue } from '../numeric';
-import { createArrayValue } from '../array';
-import { requiredParameter } from '../function';
+import { throwRuntimeError } from '../error';
+import { createNumericValue } from '../values/numeric';
+import { createArrayValue } from '../values/array';
+import { requiredParameter } from '../values/function';
 
 const createRangeArray = (start, end, step) => {
   const result = [];

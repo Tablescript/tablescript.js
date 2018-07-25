@@ -21,7 +21,7 @@ import { keysBuiltIn } from './keys';
 import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
 import { requireBuiltIn } from './require';
-import { createNativeFunctionValue } from '../function';
+import { createNativeFunctionValue } from '../values/function';
 
 export const initializeBuiltins = () => ({
   'assert': createNativeFunctionValue(['condition', 'message'], assertBuiltIn),
