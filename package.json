@@ -9,9 +9,9 @@
   "main": "./dist/index.js",
   "scripts": {
     "build": "node_modules/.bin/babel src --ignore __tests__ --out-dir dist",
-    "build:parser": "node_modules/.bin/pegjs --cache --output src/parser/peg-parser.js src/grammar/tablescript.pegjs",
-    "build:tracing-parser": "node_modules/.bin/pegjs --trace --cache --output src/parser/peg-parser.js src/grammar/tablescript.pegjs",
-    "build:template-string-parser": "node_modules/.bin/pegjs --cache --output src/parser/template-string-parser.js src/grammar/template-string.pegjs",
+    "build:parser": "node_modules/.bin/pegjs --cache --output src/parser/tablescript-grammar-parser.js src/grammar/tablescript.pegjs",
+    "build:tracing-parser": "node_modules/.bin/pegjs --trace --cache --output src/parser/tablescript-grammar-parser.js src/grammar/tablescript.pegjs",
+    "build:template-string-parser": "node_modules/.bin/pegjs --cache --output src/parser/template-string-grammar-parser.js src/grammar/template-string.pegjs",
     "dependency-graph": "madge --image tablescript-graph.svg src/bin/tablescript.js",
     "lint": "node_modules/.bin/eslint src",
     "test": "mocha --require babel-core/register --require babel-polyfill src/**/*.test.js",

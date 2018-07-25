@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import nodeRepl from 'repl';
-import { parse } from './parser/parser';
+import { parse } from './parser/tablescript-parser';
 import { interpret } from './interpreter';
 import { TablescriptError } from './error';
 

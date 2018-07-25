@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { parse } from './parser/parser';
+import { parse } from './parser/tablescript-parser';
 import { interpret } from './interpreter';
 import { throwRuntimeError } from './error';
 
