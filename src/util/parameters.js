@@ -16,6 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import R from 'ramda';
+import { throwRuntimeError } from '../error';
 
 const mapFormalParameters = (formalParameters, parameters) => parameters.reduce((acc, p, i) => ({ ...acc, [formalParameters[i]]: p }), {});
 
@@ -23,3 +24,14 @@ export const mapFunctionParameters = (context, formalParameters, parameters) => 
   ...mapFormalParameters(formalParameters, R.take(formalParameters.length, parameters)),
   'arguments': context.factory.createArrayValue(parameters),
 });
+
+export const requiredParameter = (context, name) => {
+  if (context.scope[name]) {
+    return context.scope[name];
+  }
+  throwRuntimeError(`Missing required parameter ${name}`, context);
+};
+
+export const optionalParameter = (context, name) => context.scope[name];
+
+export const optionalParameterOr = (context, name, value) => context.scope[name] ? context.scope[name] : value;

@@ -85,7 +85,12 @@ const valueFactory = {
   createUndefined,
 };
 
-const context = initializeContext(initializeScope(args, interpreterOptions), initializeScope, interpreterOptions, valueFactory);
+const context = initializeContext(
+  initializeScope,
+  args,
+  interpreterOptions,
+  valueFactory,
+);
 
 if (!filename) {
   repl(context);

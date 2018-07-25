@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError } from '../error';
-import { requiredParameter } from '../context';
+import { requiredParameter } from '../util/parameters';
 
 const createRangeArray = (context, start, end, step) => {
   const result = [];

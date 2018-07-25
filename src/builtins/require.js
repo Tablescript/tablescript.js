@@ -16,7 +16,8 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { loadAndRunScript } from '../index';
-import { replaceScope, requiredParameter } from '../context';
+import { replaceScope } from '../context';
+import { requiredParameter } from '../util/parameters';
 
 export const requireBuiltIn = async context => {
   const filename = requiredParameter(context, 'filename').asNativeString(context);

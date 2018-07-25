@@ -17,7 +17,7 @@
 
 import { norm } from './norm';
 import { createNativeFunctionValue } from '../values/function';
-import { requiredParameter, optionalParameterOr } from '../context';
+import { requiredParameter, optionalParameterOr } from '../util/parameters';
 
 const parametersAsNativeNumbers = context => requiredParameter(context, 'arguments').asArray().map(p => p.asNativeNumber(context));
 

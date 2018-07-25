@@ -20,7 +20,7 @@ import { createValue } from './default';
 import { valueTypes, isArray, isString } from './types';
 import { throwRuntimeError } from '../error';
 import { createNativeFunctionValue } from './function';
-import { requiredParameter, optionalParameter } from '../context';
+import { requiredParameter, optionalParameter } from '../util/parameters';
 import { quickSort } from '../util/sort';
 
 const entriesAsNativeValues = (context, entries) => entries.map(e => e.asNativeValue(context));

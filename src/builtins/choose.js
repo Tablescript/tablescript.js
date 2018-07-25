@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { randomNumber } from '../util/random';
-import { requiredParameter } from '../context';
+import { requiredParameter } from '../util/parameters';
 
 export const chooseBuiltIn = async context => {
   const items = requiredParameter(context, 'items').asArray();

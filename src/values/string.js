@@ -19,7 +19,7 @@ import R from 'ramda';
 import { createValue } from './default';
 import { valueTypes, isString, isNumber } from './types';
 import { createNativeFunctionValue } from './function';
-import { requiredParameter, optionalParameter } from '../context';
+import { requiredParameter, optionalParameter } from '../util/parameters';
 
 const asNativeString = value => () => value;
 

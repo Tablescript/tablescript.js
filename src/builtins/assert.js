@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError } from '../error';
-import { requiredParameter, optionalParameter } from '../context';
+import { requiredParameter, optionalParameter } from '../util/parameters';
 
 export const assertBuiltIn = async context => {
   const condition = requiredParameter(context, 'condition');

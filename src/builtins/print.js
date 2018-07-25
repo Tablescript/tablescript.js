@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { requiredParameter } from '../context';
+import { requiredParameter } from '../util/parameters';
 
 export const printBuiltIn = async context => {
   const s = requiredParameter(context, 'arguments')
