@@ -166,6 +166,18 @@ const reverse = entries => createNativeFunctionValue([], async context => {
   return createArrayValue([...entries].reverse());
 });
 
+const slice = entries => createNativeFunctionValue(['begin', 'end'], async context => {
+  const begin = optionalParameter(context, 'begin');
+  if (begin) {
+    const end = optionalParameter(context, 'end');
+    if (end) {
+      return createArrayValue(entries.slice(begin.asNativeNumber(context), end.asNativeNumber(context)));
+    }
+    return createArrayValue(entries.slice(begin.asNativeNumber(context)));
+  }
+  return createArrayValue(entries.slice());
+});
+
 const length = entries => createNativeFunctionValue([], async context => {
   return context.factory.createNumericValue(entries.length);
 });
@@ -184,6 +196,7 @@ export const createArrayValue = entries => createValue(
     sort: sort(entries),
     join: join(entries),
     reverse: reverse(entries),
+    slice: slice(entries),
     length: length(entries),
   },
   {
