@@ -19,10 +19,9 @@ import { createBooleanValue } from '../values/boolean';
 
 const or = async (context, leftValue, rightExpression) => {
   if (leftValue.asNativeBoolean(context)) {
-    return createBooleanValue(true);
+    return leftValue;
   }
-  const rightValue = await rightExpression.evaluate(context);
-  return createBooleanValue(rightValue.asNativeBoolean(context));
+  return rightExpression.evaluate(context);
 };
 
 const and = async (context, leftValue, rightExpression) => {

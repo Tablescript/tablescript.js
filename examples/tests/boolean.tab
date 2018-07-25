@@ -13,3 +13,6 @@ system.assert(true and not false or false)
 
 system.assert('' + true == 'true')
 system.assert('' + false == 'false')
+
+system.assert(not_defined or 9 == 9)
+system.assert('yup' or 9 == 'yup')
