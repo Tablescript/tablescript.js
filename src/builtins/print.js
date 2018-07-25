@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createStringValue } from '../values/string';
 import { requiredParameter } from '../context';
 
 export const printBuiltIn = async context => {
@@ -24,5 +23,5 @@ export const printBuiltIn = async context => {
     .map(p => p.asNativeString(context))
     .join();
   await context.options.output.print(s);
-  return createStringValue(s);
+  return context.factory.createStringValue(s);
 };

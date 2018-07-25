@@ -16,7 +16,6 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError } from '../error';
-import { createUndefined } from '../values/undefined';
 import { requiredParameter, optionalParameter } from '../context';
 
 export const assertBuiltIn = async context => {
@@ -30,5 +29,5 @@ export const assertBuiltIn = async context => {
       throwRuntimeError('assertion failed', context);
     }
   }
-  return createUndefined();
+  return context.factory.createUndefined();
 };

@@ -15,13 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createArrayValue } from '../values/array';
-import { createStringValue } from '../values/string';
 import { requiredParameter } from '../context';
 
 export const keysBuiltIn = async context => {
   const object = requiredParameter(context, 'o').asObject();
   const keys = Object.keys(object)
   keys.sort();
-  return createArrayValue(keys.map(key => createStringValue(key)));
+  return context.factory.createArrayValue(keys.map(key => context.factory.createStringValue(key)));
 };

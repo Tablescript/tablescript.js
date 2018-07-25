@@ -16,34 +16,32 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError } from '../error';
-import { createNumericValue } from '../values/numeric';
-import { createArrayValue } from '../values/array';
 import { requiredParameter } from '../context';
 
-const createRangeArray = (start, end, step) => {
+const createRangeArray = (context, start, end, step) => {
   const result = [];
   if (step > 0) {
     for (let i = start; i < end; i += step) {
-      result.push(createNumericValue(i));
+      result.push(context.factory.createNumericValue(i));
     }
   } else {
     for (let i = start; i > end; i += step) {
-      result.push(createNumericValue(i));
+      result.push(context.factory.createNumericValue(i));
     }
   }
 
-  return createArrayValue(result);
+  return context.factory.createArrayValue(result);
 };
 
 export const rangeBuiltIn = async context => {
   const args = requiredParameter(context, 'arguments').asArray(context);
   const startValue = requiredParameter(context, 'start').asNativeNumber(context);
   if (args.length === 1) {
-    return createRangeArray(0, startValue, startValue > 0 ? 1 : -1);
+    return createRangeArray(context, 0, startValue, startValue > 0 ? 1 : -1);
   }
   const endValue = requiredParameter(context, 'end').asNativeNumber(context);
   if (args.length === 2) {
-    return createRangeArray(startValue, endValue, startValue <= endValue ? 1 : -1);
+    return createRangeArray(context, startValue, endValue, startValue <= endValue ? 1 : -1);
   }
   const stepValue = requiredParameter(context, 'step').asNativeNumber(context);
   if (endValue < startValue && stepValue >= 0) {
@@ -52,5 +50,5 @@ export const rangeBuiltIn = async context => {
   if (endValue > startValue && stepValue <= 0) {
     throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be positive if start is less than end', context);
   }
-  return createRangeArray(startValue, endValue, stepValue);
+  return createRangeArray(context, startValue, endValue, stepValue);
 };
