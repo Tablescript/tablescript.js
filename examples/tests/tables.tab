@@ -9,7 +9,7 @@ keys = system.keys
 #
 # Without a range specifier, the "next" single roll will be used. Each
 # entry has an equal chance of being rolled.
-t1 = table {
+t1 = choice {
   'first'
   'second'
   'third'
@@ -67,15 +67,6 @@ range(10)
 ############################################################################
 
 ############################################################################
-# You cannot mixed entry types.
-# t1 = table {
-#   1-2: 'first'
-#   'second'
-#   4-6: 'third'
-# }
-############################################################################
-
-############################################################################
 # Accessing the rolled value.
 #
 # The 'roll' value is provided when evaluating the table entry.
@@ -102,7 +93,7 @@ range(10)
     assert(expected_value.includes(t1()))
   })
 
-t1 = table {
+t1 = choice {
   "first #{roll}"
   "second #{roll}"
   "third #{roll}"
@@ -120,7 +111,7 @@ range(10)
 #
 # You can spread an array into a table of simple entries.
 a = ['first', 'second', 'third']
-t1 = table {
+t1 = choice {
   ...a
   'fourth'
 }
@@ -143,7 +134,7 @@ t1 = table {
   4-6: 'third'
 }
 
-t2 = table {
+t2 = choice {
   ...t1
   'fourth'
 }
@@ -158,11 +149,11 @@ assert(t2[6] == 'third')
 
 ############################################################################
 # Table entries are evaluated when the table is called.
-t1 = table {
+t1 = choice {
   "first #{roll}"
   "second #{roll}"
 }
-t2 = table {
+t2 = choice {
   "third #{roll}"
   ...t1
 }
@@ -179,7 +170,7 @@ range(10)
 #
 # Generate table entries from any array.
 colours = 'red orange yellow green blue violet'
-t1 = table {
+t1 = choice {
   ...(colours.split(' '))
 }
 
@@ -191,13 +182,13 @@ range(10)
 
 ############################################################################
 # Calling one table from another.
-t1 = table {
+t1 = choice {
   'first'
   'second'
   'third'
 }
 
-t2 = table {
+t2 = choice {
   "#{t1()} from first"
   "#{t1()} from second"
 }
@@ -220,7 +211,7 @@ range(10)
 # Table parameters
 #
 # You can define parameters to be passed into tables when called.
-t1 = table(p1, p2) {
+t1 = choice(p1, p2) {
   "first #{p1}"
   "second #{p2}"
 }
@@ -235,7 +226,7 @@ range(10)
   })
 ############################################################################
 # Hackity Hack
-t1 = table(entries) {
+t1 = choice(entries) {
   choose(entries)
 }
 
@@ -251,7 +242,7 @@ range(10)
 # Non-string table parameters.
 #
 # Table parameters can be any type.
-t1 = table(object, choices) {
+t1 = choice(object, choices) {
   object[choose(keys(object))]
   choose(choices)
 }

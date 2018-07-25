@@ -2,7 +2,7 @@ names = system.require('./names.tab')
 things = system.require('./things.tab')
 creatures = system.require('./creatures.tab')
 
-all_things = table {
+all_things = choice {
   ...things.body_part
   ...things.dungeon_thing
   ...things.weapon
@@ -51,7 +51,7 @@ create_person = fn(name, lair, pronouns) {
   }
 }
 
-lair = table {
+lair = choice {
   'lair'
   'cave'
   'tower'
@@ -60,7 +60,7 @@ lair = table {
   'camp'
 }
 
-person_description = table {
+person_description = choice {
   'aromatic'
   'old'
   'unscrupulous'
@@ -84,7 +84,7 @@ person_description = table {
   'young'
 }
 
-person = table {
+person = choice {
   create_person('wizard', lair(), ['his', 'her'])
   create_person('sorcerer', lair(), ['his', 'her'])
   create_person('goblin king', lair(), ['his'])
@@ -139,7 +139,7 @@ roles = [
   ['the', ...description, n].join(' ')
 })
 
-local = table {
+local = choice {
   {
     name: names.first_name()
   }
@@ -151,7 +151,7 @@ local = table {
 }
 
 create_thing = fn(thing, possible_adjectives) {
-  description = [(table {
+  description = [(choice {
     ...possible_adjectives
     ''
   })(), thing].filter(fn(w) { w != '' }).join(' ')
@@ -162,7 +162,7 @@ create_thing = fn(thing, possible_adjectives) {
   }
 }
 
-desirable_thing = table {
+desirable_thing = choice {
   create_thing('amulet', ['magic', 'jeweled', 'golden', 'silver', 'platinum'])
   create_thing('treasure', ['long lost'])
   create_thing('chalice', ['magic', 'jeweled', 'golden', 'silver', 'platinum'])
@@ -171,14 +171,14 @@ desirable_thing = table {
   create_thing('spellbook', ['long lost'])
 }
 
-found_thing = table {
+found_thing = choice {
   ...desirable_thing
   create_thing('cart', ['overturned'])
   create_thing('wagon', ['overturned'])
 }
 
 create_location = fn(name, areas, types) {
-  description = [(table {
+  description = [(choice {
     ...types
     ''
   })(), name].filter(fn(w) { w != '' }).join(' ')
@@ -199,7 +199,7 @@ mine_types = ['diamond', 'gold', 'silver', 'platinum', 'copper', 'creepy', 'haun
 forest_types = ['pine', 'spruce', 'dark', 'creepy', 'haunted']
 building_types = ['ruined', 'crumbling', 'ancient', 'dark']
 
-locations = table {
+locations = choice {
   create_location('mine', mine_modifiers, mine_types)
   create_location('mines', mine_modifiers, mine_types)
   create_location('forest', forest_modifiers, forest_types)
@@ -221,7 +221,7 @@ locations = table {
   create_location('farm', hill_modifiers, [])
 }
 
-rumour_template = table {
+rumour_template = choice {
   {
     subject = person()
     description = system.choose([[], [person_description()]])

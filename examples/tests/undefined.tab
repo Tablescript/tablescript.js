@@ -31,7 +31,7 @@ assert(a[10] == undefined)
 
 ############################################################################
 # Tables indexed past their maximum roll are undefined
-t = table {
+t = choice {
   'red'
   'green'
   'blue'

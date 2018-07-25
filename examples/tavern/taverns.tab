@@ -12,7 +12,7 @@ suffix = table {
   10: 'Pub'
 }
 
-noun = table {
+noun = choice {
   creatures.creature().capitalize()
   things.body_part().capitalize()
   things.dungeon_thing().capitalize()
@@ -23,7 +23,7 @@ noun = table {
 
 join_and_capitalize = fn(words) { words.map(fn(w) { w.capitalize() }).join(' ') }
 
-tavern_name = table {
+tavern_name = choice {
   join_and_capitalize(['The', adjectives.adjective(), noun(), suffix()])
   join_and_capitalize(['The', adjectives.adjective(), noun()])
   join_and_capitalize([adjectives.adjective(), noun(), suffix()])

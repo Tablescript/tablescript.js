@@ -1,4 +1,4 @@
-body_part = table {
+body_part = choice {
   'head'
   'arm'
   'leg'
@@ -8,7 +8,7 @@ body_part = table {
   'elbow'
 }
 
-dungeon_thing = table {
+dungeon_thing = choice {
   'chest'
   'coin'
   'sack'
@@ -16,7 +16,7 @@ dungeon_thing = table {
   'cheese'
 }
 
-weapon = table {
+weapon = choice {
   'whip'
   'sword'
   'flail'
@@ -28,7 +28,7 @@ weapon = table {
   'lance'
 }
 
-tree = table {
+tree = choice {
   'pine'
   'yew'
   'spruce'
@@ -37,7 +37,7 @@ tree = table {
   'elm'
 }
 
-instrument = table {
+instrument = choice {
   'harp'
   'guitar'
   'banjo'

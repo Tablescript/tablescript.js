@@ -1,4 +1,4 @@
-farm_animal = table {
+farm_animal = choice {
   'pony'
   'pig'
   'horse'
@@ -14,7 +14,7 @@ farm_animal = table {
   'ass'
 }
 
-animal = table {
+animal = choice {
   'tiger'
   'lion'
   'boar'
@@ -27,7 +27,7 @@ animal = table {
   'badger'
 }
 
-monster = table {
+monster = choice {
   'kobold'
   'goblin'
   'orc'
@@ -39,7 +39,7 @@ monster = table {
   'giant'
 }
 
-human = table {
+human = choice {
   'witch'
   'hag'
   'wizard'
@@ -56,7 +56,7 @@ human = table {
   'maid'
 }
 
-creature = table {
+creature = choice {
   farmAnimal()
   animal()
   monster()

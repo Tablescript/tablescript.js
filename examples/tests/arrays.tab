@@ -55,7 +55,7 @@ a = [
   'abc',
   { a: 3, b: 'def' },
   [4, 5, [6]],
-  table {
+  choice {
     'first'
     'second'
     'third'

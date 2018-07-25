@@ -252,6 +252,19 @@ FunctionBody "function body"
     return createBlockExpression(createLocation(location(), options), optionalList(body));
   }
 
+ChoiceExpression "choice expression"
+  = ChoiceToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ entries:ChoiceEntries __ '}' {
+    return createTableExpression(createLocation(location(), options), params ? params[0] : [], entries);
+  }
+  / ChoiceToken __ '{' __ entries:ChoiceEntries __ '}' {
+    return createTableExpression(createLocation(location(), options), [], entries);
+  }
+
+ChoiceEntries "table entries"
+  = head:SimpleTableEntry tail:(__ SimpleTableEntry)* {
+    return composeList(head, extractList(tail, 1));
+  }
+
 TableExpression "table expression"
   = TableToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ entries:TableEntries __ '}' {
     return createTableExpression(createLocation(location(), options), params ? params[0] : [], entries);
@@ -262,9 +275,6 @@ TableExpression "table expression"
 
 TableEntries "table entries"
   = head:TableEntry tail:(__ TableEntry)* {
-    return composeList(head, extractList(tail, 1));
-  }
-  / head:SimpleTableEntry tail:(__ SimpleTableEntry)* {
     return composeList(head, extractList(tail, 1));
   }
 
@@ -312,6 +322,7 @@ PrimaryExpression
     return createVariableExpression(i);
   }
   / FunctionExpression
+  / ChoiceExpression
   / TableExpression
   / '(' __ e:AdditiveExpression __ ')' {
     return e;
@@ -501,6 +512,7 @@ ReservedWord
   / OrToken
   / NotToken
   / FunctionToken
+  / ChoiceToken
   / TableToken
   / UndefinedToken
 
@@ -512,5 +524,6 @@ AndToken = $("and" !IdentifierPart)
 OrToken = $("or" !IdentifierPart)
 NotToken = "not" !IdentifierPart { return 'not'; }
 FunctionToken = "fn" !IdentifierPart
+ChoiceToken = "choice" !IdentifierPart
 TableToken = "table" !IdentifierPart
 UndefinedToken = "undefined" !IdentifierPart

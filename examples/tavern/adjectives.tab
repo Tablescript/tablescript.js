@@ -1,4 +1,4 @@
-colour = table {
+colour = choice {
   'red'
   'orange'
   'yellow'
@@ -13,7 +13,7 @@ colour = table {
   'gold'
 }
 
-action = table {
+action = choice {
   'prancing'
   'flying'
   'hanging'
@@ -23,7 +23,7 @@ action = table {
   'rotting'
 }
 
-description = table {
+description = choice {
   'marvelous'
   'smelly'
   'beautiful'
@@ -39,7 +39,7 @@ description = table {
   'quick'
 }
 
-adjective = table {
+adjective = choice {
   colour().capitalize()
   action().capitalize()
   description().capitalize()
