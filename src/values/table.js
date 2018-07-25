@@ -69,8 +69,6 @@ const callFunction = (formalParameters, entries, closure) => async (context, par
   return rolledEntry.evaluate(localContext);
 };
 
-const equals = () => createBooleanValue(false);
-
 export const createTableValue = (formalParameters, entries, closure) => createValue(
   valueTypes.TABLE,
   asNativeString(),
@@ -82,6 +80,5 @@ export const createTableValue = (formalParameters, entries, closure) => createVa
     asArray: asArray(entries),
     getElement: getElement(formalParameters, entries, closure),
     callFunction: callFunction(formalParameters, entries, closure),
-    equals,
   },
 );

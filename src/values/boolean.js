@@ -18,17 +18,12 @@
 import R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
-import { createStringValue } from './string';
 
 const asNativeString = value => () => value ? 'true' : 'false';
 
 const asNativeBoolean = value => () => value;
 
 const nativeEquals = value => (context, other) => value === other.asNativeBoolean(context);
-
-const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
-
-const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
 
 export const createBooleanValue = value => createValue(
   valueTypes.BOOLEAN,
@@ -38,7 +33,5 @@ export const createBooleanValue = value => createValue(
     asNativeString: asNativeString(value),
     asNativeBoolean: asNativeBoolean(value),
     nativeEquals: nativeEquals(value),
-    equals: R.pipe(nativeEquals, equals)(value),
-    notEquals: R.pipe(nativeEquals, notEquals)(value),
   },
 );

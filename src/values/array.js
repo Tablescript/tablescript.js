@@ -78,10 +78,6 @@ const add = entries => (context, other) => createArrayValue([...entries, other])
 
 const multiplyBy = entries => (context, other) => createArrayValue(R.range(0, other.asNativeNumber(context)).reduce((all,n) => ([...all, ...entries]), []));
 
-const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
-
-const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
-
 const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], async context => {
   const reducer = requiredParameter(context, 'reducer');
   const initialValue = requiredParameter(context, 'initialValue');
@@ -199,7 +195,5 @@ export const createArrayValue = entries => createValue(
     getElement: getElement(entries),
     add: add(entries),
     multiplyBy: multiplyBy(entries),
-    equals: R.pipe(nativeEquals, equals)(entries),
-    notEquals: R.pipe(nativeEquals, notEquals)(entries),
   },
 );

@@ -55,17 +55,13 @@ const modulo = value => (context, other) => {
   return createNumericValue(value % other.asNativeNumber(context));
 };
 
-const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
+const lessThan = value => (context, other) => value < other.asNativeNumber(context);
 
-const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
+const greaterThan = value => (context, other) => value > other.asNativeNumber(context);
 
-const lessThan = value => (context, other) => createBooleanValue(value < other.asNativeNumber(context));
+const lessThanOrEquals = value => (context, other) => value <= other.asNativeNumber(context);
 
-const greaterThan = value => (context, other) => createBooleanValue(value > other.asNativeNumber(context));
-
-const lessThanOrEquals = greaterThan => (context, other) => createBooleanValue(value <= other.asNativeNumber(context));
-
-const greaterThanOrEquals = lessThan => (context, other) => createBooleanValue(value >= other.asNativeNumber(context));
+const greaterThanOrEquals = value => (context, other) => value >= other.asNativeNumber(context);
 
 export const createCustomNumericValue = (value, methods) => createValue(
   valueTypes.NUMBER,
@@ -88,11 +84,9 @@ export const createNumericValue = value => createValue(
     multiplyBy: multiplyBy(value),
     divideBy: divideBy(value),
     modulo: modulo(value),
-    equals: R.pipe(nativeEquals, equals)(value),
-    notEquals: R.pipe(nativeEquals, notEquals)(value),
     lessThan: lessThan(value),
     greaterThan: greaterThan(value),
-    lessThanOrEquals: R.pipe(greaterThan, lessThanOrEquals)(value),
-    greaterThanOrEquals: R.pipe(lessThan, greaterThanOrEquals)(value),
+    lessThanOrEquals: lessThanOrEquals(value),
+    greaterThanOrEquals: greaterThanOrEquals(value),
   },
 );

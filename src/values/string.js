@@ -30,10 +30,6 @@ const asNativeBoolean = value => () => value === '' ? false : true;
 
 const nativeEquals = value => (context, other) => isString(other) && value === other.asNativeString(context);
 
-const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
-
-const notEquals = nativeEquals => (context, other) => createBooleanValue(!nativeEquals(context, other));
-
 const getElement = value => (context, index) => {
   let indexValue = index.asNativeNumber(context);
   if (indexValue < 0) {
@@ -142,8 +138,6 @@ export const createStringValue = value => createValue(
     asNativeString: asNativeString(value),
     asNativeBoolean: asNativeBoolean(value),
     nativeEquals: nativeEquals(value),
-    equals: R.pipe(nativeEquals, equals)(value),
-    notEquals: R.pipe(nativeEquals, notEquals)(value),
     getElement: getElement(value),
     add: R.pipe(asNativeString, add)(value),
     multiplyBy: R.pipe(asNativeString, multiplyBy)(value),

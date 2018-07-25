@@ -65,8 +65,6 @@ const setProperty = o => (context, name, value) => {
   o[name.asNativeString(context)] = value;
 };
 
-const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
-
 export const createObjectValue = o => createValue(
   valueTypes.OBJECT,
   asNativeObject(o),
@@ -79,6 +77,5 @@ export const createObjectValue = o => createValue(
     asObject: asObject(o),
     getProperty: getProperty(o),
     setProperty: setProperty(o),
-    equals: R.pipe(nativeEquals, equals)(o),
   },
 );

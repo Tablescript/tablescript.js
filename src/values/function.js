@@ -37,7 +37,6 @@ export const optionalParameterOr = (context, name, value) => context.scope[name]
 const sharedAsNativeString = type => () => `function(${type})`;
 const asNativeBoolean = () => true;
 const nativeEquals = () => false;
-const equals = () => createBooleanValue(false);
 
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');
@@ -55,7 +54,6 @@ export const createNativeFunctionValue = (formalParameters, f) => {
       asNativeBoolean,
       nativeEquals,
       callFunction,
-      equals,
     },
   );
 };
@@ -80,7 +78,6 @@ export const createFunctionValue = (formalParameters, body, closure) => {
       asNativeBoolean,
       nativeEquals,
       callFunction,
-      equals,
     }
   );
 };

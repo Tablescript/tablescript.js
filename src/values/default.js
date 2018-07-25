@@ -35,8 +35,6 @@ subtract(context, other) : NUMBER;
 multiplyBy(context, other) : NUMBER;
 divideBy(context, other) | NUMBER;
 modulo(context, other) | NUMBER;
-equals(context, other : VALUE) : BOOLEAN;
-notEquals(context, other : VALUE) : BOOLEAN;
 lessThan(context, other : VALUE) : BOOLEAN;
 greaterThan(context, other : VALUE) : BOOLEAN;
 lessThanOrEquals(context, other : VALUE) : BOOLEAN;
@@ -75,8 +73,6 @@ const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({
   multiplyBy: runtimeErrorThrower(`Cannot multiply ${getTypeName()}`),
   divideBy: runtimeErrorThrower(`Cannot divide ${getTypeName()}`),
   modulo: runtimeErrorThrower(`Cannot modulo ${getTypeName()}`),
-  equals: runtimeErrorThrower(`Cannot determine equality with ${getTypeName()}`),
-  notEquals: runtimeErrorThrower(`Cannot determine inequality with ${getTypeName()}`),
   lessThan: runtimeErrorThrower(`Cannot compare (<) with ${getTypeName()}`),
   greaterThan: runtimeErrorThrower(`Cannot compare (>) with ${getTypeName()}`),
   lessThanOrEquals: runtimeErrorThrower(`Cannot compare (<=) with ${getTypeName()}`),
