@@ -30,8 +30,6 @@ const asNativeBoolean = () => true;
 
 const nativeEquals = () => false;
 
-const asBoolean = asNativeBoolean => () => createBooleanValue(asNativeBoolean());
-
 const asArray = entries => () => entries;
 
 const tableEntryScope = (formalParameters, entries, closure, roll) => ({
@@ -81,7 +79,6 @@ export const createTableValue = (formalParameters, entries, closure) => createVa
     asNativeString,
     asNativeBoolean,
     nativeEquals,
-    asBoolean: R.pipe(asNativeBoolean, asBoolean)(),
     asArray: asArray(entries),
     getElement: getElement(formalParameters, entries, closure),
     callFunction: callFunction(formalParameters, entries, closure),

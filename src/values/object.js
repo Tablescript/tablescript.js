@@ -51,8 +51,6 @@ const nativeEquals = o => (context, other) => {
   }, true);
 };
 
-const asBoolean = () => createBooleanValue(asNativeBoolean());
-
 const asObject = o => () => o;
 
 const getProperty = o => (context, name) => {
@@ -78,7 +76,6 @@ export const createObjectValue = o => createValue(
     asNativeBoolean,
     asNativeObject: asNativeObject(o),
     nativeEquals: nativeEquals(o),
-    asBoolean,
     asObject: asObject(o),
     getProperty: getProperty(o),
     setProperty: setProperty(o),

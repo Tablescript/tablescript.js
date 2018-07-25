@@ -28,8 +28,6 @@ const asNativeBoolean = () => false;
 
 const nativeEquals = (context, other) => isUndefined(other);
 
-const asBoolean = context => createBooleanValue(asNativeBoolean(context));
-
 const equals = (context, other) => createBooleanValue(nativeEquals(context, other));
 
 export const createUndefined = () => createValue(
@@ -40,7 +38,6 @@ export const createUndefined = () => createValue(
     asNativeString,
     asNativeBoolean,
     nativeEquals,
-    asBoolean,
     equals,
   }
 );

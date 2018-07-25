@@ -38,7 +38,6 @@ const sharedAsNativeString = type => () => `function(${type})`;
 const asNativeBoolean = () => true;
 const nativeEquals = () => false;
 const equals = () => createBooleanValue(false);
-const asBoolean = () => createBooleanValue(asNativeBoolean()); // asBoolean = R.pipe(asNativeBoolean, createBooleanValue) does not work wat
 
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');
@@ -55,7 +54,6 @@ export const createNativeFunctionValue = (formalParameters, f) => {
       asNativeString,
       asNativeBoolean,
       nativeEquals,
-      asBoolean,
       callFunction,
       equals,
     },
@@ -81,7 +79,6 @@ export const createFunctionValue = (formalParameters, body, closure) => {
       asNativeString,
       asNativeBoolean,
       nativeEquals,
-      asBoolean,
       callFunction,
       equals,
     }

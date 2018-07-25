@@ -45,8 +45,6 @@ const nativeEquals = entries => (context, other) => {
   return entries.reduce((result, entry, index) => result && entry.nativeEquals(context, otherEntries[index]), true);
 };
 
-const asBoolean = asNativeBoolean => () => createBooleanValue(asNativeBoolean());
-
 const asArray = entries => () => entries;
 
 const mapArrayIndex = (context, index, entries) => {
@@ -196,7 +194,6 @@ export const createArrayValue = entries => createValue(
     asNativeBoolean: asNativeBoolean(),
     asNativeArray: asNativeArray(entries),
     nativeEquals: nativeEquals(entries),
-    asBoolean: R.pipe(asNativeBoolean, asBoolean)(),
     asArray: asArray(entries),
     setProperty: setProperty(entries),
     getElement: getElement(entries),
