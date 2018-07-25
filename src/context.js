@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import { throwRuntimeError } from './error';
+
 export const updateStack = (context, location) => ({
   ...context,
   stack: [
@@ -45,8 +47,21 @@ export const replaceScope = (context, scope) => ({
 
 export const closureFromScope = context => ({ ...context.scope });
 
-export const initializeContext = (scope, options) => ({
+export const initializeContext = (scope, initializeScope, options, factory) => ({
   stack: [],
   scope,
+  initializeScope,
   options,
+  factory,
 });
+
+export const requiredParameter = (context, name) => {
+  if (context.scope[name]) {
+    return context.scope[name];
+  }
+  throwRuntimeError(`Missing required parameter ${name}`, context);
+};
+
+export const optionalParameter = (context, name) => context.scope[name];
+
+export const optionalParameterOr = (context, name, value) => context.scope[name] ? context.scope[name] : value;

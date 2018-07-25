@@ -44,14 +44,13 @@ greaterThanOrEquals(context, other : VALUE) : BOOLEAN;
 
 import { valueTypeName } from './types';
 import { runtimeErrorThrower } from '../error';
-import { createUndefined } from './undefined';
 
 const getProperty = properties => (context, name) => {
   const nameValue = name.asNativeString(context);
   if (properties[nameValue]) {
     return properties[nameValue];
   }
-  return createUndefined();
+  return context.factory.createUndefined();
 };
 
 const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({

@@ -15,11 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import R from 'ramda';
 import { createValue } from './default';
 import { valueTypes, isNumber, isString } from './types';
-import { createStringValue } from './string';
-import { createBooleanValue } from './boolean';
 import { throwRuntimeError } from '../error';
 
 const asNativeNumber = value => () => value;
@@ -32,7 +29,7 @@ const nativeEquals = value => (context, other) => isNumber(other) && value === o
 
 const add = value => (context, other) => {
   if (isString(other)) {
-    return createStringValue(value.toString() + other.asNativeString());
+    return context.factory.createStringValue(value.toString() + other.asNativeString());
   }
   return createNumericValue(value + other.asNativeNumber(context));
 };

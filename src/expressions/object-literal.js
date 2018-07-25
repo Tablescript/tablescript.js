@@ -21,12 +21,14 @@ import { expressionTypes } from './types';
 import { updateStack } from '../context';
 
 const evaluator = context => (p, entry) => {
-  return p.then(acc => new Promise(resolve => {
+  return p.then(acc => new Promise((resolve, reject) => {
     entry.evaluate(context).then(value => {
       resolve({
         ...acc,
         ...value.asObject(),
       });
+    }).catch(e => {
+      reject(e);
     });
   }));
 };

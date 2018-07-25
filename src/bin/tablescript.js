@@ -30,9 +30,12 @@ import pkginfo from 'pkginfo';
 
 import { initializeBuiltins } from '../builtins/builtins';
 import { initializeMath } from '../builtins/math';
-import { createStringValue } from '../values/string';
 import { createArrayValue } from '../values/array';
+import { createBooleanValue } from '../values/boolean';
+import { createNumericValue } from '../values/numeric';
 import { createObjectValue } from '../values/object';
+import { createStringValue } from '../values/string';
+import { createUndefined } from '../values/undefined';
 
 pkginfo(module, 'version');
 
@@ -74,7 +77,15 @@ const initializeScope = (args, options) => ({
   }),
 });
 
-const context = initializeContext(initializeScope(args, interpreterOptions), interpreterOptions);
+const valueFactory = {
+  createArrayValue,
+  createBooleanValue,
+  createNumericValue,
+  createStringValue,
+  createUndefined,
+};
+
+const context = initializeContext(initializeScope(args, interpreterOptions), initializeScope, interpreterOptions, valueFactory);
 
 if (!filename) {
   repl(context);

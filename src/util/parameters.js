@@ -16,11 +16,10 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import R from 'ramda';
-import { createArrayValue } from '../values/array';
 
 const mapFormalParameters = (formalParameters, parameters) => parameters.reduce((acc, p, i) => ({ ...acc, [formalParameters[i]]: p }), {});
 
-export const mapFunctionParameters = (formalParameters, parameters) => ({
+export const mapFunctionParameters = (context, formalParameters, parameters) => ({
   ...mapFormalParameters(formalParameters, R.take(formalParameters.length, parameters)),
-  'arguments': createArrayValue(parameters),
+  'arguments': context.factory.createArrayValue(parameters),
 });

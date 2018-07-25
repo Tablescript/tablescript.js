@@ -16,7 +16,8 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { norm } from './norm';
-import { createNativeFunctionValue, requiredParameter, optionalParameterOr } from '../values/function';
+import { createNativeFunctionValue } from '../values/function';
+import { requiredParameter, optionalParameterOr } from '../context';
 import { createNumericValue } from '../values/numeric';
 
 const parametersAsNativeNumbers = context => requiredParameter(context, 'arguments').asArray().map(p => p.asNativeNumber(context));

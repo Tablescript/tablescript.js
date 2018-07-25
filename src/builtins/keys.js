@@ -17,7 +17,7 @@
 
 import { createArrayValue } from '../values/array';
 import { createStringValue } from '../values/string';
-import { requiredParameter } from '../values/function';
+import { requiredParameter } from '../context';
 
 export const keysBuiltIn = async context => {
   const object = requiredParameter(context, 'o').asObject();

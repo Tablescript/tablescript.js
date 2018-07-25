@@ -1,7 +1,7 @@
 assert = system.assert
 
 s = 'I have a ham radio'
-assert(s.length == 18)
+assert(s.length() == 18)
 
 assert(s[0] == 'I')
 assert(s[-1] == 'o')

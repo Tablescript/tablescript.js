@@ -17,7 +17,7 @@
 
 import { throwRuntimeError } from '../error';
 import { createUndefined } from '../values/undefined';
-import { requiredParameter, optionalParameter } from '../values/function';
+import { requiredParameter, optionalParameter } from '../context';
 
 export const assertBuiltIn = async context => {
   const condition = requiredParameter(context, 'condition');

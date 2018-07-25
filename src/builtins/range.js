@@ -18,7 +18,7 @@
 import { throwRuntimeError } from '../error';
 import { createNumericValue } from '../values/numeric';
 import { createArrayValue } from '../values/array';
-import { requiredParameter } from '../values/function';
+import { requiredParameter } from '../context';
 
 const createRangeArray = (start, end, step) => {
   const result = [];

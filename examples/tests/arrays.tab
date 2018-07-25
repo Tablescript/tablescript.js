@@ -81,6 +81,14 @@ assert(a[5](2) == 6)
 ############################################################################
 
 ############################################################################
+# Array.length
+
+assert([].length() == 0)
+assert([12].length() == 1)
+assert(['abc', 9, true].length() == 3)
+############################################################################
+
+############################################################################
 # Array.includes
 #
 # The includes function tests each element until it finds the value passed.
@@ -213,7 +221,7 @@ even = fn(n) { n % 2 == 0 }
 assert(a.filter(even) == [2, 4, 6])
 
 a = ['red', 'orange', 'yellow', 'green', 'blue', 'violet', 'indigo']
-length_6 = fn(n) { n.length == 6 }
+length_6 = fn(n) { n.length() == 6 }
 assert(a.filter(length_6) == ['orange', 'yellow', 'violet', 'indigo'])
 
 # The filter function can also take a 2nd parameter that is the 0-based

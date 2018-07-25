@@ -17,8 +17,6 @@
 
 import { valueTypes, isUndefined } from './types';
 import { createValue } from './default';
-import { createStringValue } from './string';
-import { createBooleanValue } from './boolean';
 
 const asNativeValue = () => undefined;
 

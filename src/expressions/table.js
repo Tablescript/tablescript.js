@@ -22,12 +22,14 @@ import { TablescriptError } from '../error';
 import { updateStack, closureFromScope } from '../context';
 
 const entryExpander = context => (p, entry) => {
-  return p.then(acc => new Promise(resolve => {
+  return p.then(acc => new Promise((resolve, reject) => {
     entry.expand(context).then(expandedEntries => {
       resolve([
         ...acc,
         ...expandedEntries,
       ]);
+    }).catch(e => {
+      reject(e);
     });
   }));
 };

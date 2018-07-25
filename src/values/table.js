@@ -63,7 +63,7 @@ const callFunction = (formalParameters, entries, closure) => async (context, par
   const localContext = pushStack(replaceScope(context, {
     ...context.scope,
     ...closure,
-    ...mapFunctionParameters(formalParameters, parameters),
+    ...mapFunctionParameters(context, formalParameters, parameters),
     ...tableEntryScope(formalParameters, entries, closure, roll),  
   }));
   return rolledEntry.evaluate(localContext);

@@ -18,11 +18,8 @@
 import R from 'ramda';
 import { createValue } from './default';
 import { valueTypes, isString, isNumber } from './types';
-import { createBooleanValue } from './boolean';
-import { createUndefined } from './undefined';
-import { createNativeFunctionValue, requiredParameter, optionalParameter } from './function';
-import { createNumericValue } from './numeric';
-import { createArrayValue } from './array';
+import { createNativeFunctionValue } from './function';
+import { requiredParameter, optionalParameter } from '../context';
 
 const asNativeString = value => () => value;
 
@@ -36,7 +33,7 @@ const getElement = value => (context, index) => {
     indexValue = value.length + indexValue;
   }
   if (indexValue < 0 || indexValue >= value.length) {
-    return createUndefined();
+    return context.factory.createUndefined();
   }
   return createStringValue(value[indexValue]);
 };
@@ -51,9 +48,9 @@ const split = value => createNativeFunctionValue(['separator'], context => {
     if (!isString(separator)) {
       throwRuntimeError(`split(separator) separator must be a string`, context);
     }
-    return createArrayValue(value.split(separator.asNativeString(context)).map(s => createStringValue(s)));
+    return context.factory.createArrayValue(value.split(separator.asNativeString(context)).map(s => createStringValue(s)));
   }
-  return createArrayValue(value.split().map(s => createStringValue(s)));
+  return context.factory.createArrayValue(value.split().map(s => createStringValue(s)));
 });
 
 const capitalize = value => createNativeFunctionValue([], () => createStringValue(value.length === 0 ? value : value[0].toUpperCase() + value.slice(1)));
@@ -67,7 +64,7 @@ const includes = value => createNativeFunctionValue(['s'], context => {
   if (!isString(s)) {
     throwRuntimeError(`includes(s) s must be a string`, context);
   }
-  return createBooleanValue(value.includes(s.asNativeString(context)));
+  return context.factory.createBooleanValue(value.includes(s.asNativeString(context)));
 });
 
 const indexOf = value => createNativeFunctionValue(['s'], context => {
@@ -75,7 +72,7 @@ const indexOf = value => createNativeFunctionValue(['s'], context => {
   if (!isString(s)) {
     throwRuntimeError(`indexOf(s) s must be a string`, context);
   }
-  return createNumericValue(value.indexOf(s.asNativeString(context)));
+  return context.factory.createNumericValue(value.indexOf(s.asNativeString(context)));
 });
 
 const slice = value => createNativeFunctionValue(['start', 'end'], context => {
@@ -98,7 +95,7 @@ const startsWith = value => createNativeFunctionValue(['s'], context => {
   if (!isString(s)) {
     throwRuntimeError(`startsWith(s) s must be a string`, context);
   }
-  return createBooleanValue(value.startsWith(s.asNativeString(context)));
+  return context.factory.createBooleanValue(value.startsWith(s.asNativeString(context)));
 });
 
 const endsWith = value => createNativeFunctionValue(['s'], context => {
@@ -106,7 +103,7 @@ const endsWith = value => createNativeFunctionValue(['s'], context => {
   if (!isString(s)) {
     throwRuntimeError(`endsWith(s) s must be a string`, context);
   }
-  return createBooleanValue(value.endsWith(s.asNativeString(context)));
+  return context.factory.createBooleanValue(value.endsWith(s.asNativeString(context)));
 });
 
 const trim = value => createNativeFunctionValue([], () => createStringValue(value.trim()));
@@ -114,6 +111,10 @@ const trim = value => createNativeFunctionValue([], () => createStringValue(valu
 const trimLeft = value => createNativeFunctionValue([], () => createStringValue(value.trimLeft()));
 
 const trimRight = value => createNativeFunctionValue([], () => createStringValue(value.trimRight()));
+
+const empty = value => createNativeFunctionValue([], context => context.factory.createBooleanValue(value.length === 0));
+
+const length = value => createNativeFunctionValue([], context => context.factory.createNumericValue(value.length));
 
 export const createStringValue = value => createValue(
   valueTypes.STRING,
@@ -131,8 +132,8 @@ export const createStringValue = value => createValue(
     trim: trim(value),
     trimLeft: trimLeft(value),
     trimRight: trimRight(value),
-    empty: createBooleanValue(value.length === 0),
-    length: createNumericValue(value.length),  
+    empty: empty(value),
+    length: length(value),  
   },
   {
     asNativeString: asNativeString(value),

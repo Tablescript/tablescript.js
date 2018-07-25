@@ -15,24 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
-import { createStringValue } from './string';
-import { createBooleanValue } from './boolean';
 import { mapFunctionParameters } from '../util/parameters';
 import { replaceScope, pushStack } from '../context';
-
-export const requiredParameter = (context, name) => {
-  if (context.scope[name]) {
-    return context.scope[name];
-  }
-  throwRuntimeError(`Missing required parameter ${name}`, context);
-};
-
-export const optionalParameter = (context, name) => context.scope[name];
-
-export const optionalParameterOr = (context, name, value) => context.scope[name] ? context.scope[name] : value;
 
 const sharedAsNativeString = type => () => `function(${type})`;
 const asNativeBoolean = () => true;
@@ -41,7 +27,7 @@ const nativeEquals = () => false;
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');
   const callFunction = async (context, parameters) => {
-    const localContext = replaceScope(context, mapFunctionParameters(formalParameters, parameters));
+    const localContext = replaceScope(context, mapFunctionParameters(context, formalParameters, parameters));
     return f(localContext);
   };
 
@@ -64,7 +50,7 @@ export const createFunctionValue = (formalParameters, body, closure) => {
     const localContext = pushStack(replaceScope(context, {
       ...context.scope,
       ...closure,
-      ...mapFunctionParameters(formalParameters, parameters),
+      ...mapFunctionParameters(context, formalParameters, parameters),
     }));
     return body.evaluate(localContext);
   };
