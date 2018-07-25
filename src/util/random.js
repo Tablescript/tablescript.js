@@ -59,3 +59,20 @@ const applySuffix = (rolls, suffix) => {
 
 export const rollDice = (count, die, suffix) => applySuffix(createRollSet(count, die), suffix)
   .reduce((sum, roll) => sum + roll, 0);
+
+export const rollDiceFromString = s => {
+  const matches = s.match(/([1-9][0-9]*)d([1-9][0-9]*)(([-+])([lh])([1-9][0-9]*)?)?/i);
+  if (!matches) {
+    throw new Error('Invalid dice string');
+  }
+  const count = parseInt(matches[1]);
+  const die = parseInt(matches[2]);
+  if (matches[3]) {
+    return rollDice(count, die, {
+      operator: matches[4],
+      specifier: matches[5],
+      count: matches[6] ? parseInt(matches[6]) : 1,
+    });
+  }
+  return rollDice(count, die);
+};
