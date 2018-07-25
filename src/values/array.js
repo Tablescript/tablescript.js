@@ -45,8 +45,6 @@ const nativeEquals = entries => (context, other) => {
   return entries.reduce((result, entry, index) => result && entry.nativeEquals(context, otherEntries[index]), true);
 };
 
-const asString = asNativeString => context => createStringValue(asNativeString(context));
-
 const asBoolean = asNativeBoolean => () => createBooleanValue(asNativeBoolean());
 
 const asArray = entries => () => entries;
@@ -198,7 +196,6 @@ export const createArrayValue = entries => createValue(
     asNativeBoolean: asNativeBoolean(),
     asNativeArray: asNativeArray(entries),
     nativeEquals: nativeEquals(entries),
-    asString: R.pipe(asNativeString, asString)(entries),
     asBoolean: R.pipe(asNativeBoolean, asBoolean)(),
     asArray: asArray(entries),
     setProperty: setProperty(entries),

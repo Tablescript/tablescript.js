@@ -38,12 +38,10 @@ const sharedAsNativeString = type => () => `function(${type})`;
 const asNativeBoolean = () => true;
 const nativeEquals = () => false;
 const equals = () => createBooleanValue(false);
-const sharedAsString = type => R.pipe(sharedAsNativeString(type), createStringValue);
 const asBoolean = () => createBooleanValue(asNativeBoolean()); // asBoolean = R.pipe(asNativeBoolean, createBooleanValue) does not work wat
 
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');
-  const asString = sharedAsString('native');
   const callFunction = async (context, parameters) => {
     const localContext = replaceScope(context, mapFunctionParameters(formalParameters, parameters));
     return f(localContext);
@@ -57,7 +55,6 @@ export const createNativeFunctionValue = (formalParameters, f) => {
       asNativeString,
       asNativeBoolean,
       nativeEquals,
-      asString,
       asBoolean,
       callFunction,
       equals,
@@ -67,7 +64,6 @@ export const createNativeFunctionValue = (formalParameters, f) => {
 
 export const createFunctionValue = (formalParameters, body, closure) => {
   const asNativeString = sharedAsNativeString('tablescript');
-  const asString = sharedAsString('tablescript');
   const callFunction = async (context, parameters) => {
     const localContext = pushStack(replaceScope(context, {
       ...context.scope,
@@ -85,7 +81,6 @@ export const createFunctionValue = (formalParameters, body, closure) => {
       asNativeString,
       asNativeBoolean,
       nativeEquals,
-      asString,
       asBoolean,
       callFunction,
       equals,

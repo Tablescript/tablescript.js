@@ -32,8 +32,6 @@ const nativeEquals = value => (context, other) => isNumber(other) && value === o
 
 const asNumber = value => context => createNumericValue(value);
 
-const asString = asNativeString => context => createStringValue(asNativeString(context));
-
 const asBoolean = asNativeBoolean => context => createBooleanValue(asNativeBoolean(context));
 
 const add = value => (context, other) => {
@@ -90,7 +88,6 @@ export const createNumericValue = value => createValue(
     asNativeBoolean: asNativeBoolean(value),
     nativeEquals: nativeEquals(value),
     asNumber: asNumber(value),
-    asString: R.pipe(asNativeString, asString)(value),
     asBoolean: R.pipe(asNativeBoolean, asBoolean)(value),
     add: add(value),
     subtract: subtract(value),

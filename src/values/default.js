@@ -25,7 +25,6 @@ asNativeArray(context) : array[any<native>];
 asNativeObject(context) : object<string => any<native>];
 nativeEquals(context, other : VALUE) : boolean;
 asNumber(context) : NUMBER;
-asString(context) : STRING;
 asBoolean(context) : BOOLEAN;
 asArray(context) : ARRAY<VALUE>;
 asObject(context) : OBJECT;
@@ -68,7 +67,6 @@ const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({
   asNativeObject: runtimeErrorThrower(`Cannot cast ${getTypeName()} to object`),
   nativeEquals: runtimeErrorThrower(`${getTypeName()} equality unimplemented`),
   asNumber: runtimeErrorThrower(`Cannot cast ${getTypeName()} to number`),
-  asString: runtimeErrorThrower(`Cannot cast ${getTypeName()} to string`),
   asBoolean: runtimeErrorThrower(`Cannot cast ${getTypeName()} to boolean`),
   asArray: runtimeErrorThrower(`Cannot cast ${getTypeName()} to array`),
   asObject: runtimeErrorThrower(`Cannot cast ${getTypeName()} to object`),

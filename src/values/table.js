@@ -30,8 +30,6 @@ const asNativeBoolean = () => true;
 
 const nativeEquals = () => false;
 
-const asString = asNativeString => () => createStringValue(asNativeString());
-
 const asBoolean = asNativeBoolean => () => createBooleanValue(asNativeBoolean());
 
 const asArray = entries => () => entries;
@@ -83,7 +81,6 @@ export const createTableValue = (formalParameters, entries, closure) => createVa
     asNativeString,
     asNativeBoolean,
     nativeEquals,
-    asString: R.pipe(asNativeString, asString)(),
     asBoolean: R.pipe(asNativeBoolean, asBoolean)(),
     asArray: asArray(entries),
     getElement: getElement(formalParameters, entries, closure),

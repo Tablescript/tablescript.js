@@ -51,8 +51,6 @@ const nativeEquals = o => (context, other) => {
   }, true);
 };
 
-const asString = asNativeString => context => createStringValue(asNativeString(context));
-
 const asBoolean = () => createBooleanValue(asNativeBoolean());
 
 const asObject = o => () => o;
@@ -80,7 +78,6 @@ export const createObjectValue = o => createValue(
     asNativeBoolean,
     asNativeObject: asNativeObject(o),
     nativeEquals: nativeEquals(o),
-    asString: R.pipe(asNativeString, asString)(o),
     asBoolean,
     asObject: asObject(o),
     getProperty: getProperty(o),

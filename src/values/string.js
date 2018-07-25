@@ -30,8 +30,6 @@ const asNativeBoolean = value => () => value === '' ? false : true;
 
 const nativeEquals = value => (context, other) => isString(other) && value === other.asNativeString(context);
 
-const asString = asNativeString => context => createStringValue(asNativeString(context));
-
 const asBoolean = asNativeBoolean => context => createBooleanValue(asNativeBoolean(context));
 
 const equals = nativeEquals => (context, other) => createBooleanValue(nativeEquals(context, other));
@@ -146,7 +144,6 @@ export const createStringValue = value => createValue(
     asNativeString: asNativeString(value),
     asNativeBoolean: asNativeBoolean(value),
     nativeEquals: nativeEquals(value),
-    asString: R.pipe(asNativeString, asString)(value),
     asBoolean: R.pipe(asNativeBoolean, asBoolean)(value),
     equals: R.pipe(nativeEquals, equals)(value),
     notEquals: R.pipe(nativeEquals, notEquals)(value),
