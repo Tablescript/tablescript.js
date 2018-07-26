@@ -15,11 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import R from 'ramda';
 import { createValue } from './default';
 import { valueTypes, isObject } from './types';
-import { createStringValue } from './string';
-import { createBooleanValue } from './boolean';
 import { createUndefined } from './undefined';
 
 const propertiesAsNativeValues = (context, o) => {
@@ -68,6 +65,7 @@ const setProperty = o => (context, name, value) => {
 export const createObjectValue = o => createValue(
   valueTypes.OBJECT,
   asNativeObject(o),
+  nativeEquals(o),
   {},
   {
     asNativeString: asNativeString(o),

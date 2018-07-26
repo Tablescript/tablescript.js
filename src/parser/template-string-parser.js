@@ -22,18 +22,6 @@ export const parse = s => {
   try {
     return parser.parse(s);
   } catch (e) {
-    throw new TablescriptError(
-      'SyntaxError',
-      e.message,
-      {
-        stack: [
-          {
-            line: e.location ? e.location.start.line : 0,
-            column: e.location ? e.location.start.column: 0,
-            location: e.location,
-          },
-        ],
-      },
-    );
+    throw TablescriptError.fromParserError(e);
   }
 };

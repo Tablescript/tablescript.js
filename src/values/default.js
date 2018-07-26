@@ -18,6 +18,7 @@
 /*
 
 asNativeValue(context) : any<native>;
+identicalTo(other) : boolean;
 asNativeNumber(context) : number;
 asNativeString(context) : string;
 asNativeBoolean(context) : boolean;
@@ -53,8 +54,9 @@ const getProperty = properties => (context, name) => {
   return context.factory.createUndefined();
 };
 
-const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({
-  asNativeValue: nativeValueFunction,
+const defaultMethods = (asNativeValue, identicalTo, properties, getTypeName) => ({
+  asNativeValue,
+  identicalTo,
   asNativeNumber: runtimeErrorThrower(`Cannot cast ${getTypeName()} to number`),
   asNativeString: runtimeErrorThrower(`Cannot cast ${getTypeName()} to string`),
   asNativeBoolean: runtimeErrorThrower(`Cannot cast ${getTypeName()} to boolean`),
@@ -78,8 +80,8 @@ const defaultMethods = (nativeValueFunction, properties, getTypeName) => ({
   greaterThanOrEquals: runtimeErrorThrower(`Cannot compare (>=) with ${getTypeName()}`),
 });
 
-export const createValue = (type, nativeValueFunction, properties, methods) => ({
+export const createValue = (type, nativeValueFunction, identicalToFunction, properties, methods) => ({
   type,
-  ...defaultMethods(nativeValueFunction, properties, () => valueTypeName(type)),
+  ...defaultMethods(nativeValueFunction, identicalToFunction, properties, () => valueTypeName(type)),
   ...methods,
 });

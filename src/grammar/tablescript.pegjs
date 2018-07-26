@@ -494,12 +494,18 @@ String
   }
 
 DoubleQuoteStringCharacter
-  = !('"') . {
+  = '\\\"' {
+    return '"';
+  }
+  / !('"') . {
     return text();
   }
 
 SingleQuoteStringCharacter
-  = !("'") . {
+  = "\\\'" {
+    return "'";
+  }
+  / !("'") . {
     return text();
   }
 

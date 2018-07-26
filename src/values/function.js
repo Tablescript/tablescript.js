@@ -34,7 +34,8 @@ export const createNativeFunctionValue = (formalParameters, f) => {
   return createValue(
     valueTypes.FUNCTION,
     asNativeString,
-    [],
+    () => false,
+    {},
     {
       asNativeString,
       asNativeBoolean,
@@ -58,7 +59,8 @@ export const createFunctionValue = (formalParameters, body, closure) => {
   return createValue(
     valueTypes.FUNCTION,
     asNativeString,
-    [],
+    () => false,
+    {},
     {
       asNativeString,
       asNativeBoolean,

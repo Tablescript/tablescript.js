@@ -29,6 +29,7 @@ const nativeEquals = (context, other) => isUndefined(other);
 export const createUndefined = () => createValue(
   valueTypes.UNDEFINED,
   asNativeValue,
+  nativeEquals,
   {},
   {
     asNativeString,

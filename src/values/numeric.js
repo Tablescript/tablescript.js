@@ -70,6 +70,7 @@ export const createCustomNumericValue = (value, methods) => createValue(
 export const createNumericValue = value => createValue(
   valueTypes.NUMBER,
   asNativeNumber(value),
+  nativeEquals(value),
   {},
   {
     asNativeNumber: asNativeNumber(value),

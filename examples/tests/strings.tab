@@ -48,5 +48,7 @@ assert(123 + 'abc' == '123abc')
 x = 9
 assert("string #{x} interpolation" == 'string 9 interpolation')
 
+assert("\"interpolated\" 'string'" == '"interpolated" \'string\'')
+
 results = ['2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
 assert(results.includes("#{2d6}"))

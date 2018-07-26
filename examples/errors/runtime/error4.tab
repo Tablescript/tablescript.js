@@ -1,0 +1,3 @@
+
+s = "Some template string with undefined expression #{ nope() }"
+system.print(s)

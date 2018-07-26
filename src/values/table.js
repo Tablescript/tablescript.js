@@ -72,6 +72,7 @@ const callFunction = (formalParameters, entries, closure) => async (context, par
 export const createTableValue = (formalParameters, entries, closure) => createValue(
   valueTypes.TABLE,
   asNativeString(),
+  () => false,
   {},
   {
     asNativeString,

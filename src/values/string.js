@@ -23,11 +23,13 @@ import { throwRuntimeError } from '../error';
 import { requiredParameter, optionalParameter } from '../util/parameters';
 import { rollDiceFromString } from '../util/random';
 
+const identicalTo = value => (context, other) => isString(other) && value === other.asNativeString(context);
+
 const asNativeString = value => () => value;
 
 const asNativeBoolean = value => () => value === '' ? false : true;
 
-const nativeEquals = value => (context, other) => isString(other) && value === other.asNativeString(context);
+const nativeEquals = value => (context, other) => value === other.asNativeString(context);
 
 const getElement = value => (context, index) => {
   let indexValue = index.asNativeNumber(context);
@@ -40,9 +42,17 @@ const getElement = value => (context, index) => {
   return createStringValue(value[indexValue]);
 };
 
-const add = asNativeString => (context, other) => createStringValue(asNativeString(context) + other.asNativeString(context));
+const add = value => (context, other) => createStringValue(value + other.asNativeString(context));
 
-const multiplyBy = asNativeString => (context, other) => createStringValue(asNativeString(context).repeat(other.asNativeNumber(context)));
+const multiplyBy = value => (context, other) => createStringValue(value.repeat(other.asNativeNumber(context)));
+
+const lessThan = value => (context, other) => value < other.asNativeString(context);
+
+const greaterThan = value => (context, other) => value > other.asNativeString(context);
+
+const lessThanOrEquals = value => (context, other) => value <= other.asNativeString(context);
+
+const greaterThanOrEquals = value => (context, other) => value >= other.asNativeString(context);
 
 const split = value => createNativeFunctionValue(['separator'], async context => {
   const separator = optionalParameter(context, 'separator');
@@ -129,6 +139,7 @@ const roll = value => createNativeFunctionValue([], async context => {
 export const createStringValue = value => createValue(
   valueTypes.STRING,
   asNativeString(value),
+  identicalTo(value),
   {
     split: split(value),
     capitalize: capitalize(value),
@@ -151,7 +162,11 @@ export const createStringValue = value => createValue(
     asNativeBoolean: asNativeBoolean(value),
     nativeEquals: nativeEquals(value),
     getElement: getElement(value),
-    add: R.pipe(asNativeString, add)(value),
-    multiplyBy: R.pipe(asNativeString, multiplyBy)(value),
+    add: add(value),
+    multiplyBy: multiplyBy(value),
+    lessThan: lessThan(value),
+    greaterThan: greaterThan(value),
+    lessThanOrEquals: lessThanOrEquals(value),
+    greaterThanOrEquals: greaterThanOrEquals(value),
   },
 );

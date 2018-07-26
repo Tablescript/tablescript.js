@@ -21,6 +21,7 @@ import { createValue } from './default';
 export const createArraySpread = a => createValue(
   valueTypes.ARRAY_SPREAD,
   a.asNativeValue,
+  () => false,
   {},
   {
     asArray: () => a.asArray(),
@@ -30,6 +31,7 @@ export const createArraySpread = a => createValue(
 export const createObjectSpread = o => createValue(
   valueTypes.OBJECT_SPREAD,
   o.asNativeValue,
+  () => false,
   {},
   {
     asObject: () => o.asObject(),
@@ -39,6 +41,7 @@ export const createObjectSpread = o => createValue(
 export const createTableSpread = t => createValue(
   valueTypes.TABLE_SPREAD,
   t.asNativeValue,
+  () => false,
   {},
   {
     asArray: () => t.asArray(),

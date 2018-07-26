@@ -16,7 +16,9 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createValue } from './default';
-import { valueTypes } from './types';
+import { valueTypes, isBoolean } from './types';
+
+const identicalTo = value => (context, other) => isBoolean(other) && value === other.asNativeBoolean();
 
 const asNativeString = value => () => value ? 'true' : 'false';
 
@@ -27,6 +29,7 @@ const nativeEquals = value => (context, other) => value === other.asNativeBoolea
 export const createBooleanValue = value => createValue(
   valueTypes.BOOLEAN,
   asNativeBoolean(value),
+  identicalTo(value),
   {},
   {
     asNativeString: asNativeString(value),
