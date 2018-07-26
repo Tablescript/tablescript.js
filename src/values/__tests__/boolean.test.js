@@ -21,6 +21,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 import { createBooleanValue } from '../boolean';
+import { createNumericValue } from '../numeric';
 import { createStringValue } from '../string';
 import { valueTypes } from '../types';
 
@@ -36,12 +37,40 @@ describe('boolean', () => {
       expect(value.type).to.equal(valueTypes.BOOLEAN);
     });
 
+    it('has a native value of true', () => {
+      expect(value.asNativeValue()).to.equal(true);
+    });
+
+    it('is identical to true', () => {
+      expect(value.identicalTo({}, createBooleanValue(true))).to.be.true;
+    });
+
+    it('is not identical to false', () => {
+      expect(value.identicalTo({}, createBooleanValue(false))).to.be.false;
+    });
+    
+    it('is not identical to a string', () => {
+      expect(value.identicalTo({}, createStringValue('nope'))).to.be.false;
+    });
+
     it('cannot convert implicitly to number', () => {
       expect(() => value.asNativeNumber()).to.throw('Cannot cast BOOLEAN to number');
     });
 
     it('has a string value of "true"', () => {
       expect(value.asNativeString()).to.equal('true');
+    });
+
+    it('has a native boolean value of true', () => {
+      expect(value.asNativeBoolean()).to.be.true;
+    });
+
+    it('cannot convert implicitly to an array', () => {
+      expect(() => value.asNativeArray()).to.throw('Cannot cast BOOLEAN to array');
+    });
+
+    it('cannot convert implicitly to an object', () => {
+      expect(() => value.asNativeObject()).to.throw('Cannot cast BOOLEAN to object');
     });
 
     describe('equivalency', () => {
@@ -52,6 +81,14 @@ describe('boolean', () => {
       it('does not equal another value that is not true', () => {
         expect(value.nativeEquals({}, createBooleanValue(false))).to.be.false;
       });
+    });
+
+    it('cannot convert implicitly to an array', () => {
+      expect(() => value.asArray()).to.throw('Cannot cast BOOLEAN to array');
+    });
+
+    it('cannot convert implicitly to an object', () => {
+      expect(() => value.asObject()).to.throw('Cannot cast BOOLEAN to object');
     });
 
     it('throws when asked for a property', () => {
@@ -68,6 +105,42 @@ describe('boolean', () => {
 
     it('throws when called', () => {
       expect(() => value.callFunction()).to.throw('BOOLEAN is not callable');
+    });
+
+    it('cannot be added to', () => {
+      expect(() => value.add({}, createNumericValue(9))).to.throw('Cannot add to BOOLEAN');
+    });
+
+    it('cannot be subtracted from', () => {
+      expect(() => value.subtract({}, createNumericValue(9))).to.throw('Cannot subtract from BOOLEAN');
+    });
+
+    it('cannot be multiplied', () => {
+      expect(() => value.multiplyBy({}, createNumericValue(9))).to.throw('Cannot multiply BOOLEAN');
+    });
+
+    it('cannot by divided', () => {
+      expect(() => value.divideBy({}, createNumericValue(9))).to.throw('Cannot divide BOOLEAN');
+    });
+
+    it('cannot modulo', () => {
+      expect(() => value.modulo({}, createNumericValue(9))).to.throw('Cannot modulo BOOLEAN');
+    });
+
+    it('is not less than anything', () => {
+      expect(() => value.lessThan({}, createNumericValue(9))).to.throw('Cannot compare (<) with BOOLEAN');
+    });
+
+    it('is not greater than anything', () => {
+      expect(() => value.greaterThan({}, createNumericValue(9))).to.throw('Cannot compare (>) with BOOLEAN');
+    });
+
+    it('is not less than or equal to anything', () => {
+      expect(() => value.lessThanOrEquals({}, createNumericValue(9))).to.throw('Cannot compare (<=) with BOOLEAN');
+    });
+
+    it('is not greater than or greater than anything', () => {
+      expect(() => value.greaterThanOrEquals({}, createNumericValue(9))).to.throw('Cannot compare (>=) with BOOLEAN');
     });
   });
 
@@ -82,12 +155,40 @@ describe('boolean', () => {
       expect(value.type).to.equal(valueTypes.BOOLEAN);
     });
 
+    it('has a native value of false', () => {
+      expect(value.asNativeValue()).to.equal(false);
+    });
+
+    it('is identical to false', () => {
+      expect(value.identicalTo({}, createBooleanValue(false))).to.be.true;
+    });
+
+    it('is not identical to true', () => {
+      expect(value.identicalTo({}, createBooleanValue(true))).to.be.false;
+    });
+    
+    it('is not identical to a string', () => {
+      expect(value.identicalTo({}, createStringValue('nope'))).to.be.false;
+    });
+
     it('cannot convert implicitly to number', () => {
       expect(() => value.asNativeNumber()).to.throw('Cannot cast BOOLEAN to number');
     });
 
     it('has a string value of "false"', () => {
       expect(value.asNativeString()).to.equal('false');
+    });
+
+    it('has a native boolean value of false', () => {
+      expect(value.asNativeBoolean()).to.be.false;
+    });
+
+    it('cannot convert implicitly to an array', () => {
+      expect(() => value.asNativeArray()).to.throw('Cannot cast BOOLEAN to array');
+    });
+
+    it('cannot convert implicitly to an object', () => {
+      expect(() => value.asNativeObject()).to.throw('Cannot cast BOOLEAN to object');
     });
 
     describe('equivalency', () => {
@@ -98,6 +199,14 @@ describe('boolean', () => {
       it('does not equal another value that is not false', () => {
         expect(value.nativeEquals({}, createBooleanValue(true))).to.be.false;
       });
+    });
+
+    it('cannot convert implicitly to an array', () => {
+      expect(() => value.asArray()).to.throw('Cannot cast BOOLEAN to array');
+    });
+
+    it('cannot convert implicitly to an object', () => {
+      expect(() => value.asObject()).to.throw('Cannot cast BOOLEAN to object');
     });
 
     it('throws when asked for a property', () => {
@@ -114,6 +223,42 @@ describe('boolean', () => {
 
     it('throws when called', () => {
       expect(() => value.callFunction()).to.throw('BOOLEAN is not callable');
+    });
+
+    it('cannot be added to', () => {
+      expect(() => value.add({}, createNumericValue(9))).to.throw('Cannot add to BOOLEAN');
+    });
+
+    it('cannot be subtracted from', () => {
+      expect(() => value.subtract({}, createNumericValue(9))).to.throw('Cannot subtract from BOOLEAN');
+    });
+
+    it('cannot be multiplied', () => {
+      expect(() => value.multiplyBy({}, createNumericValue(9))).to.throw('Cannot multiply BOOLEAN');
+    });
+
+    it('cannot by divided', () => {
+      expect(() => value.divideBy({}, createNumericValue(9))).to.throw('Cannot divide BOOLEAN');
+    });
+
+    it('cannot modulo', () => {
+      expect(() => value.modulo({}, createNumericValue(9))).to.throw('Cannot modulo BOOLEAN');
+    });
+
+    it('is not less than anything', () => {
+      expect(() => value.lessThan({}, createNumericValue(9))).to.throw('Cannot compare (<) with BOOLEAN');
+    });
+
+    it('is not greater than anything', () => {
+      expect(() => value.greaterThan({}, createNumericValue(9))).to.throw('Cannot compare (>) with BOOLEAN');
+    });
+
+    it('is not less than or equal to anything', () => {
+      expect(() => value.lessThanOrEquals({}, createNumericValue(9))).to.throw('Cannot compare (<=) with BOOLEAN');
+    });
+
+    it('is not greater than or greater than anything', () => {
+      expect(() => value.greaterThanOrEquals({}, createNumericValue(9))).to.throw('Cannot compare (>=) with BOOLEAN');
     });
   });
 });
