@@ -57,7 +57,7 @@ human = choice {
 }
 
 creature = choice {
-  farmAnimal()
+  farm_animal()
   animal()
   monster()
   human()
