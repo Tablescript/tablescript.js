@@ -19,21 +19,25 @@ import http from 'http';
 
 export const loadHttpFile = async (context, filename) => {
   return new Promise((resolve, reject) => {
-    http.get(filename, res => {
-      const { statusCode } = res;
-      if (statusCode !== 200) {
-        res.resume();
+    try {
+      http.get(filename, res => {
+        const { statusCode } = res;
+        if (statusCode !== 200) {
+          res.resume();
+          resolve(undefined);
+        } else {
+          res.setEncoding('utf8');
+          let rawData = '';
+          res.on('data', chunk => { rawData += chunk; });
+          res.on('end', () => {
+            resolve({ path: filename, body: rawData });
+          });
+        }
+      }).on('error', e => {
         resolve(undefined);
-      } else {
-        res.setEncoding('utf8');
-        let rawData = '';
-        res.on('data', chunk => { rawData += chunk; });
-        res.on('end', () => {
-          resolve({ path: filename, body: rawData });
-        });
-      }
-    }).on('error', e => {
+      });
+    } catch (e) {
       resolve(undefined);
-    });
+    }
   });
 };

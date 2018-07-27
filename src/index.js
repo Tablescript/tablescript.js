@@ -30,7 +30,7 @@ const loadScript = async (context, scriptPath) => {
       return script;
     }
   }
-  throwRuntimeError(`Unable to load ${scriptPath}`, context);
+  throwRuntimeError(`Unable to load "${scriptPath}"`, context);
 };
 
 export const loadAndRunScript = async (context, scriptPath, args) => {
