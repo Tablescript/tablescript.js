@@ -17,6 +17,7 @@
 
 {
   const { createBlockExpression } = require('../expressions/block');
+  const { createCompoundExpression } = require('../expressions/compound');
   const { createAssignmentExpression } = require('../expressions/assignment');
   const { createConditionalExpression } = require('../expressions/conditional');
   const { createBinaryExpression } = require('../expressions/binary');
@@ -70,34 +71,23 @@
 }
 
 Start
-  = __ p:Program __ {
-    return p;
+  = __ body:Expressions? __ {
+    return createCompoundExpression(createLocation(location(), options), optionalList(body));
   }
 
-Program
-  = body:Statements? {
-    return optionalList(body);
-  }
-
-Statements
-  = head:Statement tail:(__ Statement)* {
+Expressions
+  = head:Expression tail:(__ Expression)* {
     return buildList(head, tail, 1);
   }
 
-Statement
-  = Block
-  / ExpressionStatement
-
 Block "block"
-  = '{' __ body:(Statements __)? '}' {
+  = '{' __ body:(Expressions __)? '}' {
     return createBlockExpression(createLocation(location(), options), optionalList(extractOptional(body, 0)));
   }
 
-ExpressionStatement "simple expression"
-  = Expression
-
 Expression "expression"
-  = e:AssignmentExpression __ {
+  = Block
+  / e:AssignmentExpression __ {
     return e;
   }
 
@@ -196,10 +186,10 @@ CallExpression "call expression"
     __ args:Arguments {
       return { type: 'call', args }
     }
-    / __ '[' __ property:Expression __ ']' {
+    / '[' __ property:Expression __ ']' {
       return { 'type': 'member', property };
     }
-    / __ '.' __ property:Identifier {
+    / '.' __ property:Identifier {
       return { 'type': 'member', property: createStringLiteral(property) };
     }
   )* {
@@ -227,10 +217,10 @@ MemberExpression "member expression"
     PrimaryExpression
   )
   tail:(
-    __ '[' __ property:Expression __ ']' {
+    '[' __ property:Expression __ ']' {
       return { property };
     }
-    / __ '.' __ property:Identifier {
+    / '.' __ property:Identifier {
       return { property: createStringLiteral(property) };
     }
   )* {
@@ -238,18 +228,13 @@ MemberExpression "member expression"
   }
 
 FunctionExpression "function expression"
-  = FunctionToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ body:FunctionBody __ '}' {
+  = FunctionToken __ '(' __ params:(FormalParameterList __)? ')' __ body:Block {
     return createFunctionExpression(createLocation(location(), options), params ? params[0] : [], body);
   }
 
 FormalParameterList "formal parameter list"
   = head:Identifier tail:(__ Comma __ Identifier)* {
     return composeList(head, extractList(tail, 3));
-  }
-
-FunctionBody "function body"
-  = body:Statements? {
-    return createBlockExpression(createLocation(location(), options), optionalList(body));
   }
 
 ChoiceExpression "choice expression"
@@ -304,10 +289,10 @@ TableEntryBody "table entry body"
   / Block
 
 IfExpression "if expression"
-  = IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Statement __ ElseToken __ elseBlock:Statement {
+  = IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Expression __ ElseToken __ elseBlock:Expression {
     return createIfExpression(createLocation(location(), options), e, ifBlock, elseBlock);
   }
-  / IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Statement {
+  / IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Expression {
     return createIfExpression(createLocation(location(), options), e, ifBlock);
   }
 

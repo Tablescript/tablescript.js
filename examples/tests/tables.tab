@@ -31,10 +31,9 @@ expected_values = ['first', 'second', 'third']
 actual_value = t1()
 assert(expected_values.includes(actual_value))
 
-range(10)
-  .map(fn() {
-    assert(expected_values.includes(t1()))
-  })
+range(10).map(fn() {
+  assert(expected_values.includes(t1()))
+})
 ############################################################################
 
 ############################################################################
@@ -60,10 +59,9 @@ assert(t1[9] == 'fourth')
 assert(t1[10] == 'fourth')
 
 expected_values = ['first', 'second', 'third', 'fourth']
-range(10)
-  .map(fn() {
-    assert(expected_values.includes(t1()))
-  })
+range(10).map(fn() {
+  assert(expected_values.includes(t1()))
+})
 ############################################################################
 
 ############################################################################
@@ -88,10 +86,9 @@ expected_value = [
   'third 4', 'third 5',
   'fourth 6', 'fourth 7', 'fourth 8', 'fourth 9', 'fourth 10'
 ]
-range(10)
-  .map(fn() {
-    assert(expected_value.includes(t1()))
-  })
+range(10).map(fn() {
+  assert(expected_value.includes(t1()))
+})
 
 t1 = choice {
   "first #{roll}"
@@ -100,10 +97,9 @@ t1 = choice {
 }
 
 expected_value = ['first 1', 'second 2', 'third 3', 'fourth 4']
-range(10)
-  .map(fn() {
-    assert(expected_value.includes(t1()))
-  })
+range(10).map(fn() {
+  assert(expected_value.includes(t1()))
+})
 ############################################################################
 
 ############################################################################
@@ -159,10 +155,9 @@ t2 = choice {
 }
 
 expected_values = ['third 1', 'first 2', 'second 3']
-range(10)
-  .map(fn() {
-    assert(expected_values.includes(t2()))
-  })
+range(10).map(fn() {
+  assert(expected_values.includes(t2()))
+})
 ############################################################################
 
 ############################################################################
@@ -174,10 +169,9 @@ t1 = choice {
   ...(colours.split(' '))
 }
 
-range(10)
-  .map(fn() {
-    assert(colours.includes(t1()))
-  })
+range(10).map(fn() {
+  assert(colours.includes(t1()))
+})
 ############################################################################
 
 ############################################################################
@@ -201,10 +195,9 @@ expected_values = [
   'second from second',
   'third from second'
 ]
-range(10)
-  .map(fn() {
-    assert(expected_values.includes(t2()))
-  })
+range(10).map(fn() {
+  assert(expected_values.includes(t2()))
+})
 ############################################################################
 
 ############################################################################
@@ -220,10 +213,9 @@ expected_values = [
   'first a',
   'second b'
 ]
-range(10)
-  .map(fn() {
-    assert(expected_values.includes(t1('a', 'b')))
-  })
+range(10).map(fn() {
+  assert(expected_values.includes(t1('a', 'b')))
+})
 ############################################################################
 # Hackity Hack
 t1 = choice(entries) {
@@ -232,10 +224,9 @@ t1 = choice(entries) {
 
 expected_values = ['red', 'green', 'blue']
 
-range(10)
-  .map(fn() {
-    assert(expected_values.includes(t1(['red', 'green', 'blue'])))
-  })
+range(10).map(fn() {
+  assert(expected_values.includes(t1(['red', 'green', 'blue'])))
+})
 ############################################################################
 
 ############################################################################
@@ -256,8 +247,7 @@ o = {
 a = ['red', 'green', 'blue']
 
 expected_values = [1, 2, 3, 'red', 'green', 'blue']
-range(10)
-  .map(fn() {
-    assert(expected_values.includes(t1(o, a)))
-  })
+range(10).map(fn() {
+  assert(expected_values.includes(t1(o, a)))
+})
 ############################################################################

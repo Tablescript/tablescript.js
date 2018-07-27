@@ -7,10 +7,9 @@ range = system.range
 # test_rolls calls the passed roll function 100 times and asserts the result
 # is in the expected_values array.
 test_rolls = fn(roll, expected_values) {
-  range(100)
-    .map(fn() {
-      assert(expected_values.includes(roll()))
-    })
+  range(100).map(fn() {
+    assert(expected_values.includes(roll()))
+  })
 }
 
 # all_rolls_for_d creates an array of possible rolls for a die with

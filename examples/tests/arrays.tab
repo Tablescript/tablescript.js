@@ -73,10 +73,9 @@ assert(a[3][0] == 4)
 assert(a[3][1] == 5)
 assert(a[3][2] == [6])
 assert(a[3][2][0] == 6)
-range(10)
-  .map(fn() {
-    assert(['first', 'second', 'third'].includes(a[4]()))
-  })
+range(10).map(fn() {
+  assert(['first', 'second', 'third'].includes(a[4]()))
+})
 assert(a[5](2) == 6)
 ############################################################################
 
