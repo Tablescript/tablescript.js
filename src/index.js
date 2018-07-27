@@ -16,12 +16,11 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { parse } from './parser/tablescript-parser';
-import { interpret } from './interpreter';
 import { throwRuntimeError } from './error';
 
 export const runScript = async (context, script, scriptPath) => {
-  const expressions = parse(script, scriptPath);
-  return interpret(expressions, context);
+  const expression = parse(script, scriptPath);
+  return expression.evaluate(context);
 };
 
 const loadScript = async (context, scriptPath) => {

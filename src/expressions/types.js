@@ -22,6 +22,7 @@ export const expressionTypes = {
   BOOLEAN: Symbol('BOOLEAN'),
   BLOCK: Symbol('BLOCK'),
   CALL: Symbol('CALL'),
+  COMPOUND: Symbol('COMPOUND'),
   COMPOUND_STRING: Symbol('COMPOUND_STRING'),
   CONDITIONAL: Symbol('CONDITIONAL'),
   DICE: Symbol('DICE'),
@@ -53,6 +54,8 @@ export const expressionTypeName = type => {
       return 'boolean';
     case expressionTypes.CALL:
       return 'call';
+    case expressionTypes.COMPOUND:
+      return 'compound';
     case expressionTypes.COMPOUND_STRING:
       return 'compound string';
     case expressionTypes.CONDITIONAL:
