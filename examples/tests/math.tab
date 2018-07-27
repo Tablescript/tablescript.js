@@ -11,3 +11,5 @@ assert(math.floor(3.14159) == 3)
 assert(math.ceil(3.14159) == 4)
 
 assert(math.pow(2, 10) == 1024)
+
+assert(['0', '1', '2', '3', '4', '5'].map(math.int) == [0, 1, 2, 3, 4, 5])

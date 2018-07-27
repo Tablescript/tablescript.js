@@ -18,6 +18,8 @@
 import { norm } from './norm';
 import { createNativeFunctionValue } from '../values/function';
 import { requiredParameter, optionalParameterOr } from '../util/parameters';
+import { isString, isNumber, isBoolean } from '../values/types';
+import { throwRuntimeError } from '../error';
 
 const parametersAsNativeNumbers = context => requiredParameter(context, 'arguments').asArray().map(p => p.asNativeNumber(context));
 
@@ -46,6 +48,20 @@ const mathNormI = createNativeFunctionValue(['mean', 'stdev'], async context =>
   )
 );
 
+const mathInt = createNativeFunctionValue(['i'], async context => {
+  const i = requiredParameter(context, 'i');
+  if (isNumber(i)) {
+    return context.factory.createNumericValue(Math.round(i.asNativeValue(context)));
+  }
+  if (isString(i)) {
+    return context.factory.createNumericValue(parseInt(i.asNativeString(context)));
+  }
+  if (isBoolean(i)) {
+    return context.factory.createNumericValue(i.asNativeBoolean(context) ? 1 : 0);
+  }
+  throwRuntimeError(`Cannot convert #{i.type} to NUMBER`);
+});
+
 export const initializeMath = () => ({
   max: mathMax,
   min: mathMin,
@@ -55,4 +71,5 @@ export const initializeMath = () => ({
   pow: mathPow,
   norm: mathNorm,
   normI: mathNormI,
+  int: mathInt,
 });
