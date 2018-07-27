@@ -22,6 +22,7 @@ export const createArraySpread = a => createValue(
   valueTypes.ARRAY_SPREAD,
   a.asNativeValue,
   () => false,
+  () => false,
   {},
   {
     asArray: () => a.asArray(),
@@ -32,6 +33,7 @@ export const createObjectSpread = o => createValue(
   valueTypes.OBJECT_SPREAD,
   o.asNativeValue,
   () => false,
+  () => false,
   {},
   {
     asObject: () => o.asObject(),
@@ -41,6 +43,7 @@ export const createObjectSpread = o => createValue(
 export const createTableSpread = t => createValue(
   valueTypes.TABLE_SPREAD,
   t.asNativeValue,
+  () => false,
   () => false,
   {},
   {

@@ -71,12 +71,12 @@ export const createNumericValue = value => createValue(
   valueTypes.NUMBER,
   asNativeNumber(value),
   nativeEquals(value),
+  nativeEquals(value),
   {},
   {
     asNativeNumber: asNativeNumber(value),
     asNativeString: asNativeString(value),
     asNativeBoolean: asNativeBoolean(value),
-    nativeEquals: nativeEquals(value),
     add: add(value),
     subtract: subtract(value),
     multiplyBy: multiplyBy(value),

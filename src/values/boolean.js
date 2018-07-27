@@ -30,10 +30,10 @@ export const createBooleanValue = value => createValue(
   valueTypes.BOOLEAN,
   asNativeBoolean(value),
   identicalTo(value),
+  nativeEquals(value),
   {},
   {
     asNativeString: asNativeString(value),
     asNativeBoolean: asNativeBoolean(value),
-    nativeEquals: nativeEquals(value),
   },
 );

@@ -211,6 +211,7 @@ export const createArrayValue = entries => createValue(
   valueTypes.ARRAY,
   asNativeArray(entries),
   identicalTo(entries),
+  nativeEquals(entries),
   {
     reduce: reduce(entries),
     map: map(entries),
@@ -230,7 +231,6 @@ export const createArrayValue = entries => createValue(
     asNativeString: asNativeString(entries),
     asNativeBoolean: asNativeBoolean(),
     asNativeArray: asNativeArray(entries),
-    nativeEquals: nativeEquals(entries),
     asArray: asArray(entries),
     setProperty: setProperty(entries),
     getElement: getElement(entries),

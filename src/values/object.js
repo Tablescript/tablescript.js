@@ -66,12 +66,12 @@ export const createObjectValue = o => createValue(
   valueTypes.OBJECT,
   asNativeObject(o),
   nativeEquals(o),
+  nativeEquals(o),
   {},
   {
     asNativeString: asNativeString(o),
     asNativeBoolean,
     asNativeObject: asNativeObject(o),
-    nativeEquals: nativeEquals(o),
     asObject: asObject(o),
     getProperty: getProperty(o),
     setProperty: setProperty(o),

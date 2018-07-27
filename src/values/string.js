@@ -140,6 +140,7 @@ export const createStringValue = value => createValue(
   valueTypes.STRING,
   asNativeString(value),
   identicalTo(value),
+  nativeEquals(value),
   {
     split: split(value),
     capitalize: capitalize(value),
@@ -160,7 +161,6 @@ export const createStringValue = value => createValue(
   {
     asNativeString: asNativeString(value),
     asNativeBoolean: asNativeBoolean(value),
-    nativeEquals: nativeEquals(value),
     getElement: getElement(value),
     add: add(value),
     multiplyBy: multiplyBy(value),

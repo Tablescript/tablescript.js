@@ -30,10 +30,10 @@ export const createUndefined = () => createValue(
   valueTypes.UNDEFINED,
   asNativeValue,
   nativeEquals,
+  nativeEquals,
   {},
   {
     asNativeString,
     asNativeBoolean,
-    nativeEquals,
   }
 );

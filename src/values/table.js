@@ -28,8 +28,6 @@ const asNativeString = () => 'table';
 
 const asNativeBoolean = () => true;
 
-const nativeEquals = () => false;
-
 const asArray = entries => () => entries;
 
 const tableEntryScope = (formalParameters, entries, closure, roll) => ({
@@ -71,13 +69,13 @@ const callFunction = (formalParameters, entries, closure) => async (context, par
 
 export const createTableValue = (formalParameters, entries, closure) => createValue(
   valueTypes.TABLE,
-  asNativeString(),
+  asNativeString,
+  () => false,
   () => false,
   {},
   {
     asNativeString,
     asNativeBoolean,
-    nativeEquals,
     asArray: asArray(entries),
     getElement: getElement(formalParameters, entries, closure),
     callFunction: callFunction(formalParameters, entries, closure),

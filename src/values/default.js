@@ -54,17 +54,17 @@ const getProperty = properties => (context, name) => {
   return context.factory.createUndefined();
 };
 
-const defaultMethods = (asNativeValue, identicalTo, properties, getTypeName) => ({
+const defaultMethods = (asNativeValue, identicalTo, nativeEquals, properties, getTypeName) => ({
   asNativeValue,
   identicalTo,
-  asNativeNumber: runtimeErrorThrower(`Cannot cast ${getTypeName()} to number`),
-  asNativeString: runtimeErrorThrower(`Cannot cast ${getTypeName()} to string`),
-  asNativeBoolean: runtimeErrorThrower(`Cannot cast ${getTypeName()} to boolean`),
-  asNativeArray: runtimeErrorThrower(`Cannot cast ${getTypeName()} to array`),
-  asNativeObject: runtimeErrorThrower(`Cannot cast ${getTypeName()} to object`),
-  nativeEquals: runtimeErrorThrower(`${getTypeName()} equality unimplemented`),
-  asArray: runtimeErrorThrower(`Cannot cast ${getTypeName()} to array`),
-  asObject: runtimeErrorThrower(`Cannot cast ${getTypeName()} to object`),
+  nativeEquals,
+  asNativeNumber: runtimeErrorThrower(`Cannot treat ${getTypeName()} as NUMBER`),
+  asNativeString: runtimeErrorThrower(`Cannot treat ${getTypeName()} as STRING`),
+  asNativeBoolean: runtimeErrorThrower(`Cannot treat ${getTypeName()} as BOOLEAN`),
+  asNativeArray: runtimeErrorThrower(`Cannot treat ${getTypeName()} as ARRAY`),
+  asNativeObject: runtimeErrorThrower(`Cannot treat ${getTypeName()} as OBJECT`),
+  asArray: runtimeErrorThrower(`Cannot treat ${getTypeName()} as ARRAY`),
+  asObject: runtimeErrorThrower(`Cannot treat ${getTypeName()} as OBJECT`),
   getProperty: Object.keys(properties).length === 0 ? runtimeErrorThrower(`Cannot get property of ${getTypeName()}`) : getProperty(properties),
   setProperty: runtimeErrorThrower(`Cannot set property of ${getTypeName()}`),
   getElement: runtimeErrorThrower(`Cannot get element of ${getTypeName()}`),
@@ -80,8 +80,8 @@ const defaultMethods = (asNativeValue, identicalTo, properties, getTypeName) => 
   greaterThanOrEquals: runtimeErrorThrower(`Cannot compare (>=) with ${getTypeName()}`),
 });
 
-export const createValue = (type, nativeValueFunction, identicalToFunction, properties, methods) => ({
+export const createValue = (type, nativeValueFunction, identicalToFunction, nativeEqualsFunction, properties, methods) => ({
   type,
-  ...defaultMethods(nativeValueFunction, identicalToFunction, properties, () => valueTypeName(type)),
+  ...defaultMethods(nativeValueFunction, identicalToFunction, nativeEqualsFunction, properties, () => valueTypeName(type)),
   ...methods,
 });

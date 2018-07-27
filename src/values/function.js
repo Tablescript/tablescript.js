@@ -22,7 +22,6 @@ import { replaceScope, pushStack } from '../context';
 
 const sharedAsNativeString = type => () => `function(${type})`;
 const asNativeBoolean = () => true;
-const nativeEquals = () => false;
 
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');
@@ -35,11 +34,11 @@ export const createNativeFunctionValue = (formalParameters, f) => {
     valueTypes.FUNCTION,
     asNativeString,
     () => false,
+    () => false,
     {},
     {
       asNativeString,
       asNativeBoolean,
-      nativeEquals,
       callFunction,
     },
   );
@@ -60,11 +59,11 @@ export const createFunctionValue = (formalParameters, body, closure) => {
     valueTypes.FUNCTION,
     asNativeString,
     () => false,
+    () => false,
     {},
     {
       asNativeString,
       asNativeBoolean,
-      nativeEquals,
       callFunction,
     }
   );
