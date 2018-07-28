@@ -1,15 +1,13 @@
-assert = system.assert
-
 a = [1,2,3,4,5]
-assert(math.max(...a) == 5)
-assert(math.min(...a) == 1)
+assert(max(...a) == 5)
+assert(min(...a) == 1)
 
-assert(math.round(3.14159) == 3)
-assert(math.round(2.75) == 3)
+assert(round(3.14159) == 3)
+assert(round(2.75) == 3)
 
-assert(math.floor(3.14159) == 3)
-assert(math.ceil(3.14159) == 4)
+assert(floor(3.14159) == 3)
+assert(ceil(3.14159) == 4)
 
-assert(math.pow(2, 10) == 1024)
+assert(pow(2, 10) == 1024)
 
-assert(['0', '1', '2', '3', '4', '5'].map(math.int) == [0, 1, 2, 3, 4, 5])
+assert(['0', '1', '2', '3', '4', '5'].map(int) == [0, 1, 2, 3, 4, 5])

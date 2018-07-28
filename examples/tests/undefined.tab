@@ -1,5 +1,3 @@
-assert = system.assert
-
 ############################################################################
 # Undefined variables are undefined
 a = 12

@@ -68,13 +68,9 @@ const expandArguments = args => ({
 });
 
 const initializeScope = (args, options) => ({
-  system: createObjectValue({
-    ...expandArguments(args),
-    ...initializeBuiltins(options),
-  }),
-  math: createObjectValue({
-    ...initializeMath(),
-  }),
+  ...expandArguments(args),
+  ...initializeBuiltins(options),
+  ...initializeMath(),
 });
 
 const valueFactory = {

@@ -18,16 +18,16 @@ o = {
   }
 }
 
-system.assert(o.foo == 9)
-system.assert(o.bar == 'I have a ham radio')
-system.assert(o.baz(2, 3) == 6)
+assert(o.foo == 9)
+assert(o.bar == 'I have a ham radio')
+assert(o.baz(2, 3) == 6)
 
 o.goo = 12
-system.assert(o.goo == 12)
-system.assert(o['flung'] == 'flamber')
+assert(o.goo == 12)
+assert(o['flung'] == 'flamber')
 
-system.assert(o.sub.subsubsubsub.b == 2)
-system.assert(o.a().map(fn(x) { x - 5 }) == [5,6,7])
+assert(o.sub.subsubsubsub.b == 2)
+assert(o.a().map(fn(x) { x - 5 }) == [5,6,7])
 
 o = {
   a: 1,
@@ -36,7 +36,7 @@ o = {
 }
 p = o
 o.a = 99
-system.assert(p.a == 99)
+assert(p.a == 99)
 
 o = {
   a: 1,
@@ -48,7 +48,7 @@ p = {
   d: 4,
   e: 5
 }
-system.assert(p == {a: 1, b: 2, c: 3, d: 4, e: 5})
+assert(p == {a: 1, b: 2, c: 3, d: 4, e: 5})
 
 o = {
   b: 2,
@@ -57,4 +57,4 @@ o = {
   e: 7,
   c: 0
 }
-system.assert(system.keys(o) == ['a', 'b', 'c', 'd', 'e'])
+assert(keys(o) == ['a', 'b', 'c', 'd', 'e'])
