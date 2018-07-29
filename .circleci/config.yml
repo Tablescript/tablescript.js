@@ -32,6 +32,9 @@ jobs:
           name: Build parser
           command: yarn build:parser
       - run:
+          name: Build template string parser
+          command: yarn build:template-string-parser
+      - run:
           name: Build package
           command: yarn build
 
@@ -44,6 +47,9 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
+      - run:
+          name: Run linter
+          command: yarn lint
       - run:
           name: Run unit tests
           command: yarn test
