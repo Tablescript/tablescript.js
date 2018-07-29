@@ -1,4 +1,4 @@
 
-taverns = system.require('./tavern/taverns.tab')
+taverns = require('./tavern/taverns.tab')
 
-system.print(taverns.tavern())
+print(taverns.tavern())

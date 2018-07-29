@@ -1,6 +1,6 @@
-names = system.require('./names.tab')
-things = system.require('./things.tab')
-creatures = system.require('./creatures.tab')
+names = require('./names.tab')
+things = require('./things.tab')
+creatures = require('./creatures.tab')
 
 all_things = choice {
   ...things.body_part
@@ -47,7 +47,7 @@ create_person = fn(name, lair, pronouns) {
     article: articlize(name),
     lair: lair,
     possessive: possessivethize(name),
-    pronoun: system.choose(pronouns)
+    pronoun: choose(pronouns)
   }
 }
 
@@ -135,7 +135,7 @@ roles = [
   'wizard',
   'woman'
 ].map(fn(n) {
-  description = system.choose([[], [person_description()]])
+  description = choose([[], [person_description()]])
   ['the', ...description, n].join(' ')
 })
 
@@ -184,7 +184,7 @@ create_location = fn(name, areas, types) {
   })(), name].filter(fn(w) { w != '' }).join(' ')
   {
     name: description,
-    area: [system.choose(areas), description].join(' ')
+    area: [choose(areas), description].join(' ')
   }
 }
 
@@ -224,21 +224,21 @@ locations = choice {
 rumour_template = choice {
   {
     subject = person()
-    description = system.choose([[], [person_description()]])
+    description = choose([[], [person_description()]])
     object = desirable_thing()
-    ['the', ...description, subject.name, 'wants', ...system.choose([['their', object.name], [object.article], ['the', object.name]])]
+    ['the', ...description, subject.name, 'wants', ...choose([['their', object.name], [object.article], ['the', object.name]])]
   }
   {
     subject = person()
-    description = system.choose([[], [person_description()]])
+    description = choose([[], [person_description()]])
     object = desirable_thing()
-    ['the', ...description, subject.name, 'wants', ...system.choose([[subject.pronoun, object.name], [object.article], ['the', object.name]]), 'delivered to', subject.pronoun, subject.lair]
+    ['the', ...description, subject.name, 'wants', ...choose([[subject.pronoun, object.name], [object.article], ['the', object.name]]), 'delivered to', subject.pronoun, subject.lair]
   }
   {
     subject = person()
-    description = system.choose([[], [person_description()]])
+    description = choose([[], [person_description()]])
     object = desirable_thing()
-    ['the', ...description, subject.name, 'is searching for', ...system.choose([[subject.pronoun, object.name], [object.article]])]
+    ['the', ...description, subject.name, 'is searching for', ...choose([[subject.pronoun, object.name], [object.article]])]
   }
   {
     subject = local()
@@ -258,21 +258,21 @@ rumour_template = choice {
     [subject.name, 'found', object.article, location.area]
   }
   {
-    password = system.range(d3).map(fn() { all_things() }).join(' ')
+    password = range(d3).map(fn() { all_things() }).join(' ')
     ['the password is', '"' + password + '"']
   }
   {
     subject = local()
-    [subject.name, system.choose(['has been missing for', "hasn't been seen for"]), d6 + 1, system.choose(['days', 'weeks'])]
+    [subject.name, choose(['has been missing for', "hasn't been seen for"]), d6 + 1, choose(['days', 'weeks'])]
   }
 }
 
 prefix = table {
-  1: ['I heard' + system.choose([' that', ''])]
-  2: ['I hear' + system.choose([' that', ''])]
-  3: ['I overheard ' + local().name + ' saying' + system.choose([' that', ''])]
-  4: ['I overheard ' + local().name + ' say' + system.choose([' that', ''])]
-  5-10: [local().name + system.choose([' said', ' told me']) + system.choose([' that', ''])]
+  1: ['I heard' + choose([' that', ''])]
+  2: ['I hear' + choose([' that', ''])]
+  3: ['I overheard ' + local().name + ' saying' + choose([' that', ''])]
+  4: ['I overheard ' + local().name + ' say' + choose([' that', ''])]
+  5-10: [local().name + choose([' said', ' told me']) + choose([' that', ''])]
   11-20: []
 }
 
@@ -281,8 +281,7 @@ rumour = fn() {
 }
 
 rumours = fn(n) {
-  system.range(n)
-    .map(fn() { rumour() })
+  range(n).map(rumour)
 }
 
 {

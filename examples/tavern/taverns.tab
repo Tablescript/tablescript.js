@@ -1,10 +1,8 @@
-choose = system.choose
-
-adjectives = system.require('./adjectives.tab')
-creatures = system.require('./creatures.tab')
-things = system.require('./things.tab')
-names = system.require('./names.tab')
-rumours = system.require('./rumours.tab')
+adjectives = require('./adjectives.tab')
+creatures = require('./creatures.tab')
+things = require('./things.tab')
+names = require('./names.tab')
+rumours = require('./rumours.tab')
 
 suffix = table {
   1-5: 'Inn'
