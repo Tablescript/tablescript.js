@@ -53,6 +53,9 @@ jobs:
       - run:
           name: Run unit tests
           command: yarn test
+      - run:
+          name: Run integration tests
+          command: find ./examples/tests -name "*.tab" -exec node ./dist/bin/tablescript.js {} \;
 
 workflows:
   version: 2
