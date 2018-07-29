@@ -158,10 +158,10 @@ CallExpression "call expression"
     __ args:Arguments {
       return { type: 'call', args }
     }
-    / __ '[' __ property:Expression __ ']' {
+    / '[' __ property:Expression __ ']' {
       return { 'type': 'member', property };
     }
-    / __ '.' __ property:Identifier {
+    / '.' __ property:Identifier {
       return { 'type': 'member', property: createStringLiteral(property) };
     }
   )* {
@@ -189,10 +189,10 @@ MemberExpression "member expression"
     PrimaryExpression
   )
   tail:(
-    __ '[' __ property:Expression __ ']' {
+    '[' __ property:Expression __ ']' {
       return { property };
     }
-    / __ '.' __ property:Identifier {
+    / '.' __ property:Identifier {
       return { property: createStringLiteral(property) };
     }
   )* {
@@ -254,10 +254,10 @@ ArrayEntries
 
 ObjectLiteral "object"
   = '{' __ p:ObjectProperties __ '}' {
-    return createObjectLiteral(p);
+    return createObjectLiteral(createLocation(location(), options), p);
   }
   / '{' __ '}' {
-    return createObjectLiteral([]);
+    return createObjectLiteral(createLocation(location(), options), []);
   }
 
 ObjectProperties
