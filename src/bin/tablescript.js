@@ -29,7 +29,6 @@ import { TablescriptError } from '../error';
 import pkginfo from 'pkginfo';
 
 import { initializeBuiltins } from '../builtins/builtins';
-import { initializeMath } from '../builtins/math';
 import { createArrayValue } from '../values/array';
 import { createBooleanValue } from '../values/boolean';
 import { createNumericValue } from '../values/numeric';
@@ -70,7 +69,6 @@ const expandArguments = args => ({
 const initializeScope = (args, options) => ({
   ...expandArguments(args),
   ...initializeBuiltins(options),
-  ...initializeMath(),
 });
 
 const valueFactory = {

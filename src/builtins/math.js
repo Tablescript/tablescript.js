@@ -18,67 +18,54 @@
 import { norm } from './norm';
 import { createNativeFunctionValue } from '../values/function';
 import { requiredParameter, optionalParameterOr } from '../util/parameters';
-import { isString, isNumber, isBoolean } from '../values/types';
-import { throwRuntimeError } from '../error';
 
 const parametersAsNativeNumbers = context => requiredParameter(context, 'arguments').asArray().map(p => p.asNativeNumber(context));
 
-const mathMax = createNativeFunctionValue([], async context => context.factory.createNumericValue(Math.max(...parametersAsNativeNumbers(context))));
-const mathMin = createNativeFunctionValue([], async context => context.factory.createNumericValue(Math.min(...parametersAsNativeNumbers(context))));
-const mathRound = createNativeFunctionValue(['n'], async context => context.factory.createNumericValue(Math.round(requiredParameter(context, 'n').asNativeNumber(context))));
-const mathFloor = createNativeFunctionValue(['n'], async context =>context.factory.createNumericValue(Math.floor(requiredParameter(context, 'n').asNativeNumber(context))));
-const mathCeil = createNativeFunctionValue(['n'], async context => context.factory.createNumericValue(Math.ceil(requiredParameter(context, 'n').asNativeNumber(context))));
-const mathPow = createNativeFunctionValue(['x', 'y'], async context => context.factory.createNumericValue(Math.pow(requiredParameter(context, 'x').asNativeNumber(context), requiredParameter(context, 'y').asNativeNumber(context))));
-const mathNorm = createNativeFunctionValue(['mean', 'stdev'], async context => 
-  context.factory.createNumericValue(
+const mathMax = async context => context.factory.createNumericValue(Math.max(...parametersAsNativeNumbers(context)));
+
+const mathMin = async context => context.factory.createNumericValue(Math.min(...parametersAsNativeNumbers(context)));
+
+const mathRound = async context => context.factory.createNumericValue(
+  Math.round(requiredParameter(context, 'n').asNativeNumber(context))
+);
+
+const mathFloor = async context =>context.factory.createNumericValue(
+  Math.floor(requiredParameter(context, 'n').asNativeNumber(context))
+);
+
+const mathCeil = async context => context.factory.createNumericValue(
+  Math.ceil(requiredParameter(context, 'n').asNativeNumber(context))
+);
+
+const mathPow = async context => context.factory.createNumericValue(
+  Math.pow(
+    requiredParameter(context, 'x').asNativeNumber(context),
+    requiredParameter(context, 'y').asNativeNumber(context)
+  )
+);
+
+const mathNorm = async context => context.factory.createNumericValue(
+  norm(
+    requiredParameter(context, 'mean').asNativeNumber(context),
+    optionalParameterOr(context, 'stdev', context.factory.createNumericValue(1.0)).asNativeNumber(context),
+  )
+);
+const mathNormI = async context => context.factory.createNumericValue(
+  Math.round(
     norm(
       requiredParameter(context, 'mean').asNativeNumber(context),
       optionalParameterOr(context, 'stdev', context.factory.createNumericValue(1.0)).asNativeNumber(context),
     )
   )
 );
-const mathNormI = createNativeFunctionValue(['mean', 'stdev'], async context => 
-  context.factory.createNumericValue(
-    Math.round(
-      norm(
-        requiredParameter(context, 'mean').asNativeNumber(context),
-        optionalParameterOr(context, 'stdev', context.factory.createNumericValue(1.0)).asNativeNumber(context),
-      )
-    )
-  )
-);
-
-const mathInt = createNativeFunctionValue(['i'], async context => {
-  const i = requiredParameter(context, 'i');
-  if (isNumber(i)) {
-    return context.factory.createNumericValue(Math.round(i.asNativeValue(context)));
-  }
-  if (isString(i)) {
-    return context.factory.createNumericValue(parseInt(i.asNativeString(context)));
-  }
-  if (isBoolean(i)) {
-    return context.factory.createNumericValue(i.asNativeBoolean(context) ? 1 : 0);
-  }
-  throwRuntimeError(`Cannot convert #{i.type} to NUMBER`);
-});
-
-const builtInStr = createNativeFunctionValue(['s'], async context => {
-  const s = requiredParameter(context, 's');
-  if (isString(s)) {
-    return s;
-  }
-  return context.factory.createStringValue(s.asNativeString(context));
-});
 
 export const initializeMath = () => ({
-  max: mathMax,
-  min: mathMin,
-  round: mathRound,
-  floor: mathFloor,
-  ceil: mathCeil,
-  pow: mathPow,
-  norm: mathNorm,
-  normI: mathNormI,
-  int: mathInt,
-  str: builtInStr,
+  max: createNativeFunctionValue([], mathMax),
+  min: createNativeFunctionValue([], mathMin),
+  round: createNativeFunctionValue(['n'], mathRound),
+  floor: createNativeFunctionValue(['n'], mathFloor),
+  ceil: createNativeFunctionValue(['n'], mathCeil),
+  pow: createNativeFunctionValue(['x', 'y'], mathPow),
+  norm: createNativeFunctionValue(['mean', 'stdev'], mathNorm),
+  normI: createNativeFunctionValue(['mean', 'stdev'], mathNormI),
 });

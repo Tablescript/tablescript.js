@@ -22,12 +22,20 @@ import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
 import { requireBuiltIn } from './require';
 import { createNativeFunctionValue } from '../values/function';
+import { createObjectValue } from '../values/object';
+import { strBuiltIn, intBuiltIn } from './convert';
+import { initializeMath } from './math';
 
 export const initializeBuiltins = () => ({
-  'assert': createNativeFunctionValue(['condition', 'message'], assertBuiltIn),
+  assert: createNativeFunctionValue(['condition', 'message'], assertBuiltIn),
   choose: createNativeFunctionValue(['items'], chooseBuiltIn),
   keys: createNativeFunctionValue(['o'], keysBuiltIn),
   print: createNativeFunctionValue([], printBuiltIn),
   range: createNativeFunctionValue(['start', 'end', 'step'], rangeBuiltIn),
-  'require': createNativeFunctionValue(['filename'], requireBuiltIn),
+  require: createNativeFunctionValue(['filename'], requireBuiltIn),
+  str: createNativeFunctionValue(['s'], strBuiltIn),
+  int: createNativeFunctionValue(['i'], intBuiltIn),
+  math: createObjectValue({
+    ...initializeMath(),
+  }),
 });
