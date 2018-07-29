@@ -62,6 +62,14 @@ const mathInt = createNativeFunctionValue(['i'], async context => {
   throwRuntimeError(`Cannot convert #{i.type} to NUMBER`);
 });
 
+const builtInStr = createNativeFunctionValue(['s'], async context => {
+  const s = requiredParameter(context, 's');
+  if (isString(s)) {
+    return s;
+  }
+  return context.factory.createStringValue(s.asNativeString(context));
+});
+
 export const initializeMath = () => ({
   max: mathMax,
   min: mathMin,
@@ -72,4 +80,5 @@ export const initializeMath = () => ({
   norm: mathNorm,
   normI: mathNormI,
   int: mathInt,
+  str: builtInStr,
 });
