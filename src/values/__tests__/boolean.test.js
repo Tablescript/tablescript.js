@@ -54,7 +54,7 @@ describe('boolean', () => {
     });
 
     it('cannot convert implicitly to number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast BOOLEAN to number');
+      expect(() => value.asNativeNumber()).to.throw('Cannot treat BOOLEAN as NUMBER');
     });
 
     it('has a string value of "true"', () => {
@@ -66,11 +66,11 @@ describe('boolean', () => {
     });
 
     it('cannot convert implicitly to an array', () => {
-      expect(() => value.asNativeArray()).to.throw('Cannot cast BOOLEAN to array');
+      expect(() => value.asNativeArray()).to.throw('Cannot treat BOOLEAN as ARRAY');
     });
 
     it('cannot convert implicitly to an object', () => {
-      expect(() => value.asNativeObject()).to.throw('Cannot cast BOOLEAN to object');
+      expect(() => value.asNativeObject()).to.throw('Cannot treat BOOLEAN as OBJECT');
     });
 
     describe('equivalency', () => {
@@ -84,11 +84,11 @@ describe('boolean', () => {
     });
 
     it('cannot convert implicitly to an array', () => {
-      expect(() => value.asArray()).to.throw('Cannot cast BOOLEAN to array');
+      expect(() => value.asArray()).to.throw('Cannot treat BOOLEAN as ARRAY');
     });
 
     it('cannot convert implicitly to an object', () => {
-      expect(() => value.asObject()).to.throw('Cannot cast BOOLEAN to object');
+      expect(() => value.asObject()).to.throw('Cannot treat BOOLEAN as OBJECT');
     });
 
     it('throws when asked for a property', () => {
@@ -172,7 +172,7 @@ describe('boolean', () => {
     });
 
     it('cannot convert implicitly to number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast BOOLEAN to number');
+      expect(() => value.asNativeNumber()).to.throw('Cannot treat BOOLEAN as NUMBER');
     });
 
     it('has a string value of "false"', () => {
@@ -184,11 +184,11 @@ describe('boolean', () => {
     });
 
     it('cannot convert implicitly to an array', () => {
-      expect(() => value.asNativeArray()).to.throw('Cannot cast BOOLEAN to array');
+      expect(() => value.asNativeArray()).to.throw('Cannot treat BOOLEAN as ARRAY');
     });
 
     it('cannot convert implicitly to an object', () => {
-      expect(() => value.asNativeObject()).to.throw('Cannot cast BOOLEAN to object');
+      expect(() => value.asNativeObject()).to.throw('Cannot treat BOOLEAN as OBJECT');
     });
 
     describe('equivalency', () => {
@@ -202,11 +202,11 @@ describe('boolean', () => {
     });
 
     it('cannot convert implicitly to an array', () => {
-      expect(() => value.asArray()).to.throw('Cannot cast BOOLEAN to array');
+      expect(() => value.asArray()).to.throw('Cannot treat BOOLEAN as ARRAY');
     });
 
     it('cannot convert implicitly to an object', () => {
-      expect(() => value.asObject()).to.throw('Cannot cast BOOLEAN to object');
+      expect(() => value.asObject()).to.throw('Cannot treat BOOLEAN as OBJECT');
     });
 
     it('throws when asked for a property', () => {

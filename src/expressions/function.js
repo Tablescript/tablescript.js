@@ -25,4 +25,11 @@ const evaluate = (location, formalParameters, body) => async context => {
   return createFunctionValue(formalParameters, body, { ...localContext.scope });
 };
 
-export const createFunctionExpression = (location, formalParameters, body) => createExpression(expressionTypes.FUNCTION, evaluate(location, formalParameters, body));
+export const createFunctionExpression = (
+  location,
+  formalParameters,
+  body
+) => createExpression(
+  expressionTypes.FUNCTION,
+  evaluate(location, formalParameters, body)
+);

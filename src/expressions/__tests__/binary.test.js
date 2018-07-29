@@ -25,7 +25,7 @@ import { numericValue } from '../../__tests__/util';
 import { createNumericValue } from '../../values/numeric';
 import { expressionTypes } from '../types';
 
-describe('createBinaryExpressionWithOperators', () => {
+xdescribe('createBinaryExpressionWithOperators', () => {
   let expression;
   let leftExpression;
   let rightExpression;

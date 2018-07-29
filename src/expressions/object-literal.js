@@ -44,4 +44,7 @@ const evaluateObjectProperty = (key, value) => async context => createObjectValu
   [key]: await value.evaluate(context),
 });
 
-export const createObjectLiteralPropertyExpression = (key, value) => createExpression(expressionTypes.OBJECT_PROPERTY, evaluateObjectProperty(key, value));
+export const createObjectLiteralPropertyExpression = (key, value) => createExpression(
+  expressionTypes.OBJECT_PROPERTY,
+  evaluateObjectProperty(key, value)
+);

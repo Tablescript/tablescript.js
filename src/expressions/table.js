@@ -70,4 +70,7 @@ const evaluate = (location, formalParameters, entries) => async context => {
   return createTableValue(formalParameters, await expandEntries(localContext, entries), closureFromScope(localContext));
 };
 
-export const createTableExpression = (location, formalParameters, entries) => createExpression(expressionTypes.TABLE, evaluate(location, formalParameters, entries));
+export const createTableExpression = (location, formalParameters, entries) => createExpression(
+  expressionTypes.TABLE,
+  evaluate(location, formalParameters, entries)
+);

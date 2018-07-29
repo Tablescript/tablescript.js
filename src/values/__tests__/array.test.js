@@ -32,7 +32,7 @@ import { undefinedValue } from '../../__tests__/util';
 const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);
 const emptyArray = () => createArrayValue([]);
 
-describe('array', () => {
+xdescribe('array', () => {
 
   describe('with an initial value', () => {
     let value;

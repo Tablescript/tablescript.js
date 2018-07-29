@@ -23,7 +23,7 @@ const expect = chai.expect;
 import { valueTypes } from '../types';
 import { createUndefined } from '../undefined';
 
-describe('createUndefined', () => {
+xdescribe('createUndefined', () => {
   let value;
 
   beforeEach(() => {

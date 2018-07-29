@@ -75,7 +75,12 @@ const getElement = entries => (context, index) => {
 
 const add = entries => (context, other) => createArrayValue([...entries, other]);
 
-const multiplyBy = entries => (context, other) => createArrayValue(R.range(0, other.asNativeNumber(context)).reduce((all,n) => ([...all, ...entries]), []));
+const multiplyBy = entries => (context, other) => createArrayValue(
+  R.range(
+    0,
+    other.asNativeNumber(context)
+  ).reduce((all,n) => ([...all, ...entries]), [])
+);
 
 const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], async context => {
   const reducer = requiredParameter(context, 'reducer');

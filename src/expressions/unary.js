@@ -37,4 +37,7 @@ const evaluate = (location, operator, argument) => async context => {
   throwRuntimeError(`Invalid operator ${operator}`, localContext);
 };
 
-export const createUnaryExpression = (location, operator, argument) => createExpression(expressionTypes.UNARY, evaluate(location, operator, argument));
+export const createUnaryExpression = (location, operator, argument) => createExpression(
+  expressionTypes.UNARY,
+  evaluate(location, operator, argument)
+);

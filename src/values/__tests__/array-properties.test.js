@@ -27,7 +27,7 @@ import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
 import { numericValue, booleanValue, arrayValue } from '../../__tests__/util';
 
-describe('array', () => {
+xdescribe('array', () => {
   const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);
   const nonEmptyNumericArray = () => createArrayValue([createNumericValue(4), createNumericValue(5), createNumericValue(6)]);
   const emptyArray = () => createArrayValue([]);

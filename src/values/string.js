@@ -65,7 +65,10 @@ const split = value => createNativeFunctionValue(['separator'], async context =>
   return context.factory.createArrayValue(value.split().map(s => createStringValue(s)));
 });
 
-const capitalize = value => createNativeFunctionValue([], async () => createStringValue(value.length === 0 ? value : value[0].toUpperCase() + value.slice(1)));
+const capitalize = value => createNativeFunctionValue(
+  [],
+  async () => createStringValue(value.length === 0 ? value : value[0].toUpperCase() + value.slice(1))
+);
 
 const uppercase = value => createNativeFunctionValue([], async () => createStringValue(value.toUpperCase()));
 

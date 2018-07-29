@@ -24,7 +24,7 @@ import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
 import { valueTypes } from '../types';
 
-describe('string value', () => {
+xdescribe('string value', () => {
   let value;
 
   describe('containing a non-empty string', () => {
