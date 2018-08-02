@@ -19,7 +19,7 @@ const defaultInterpreterOptions = options => ({
     },
   },
   flags: {
-    validateTables: options.tableValidation,
+    validateTables: options.tableValidation || true,
   }
 });
 
