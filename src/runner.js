@@ -15,12 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { loadAndRunScript } from '../runner';
-import { replaceScope } from '../context';
-import { requiredParameter } from '../util/parameters';
+import { parse } from './parser/tablescript-parser';
+import { throwRuntimeError } from './error';
 
-export const requireBuiltIn = async context => {
-  const filename = requiredParameter(context, 'filename').asNativeString(context);
-  const args = requiredParameter(context, 'arguments').asArray().slice(1);
-  return loadAndRunScript(replaceScope(context, context.initializeScope(args, context.options)), filename);
+export const runScript = async (context, script, scriptPath) => {
+  const expression = parse(script, scriptPath);
+  return expression.evaluate(context);
+};
+
+const loadScript = async (context, scriptPath) => {
+  for (const loader of context.options.input.loaders) {
+    const script = await loader(context, scriptPath);
+    if (script) {
+      return script;
+    }
+  }
+  throwRuntimeError(`Unable to load "${scriptPath}"`, context);
+};
+
+export const loadAndRunScript = async (context, scriptPath, args) => {
+  const script = await loadScript(context, scriptPath);
+  return runScript(context, script.body, script.path, args);
 };

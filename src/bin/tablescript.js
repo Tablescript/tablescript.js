@@ -20,21 +20,10 @@
 import 'babel-polyfill';
 import options from 'commander';
 import fs from 'fs';
-import { runScript } from '../index';
+import { runScript, initializeContext, defaultInitializeScope, defaultInterpreterOptions, defaultValueFactory } from '../index';
 import { repl } from '../repl';
-import { initializeContext } from '../context';
-import { loadFsFile } from '../fs-loader';
-import { loadHttpFile } from '../http-loader';
 import { TablescriptError } from '../error';
 import pkginfo from 'pkginfo';
-
-import { initializeBuiltins } from '../builtins/builtins';
-import { createArrayValue } from '../values/array';
-import { createBooleanValue } from '../values/boolean';
-import { createNumericValue } from '../values/numeric';
-import { createObjectValue } from '../values/object';
-import { createStringValue } from '../values/string';
-import { createUndefined } from '../values/undefined';
 
 pkginfo(module, 'version');
 
@@ -45,45 +34,16 @@ options
   .option('-v, --no-table-validation', 'Disable table entry validation')
   .parse(process.argv);
 
-const interpreterOptions = {
-  input: {
-    loaders: [loadFsFile, loadHttpFile],
-  },
-  output: {
-    print: s => {
-      console.log(s);
-    },
-  },
-  flags: {
-    validateTables: options.tableValidation,
-  }
-};
+const interpreterOptions = defaultInterpreterOptions(options);
 
 const filename = options.args[0];
 const args = options.args.slice(1);
 
-const expandArguments = args => ({
-  arguments: createArrayValue(args.map(a => (typeof a === 'string') ? createStringValue(a) : a))
-});
-
-const initializeScope = (args, options) => ({
-  ...expandArguments(args),
-  ...initializeBuiltins(options),
-});
-
-const valueFactory = {
-  createArrayValue,
-  createBooleanValue,
-  createNumericValue,
-  createStringValue,
-  createUndefined,
-};
-
 const context = initializeContext(
-  initializeScope,
+  defaultInitializeScope,
   args,
   interpreterOptions,
-  valueFactory,
+  defaultValueFactory,
 );
 
 if (!filename) {
