@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import R from 'ramda';
+import * as R from 'ramda';
 import { isBoolean, isNumber, isString, isArray, isUndefined } from '../values/types';
 
 export const booleanValue = expected => value => {

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import R from 'ramda';
+import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes, isString, isNumber } from './types';
 import { createNativeFunctionValue } from './function';
