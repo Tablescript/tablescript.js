@@ -25,7 +25,7 @@ import { createBooleanValue } from '../../values/boolean';
 import { createConditionalExpression } from '../conditional';
 import { numericValue } from '../../__tests__/util';
 
-xdescribe('createConditionalExpression', () => {
+describe('createConditionalExpression', () => {
   describe('evaluate', () => {
     it('returns the consequent value when test expression is true', () => {
       const mockTestExpression = {

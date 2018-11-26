@@ -20,35 +20,37 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { createExpression } from '../default';
-import { expressionTypes } from '../types';
+import { createBooleanLiteral } from '../boolean-literal';
 
-describe('createExpression', () => {
-  let expression;
+describe('createBooleanValue', () => {
+  describe('evaluate', () => {
+    let mockContext;
 
-  beforeEach(() => {
-    expression = createExpression(expressionTypes.BOOLEAN, 'some function');
+    beforeEach(() => {      
+      mockContext = {
+        factory: {
+          createBooleanValue: b => b
+        }
+      }
+    });
+
+    it('evaluates a true literal to a true boolean value', () => {
+      const expression = createBooleanLiteral(true);
+      return expression.evaluate(mockContext).then(v => {
+        expect(v).to.equal(true);
+      });
+    });
+
+    it('evaluates a false literal to a false boolean value', () => {
+      const expression = createBooleanLiteral(false);
+      return expression.evaluate(mockContext).then(v => {
+        expect(v).to.equal(false);
+      });
+    });
   });
 
-  it('stores the type', () => {
-    expect(expression.type).to.equal(expressionTypes.BOOLEAN);
-  });
-
-  it('stores the evaluate function', () => {
-    expect(expression.evaluate).to.equal('some function');
-  });
-
-  it('throws when evaluating as a left-hand side', () => {
+  it('throws when evaluated as a lhs', () => {
+    const expression = createBooleanLiteral(true);
     expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to boolean expression');
-  });
-
-  describe('with an evaluateAsLeftHandSide parameter', () => {
-    beforeEach(() => {
-      expression = createExpression(expressionTypes.BOOLEAN, 'some function', 'some other function');
-    });
-
-    it('stores the evaluateAsLeftHandSide function', () => {
-      expect(expression.evaluateAsLeftHandSide).to.equal('some other function');
-    });
   });
 });
