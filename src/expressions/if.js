@@ -15,22 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createUndefined } from '../values/undefined';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
-import { updateStack } from '../context';
 
 const evaluate = (location, condition, ifBlock, elseBlock) => async context => {
-  const localContext = updateStack(context, location);
-  const expressionValue = await condition.evaluate(localContext);
-  if (expressionValue.asNativeBoolean(localContext)) {
-    return ifBlock.evaluate(localContext);
+  console.log('IF');
+  context.setLocation(location);
+  const expressionValue = await condition.evaluate(context);
+  if (expressionValue.asNativeBoolean(context)) {
+    return ifBlock.evaluate(context);
   } else {
     if (elseBlock) {
-      return elseBlock.evaluate(localContext);
+      return elseBlock.evaluate(context);
     }
   }
-  return createUndefined();
+  return context.factory.createUndefined();
 };
 
 export const createIfExpression = (

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
+import R from 'ramda';
 import { throwRuntimeError } from '../error';
 
 const mapFormalParameters = (formalParameters, parameters) => parameters.reduce((acc, p, i) => ({ ...acc, [formalParameters[i]]: p }), {});
@@ -26,12 +26,13 @@ export const mapFunctionParameters = (context, formalParameters, parameters) => 
 });
 
 export const requiredParameter = (context, name) => {
-  if (context.scope[name]) {
-    return context.scope[name];
+  const localVariable = context.getLocalVariable(name);
+  if (localVariable) {
+    return localVariable;
   }
   throwRuntimeError(`Missing required parameter ${name}`, context);
 };
 
-export const optionalParameter = (context, name) => context.scope[name];
+export const optionalParameter = (context, name) => context.getLocalVariable(name);
 
-export const optionalParameterOr = (context, name, value) => context.scope[name] ? context.scope[name] : value;
+export const optionalParameterOr = (context, name, value) => context.getLocalVariable(name) ? context.getLocalVariable(name) : value;

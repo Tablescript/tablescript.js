@@ -22,7 +22,6 @@ import { randomNumber } from '../util/random';
 import { createUndefined } from './undefined';
 import { createNumericValue } from './numeric';
 import { mapFunctionParameters } from '../util/parameters';
-import { replaceScope, pushStack } from '../context';
 
 const asNativeString = () => 'table';
 
@@ -39,12 +38,13 @@ const getElement = (formalParameters, entries, closure) => async (context, index
   const roll = index.asNativeNumber(context);
   const selectedEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
   if (selectedEntry) {
-    const localContext = pushStack(replaceScope(context, {
-      ...context.scope,
-      ...closure,
-      ...tableEntryScope(formalParameters, entries, closure, roll),
-    }));
-    return selectedEntry.evaluate(localContext);
+    const oldScopes = context.swapScopes([
+      closure,
+      tableEntryScope(formalParameters, entries, closure, roll),
+    ]);
+    const result = await selectedEntry.evaluate(context);
+    context.swapScopes(oldScopes);
+    return result;
   }
   return createUndefined();
 };
@@ -58,13 +58,14 @@ const getRolledEntry = (entries, roll) => entries.find((e, index) => e.rollAppli
 const callFunction = (formalParameters, entries, closure) => async (context, parameters) => {
   const roll = getTableRoll(entries);
   const rolledEntry = getRolledEntry(entries, roll);
-  const localContext = pushStack(replaceScope(context, {
-    ...context.scope,
-    ...closure,
-    ...mapFunctionParameters(context, formalParameters, parameters),
-    ...tableEntryScope(formalParameters, entries, closure, roll),  
-  }));
-  return rolledEntry.evaluate(localContext);
+  const oldScopes = context.swapScopes([
+    closure,
+    mapFunctionParameters(context, formalParameters, parameters),
+    tableEntryScope(formalParameters, entries, closure, roll),  
+  ]);
+  const result = await rolledEntry.evaluate(context);
+  context.swapScopes(oldScopes);
+  return result;
 };
 
 export const createTableValue = (formalParameters, entries, closure) => createValue(

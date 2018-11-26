@@ -18,7 +18,6 @@
 import { createValue } from './default';
 import { valueTypes } from './types';
 import { mapFunctionParameters } from '../util/parameters';
-import { replaceScope, pushStack } from '../context';
 
 const sharedAsNativeString = type => () => `function(${type})`;
 const asNativeBoolean = () => true;
@@ -26,8 +25,12 @@ const asNativeBoolean = () => true;
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');
   const callFunction = async (context, parameters) => {
-    const localContext = replaceScope(context, mapFunctionParameters(context, formalParameters, parameters));
-    return f(localContext);
+    context.dump('native callFunction()');
+    const oldScopes = context.swapScopes([mapFunctionParameters(context, formalParameters, parameters)]);
+    context.dump('native callFunction() after swap');
+    const result = await f(context);
+    context.swapScopes(oldScopes);
+    return result;
   };
 
   return createValue(
@@ -47,12 +50,15 @@ export const createNativeFunctionValue = (formalParameters, f) => {
 export const createFunctionValue = (formalParameters, body, closure) => {
   const asNativeString = sharedAsNativeString('tablescript');
   const callFunction = async (context, parameters) => {
-    const localContext = pushStack(replaceScope(context, {
-      ...context.scope,
-      ...closure,
-      ...mapFunctionParameters(context, formalParameters, parameters),
-    }));
-    return body.evaluate(localContext);
+    context.dump('callFunction()');
+    const oldScopes = context.swapScopes([
+      mapFunctionParameters(context, formalParameters, parameters),
+      closure,
+    ]);
+    context.dump('callFunction() after swap');
+    const result = body.evaluate(context);
+    context.swapScopes(oldScopes);
+    return result;
   };
 
   return createValue(

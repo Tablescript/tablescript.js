@@ -15,40 +15,68 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-export const updateStack = (context, location) => ({
-  ...context,
-  stack: [
-    location,
-    ...context.stack.slice(1),
-  ]
-});
+import { valueTypeName } from './values/types';
 
-export const pushStack = context => ({
-  ...context,
-  stack: [
-    context.stack[0],
-    ...context.stack,
-  ],
-});
+const valueAsString = value => value.asNativeString();
 
-export const copyScope = context => ({
-  ...context,
-  scope: {
-    ...context.scope,
-  },
-});
+const dumpScopeEntry = scope => name => {
+  console.log(`    ${name} = ${valueAsString(scope[name])}`);
+};
 
-export const replaceScope = (context, scope) => ({
-  ...context,
-  scope,
-});
+const dumpScope = scope => {
+  console.log('    ***** SCOPE *****');
+  Object.keys(scope).forEach(dumpScopeEntry(scope));
+  console.log('    *****************');
+};
 
-export const closureFromScope = context => ({ ...context.scope });
+export const initializeContext = (initializeScope, args, options, factory) => {
+  const stacks = {
+    locations: [],
+    scopes: [initializeScope(args, options)],
+  };
 
-export const initializeContext = (initializeScope, args, options, factory) => ({
-  stack: [],
-  scope: initializeScope(args, options),
-  initializeScope,
-  options,
-  factory,
-});
+  return ({
+    dump: message => {
+      console.log(`  ----- CONTEXT ${message}`);
+      stacks.scopes.forEach(dumpScope);
+      console.log('  -----');
+    },
+    initializeScope,
+    options,
+    factory,
+    locations: () => stacks.locations,
+    pushLocation: location => {
+      stacks.locations = [location, ...stacks.locations.slice(1)];
+    },
+    setLocation: location => {
+      stacks.locations = [location, ...stacks.locations.slice(1)];
+    },
+    popLocation: () => {
+      stacks.locations = [...stacks.locations.slice(1)];
+    },
+
+    scopes: () => stacks.scopes,
+    pushScope: () => {
+      stacks.scopes = [{}, ...stacks.scopes];
+    },
+    swapScopes: scopes => {
+      const currentScopes = stacks.scopes;
+      stacks.scopes = scopes;
+      return currentScopes;
+    },
+    popScope: () => {
+      stacks.scopes = [...stacks.scopes.slice(1)];
+    },
+    getScope: () => stacks.scopes.reverse().reduce((acc, s) => ({ ...acc, ...s }), {}),
+    getVariable: name => stacks.scopes.reduce((acc, s) => acc || s[name], undefined),
+    getLocalVariable: name => stacks.scopes[0][name],
+    setVariable: (name, value) => {
+      const frame = stacks.scopes.findIndex(s => s[name]);
+      if (frame === -1) {
+        stacks.scopes[0][name] = value;
+      } else {
+        stacks.scopes[frame][name] = value;
+      }
+    },
+  });
+};

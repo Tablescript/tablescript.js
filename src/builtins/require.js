@@ -16,11 +16,13 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { loadAndRunScript } from '../runner';
-import { replaceScope } from '../context';
 import { requiredParameter } from '../util/parameters';
 
 export const requireBuiltIn = async context => {
   const filename = requiredParameter(context, 'filename').asNativeString(context);
   const args = requiredParameter(context, 'arguments').asArray().slice(1);
-  return loadAndRunScript(replaceScope(context, context.initializeScope(args, context.options)), filename);
+  const oldScopes = context.swapScopes([context.initializeScope(args, context.options)]);
+  const result = await loadAndRunScript(context, filename);
+  context.swapScopes(oldScopes);
+  return result;
 };

@@ -17,15 +17,15 @@
 
 import { expressionTypes } from './types';
 import { createExpression } from './default';
-import { updateStack } from '../context';
 
 const evaluate = (location, testExpression, consequentExpression, alternateExpression) => async context => {
-  const localContext = updateStack(context, location);
-  const testValue = await testExpression.evaluate(localContext);
-  if (testValue.asNativeBoolean(localContext)) {
-    return consequentExpression.evaluate(localContext);
+  console.log('CONDITIONAL');
+  context.setLocation(location);
+  const testValue = await testExpression.evaluate(context);
+  if (testValue.asNativeBoolean(context)) {
+    return consequentExpression.evaluate(context);
   }
-  return alternateExpression.evaluate(localContext);
+  return alternateExpression.evaluate(context);
 };
 
 export const createConditionalExpression = (location, testExpression, consequentExpression, alternateExpression) => {

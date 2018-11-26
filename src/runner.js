@@ -17,10 +17,11 @@
 
 import { parse } from './parser/tablescript-parser';
 import { throwRuntimeError } from './error';
+import { initializeStack } from './stack';
 
 export const runScript = async (context, script, scriptPath) => {
   const expression = parse(script, scriptPath);
-  return expression.evaluate(context);
+  return expression.evaluate(context, initializeStack());
 };
 
 const loadScript = async (context, scriptPath) => {

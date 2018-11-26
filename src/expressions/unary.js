@@ -16,25 +16,23 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { createExpression } from './default';
-import { createNumericValue } from '../values/numeric';
-import { createBooleanValue } from '../values/boolean';
 import { throwRuntimeError } from '../error';
 import { expressionTypes } from './types';
-import { updateStack } from '../context';
 
 const evaluate = (location, operator, argument) => async context => {
-  const localContext = updateStack(context, location);
-  const value = await argument.evaluate(localContext);
+  console.log('UNARY');
+  context.setLocation(location);
+  const value = await argument.evaluate(context);
   if (operator === '-') {
-    return createNumericValue(-1 * value.asNativeNumber(localContext));
+    return context.factory.createNumericValue(-1 * value.asNativeNumber(context));
   }
   if (operator === '+') {
-    return createNumericValue(value.asNativeNumber(localContext));
+    return context.factory.createNumericValue(value.asNativeNumber(context));
   }
   if (operator === 'not') {
-    return createBooleanValue(!value.asNativeBoolean(localContext));
+    return context.factory.createBooleanValue(!value.asNativeBoolean(context));
   }
-  throwRuntimeError(`Invalid operator ${operator}`, localContext);
+  throwRuntimeError(`Invalid operator ${operator}`, context);
 };
 
 export const createUnaryExpression = (location, operator, argument) => createExpression(

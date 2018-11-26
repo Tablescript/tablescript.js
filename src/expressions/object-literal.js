@@ -18,7 +18,6 @@
 import { createObjectValue } from '../values/object';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
-import { updateStack } from '../context';
 
 const evaluator = context => (p, entry) => {
   return p.then(acc => new Promise((resolve, reject) => {
@@ -34,15 +33,16 @@ const evaluator = context => (p, entry) => {
 };
 
 const evaluate = (location, entries) => async context => {
-  const localContext = updateStack(context, location);
-  return createObjectValue(await entries.reduce(evaluator(localContext), Promise.resolve({})));
+  console.log('OBJECT');
+  context.setLocation(location);
+  return createObjectValue(await entries.reduce(evaluator(context), Promise.resolve({})));
 };
 
 export const createObjectLiteral = (location, entries) => createExpression(expressionTypes.OBJECT, evaluate(location, entries));
 
-const evaluateObjectProperty = (key, value) => async context => createObjectValue({
+const evaluateObjectProperty = (key, value) => async context => { console.log('OBJECT_PROPERTY'); return createObjectValue({
   [key]: await value.evaluate(context),
-});
+}); };
 
 export const createObjectLiteralPropertyExpression = (key, value) => createExpression(
   expressionTypes.OBJECT_PROPERTY,

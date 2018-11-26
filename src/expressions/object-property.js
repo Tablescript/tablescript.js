@@ -23,32 +23,32 @@ import {
 } from '../values/left-hand-side';
 import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
-import { updateStack } from '../context';
 
 const evaluate = (location, objectExpression, propertyNameExpression) => async context => {
-  const localContext = updateStack(context, location);
-  const objectValue = await objectExpression.evaluate(localContext);
-  const propertyNameValue = await propertyNameExpression.evaluate(localContext);
+  console.log('OBJECT_PROPERTY');
+  context.setLocation(location);
+  const objectValue = await objectExpression.evaluate(context);
+  const propertyNameValue = await propertyNameExpression.evaluate(context);
   if (isNumber(propertyNameValue)) {
-    return objectValue.getElement(localContext, propertyNameValue);
+    return objectValue.getElement(context, propertyNameValue);
   }
-  return objectValue.getProperty(localContext, propertyNameValue);
+  return objectValue.getProperty(context, propertyNameValue);
 };
 
 const evaluateAsLeftHandSide = (location, objectExpression, propertyNameExpression) => async context => {
-  const localContext = updateStack(context, location);
-  const objectValue = await objectExpression.evaluate(localContext);
+  context.setLocation(location);
+  const objectValue = await objectExpression.evaluate(context);
   if (!(isObject(objectValue) || isArray(objectValue))) {
-    throwRuntimeError('Cannot assign to non-object non-array type', localContext);
+    throwRuntimeError('Cannot assign to non-object non-array type', context);
   }
-  const propertyNameValue = await propertyNameExpression.evaluate(localContext);
+  const propertyNameValue = await propertyNameExpression.evaluate(context);
   if (isNumber(propertyNameValue)) {
     return createArrayElementLeftHandSideValue(objectValue, propertyNameValue);
   }
   if (isString(propertyNameValue)) {
     return createObjectPropertyLeftHandSideValue(objectValue, propertyNameValue);
   }
-  throwRuntimeError('Cannot access property or element', localContext);
+  throwRuntimeError('Cannot access property or element', context);
 };
 
 export const createObjectPropertyExpression = (location, objectExpression, propertyNameExpression) => createExpression(

@@ -92,8 +92,8 @@ const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'],
   return result;
 });
 
-const map = entries => createNativeFunctionValue(['f'], async context => {
-  const f = requiredParameter(context, 'f');
+const map = entries => createNativeFunctionValue(['mapf'], async context => {
+  const f = requiredParameter(context, 'mapf');
   const result = [];
   for (let i = 0; i < entries.length; i++) {
     result.push(await f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]));

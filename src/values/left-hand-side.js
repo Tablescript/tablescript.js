@@ -21,7 +21,7 @@ export const createLeftHandSideValue = name => {
   return {
     type: valueTypes.LEFT_HAND_SIDE,
     assignFrom: (context, value) => {
-      context.scope[name] = value;
+      context.setVariable(name, value);
     },
   };
 };

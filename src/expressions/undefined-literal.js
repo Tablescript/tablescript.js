@@ -19,6 +19,6 @@ import { createUndefined } from '../values/undefined';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = () => Promise.resolve(createUndefined());
+const evaluate = async context => context.factory.createUndefined();
 
 export const createUndefinedLiteral = () => createExpression(expressionTypes.UNDEFINED, evaluate);

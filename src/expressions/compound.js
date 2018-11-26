@@ -17,14 +17,13 @@
 
 import { expressionTypes } from './types';
 import { createExpression } from './default';
-import { createUndefined } from '../values/undefined';
-import { updateStack } from '../context';
 
 const evaluate = (location, expressions) => async context => {
-  const localContext = updateStack(context, location);
-  let result = createUndefined();
+  console.log('COMPOUND');
+  context.setLocation(location);
+  let result = context.factory.createUndefined();
   for (const expression of expressions) {
-    result = await expression.evaluate(localContext);
+    result = await expression.evaluate(context);
   }
   return result;
 };

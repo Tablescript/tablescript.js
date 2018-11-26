@@ -16,11 +16,10 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { rollDice } from '../util/random';
-import { createNumericValue } from '../values/numeric';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = (count, die, suffix) => () => Promise.resolve(createNumericValue(rollDice(count, die, suffix)));
+const evaluate = (count, die, suffix) => async context => context.factory.createNumericValue(rollDice(count, die, suffix));
 
 export const createDiceLiteral = (count, die, suffix) => createExpression(expressionTypes.DICE, evaluate(count, die, suffix));
 

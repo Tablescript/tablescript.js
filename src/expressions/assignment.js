@@ -19,7 +19,6 @@ import { isLeftHandSide } from '../values/types';
 import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
-import { updateStack } from '../context';
 
 const operators = {
   '=': (context, leftHandSideValue, leftValue, value) => {
@@ -43,17 +42,18 @@ const operators = {
 };
 
 const evaluate = (location, leftHandSideExpression, operator, valueExpression) => async context => {
-  const localContext = updateStack(context, location);
-  const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(localContext);
+  console.log('ASSIGNMENT');
+  context.setLocation(location);
+  const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(context);
   if (!isLeftHandSide(leftHandSideValue)) {
-    throwRuntimeError('Cannot assign to a non-left-hand-side type', localContext);
+    throwRuntimeError('Cannot assign to a non-left-hand-side type', context);
   }
-  const value = await valueExpression.evaluate(localContext);
+  const value = await valueExpression.evaluate(context);
   if (operators[operator]) {
-    const leftValue = (operator === '=') ? undefined : await leftHandSideExpression.evaluate(localContext);
-    operators[operator](localContext, leftHandSideValue, leftValue, value);
+    const leftValue = (operator === '=') ? undefined : await leftHandSideExpression.evaluate(context);
+    operators[operator](context, leftHandSideValue, leftValue, value);
   } else {
-    throwRuntimeError(`Unknown operator ${operator}`, localContext);
+    throwRuntimeError(`Unknown operator ${operator}`, context);
   }
   return value;
 };

@@ -20,11 +20,10 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { isArray, isObject, isTable } from '../values/types';
 import { createArraySpread, createObjectSpread, createTableSpread } from '../values/spread';
-import { updateStack } from '../context';
 
 const evaluate = (location, expression) => async context => {
-  const localContext = updateStack(context, location);
-  const value = await expression.evaluate(localContext);
+  context.setLocation(location);
+  const value = await expression.evaluate(context);
   if (isArray(value)) {
     return createArraySpread(value);
   }
@@ -34,7 +33,7 @@ const evaluate = (location, expression) => async context => {
   if (isTable(value)) {
     return createTableSpread(value);
   }
-  throwRuntimeError('Spreads only apply to ARRAY, OBJECT, and TABLE', localContext);
+  throwRuntimeError('Spreads only apply to ARRAY, OBJECT, and TABLE', context);
 };
 
 export const createSpreadExpression = (location, expression) => createExpression(expressionTypes.SPREAD, evaluate(location, expression));

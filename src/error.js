@@ -35,8 +35,8 @@ export class TablescriptError extends Error {
   }
 
   stackTraceToString() {
-    if (this.context && this.context.stack) {
-      return this.context.stack.map(locationToString).join('\n');
+    if (this.context) {
+      return this.context.locations().map(locationToString).join('\n');
     }
     return '';
   }

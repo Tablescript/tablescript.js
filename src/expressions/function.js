@@ -18,11 +18,11 @@
 import { createFunctionValue } from '../values/function';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
-import { updateStack } from '../context';
 
 const evaluate = (location, formalParameters, body) => async context => {
-  const localContext = updateStack(context, location);
-  return createFunctionValue(formalParameters, body, { ...localContext.scope });
+  console.log('FUNCTION');
+  context.setLocation(location);
+  return createFunctionValue(formalParameters, body, context.getScope());
 };
 
 export const createFunctionExpression = (

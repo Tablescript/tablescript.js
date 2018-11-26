@@ -67,12 +67,12 @@ const split = value => createNativeFunctionValue(['separator'], async context =>
 
 const capitalize = value => createNativeFunctionValue(
   [],
-  async () => createStringValue(value.length === 0 ? value : value[0].toUpperCase() + value.slice(1))
+  async context => createStringValue(value.length === 0 ? value : value[0].toUpperCase() + value.slice(1))
 );
 
-const uppercase = value => createNativeFunctionValue([], async () => createStringValue(value.toUpperCase()));
+const uppercase = value => createNativeFunctionValue([], async context => createStringValue(value.toUpperCase()));
 
-const lowercase = value => createNativeFunctionValue([], async () => createStringValue(value.toLowerCase()));
+const lowercase = value => createNativeFunctionValue([], async context => createStringValue(value.toLowerCase()));
 
 const includes = value => createNativeFunctionValue(['s'], async context => {
   const s = requiredParameter(context, 's');
@@ -121,11 +121,11 @@ const endsWith = value => createNativeFunctionValue(['s'], async context => {
   return context.factory.createBooleanValue(value.endsWith(s.asNativeString(context)));
 });
 
-const trim = value => createNativeFunctionValue([], async () => createStringValue(value.trim()));
+const trim = value => createNativeFunctionValue([], async context => createStringValue(value.trim()));
 
-const trimLeft = value => createNativeFunctionValue([], async () => createStringValue(value.trimLeft()));
+const trimLeft = value => createNativeFunctionValue([], async context => createStringValue(value.trimLeft()));
 
-const trimRight = value => createNativeFunctionValue([], async () => createStringValue(value.trimRight()));
+const trimRight = value => createNativeFunctionValue([], async context => createStringValue(value.trimRight()));
 
 const empty = value => createNativeFunctionValue([], async context => context.factory.createBooleanValue(value.length === 0));
 

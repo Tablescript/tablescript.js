@@ -20,20 +20,20 @@ import { throwRuntimeError } from '../error';
 import { createArrayValue } from '../values/array';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
-import { updateStack } from '../context';
 
 const evaluate = (location, values) => async context => {
-  const localContext = updateStack(context, location);
+  console.log('ARRAY');
+  context.setLocation(location);
   let result = [];
   for (let i = 0; i < values.length; i++) {
-    const value = await values[i].evaluate(localContext);
+    const value = await values[i].evaluate(context);
     if (isArraySpread(value)) {
       result = [
         ...result,
         ...value.asArray(context)
       ];
     } else if (isObjectSpread(value)) {
-      throwRuntimeError('Cannot spread object into array', localContext);
+      throwRuntimeError('Cannot spread object into array', context);
     } else {
       result = [
         ...result,

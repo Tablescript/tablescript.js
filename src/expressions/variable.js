@@ -18,9 +18,13 @@
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { createLeftHandSideValue } from '../values/left-hand-side';
-import { createUndefined } from '../values/undefined';
 
-const evaluate = name => async context => context.scope[name] || createUndefined();
+const evaluate = name => async context => {
+  context.dump('in VARIABLE');
+  const result = context.getVariable(name) || context.factory.createUndefined();
+  context.dump('in VARIABLE after getVariable()');
+  return result;
+};
 const evaluateAsLeftHandSide = name => () => createLeftHandSideValue(name);
 
 export const createVariableExpression = name => createExpression(expressionTypes.VARIABLE, evaluate(name), evaluateAsLeftHandSide(name));

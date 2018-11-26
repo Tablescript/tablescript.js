@@ -18,11 +18,11 @@
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { allOperators } from './binary-operators';
-import { updateStack } from '../context';
 
 const evaluate = (location, operators, leftExpression, operator, rightExpression) => async context => {
-  const localContext = updateStack(context, location);
-  return operators[operator](localContext, leftExpression, rightExpression);
+  console.log('BINARY');
+  context.setLocation(location);
+  return operators[operator](context, leftExpression, rightExpression);
 };
 
 export const createBinaryExpressionWithOperators = operators => (location, leftExpression, operator, rightExpression) => {

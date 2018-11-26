@@ -17,15 +17,19 @@
 
 import { expressionTypes } from './types';
 import { createExpression } from './default';
-import { createUndefined } from '../values/undefined';
-import { copyScope, updateStack } from '../context';
 
 const evaluate = (location, expressions) => async context => {
-  const localContext = copyScope(updateStack(context, location));
-  let result = createUndefined();
+  context.dump('In block...');
+  console.log(expressions);
+  context.pushLocation(location);
+  let result = context.factory.createUndefined();
   for (const expression of expressions) {
-    result = await expression.evaluate(localContext);
+    console.log('Expression to be evaluated');
+    console.log(expression);
+    result = await expression.evaluate(context);
+    context.dump('In block, after expression');
   }
+  context.popLocation();
   return result;
 };
 
