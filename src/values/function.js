@@ -25,9 +25,7 @@ const asNativeBoolean = () => true;
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');
   const callFunction = async (context, parameters) => {
-    context.dump('native callFunction()');
     const oldScopes = context.swapScopes([mapFunctionParameters(context, formalParameters, parameters)]);
-    context.dump('native callFunction() after swap');
     const result = await f(context);
     context.swapScopes(oldScopes);
     return result;
@@ -50,12 +48,10 @@ export const createNativeFunctionValue = (formalParameters, f) => {
 export const createFunctionValue = (formalParameters, body, closure) => {
   const asNativeString = sharedAsNativeString('tablescript');
   const callFunction = async (context, parameters) => {
-    context.dump('callFunction()');
     const oldScopes = context.swapScopes([
       mapFunctionParameters(context, formalParameters, parameters),
       closure,
     ]);
-    context.dump('callFunction() after swap');
     const result = body.evaluate(context);
     context.swapScopes(oldScopes);
     return result;

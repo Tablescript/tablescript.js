@@ -25,7 +25,6 @@ import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
 
 const evaluate = (location, objectExpression, propertyNameExpression) => async context => {
-  console.log('OBJECT_PROPERTY');
   context.setLocation(location);
   const objectValue = await objectExpression.evaluate(context);
   const propertyNameValue = await propertyNameExpression.evaluate(context);

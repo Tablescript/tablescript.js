@@ -20,7 +20,6 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 const evaluate = (location, formalParameters, body) => async context => {
-  console.log('FUNCTION');
   context.setLocation(location);
   return createFunctionValue(formalParameters, body, context.getScope());
 };

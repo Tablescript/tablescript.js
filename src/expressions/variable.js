@@ -20,9 +20,7 @@ import { expressionTypes } from './types';
 import { createLeftHandSideValue } from '../values/left-hand-side';
 
 const evaluate = name => async context => {
-  context.dump('in VARIABLE');
   const result = context.getVariable(name) || context.factory.createUndefined();
-  context.dump('in VARIABLE after getVariable()');
   return result;
 };
 const evaluateAsLeftHandSide = name => () => createLeftHandSideValue(name);

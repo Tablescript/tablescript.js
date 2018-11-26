@@ -22,7 +22,6 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 const evaluate = (location, values) => async context => {
-  console.log('ARRAY');
   context.setLocation(location);
   let result = [];
   for (let i = 0; i < values.length; i++) {

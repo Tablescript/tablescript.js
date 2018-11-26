@@ -20,7 +20,6 @@ import { throwRuntimeError } from '../error';
 import { expressionTypes } from './types';
 
 const evaluate = (location, operator, argument) => async context => {
-  console.log('UNARY');
   context.setLocation(location);
   const value = await argument.evaluate(context);
   if (operator === '-') {

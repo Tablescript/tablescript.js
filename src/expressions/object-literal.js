@@ -33,14 +33,13 @@ const evaluator = context => (p, entry) => {
 };
 
 const evaluate = (location, entries) => async context => {
-  console.log('OBJECT');
   context.setLocation(location);
   return createObjectValue(await entries.reduce(evaluator(context), Promise.resolve({})));
 };
 
 export const createObjectLiteral = (location, entries) => createExpression(expressionTypes.OBJECT, evaluate(location, entries));
 
-const evaluateObjectProperty = (key, value) => async context => { console.log('OBJECT_PROPERTY'); return createObjectValue({
+const evaluateObjectProperty = (key, value) => async context => { return createObjectValue({
   [key]: await value.evaluate(context),
 }); };
 

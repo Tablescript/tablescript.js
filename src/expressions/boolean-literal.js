@@ -18,6 +18,6 @@
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = value => async context => { console.log('BOOLEAN'); return context.factory.createBooleanValue(value); };
+const evaluate = value => async context => { return context.factory.createBooleanValue(value); };
 
 export const createBooleanLiteral = value => createExpression(expressionTypes.BOOLEAN, evaluate(value));

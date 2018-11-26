@@ -19,7 +19,6 @@ import { expressionTypes } from './types';
 import { createExpression } from './default';
 
 const evaluate = (location, expressions) => async context => {
-  console.log('COMPOUND');
   context.setLocation(location);
   let result = context.factory.createUndefined();
   for (const expression of expressions) {

@@ -42,7 +42,6 @@ const operators = {
 };
 
 const evaluate = (location, leftHandSideExpression, operator, valueExpression) => async context => {
-  console.log('ASSIGNMENT');
   context.setLocation(location);
   const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(context);
   if (!isLeftHandSide(leftHandSideValue)) {

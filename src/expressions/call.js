@@ -40,13 +40,8 @@ const parameterEvaluator = context => (p, parameter) => {
 const evaluateParameters = async (context, parameters) => parameters.reduce(parameterEvaluator(context), Promise.resolve([]));
 
 const evaluate = (location, callee, parameters) => async context => {
-  console.log('CALLING');
   context.setLocation(location);
-  context.dump('before');
-  console.log(callee);
   const calleeValue = await callee.evaluate(context);
-  console.log(calleeValue);
-  context.dump('after');
   const evaluatedParameters = await evaluateParameters(context, parameters);
   return calleeValue.callFunction(context, evaluatedParameters);
 };

@@ -19,7 +19,6 @@ import { expressionTypes } from './types';
 import { createExpression } from './default';
 
 const evaluate = (location, testExpression, consequentExpression, alternateExpression) => async context => {
-  console.log('CONDITIONAL');
   context.setLocation(location);
   const testValue = await testExpression.evaluate(context);
   if (testValue.asNativeBoolean(context)) {

@@ -20,7 +20,6 @@ import { expressionTypes } from './types';
 import { allOperators } from './binary-operators';
 
 const evaluate = (location, operators, leftExpression, operator, rightExpression) => async context => {
-  console.log('BINARY');
   context.setLocation(location);
   return operators[operator](context, leftExpression, rightExpression);
 };

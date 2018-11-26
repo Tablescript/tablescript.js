@@ -19,7 +19,6 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 
 const evaluate = (location, condition, ifBlock, elseBlock) => async context => {
-  console.log('IF');
   context.setLocation(location);
   const expressionValue = await condition.evaluate(context);
   if (expressionValue.asNativeBoolean(context)) {

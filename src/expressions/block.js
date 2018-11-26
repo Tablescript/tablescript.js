@@ -19,15 +19,10 @@ import { expressionTypes } from './types';
 import { createExpression } from './default';
 
 const evaluate = (location, expressions) => async context => {
-  context.dump('In block...');
-  console.log(expressions);
   context.pushLocation(location);
   let result = context.factory.createUndefined();
   for (const expression of expressions) {
-    console.log('Expression to be evaluated');
-    console.log(expression);
     result = await expression.evaluate(context);
-    context.dump('In block, after expression');
   }
   context.popLocation();
   return result;
