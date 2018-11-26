@@ -289,12 +289,18 @@ TableEntryBody "table entry body"
   / Block
 
 IfExpression "if expression"
-  = IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Expression __ ElseToken __ elseBlock:Expression {
+  = IfToken __ '(' __ e:Expression __ ')' __ ifBlock:IfBlock __ ElseToken __ elseBlock:IfBlock {
     return createIfExpression(createLocation(location(), options), e, ifBlock, elseBlock);
   }
-  / IfToken __ '(' __ e:Expression __ ')' __ ifBlock:Expression {
+  / IfToken __ '(' __ e:Expression __ ')' __ ifBlock:IfBlock {
     return createIfExpression(createLocation(location(), options), e, ifBlock);
   }
+
+IfBlock "if block"
+  = e:AssignmentExpression {
+    return createBlockExpression(createLocation(location(), optiins), [e]);
+  }
+  / Block
 
 SpreadExpression "spread"
   = '...' e:Expression {
