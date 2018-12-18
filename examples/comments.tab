@@ -4,4 +4,4 @@ x = 1
 x = # this is a third comment
   99
 
-system.print(x == 99)
+print(x == 99)

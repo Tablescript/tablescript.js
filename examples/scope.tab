@@ -1,12 +1,12 @@
-f1 = fn() {
-  f2()
-}
-
 f2 = fn() {
   9
 }
 
-system.assert(f1() == 9)
+f1 = fn() {
+  f2()
+}
+
+assert(f1() == 9)
 
 baz = fn() {
   bar = fn(foo) {
@@ -23,15 +23,4 @@ baz = fn() {
   bar(nan)()
 }
 
-system.assert(baz() == 'wabble')
-
-if (true) {
-  x = 9
-}
-system.assert(x == undefined)
-
-x = 'abc'
-if (true) {
-  x = 9
-}
-system.assert(x == 'abc')
+assert(baz() == 'wabble')

@@ -14,5 +14,4 @@ addThirty = fn(n) {
 
 toF = compose(double, addThirty)
 
-system.print(toF(25))
-
+print(toF(25))

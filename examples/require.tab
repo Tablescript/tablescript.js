@@ -1,7 +1,7 @@
-required = system.require('./required.tab', 12, 'I have a ham radio', fn(x) { x * 3 })
+required = require('./required.tab', 12, 'I have a ham radio', fn(x) { x * 3 })
 
-system.print(required.a)
-system.print(required.double(5))
-system.print(required.t())
+print(required.a)
+print(required.double(5))
+print(required.t())
 
-system.print(system.arguments)
+print(arguments)

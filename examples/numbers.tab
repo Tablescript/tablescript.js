@@ -1,20 +1,20 @@
 
 x = 12
 x += 3
-system.assert(x == 15)
+assert(x == 15)
 
 x -= 5
-system.assert(x == 10)
+assert(x == 10)
 
 x /= 2
-system.assert(x == 5)
+assert(x == 5)
 
 x *= 12
-system.assert(x == 60)
+assert(x == 60)
 
 x %= 7
-system.assert(x == 4)
+assert(x == 4)
 
 x = 3.14159
-system.assert(x == 3.14159)
-system.assert(x != 12)
+assert(x == 3.14159)
+assert(x != 12)
