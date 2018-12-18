@@ -23,7 +23,7 @@ const evaluate = (cmd, context, filename, callback) => {
   try {
     const expression = parse(cmd, '');
     expression.evaluate(context).then(value => {
-      context.scope._ = value;
+      context.setVariable('_', value);
       callback(null, value.asNativeValue(context));
     }).catch(e => {
       e.context = undefined;
@@ -45,8 +45,8 @@ export const repl = context => {
   r.defineCommand('scope', {
     help: 'Dump scope',
     action(name) {
-      Object.keys(this.context.scope).forEach(key => {
-        const value = this.context.scope[key].asNativeValue(this.context);
+      Object.keys(this.context.getScope()).forEach(key => {
+        const value = this.context.getVariable(key).asNativeValue(this.context);
         console.log(`${key} = ${value}`);
       });
       this.displayPrompt();
