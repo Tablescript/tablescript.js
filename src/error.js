@@ -46,7 +46,7 @@ TablescriptError.fromParserError = (e, filePath) => new TablescriptError(
   'SyntaxError',
   e.message,
   {
-    stack: [
+    locations: () => [
       {
         path: filePath,
         line: e.location ? e.location.start.line : 0,

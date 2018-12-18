@@ -318,7 +318,7 @@ function peg$parse(input, options) {
         },
       peg$c111 = peg$otherExpectation("if block"),
       peg$c112 = function(e) {
-          return createBlockExpression(createLocation(location(), optiins), [e]);
+          return createBlockExpression(createLocation(location(), options), [e]);
         },
       peg$c113 = peg$otherExpectation("spread"),
       peg$c114 = "...",

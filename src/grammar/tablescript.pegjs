@@ -298,7 +298,7 @@ IfExpression "if expression"
 
 IfBlock "if block"
   = e:AssignmentExpression {
-    return createBlockExpression(createLocation(location(), optiins), [e]);
+    return createBlockExpression(createLocation(location(), options), [e]);
   }
   / Block
 
