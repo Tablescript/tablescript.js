@@ -51,7 +51,9 @@ jobs:
           command: yarn lint
       - run:
           name: Run unit tests
-          command: yarn test
+          command: yarn ci:test
+      - store_test_results:
+          path: test-results
       - run:
           name: Run integration tests
           command: find ./examples/tests -name "*.tab" -exec node ./dist/bin/tablescript.js {} \;
