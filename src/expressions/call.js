@@ -19,25 +19,21 @@ import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { isArraySpread } from '../values/types';
 
-const parameterEvaluator = context => (p, parameter) => {
-  return p.then(acc => new Promise((resolve, reject) => {
-    parameter.evaluate(context).then(value => {
-      if (isArraySpread(value)) {
-        resolve([
-          ...acc,
-          ...value.asArray(),
-        ]);
-      } else {
-        resolve([
-          ...acc,
-          value,
-        ]);
-      }
-    }).catch(reject);
-  }));
-};
+const mergeValues = previousParameters => value => isArraySpread(value)
+  ? [
+      ...previousParameters,
+      ...value.asArray(),
+    ]
+  : [
+      ...previousParameters,
+      value,
+    ];
 
-const evaluateParameters = async (context, parameters) => parameters.reduce(parameterEvaluator(context), Promise.resolve([]));
+const evaluateParameter = (context, parameter) => previousParameters => parameter.evaluate(context).then(mergeValues(previousParameters));
+
+const parameterReducer = context => (acc, parameter) => acc.then(evaluateParameter(context, parameter));
+
+const evaluateParameters = async (context, parameters) => parameters.reduce(parameterReducer(context), Promise.resolve([]));
 
 const evaluate = (location, callee, parameters) => async context => {
   context.setLocation(location);
