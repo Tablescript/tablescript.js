@@ -51,6 +51,8 @@
   const { createTemplateStringLiteral } = require('../expressions/template-string-literal');
   const { createUndefinedLiteral } = require('../expressions/undefined-literal');
   const { createIfExpression } = require('../expressions/if');
+  const { createWhileExpression } = require('../expressions/while');
+  const { createUntilExpression } = require('../expressions/until');
   const { createSpreadExpression } = require('../expressions/spread');
 
   const composeBinaryExpression = (context, head, tail) => {
@@ -302,6 +304,22 @@ IfBlock "if block"
   }
   / Block
 
+WhileExpression "while expression"
+  = WhileToken __ '(' __ e:Expression __ ')' __ loopBlock:LoopBlock {
+    return createWhileExpression(createLocation(location(), options), e, loopBlock);
+  }
+
+UntilExpression "until expression"
+  = UntilToken __ '(' __ e:Expression __ ')' __ loopBlock:LoopBlock {
+    return createUntilExpression(createLocation(location(), options), e, loopBlock);
+  }
+
+LoopBlock "loop block"
+  = e:AssignmentExpression {
+    return createBlockExpression(createLocation(location(), options), [e]);
+  }
+  / Block
+
 SpreadExpression "spread"
   = '...' e:Expression {
     return createSpreadExpression(createLocation(location(), options), e);
@@ -319,6 +337,8 @@ PrimaryExpression
     return e;
   }
   / IfExpression
+  / WhileExpression
+  / UntilExpression
   / SpreadExpression
 
 Literal
@@ -505,6 +525,8 @@ ReservedWord
   / FalseToken
   / IfToken
   / ElseToken
+  / WhileToken
+  / UntilToken
   / AndToken
   / OrToken
   / NotToken
@@ -517,6 +539,8 @@ TrueToken = "true" !IdentifierPart
 FalseToken = "false" !IdentifierPart
 IfToken = "if" !IdentifierPart
 ElseToken = "else" !IdentifierPart
+WhileToken = "while" !IdentifierPart
+UntilToken = "until" !IdentifierPart
 AndToken = $("and" !IdentifierPart)
 OrToken = $("or" !IdentifierPart)
 NotToken = "not" !IdentifierPart { return 'not'; }

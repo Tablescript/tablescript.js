@@ -23,21 +23,32 @@ import { expressionTypes } from './types';
 const operators = {
   '=': (context, leftHandSideValue, leftValue, value) => {
     leftHandSideValue.assignFrom(context, value);
+    return value;
   },
   '+=': (context, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, leftValue.add(context, value));
+    const result = leftValue.add(context, value);
+    leftHandSideValue.assignFrom(context, result);
+    return result;
   },
   '-=': (context, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, leftValue.subtract(context, value));
+    const result = leftValue.subtract(context, value);
+    leftHandSideValue.assignFrom(context, result);
+    return result;
   },
   '*=': (context, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, leftValue.multiplyBy(context, value));
+    const result = leftValue.multiplyBy(context, value);
+    leftHandSideValue.assignFrom(context, result);
+    return result;
   },
   '/=': (context, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, leftValue.divideBy(context, value));
+    const result = leftValue.divideBy(context, value);
+    leftHandSideValue.assignFrom(context, result);
+    return result;
   },
   '%=': (context, leftHandSideValue, leftValue, value) => {
-    leftHandSideValue.assignFrom(context, leftValue.modulo(context, value));
+    const result = leftValue.modulo(context, value);
+    leftHandSideValue.assignFrom(context, result);
+    return result;
   },
 };
 
@@ -50,11 +61,9 @@ const evaluate = (location, leftHandSideExpression, operator, valueExpression) =
   const value = await valueExpression.evaluate(context);
   if (operators[operator]) {
     const leftValue = (operator === '=') ? undefined : await leftHandSideExpression.evaluate(context);
-    operators[operator](context, leftHandSideValue, leftValue, value);
-  } else {
-    throwRuntimeError(`Unknown operator ${operator}`, context);
+    return operators[operator](context, leftHandSideValue, leftValue, value);
   }
-  return value;
+  throwRuntimeError(`Unknown operator ${operator}`, context);
 };
 
 export const createAssignmentExpression = (location, leftHandSideExpression, operator, valueExpression) => {

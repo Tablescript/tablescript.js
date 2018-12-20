@@ -37,7 +37,9 @@ export const expressionTypes = {
   TEMPLATE_STRING: Symbol('TEMPLATE_STRING'),
   UNARY: Symbol('UNARY'),
   UNDEFINED: Symbol('UNDEFINED'),
+  UNTIL: Symbol('UNTIL'),
   VARIABLE: Symbol('VARIABLE'),
+  WHILE: Symbol('WHILE'),
 };
 
 export const expressionTypeName = type => {
@@ -84,8 +86,12 @@ export const expressionTypeName = type => {
       return 'unary';
     case expressionTypes.UNDEFINED:
       return 'undefined';
+    case expressionTypes.UNTIL:
+      return 'until';
     case expressionTypes.VARIABLE:
       return 'variable';
+    case expressionTypes.WHILE:
+      return 'while';
     default:
       return '<TYPE UNSET>';
   }
