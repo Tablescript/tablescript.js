@@ -97,6 +97,27 @@ assert(not a.includes('abc'))
 ############################################################################
 
 ############################################################################
+# Array.each
+#
+# The each function applies a function to each member of the array. It's
+# one of the Tablescript ways of "looping".
+a = [1, 2, 3, 4, 5]
+state = {
+  value: 0
+}
+f = fn(state) { fn(n) { state.value = n } }
+assert(a.each(f(state)) == 5)
+assert(state.value == 5)
+
+# The each function can also take a 2nd parameter that is the 0-based index
+# of the array member passed as the 1st parameter
+b = [0, 0, 0, 0, 0]
+f = fn(state) { fn(n, i) { state[i] = n + 1 } }
+assert(a.each(f(b)) == 6)
+assert(b == [2, 3, 4, 5, 6])
+############################################################################
+
+############################################################################
 # Array.map
 #
 # The map function applies a function to each member of the array. It's also

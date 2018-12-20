@@ -82,6 +82,15 @@ const multiplyBy = entries => (context, other) => createArrayValue(
   ).reduce((all,n) => ([...all, ...entries]), [])
 );
 
+const each = entries => createNativeFunctionValue(['f'], async context => {
+  const f = requiredParameter(context, 'f');
+  let result = context.factory.createUndefined();
+  for (let i = 0; i < entries.length; i++) {
+    result = await f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]);
+  }
+  return result;
+});
+
 const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], async context => {
   const reducer = requiredParameter(context, 'reducer');
   const initialValue = requiredParameter(context, 'initialValue');
@@ -218,6 +227,7 @@ export const createArrayValue = entries => createValue(
   identicalTo(entries),
   nativeEquals(entries),
   {
+    each: each(entries),
     reduce: reduce(entries),
     map: map(entries),
     filter: filter(entries),
