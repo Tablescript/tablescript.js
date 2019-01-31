@@ -1,7 +1,0 @@
-required = require('http://localhost:8080/required.tab', 12, 'I have a ham radio', fn(x) { x * 3 })
-
-print(required.a)
-print(required.double(5))
-print(required.t())
-
-print(arguments)

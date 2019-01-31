@@ -2,7 +2,6 @@ import { initializeContext } from './context';
 import { runScript, loadAndRunScript } from './runner';
 import { initializeBuiltins } from './builtins/builtins';
 import { loadFsFile } from './fs-loader';
-import { loadHttpFile } from './http-loader';
 import { createArrayValue } from './values/array';
 import { createBooleanValue } from './values/boolean';
 import { createNumericValue } from './values/numeric';
@@ -11,7 +10,7 @@ import { createUndefined } from './values/undefined';
 
 const defaultInterpreterOptions = options => ({
   input: {
-    loaders: [loadFsFile, loadHttpFile],
+    loaders: [loadFsFile],
   },
   output: {
     print: s => {
