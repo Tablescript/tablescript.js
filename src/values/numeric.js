@@ -86,5 +86,6 @@ export const createNumericValue = value => createValue(
     greaterThan: greaterThan(value),
     lessThanOrEquals: lessThanOrEquals(value),
     greaterThanOrEquals: greaterThanOrEquals(value),
+    compare: subtract(value),
   },
 );

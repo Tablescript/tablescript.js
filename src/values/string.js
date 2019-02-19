@@ -54,6 +54,8 @@ const lessThanOrEquals = value => (context, other) => value <= other.asNativeStr
 
 const greaterThanOrEquals = value => (context, other) => value >= other.asNativeString(context);
 
+const compare = value => (context, other) => context.factory.createNumericValue(value.localeCompare(other.asNativeString(context)));
+
 const split = value => createNativeFunctionValue(['separator'], async context => {
   const separator = optionalParameter(context, 'separator');
   if (separator) {
@@ -171,5 +173,6 @@ export const createStringValue = value => createValue(
     greaterThan: greaterThan(value),
     lessThanOrEquals: lessThanOrEquals(value),
     greaterThanOrEquals: greaterThanOrEquals(value),
+    compare: compare(value),
   },
 );

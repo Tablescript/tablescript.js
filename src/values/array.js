@@ -168,7 +168,7 @@ const findIndex = entries => createNativeFunctionValue(['f'], async context => {
 });
 
 const defaultSorter = createNativeFunctionValue(['a', 'b'], async context => {
-  return requiredParameter(context, 'a').subtract(context, requiredParameter(context, 'b'));
+  return requiredParameter(context, 'a').compare(context, requiredParameter(context, 'b'));
 });
 
 const sort = entries => createNativeFunctionValue(['f'], async context => {

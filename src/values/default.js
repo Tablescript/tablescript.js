@@ -40,6 +40,7 @@ lessThan(context, other : VALUE) : BOOLEAN;
 greaterThan(context, other : VALUE) : BOOLEAN;
 lessThanOrEquals(context, other : VALUE) : BOOLEAN;
 greaterThanOrEquals(context, other : VALUE) : BOOLEAN;
+compare(context, other : VALUE) : NUMBER;
 
 */
 
@@ -78,6 +79,7 @@ const defaultMethods = (asNativeValue, identicalTo, nativeEquals, properties, ge
   greaterThan: runtimeErrorThrower(`Cannot compare (>) with ${getTypeName()}`),
   lessThanOrEquals: runtimeErrorThrower(`Cannot compare (<=) with ${getTypeName()}`),
   greaterThanOrEquals: runtimeErrorThrower(`Cannot compare (>=) with ${getTypeName()}`),
+  compare: runtimeErrorThrower(`Cannot compare with ${getTypeName()}`),
 });
 
 export const createValue = (type, nativeValueFunction, identicalToFunction, nativeEqualsFunction, properties, methods) => ({
