@@ -17,6 +17,7 @@
 
 import { createValue } from './default';
 import { valueTypes, isNumber, isString } from './types';
+import { createNativeFunctionValue } from './function';
 import { throwRuntimeError } from '../error';
 
 const asNativeNumber = value => () => value;
@@ -60,6 +61,9 @@ const lessThanOrEquals = value => (context, other) => value <= other.asNativeNum
 
 const greaterThanOrEquals = value => (context, other) => value >= other.asNativeNumber(context);
 
+const floor = value => createNativeFunctionValue([], context => createNumericValue(Math.floor(value)));
+const ceiling = value => createNativeFunctionValue([], context => createNumericValue(Math.ceil(value)));
+
 export const createCustomNumericValue = (value, methods) => createValue(
   valueTypes.NUMBER,
   asNativeNumber(value),
@@ -72,7 +76,10 @@ export const createNumericValue = value => createValue(
   asNativeNumber(value),
   nativeEquals(value),
   nativeEquals(value),
-  {},
+  {
+    floor: floor(value),
+    ceiling: ceiling(value),
+  },
   {
     asNativeNumber: asNativeNumber(value),
     asNativeString: asNativeString(value),
