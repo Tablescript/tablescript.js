@@ -18,15 +18,20 @@
 import fs from 'fs';
 import path from 'path';
 
-const isPathed = p => p.split('/').length > 1;
+const pathedPrefixes = ['/', './', '../'];
+
+const isPathed = p => pathedPrefixes.reduce((result, prefix) => result || p.startsWith(prefix), false);
+
 const pathFromContext = context => context.locations().length > 0 ? [path.dirname(context.locations()[0].path)] : [];
-const contextPath = (context, filename) => isPathed(filename) ? pathFromContext(context) : [];
+
 const environmentPaths = () => (process.env.TS_PATH || '').split(':');
 
-const allPaths = (context, filename) => ([
-  ...contextPath(context, filename),
+const bundlePaths = () => ([
+  'bundles',
   ...environmentPaths()
 ]);
+
+const allPaths = (context, filename) => isPathed(filename) ? pathFromContext(context) : bundlePaths();
 
 const fileContents = filePath => {
   return new Promise(resolve => {
