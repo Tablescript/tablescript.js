@@ -1,6 +1,6 @@
-names = require('./names.tab')
-things = require('./things.tab')
-creatures = require('./creatures.tab')
+names = require('./names')
+things = require('./things')
+creatures = require('./creatures')
 
 all_things = choice {
   ...things.body_part

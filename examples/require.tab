@@ -1,4 +1,4 @@
-required = require('./required.tab', 12, 'I have a ham radio', fn(x) { x * 3 })
+required = require('./required', 12, 'I have a ham radio', fn(x) { x * 3 })
 
 print(required.a)
 print(required.double(5))

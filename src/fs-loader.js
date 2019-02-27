@@ -17,6 +17,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { asyncReduce } from './util/async';
 
 const pathedPrefixes = ['/', './', '../'];
 
@@ -45,14 +46,17 @@ const fileContents = filePath => {
   });
 };
 
-const tryAllPaths = async (paths, filename) => {
-  for (let i = 0; i < paths.length; i++) {
-    const contents = await fileContents(path.resolve(paths[i], filename));
-    if (contents) {
-      return contents;
-    }
+const tryPath = async (thePath, filename) => {
+  const resolvedPath = path.resolve(thePath, filename);
+  const bundleFilename = path.resolve(resolvedPath, 'main.tab');
+  const bundleContents = await fileContents(bundleFilename);
+  if (bundleContents) {
+    return bundleContents;
   }
-  return undefined;
+  const resolvedFilename = `${resolvedPath}.tab`;
+  return fileContents(resolvedFilename);
 };
+
+const tryAllPaths = (paths, filename) => asyncReduce(paths, (result, path) => result || tryPath(path, filename), undefined);
 
 export const loadFsFile = async (context, filename) => tryAllPaths(allPaths(context, filename), filename);
