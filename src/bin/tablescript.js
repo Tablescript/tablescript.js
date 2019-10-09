@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import 'babel-polyfill';
+import '@babel/polyfill';
 import options from 'commander';
 import fs from 'fs';
 import { runScript, initializeContext, defaultInitializeScope, defaultInterpreterOptions, defaultValueFactory } from '../index';
