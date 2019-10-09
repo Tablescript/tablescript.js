@@ -16,7 +16,8 @@
     "lint": "node_modules/.bin/eslint src",
     "test": "mocha --require @babel/core --require @babel/register --require @babel/polyfill src/**/*.test.js",
     "ci:test": "mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./test-results/mocha/results.xml --require @babel/core --require @babel/register --require @babel/polyfill src/**/*.test.js",
-    "test:watch": "mocha --watch --require @babel/core --require @babel/register --require @babel/polyfill src/**/*.test.js"
+    "test:watch": "mocha --watch --require @babel/core --require @babel/register --require @babel/polyfill src/**/*.test.js",
+    "postversion": "git push --tags && yarn publish . --tag $npm_package_version && git push && echo \"Successfully released version $npm_package_version!\""
   },
   "author": {
     "name": "Jamie Hale",
