@@ -78,29 +78,39 @@
 # Start -> _ Expression:* {% R.nth(1) %}
 Start -> _ Expression:* {% R.compose(R.flatten, R.nth(1)) %}
 
-Block -> "{" _ Expression:* _ "}" _ {% R.nth(1) %}
+ExpressionList ->
+  Expression
+  | ExpressionList __ Expression
 
 Expression ->
-  Block {% id %}
-  | _ AssignmentExpression __ {% R.nth(1) %}
+  AssignmentExpression {% id %}
+  | "{" _ ExpressionList _ "}" {% R.nth(2) %}
 
 AssignmentExpression ->
-  LeftHandSideExpression _ "=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'assign', left, right }) %}
-  | LeftHandSideExpression _ "+=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'plusEquals', left, right }) %}
-  | LeftHandSideExpression _ "-=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'minusEquals', left, right }) %}
-  | LeftHandSideExpression _ "*=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'timesEquals', left, right }) %}
-  | LeftHandSideExpression _ "/=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'divideEquals', left, right }) %}
-  | LeftHandSideExpression _ "%%=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'modEquals', left, right }) %}
-  | ConditionalExpression {% id %}
+  ConditionalExpression {% id %}
+  | LeftHandSideExpression _ "=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'assign', op: '=', left, right }) %}
+  | LeftHandSideExpression _ AssignmentOperator _ ConditionalExpression {% ([left, , op, , right]) => ({ type: 'assign', op, left, right }) %}
+
+AssignmentOperator ->
+  "+=" {% id %}
+  | "-=" {% id %}
+  | "*=" {% id %}
+  | "/=" {% id %}
+  | "%=" {% id %}
 
 LeftHandSideExpression ->
-  CallExpression {% id %}
+  MemberExpression {% id %}
+  | CallExpression {% id %}
+
+MemberExpression ->
+  PrimaryExpression {% id %}
+  | MemberExpression _ "[" _ Expression _ "]"
+  | MemberExpression _ "." _ IdentifierName
 
 CallExpression ->
-  CallExpression _ Arguments {% ([target, , args]) => { console.log('yup'); return ({ type: 'call', target, args }); } %}
+  CallExpression _ Arguments {% ([target, , args]) => ({ type: 'call', target, args }) %}
   | CallExpression _ "[" _ Expression _ "]" {% ([target, , , , e]) => ({ type: 'index', target, e }) %}
   | CallExpression _ "." _ IdentifierName {% ([target, , , , property]) => ({ type: 'property', target, property }) %}
-  | MemberExpression {% id %}
 
 Arguments ->
   "(" _ ")" {% R.always([]) %}
@@ -110,162 +120,25 @@ ArgumentList ->
   AssignmentExpression {% id %}
   | ArgumentList _ "," _ AssignmentExpression {% ([list, , , , e]) => ([...list, e]) %}
 
-MemberExpression ->
-  MemberExpression _ "[" _ Expression _ "]"
-  | MemberExpression _ "." _ Identifier
-  | PrimaryExpression {% id %}
-
 PrimaryExpression ->
-  Literal                           {% id %}
-  | Identifier                      {% id %}
+  IdentifierReference               {% id %}
+  | Literal                         {% id %}
+  | ArrayLiteral                    {% id %}
+  | ObjectLiteral                   {% id %}
   | FunctionExpression              {% id %}
   | ChoiceExpression                {% id %}
   | TableExpression                 {% id %}
-  | "(" _ AdditiveExpression _ ")"  {% R.nth(2) %}
   | IfExpression                    {% id %}
   | WhileExpression                 {% id %}
   | UntilExpression                 {% id %}
-  | SpreadExpression                {% id %}
 
-ConditionalExpression ->
-  ConditionalExpression _ "?" _ Expression _ ":" _ Expression
-  | LogicalOrExpression {% id %}
-
-LogicalOrExpression ->
-  LogicalOrExpression _ "or" _ LogicalAndExpression
-  | LogicalAndExpression {% id %}
-
-LogicalAndExpression ->
-  LogicalAndExpression _ "and" _ EqualityExpression
-  | EqualityExpression {% id %}
-
-EqualityExpression ->
-  EqualityExpression _ "==" _ RelationalExpression
-  | EqualityExpression _ "!=" _ RelationalExpression
-  | RelationalExpression {% id %}
-
-RelationalExpression ->
-  RelationalExpression _ "<=" _ AdditiveExpression
-  | RelationalExpression _ ">=" _ AdditiveExpression
-  | RelationalExpression _ "<" _ AdditiveExpression
-  | RelationalExpression _ ">" _ AdditiveExpression
-  | AdditiveExpression {% id %}
-
-AdditiveExpression ->
-  AdditiveExpression _ "+" _ MultiplicativeExpression {% ([left, , , , right]) => ({ type: 'add', left, right }) %}
-  | AdditiveExpression _ "-" _ MultiplicativeExpression
-  | MultiplicativeExpression {% id %}
-
-MultiplicativeExpression ->
-  MultiplicativeExpression _ "*" _ UnaryExpression
-  | MultiplicativeExpression _ "/" _ UnaryExpression
-  | UnaryExpression {% id %}
-
-UnaryExpression ->
-  "not" __ PrimaryExpression
-  | "-" _ PrimaryExpression
-  | PrimaryExpression {% id %}
-
-SpreadExpression -> "..." Expression
-
-IfExpression -> "if" _ "(" _ Expression _ ")" _ Expression ( _ "else" _ Expression ):?
-
-WhileExpression -> "while" _ "(" _ Expression _ ")" _ Expression
-
-UntilExpression -> "until" _ "(" _ Expression _ ")" _ Expression
-
-FunctionExpression -> "fn" _ "(" _ ( FormalParameterList _ ):? ")" _ Block
-
-FormalParameterList -> Identifier ( _ "," _ Identifier ):*
-
-ChoiceExpression -> "choice" _ ( "(" _ ( FormalParameterList _ ):? ")" _ ):? "{" _ ChoiceEntries _ "}"
-
-ChoiceEntries -> ChoiceEntry ( _ ChoiceEntry ):*
-
-ChoiceEntry ->
-  SpreadExpression {% id %}
-  | TableEntryBody {% id %}
-
-TableExpression -> "table" _ ( "(" FormalParameterList:? ")" _ ):? "{" _ TableEntry:* _ "}"
-
-TableEntry -> TableEntrySelector ":" _ TableEntryBody _
-
-TableEntrySelector ->
-  NonZeroInteger "-" NonZeroInteger
-  | NonZeroInteger
-
-TableEntryBody ->
-  Expression {% id %}
-  | Block {% id %}
-
-Literal ->
-  DiceLiteral {% id %}
-  | NumberLiteral {% id %}
-  | StringLiteral {% id %}
-  | ArrayLiteral {% id %}
-  | ObjectLiteral {% id %}
-  | BooleanLiteral {% id %}
-  | UndefinedLiteral {% id %}
-
-UndefinedLiteral -> "undefined" {% () => createUndefinedLiteral() %}
-
-BooleanLiteral ->
-  "true" {% () => ({ type: 'boolean', value: true }) %}
-  | "false" {% () => ({ type: 'boolean', value: false }) %}
-
-ArrayLiteral -> "[" _ ( ArrayEntries _ ):? "]"
-
-ArrayEntries ->
-  ArrayEntries _ "," _ Expression
-  | Expression {% id %}
-
-ObjectLiteral -> "{" _ ( ObjectProperties _ ):? "}"
-
-ObjectProperties ->
-  ObjectProperties _ "," _ ObjectProperty
-  | ObjectProperty {% id %}
-
-ObjectProperty ->
-  StringLiteral _ ":" _ Expression
-  | Identifier _ ":" _ Expression
-  | SpreadExpression
-
-DiceLiteral ->
-  NonZeroInteger:? "d"i NonZeroInteger DiceLiteralSuffix:?
-
-DiceLiteralSuffix -> [+-] [lLhH] NonZeroInteger:?
-
-LineTerminator ->
-  "\n"
-  | "\r\n"
-  | "\r"
-
-Comment -> "#" [^\n(\r\n)\r]:*
-
-NumberLiteral ->
-  Float {% id %}
-  | Integer {% id %}
-
-Float ->
-  "0." DecimalDigit:*
-  | NonZeroInteger "." DecimalDigit:+
-
-Integer ->
-  "0" {% () => 0 %}
-  | NonZeroInteger {% id %}
-
-NonZeroInteger -> NonZeroDigit DecimalDigit:+ {% ([head, tail]) => parseInt(`${head}${tail.join('')}`, 10) %}
-
-NonZeroDigit -> [1-9] {% id %}
-
-DecimalDigit -> [0-9] {% id %}
+IdentifierReference ->
+  Identifier {% id %}
 
 Identifier ->
   IdentifierName {%
   (data, _, reject) => {
-    console.log('*******', data);
     if (R.includes(data.join(''), reservedWords)) {
-      console.log('rejecting');
       return reject;
     }
     return {
@@ -274,6 +147,211 @@ Identifier ->
     };
   }
 %}
+
+Literal ->
+  UndefinedLiteral {% id %}
+  | BooleanLiteral {% id %}
+  | NumericLiteral {% id %}
+  | StringLiteral {% id %}
+  | DiceLiteral {% id %}
+
+ConditionalExpression ->
+  LogicalOrExpression {% id %}
+  | LogicalOrExpression _ "?" _ AssignmentExpression _ ":" _ AssignmentExpression
+
+LogicalOrExpression ->
+  LogicalAndExpression {% id %}
+  | LogicalOrExpression _ "or" _ LogicalAndExpression
+
+LogicalAndExpression ->
+  EqualityExpression {% id %}
+  | LogicalAndExpression _ "and" _ EqualityExpression
+
+EqualityExpression ->
+  RelationalExpression {% id %}
+  | EqualityExpression _ "==" _ RelationalExpression
+  | EqualityExpression _ "!=" _ RelationalExpression
+
+RelationalExpression ->
+  AdditiveExpression {% id %}
+  | RelationalExpression _ "<=" _ AdditiveExpression
+  | RelationalExpression _ ">=" _ AdditiveExpression
+  | RelationalExpression _ "<" _ AdditiveExpression
+  | RelationalExpression _ ">" _ AdditiveExpression
+
+AdditiveExpression ->
+  MultiplicativeExpression {% id %}
+  | AdditiveExpression _ "+" _ MultiplicativeExpression {% ([left, , , , right]) => ({ type: 'add', left, right }) %}
+  | AdditiveExpression _ "-" _ MultiplicativeExpression
+
+MultiplicativeExpression ->
+  UnaryExpression {% id %}
+  | MultiplicativeExpression _ "*" _ UnaryExpression
+  | MultiplicativeExpression _ "/" _ UnaryExpression
+  | MultiplicativeExpression _ "%" _ UnaryExpression
+
+UnaryExpression ->
+  LeftHandSideExpression {% id %}
+  | "not" __ UnaryExpression
+  | "-" _ UnaryExpression
+
+SpreadExpression -> "..." Expression
+
+IfExpression ->
+  "if" _ "(" _ Expression _ ")" _ Expression _ "else" _ Expression
+  | "if" _ "(" _ Expression _ ")" _ Expression
+
+WhileExpression -> "while" _ "(" _ Expression _ ")" _ Expression
+
+UntilExpression -> "until" _ "(" _ Expression _ ")" _ Expression
+
+FunctionExpression -> "fn" _ "(" _ FormalParameters _ ")" _ "{" _ FunctionBody _ "}"
+
+FormalParameters ->
+  null
+  | FormalParameterList
+
+FormalParameterList ->
+  FormalParameter
+  | FormalParameterList _ "," _ FormalParameter
+
+FormalParameter ->
+  BindingElement
+
+BindingElement ->
+  SingleNameBinding
+  | BindingPattern
+
+SingleNameBinding ->
+  BindingIdentifier
+
+BindingIdentifier ->
+  Identifier
+
+BindingPattern ->
+  ObjectBindingPattern
+  | ArrayBindingPattern
+
+ObjectBindingPattern ->
+  "{" _ "}"
+  | "{" _ BindingPropertyList _ "}"
+
+BindingPropertyList ->
+  BindingProperty
+  | BindingPropertyList _ "," _ BindingProperty
+
+BindingProperty ->
+  SingleNameBinding
+  | PropertyName _ ":" _ BindingElement
+
+ArrayBindingPattern ->
+  "[" _ BindingElementList _ "]"
+
+BindingElementList ->
+  BindingElement
+  | BindingElementList _ "," _ BindingElement
+
+FunctionBody ->
+  FunctionExpressionList
+
+FunctionExpressionList ->
+  ExpressionList
+
+ChoiceExpression -> "choice" _ ( "(" _ FormalParameters _ ")" _ ):? "{" _ ChoiceEntryList _ "}"
+
+ChoiceEntryList ->
+  ChoiceEntry
+  | ChoiceEntryList __ ChoiceEntry
+
+ChoiceEntry ->
+  SpreadExpression {% id %}
+  | TableEntryBody {% id %}
+
+TableExpression -> "table" _ ( "(" _ FormalParameters _ ")" _ ):? "{" _ TableEntryList _ "}"
+
+TableEntryList ->
+  TableEntry
+  | TableEntryList __ TableEntry
+
+TableEntry -> TableEntrySelector ":" _ TableEntryBody
+
+TableEntrySelector ->
+  NonZeroDecimalInteger "-" NonZeroDecimalInteger
+  | NonZeroDecimalInteger
+
+TableEntryBody ->
+  Expression
+  | "{" _ ExpressionList _ "}"
+
+UndefinedLiteral -> "undefined" {% () => createUndefinedLiteral() %}
+
+BooleanLiteral ->
+  "true" {% () => ({ type: 'boolean', value: true }) %}
+  | "false" {% () => ({ type: 'boolean', value: false }) %}
+
+ArrayLiteral -> "[" _ ElementList _ "]"
+
+ElementList ->
+  AssignmentExpression {% id %}
+  | ElementList _ "," _ AssignmentExpression {% ([list, , , , e]) => ([...list, e]) %}
+
+ObjectLiteral -> "{" _ PropertyDefinitionList _ "}"
+
+PropertyDefinitionList ->
+  PropertyDefinition
+  | PropertyDefinitionList _ "," _ PropertyDefinition
+
+PropertyDefinition ->
+  IdentifierReference
+  | PropertyName _ ":" _ AssignmentExpression
+  | "..." _ AssignmentExpression
+
+PropertyName ->
+  LiteralPropertyName
+  | ComputedPropertyName
+
+LiteralPropertyName ->
+  IdentifierName
+  | StringLiteral
+  | NumericLiteral
+
+ComputedPropertyName ->
+  "[" _ AssignmentExpression _ "]"
+
+DiceLiteral ->
+  NonZeroDecimalInteger:? "d"i NonZeroDecimalInteger DiceLiteralSuffix:?
+
+DiceLiteralSuffix -> [+-] [lLhH] NonZeroDecimalInteger:?
+
+LineTerminator ->
+  "\n"
+  | "\r\n"
+  | "\r"
+
+Comment -> "#" [^\n(\r\n)\r]:*
+
+NumericLiteral ->
+  DecimalLiteral
+
+DecimalLiteral ->
+  DecimalIntegerLiteral "." DecimalDigits
+  | "." DecimalDigits
+  | DecimalIntegerLiteral
+
+DecimalIntegerLiteral ->
+  "0" {% () => 0 %}
+  | NonZeroDecimalInteger {% id %}
+
+NonZeroDecimalInteger -> NonZeroDigit DecimalDigits {% ([head, tail]) => parseInt(`${head}${tail}`, 10) %}
+
+DecimalDigits ->
+  DecimalDigit
+  | DecimalDigits DecimalDigit
+
+
+NonZeroDigit -> [1-9] {% id %}
+
+DecimalDigit -> [0-9] {% id %}
 
 IdentifierName ->
   IdentifierStart {% id %}
