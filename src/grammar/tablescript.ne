@@ -1,12 +1,27 @@
 @{%
-/*
   const moo = require("moo");
 
   const lexer = moo.compile({
-    trueToken: /true/,
-    falseToken: /false/,
+    space: {match: /\s+/, lineBreaks: true},
+    true: 'true',
+    false: 'false',
+    fn: 'fn',
+    choice: 'choice',
+    table: 'table',
+    dice: /(?:[1-9][0-9]*)?[dD][1-9][0-9]*/,
+    identifierName: /[_a-zA-Z][_a-zA-Z0-9]*/,
+    decimal: /[0|[1-9][0-9]*]?\.[0-9]+/,
+    decimalInteger: /0|[1-9][0-9]*/,
+    nonZeroDecimalInteger: /[1-9][0-9]*/,
+    undefined: 'undefined',
+    '=': '=',
+    '(': '(',
+    ')': ')',
+    '{': '{',
+    '}': '}',
+    ',': ',',
+    ':': ':',
   });
-  */
 
   const R = require('ramda');
   /*
@@ -72,15 +87,14 @@
   ];
 %}
 
-# @lexer lexer
-@builtin "whitespace.ne"
+@lexer lexer
 
 # Start -> _ Expression:* {% R.nth(1) %}
-Start -> _ Expression:* {% R.compose(R.flatten, R.nth(1)) %}
+Start -> _ ExpressionList _ {% R.nth(1) %}
 
 ExpressionList ->
   Expression
-  | ExpressionList __ Expression
+  | ExpressionList __ Expression {% ([list, , e]) => ([...list, e]) %}
 
 Expression ->
   AssignmentExpression {% id %}
@@ -205,32 +219,32 @@ WhileExpression -> "while" _ "(" _ Expression _ ")" _ Expression
 
 UntilExpression -> "until" _ "(" _ Expression _ ")" _ Expression
 
-FunctionExpression -> "fn" _ "(" _ FormalParameters _ ")" _ "{" _ FunctionBody _ "}"
+FunctionExpression -> %fn _ "(" _ FormalParameters _ ")" _ "{" _ FunctionBody _ "}" {% ([ , , , , formalParams, , , , , , body]) => ({ type: 'function', formalParams, body }) %}
 
 FormalParameters ->
-  null
-  | FormalParameterList
+  null {% R.always([]) %}
+  | FormalParameterList {% id %}
 
 FormalParameterList ->
   FormalParameter
-  | FormalParameterList _ "," _ FormalParameter
+  | FormalParameterList _ "," _ FormalParameter {% ([list, , , , p]) => ([...list, p]) %}
 
 FormalParameter ->
-  BindingElement
+  BindingElement {% id %}
 
 BindingElement ->
-  SingleNameBinding
-  | BindingPattern
+  SingleNameBinding {% id %}
+  | BindingPattern {% id %}
 
 SingleNameBinding ->
-  BindingIdentifier
+  BindingIdentifier {% id %}
 
 BindingIdentifier ->
-  Identifier
+  Identifier {% id %}
 
 BindingPattern ->
-  ObjectBindingPattern
-  | ArrayBindingPattern
+  ObjectBindingPattern {% id %}
+  | ArrayBindingPattern {% id %}
 
 ObjectBindingPattern ->
   "{" _ "}"
@@ -252,42 +266,46 @@ BindingElementList ->
   | BindingElementList _ "," _ BindingElement
 
 FunctionBody ->
-  FunctionExpressionList
+  FunctionExpressionList {% id %}
 
 FunctionExpressionList ->
-  ExpressionList
+  ExpressionList {% id %}
 
-ChoiceExpression -> "choice" _ ( "(" _ FormalParameters _ ")" _ ):? "{" _ ChoiceEntryList _ "}"
+ChoiceExpression ->
+  %choice _ "(" _ FormalParameters _ ")" _ "{" _ ChoiceEntryList _ "}" {% ([ , , , , formalParams, , , , , , entries]) => ({ type: 'choice', formalParams, entries }) %}
+  | %choice _ "{" _ ChoiceEntryList _ "}" {% ([ , , , , entries]) => ({ type: 'choice', entries }) %}
 
 ChoiceEntryList ->
   ChoiceEntry
-  | ChoiceEntryList __ ChoiceEntry
+  | ChoiceEntryList __ ChoiceEntry {% ([list, , e]) => ([...list, e]) %}
 
 ChoiceEntry ->
   SpreadExpression {% id %}
   | TableEntryBody {% id %}
 
-TableExpression -> "table" _ ( "(" _ FormalParameters _ ")" _ ):? "{" _ TableEntryList _ "}"
+TableExpression ->
+  %table _ "(" _ FormalParameters _ ")" _ "{" _ TableEntryList _ "}" {% ([ , , , , formalParams, , , , , , entries]) => ({ type: 'table', formalParams, entries }) %}
+  | %table _ "{" _ TableEntryList _ "}" {% ([ , , , , entries]) => ({ type: 'table', entries }) %}
 
 TableEntryList ->
   TableEntry
-  | TableEntryList __ TableEntry
+  | TableEntryList __ TableEntry {% ([list, , e]) => ([...list, e]) %}
 
-TableEntry -> TableEntrySelector ":" _ TableEntryBody
+TableEntry -> TableEntrySelector _ ":" _ TableEntryBody {% ([selector, , , body]) => ({ type: 'tableEntry', selector, body }) %}
 
 TableEntrySelector ->
-  NonZeroDecimalInteger "-" NonZeroDecimalInteger
-  | NonZeroDecimalInteger
+  NonZeroDecimalInteger "-" NonZeroDecimalInteger {% ([from, , to]) => ({ type: 'tableEntrySelector', from, to }) %}
+  | NonZeroDecimalInteger {% ([n]) => ({ type: 'tableEntrySelector', n }) %}
 
 TableEntryBody ->
-  Expression
-  | "{" _ ExpressionList _ "}"
+  Expression {% id %}
+  | "{" _ ExpressionList _ "}" {% R.nth(2) %}
 
 UndefinedLiteral -> "undefined" {% () => createUndefinedLiteral() %}
 
 BooleanLiteral ->
-  "true" {% () => ({ type: 'boolean', value: true }) %}
-  | "false" {% () => ({ type: 'boolean', value: false }) %}
+  %true {% () => ({ type: 'boolean', value: true }) %}
+  | %false {% () => ({ type: 'boolean', value: false }) %}
 
 ArrayLiteral -> "[" _ ElementList _ "]"
 
@@ -319,7 +337,7 @@ ComputedPropertyName ->
   "[" _ AssignmentExpression _ "]"
 
 DiceLiteral ->
-  NonZeroDecimalInteger:? "d"i NonZeroDecimalInteger DiceLiteralSuffix:?
+  %dice {% ([dice]) => ({ type: 'diceLiteral', dice: dice.value }) %}
 
 DiceLiteralSuffix -> [+-] [lLhH] NonZeroDecimalInteger:?
 
@@ -331,35 +349,13 @@ LineTerminator ->
 Comment -> "#" [^\n(\r\n)\r]:*
 
 NumericLiteral ->
-  DecimalLiteral
+  %decimal {% ([n]) => ({ type: 'numericLiteral', value: parseFloat(n) }) %}
+  | %decimalInteger {% ([n]) => ({ type: 'numericLiteral', value: parseInt(n, 10) }) %}
 
-DecimalLiteral ->
-  DecimalIntegerLiteral "." DecimalDigits
-  | "." DecimalDigits
-  | DecimalIntegerLiteral
-
-DecimalIntegerLiteral ->
-  "0" {% () => 0 %}
-  | NonZeroDecimalInteger {% id %}
-
-NonZeroDecimalInteger -> NonZeroDigit DecimalDigits {% ([head, tail]) => parseInt(`${head}${tail}`, 10) %}
-
-DecimalDigits ->
-  DecimalDigit
-  | DecimalDigits DecimalDigit
-
-
-NonZeroDigit -> [1-9] {% id %}
-
-DecimalDigit -> [0-9] {% id %}
+NonZeroDecimalInteger -> %nonZeroDecimalInteger {% ([n]) => parseInt(n, 10) %}
 
 IdentifierName ->
-  IdentifierStart {% id %}
-  | IdentifierName IdentifierPart {% ([head, tail]) => `${head}${tail}` %}
-
-IdentifierStart -> [_a-zA-Z] {% id %}
-
-IdentifierPart -> [_a-zA-Z0-9] {% id %}
+  %identifierName {% id %}
 
 StringLiteral ->
   "'" SingleQuoteStringCharacter:* "'" {% ([_, cs]) => cs.join('') %}
@@ -372,3 +368,10 @@ DoubleQuoteStringCharacter ->
 SingleQuoteStringCharacter ->
   "\\'" {% id %}
   | [^'] {% id %}
+
+_ ->
+  null
+  | %space {% R.always(null) %}
+
+__ ->
+  %space {% R.always(null) %}
