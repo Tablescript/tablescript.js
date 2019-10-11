@@ -6,9 +6,18 @@
     whitespace: { match: /\s/, lineBreaks: true },
     true: 'true',
     false: 'false',
+    not: 'not',
+    orToken: 'or',
+    andToken: 'and',
     fn: 'fn',
     choice: 'choice',
     table: 'table',
+    ifToken: 'if',
+    elseToken: 'else',
+    whileToken: 'while',
+    untilToken: 'until',
+    undefinedToken: 'undefined',
+    spread: '...',
     doubleQuoteString: /"(?:\\["bfnrt\/\\]|[^"\\])*"/,
     singleQuoteString: /'(?:\\'|[^'\\])*'/,
     dice: /(?:[1-9][0-9]*)?[dD][1-9][0-9]*/,
@@ -16,10 +25,18 @@
     decimal: /[0|[1-9][0-9]*]?\.[0-9]+/,
     decimalInteger: /0|[1-9][0-9]*/,
     nonZeroDecimalInteger: /[1-9][0-9]*/,
-    undefined: 'undefined',
     comment: { match: /#[^\r\n]*/, lineBreaks: true },
     '==': '==',
     '!=': '!=',
+    '>=': '>=',
+    '<=': '<=',
+    '+=': '+=',
+    '-=': '-=',
+    '*=': '*=',
+    '/=': '/=',
+    '%=': '%=',
+    '<': '<',
+    '>': '>',
     '=': '=',
     '(': '(',
     ')': ')',
@@ -31,6 +48,10 @@
     '[': '[',
     ']': ']',
     '+': '+',
+    '-': '-',
+    '*': '*',
+    '/': '/',
+    '%': '%',
   });
 
   const R = require('ramda');
@@ -118,11 +139,11 @@ AssignmentExpression ->
   | LeftHandSideExpression _ AssignmentOperator _ ConditionalExpression {% ([left, , op, , right]) => ({ type: 'assign', op, left, right }) %}
 
 AssignmentOperator ->
-  "+=" {% id %}
-  | "-=" {% id %}
-  | "*=" {% id %}
-  | "/=" {% id %}
-  | "%=" {% id %}
+  "+=" {% R.compose(R.prop('value'), R.nth(0)) %}
+  | "-=" {% R.compose(R.prop('value'), R.nth(0)) %}
+  | "*=" {% R.compose(R.prop('value'), R.nth(0)) %}
+  | "/=" {% R.compose(R.prop('value'), R.nth(0)) %}
+  | "%=" {% R.compose(R.prop('value'), R.nth(0)) %}
 
 LeftHandSideExpression ->
   MemberExpression {% id %}
@@ -145,7 +166,9 @@ Arguments ->
 
 ArgumentList ->
   AssignmentExpression
+  | %spread _ AssignmentExpression {% ([ , , e]) => ([{ type: 'spread', e }]) %}
   | ArgumentList _ "," _ AssignmentExpression {% ([list, , , , e]) => ([...list, e]) %}
+  | ArgumentList _ "," _ %spread _ AssignmentExpression {% ([list, , , , , , e]) => ([...list, { type: 'spread', e }]) %}
 
 PrimaryExpression ->
   IdentifierReference               {% id %}
@@ -178,11 +201,11 @@ ConditionalExpression ->
 
 LogicalOrExpression ->
   LogicalAndExpression {% id %}
-  | LogicalOrExpression _ "or" _ LogicalAndExpression {% ([left, , , , right]) => ({ type: 'logicalOr', left, right }) %}
+  | LogicalOrExpression _ %orToken _ LogicalAndExpression {% ([left, , , , right]) => ({ type: 'logicalOr', left, right }) %}
 
 LogicalAndExpression ->
   EqualityExpression {% id %}
-  | LogicalAndExpression _ "and" _ EqualityExpression {% ([left, , , , right]) => ({ type: 'logicalAnd', left, right }) %}
+  | LogicalAndExpression _ %andToken _ EqualityExpression {% ([left, , , , right]) => ({ type: 'logicalAnd', left, right }) %}
 
 EqualityExpression ->
   RelationalExpression {% id %}
@@ -209,18 +232,18 @@ MultiplicativeExpression ->
 
 UnaryExpression ->
   LeftHandSideExpression {% id %}
-  | "not" __ UnaryExpression {% ([ , , e]) => ({ type: 'logicalNot', e }) %}
+  | %not __ UnaryExpression {% ([ , , e]) => ({ type: 'logicalNot', e }) %}
   | "-" _ UnaryExpression {% ([ , , e]) => ({ type: 'negate', e }) %}
 
 SpreadExpression -> "..." Expression
 
 IfExpression ->
-  "if" _ "(" _ Expression _ ")" _ Expression _ "else" _ Expression
-  | "if" _ "(" _ Expression _ ")" _ Expression
+  %ifToken _ "(" _ Expression _ ")" _ Expression _ %elseToken _ Expression {% ([ , , , , test, , , , ifExpression, , , , elseExpression]) => ({ type: 'if', test, ifExpression, elseExpression }) %}
+  | %ifToken _ "(" _ Expression _ ")" _ Expression {% ([ , , , , test, , , , ifExpression]) => ({ type: 'if', test, ifExpression }) %}
 
-WhileExpression -> "while" _ "(" _ Expression _ ")" _ Expression
+WhileExpression -> %whileToken _ "(" _ Expression _ ")" _ Expression {% ([ , , , , test, , , , loopBlock ]) => ({ type: 'while', test, loopBlock }) %}
 
-UntilExpression -> "until" _ "(" _ Expression _ ")" _ Expression
+UntilExpression -> %untilToken _ "(" _ Expression _ ")" _ Expression {% ([ , , , , test, , , , loopBlock ]) => ({ type: 'until', test, loopBlock }) %}
 
 FunctionExpression -> %fn _ "(" _ FormalParameters _ ")" _ "{" _ FunctionBody _ "}" {% ([ , , , , formalParams, , , , , , body]) => ({ type: 'function', formalParams, body }) %}
 
@@ -287,8 +310,12 @@ ChoiceEntry ->
   | TableEntryBody {% id %}
 
 TableExpression ->
-  %table _ "(" _ FormalParameters _ ")" _ "{" _ TableEntryList _ "}" {% ([ , , , , formalParams, , , , , , entries]) => ({ type: 'table', formalParams, entries }) %}
-  | %table _ "{" _ TableEntryList _ "}" {% ([ , , , , entries]) => ({ type: 'table', entries }) %}
+  %table _ "(" _ FormalParameters _ ")" _ "{" _ TableEntries _ "}" {% ([ , , , , formalParams, , , , , , entries]) => ({ type: 'table', formalParams, entries }) %}
+  | %table _ "{" _ TableEntries _ "}" {% ([ , , , , entries]) => ({ type: 'table', entries }) %}
+
+TableEntries ->
+  null {% R.always([]) %}
+  | TableEntryList {% id %}
 
 TableEntryList ->
   TableEntry
@@ -301,22 +328,26 @@ TableEntrySelector ->
   | NonZeroDecimalInteger {% ([n]) => ({ type: 'tableEntrySelector', n }) %}
 
 TableEntryBody ->
-  Expression {% id %}
+  Expression
   | "{" _ ExpressionList _ "}" {% R.nth(2) %}
 
-UndefinedLiteral -> "undefined" {% () => ({ type: 'undefinedLiteral' }) %}
+UndefinedLiteral -> %undefinedToken {% () => ({ type: 'undefinedLiteral' }) %}
 
 BooleanLiteral ->
   %true {% () => ({ type: 'boolean', value: true }) %}
   | %false {% () => ({ type: 'boolean', value: false }) %}
 
-ArrayLiteral -> "[" _ ElementList _ "]" {% ([ , , elements]) => ({ type: 'arrayLiteral', elements }) %}
+ArrayLiteral ->
+  "[" _ "]" {% R.always({ type: 'arrayLiteral', elements: [] }) %}
+  | "[" _ ElementList _ "]" {% ([ , , elements]) => ({ type: 'arrayLiteral', elements }) %}
 
 ElementList ->
   AssignmentExpression
   | ElementList _ "," _ AssignmentExpression {% ([list, , , , e]) => ([...list, e]) %}
 
-ObjectLiteral -> "{" _ PropertyDefinitionList _ "}" {% ([ , , properties]) => ({ type: 'objectLiteral', properties }) %}
+ObjectLiteral ->
+  "{" _ "}" {% R.always({ type: 'objectLiteral', properties: [] }) %}
+  | "{" _ PropertyDefinitionList _ "}" {% ([ , , properties]) => ({ type: 'objectLiteral', properties }) %}
 
 PropertyDefinitionList ->
   PropertyDefinition
