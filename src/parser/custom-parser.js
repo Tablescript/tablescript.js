@@ -6,7 +6,8 @@ function id(x) { return x[0]; }
   const moo = require("moo");
 
   const lexer = moo.compile({
-    space: {match: /\s+/, lineBreaks: true},
+    //space: { match: /[ \t\n]+/, lineBreaks: true },
+    whitespace: { match: /\s/, lineBreaks: true },
     true: 'true',
     false: 'false',
     fn: 'fn',
@@ -20,13 +21,16 @@ function id(x) { return x[0]; }
     decimalInteger: /0|[1-9][0-9]*/,
     nonZeroDecimalInteger: /[1-9][0-9]*/,
     undefined: 'undefined',
+    comment: { match: /#[^\r\n]*/, lineBreaks: true },
     '==': '==',
+    '!=': '!=',
     '=': '=',
     '(': '(',
     ')': ')',
     '{': '{',
     '}': '}',
     ',': ',',
+    '.': '.',
     ':': ':',
     '[': '[',
     ']': ']',
@@ -98,6 +102,7 @@ function id(x) { return x[0]; }
 var grammar = {
     Lexer: lexer,
     ParserRules: [
+    {"name": "Start", "symbols": ["_"], "postprocess": R.always([])},
     {"name": "Start", "symbols": ["_", "ExpressionList", "_"], "postprocess": R.nth(1)},
     {"name": "ExpressionList", "symbols": ["Expression"]},
     {"name": "ExpressionList", "symbols": ["ExpressionList", "__", "Expression"], "postprocess": ([list, , e]) => ([...list, e])},
@@ -135,17 +140,7 @@ var grammar = {
     {"name": "PrimaryExpression", "symbols": ["WhileExpression"], "postprocess": id},
     {"name": "PrimaryExpression", "symbols": ["UntilExpression"], "postprocess": id},
     {"name": "IdentifierReference", "symbols": ["Identifier"], "postprocess": id},
-    {"name": "Identifier", "symbols": ["IdentifierName"], "postprocess": 
-        (data, _, reject) => {
-          if (R.includes(data.join(''), reservedWords)) {
-            return reject;
-          }
-          return {
-            type: 'identifier',
-            name: data.join(''),
-          };
-        }
-        },
+    {"name": "Identifier", "symbols": ["IdentifierName"], "postprocess": ([name]) => ({ type: 'identifier', name })},
     {"name": "Literal", "symbols": ["UndefinedLiteral"], "postprocess": id},
     {"name": "Literal", "symbols": ["BooleanLiteral"], "postprocess": id},
     {"name": "Literal", "symbols": ["NumericLiteral"], "postprocess": id},
@@ -218,43 +213,40 @@ var grammar = {
     {"name": "TableEntrySelector", "symbols": ["NonZeroDecimalInteger"], "postprocess": ([n]) => ({ type: 'tableEntrySelector', n })},
     {"name": "TableEntryBody", "symbols": ["Expression"], "postprocess": id},
     {"name": "TableEntryBody", "symbols": [{"literal":"{"}, "_", "ExpressionList", "_", {"literal":"}"}], "postprocess": R.nth(2)},
-    {"name": "UndefinedLiteral", "symbols": [{"literal":"undefined"}], "postprocess": () => createUndefinedLiteral()},
+    {"name": "UndefinedLiteral", "symbols": [{"literal":"undefined"}], "postprocess": () => ({ type: 'undefinedLiteral' })},
     {"name": "BooleanLiteral", "symbols": [(lexer.has("true") ? {type: "true"} : true)], "postprocess": () => ({ type: 'boolean', value: true })},
     {"name": "BooleanLiteral", "symbols": [(lexer.has("false") ? {type: "false"} : false)], "postprocess": () => ({ type: 'boolean', value: false })},
-    {"name": "ArrayLiteral", "symbols": [{"literal":"["}, "_", "ElementList", "_", {"literal":"]"}]},
-    {"name": "ElementList", "symbols": ["AssignmentExpression"], "postprocess": id},
+    {"name": "ArrayLiteral", "symbols": [{"literal":"["}, "_", "ElementList", "_", {"literal":"]"}], "postprocess": ([ , , elements]) => ({ type: 'arrayLiteral', elements })},
+    {"name": "ElementList", "symbols": ["AssignmentExpression"]},
     {"name": "ElementList", "symbols": ["ElementList", "_", {"literal":","}, "_", "AssignmentExpression"], "postprocess": ([list, , , , e]) => ([...list, e])},
-    {"name": "ObjectLiteral", "symbols": [{"literal":"{"}, "_", "PropertyDefinitionList", "_", {"literal":"}"}]},
+    {"name": "ObjectLiteral", "symbols": [{"literal":"{"}, "_", "PropertyDefinitionList", "_", {"literal":"}"}], "postprocess": ([ , , properties]) => ({ type: 'objectLiteral', properties })},
     {"name": "PropertyDefinitionList", "symbols": ["PropertyDefinition"]},
-    {"name": "PropertyDefinitionList", "symbols": ["PropertyDefinitionList", "_", {"literal":","}, "_", "PropertyDefinition"]},
-    {"name": "PropertyDefinition", "symbols": ["IdentifierReference"]},
-    {"name": "PropertyDefinition", "symbols": ["PropertyName", "_", {"literal":":"}, "_", "AssignmentExpression"]},
-    {"name": "PropertyDefinition", "symbols": [{"literal":"..."}, "_", "AssignmentExpression"]},
-    {"name": "PropertyName", "symbols": ["LiteralPropertyName"]},
-    {"name": "PropertyName", "symbols": ["ComputedPropertyName"]},
-    {"name": "LiteralPropertyName", "symbols": ["IdentifierName"]},
-    {"name": "LiteralPropertyName", "symbols": ["StringLiteral"]},
-    {"name": "LiteralPropertyName", "symbols": ["NumericLiteral"]},
-    {"name": "ComputedPropertyName", "symbols": [{"literal":"["}, "_", "AssignmentExpression", "_", {"literal":"]"}]},
+    {"name": "PropertyDefinitionList", "symbols": ["PropertyDefinitionList", "_", {"literal":","}, "_", "PropertyDefinition"], "postprocess": ([list, , , , e]) => ([...list, e])},
+    {"name": "PropertyDefinition", "symbols": ["IdentifierReference"], "postprocess": id},
+    {"name": "PropertyDefinition", "symbols": ["PropertyName", "_", {"literal":":"}, "_", "AssignmentExpression"], "postprocess": ([name, , , , e]) => ({ type: 'property', name, e })},
+    {"name": "PropertyDefinition", "symbols": [{"literal":"..."}, "_", "AssignmentExpression"], "postprocess": ([ , , e]) => ({ type: 'spreadProperty', e })},
+    {"name": "PropertyName", "symbols": ["LiteralPropertyName"], "postprocess": id},
+    {"name": "PropertyName", "symbols": ["ComputedPropertyName"], "postprocess": id},
+    {"name": "LiteralPropertyName", "symbols": ["IdentifierName"], "postprocess": id},
+    {"name": "LiteralPropertyName", "symbols": ["StringLiteral"], "postprocess": id},
+    {"name": "LiteralPropertyName", "symbols": ["NumericLiteral"], "postprocess": id},
+    {"name": "ComputedPropertyName", "symbols": [{"literal":"["}, "_", "AssignmentExpression", "_", {"literal":"]"}], "postprocess": ([ , , e]) => ({ type: 'computedPropertyName', e })},
     {"name": "DiceLiteral", "symbols": [(lexer.has("dice") ? {type: "dice"} : dice)], "postprocess": ([dice]) => ({ type: 'diceLiteral', dice: dice.value })},
     {"name": "DiceLiteralSuffix$ebnf$1", "symbols": ["NonZeroDecimalInteger"], "postprocess": id},
     {"name": "DiceLiteralSuffix$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "DiceLiteralSuffix", "symbols": [/[+-]/, /[lLhH]/, "DiceLiteralSuffix$ebnf$1"]},
-    {"name": "LineTerminator", "symbols": [{"literal":"\n"}]},
-    {"name": "LineTerminator", "symbols": [{"literal":"\r\n"}]},
-    {"name": "LineTerminator", "symbols": [{"literal":"\r"}]},
-    {"name": "Comment$ebnf$1", "symbols": []},
-    {"name": "Comment$ebnf$1", "symbols": ["Comment$ebnf$1", /[^\n(\r\n)\r]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "Comment", "symbols": [{"literal":"#"}, "Comment$ebnf$1"]},
     {"name": "NumericLiteral", "symbols": [(lexer.has("decimal") ? {type: "decimal"} : decimal)], "postprocess": ([n]) => ({ type: 'numericLiteral', value: parseFloat(n) })},
     {"name": "NumericLiteral", "symbols": [(lexer.has("decimalInteger") ? {type: "decimalInteger"} : decimalInteger)], "postprocess": ([n]) => ({ type: 'numericLiteral', value: parseInt(n, 10) })},
     {"name": "NonZeroDecimalInteger", "symbols": [(lexer.has("nonZeroDecimalInteger") ? {type: "nonZeroDecimalInteger"} : nonZeroDecimalInteger)], "postprocess": ([n]) => parseInt(n, 10)},
-    {"name": "IdentifierName", "symbols": [(lexer.has("identifierName") ? {type: "identifierName"} : identifierName)], "postprocess": id},
+    {"name": "IdentifierName", "symbols": [(lexer.has("identifierName") ? {type: "identifierName"} : identifierName)], "postprocess": R.compose(R.prop('value'), R.nth(0))},
     {"name": "StringLiteral", "symbols": [(lexer.has("doubleQuoteString") ? {type: "doubleQuoteString"} : doubleQuoteString)], "postprocess": ([data]) => ({ type: 'stringLiteral', s: data.value })},
     {"name": "StringLiteral", "symbols": [(lexer.has("singleQuoteString") ? {type: "singleQuoteString"} : singleQuoteString)], "postprocess": ([data]) => ({ type: 'stringLiteral', s: data.value })},
     {"name": "_", "symbols": []},
-    {"name": "_", "symbols": [(lexer.has("space") ? {type: "space"} : space)], "postprocess": R.always(null)},
-    {"name": "__", "symbols": [(lexer.has("space") ? {type: "space"} : space)], "postprocess": R.always(null)}
+    {"name": "_", "symbols": ["_", (lexer.has("whitespace") ? {type: "whitespace"} : whitespace)], "postprocess": R.always(null)},
+    {"name": "_", "symbols": ["_", (lexer.has("comment") ? {type: "comment"} : comment)], "postprocess": R.always(null)},
+    {"name": "__", "symbols": [(lexer.has("whitespace") ? {type: "whitespace"} : whitespace)], "postprocess": R.always(null)},
+    {"name": "__", "symbols": ["__", (lexer.has("whitespace") ? {type: "whitespace"} : whitespace)], "postprocess": R.always(null)},
+    {"name": "__", "symbols": ["__", (lexer.has("comment") ? {type: "comment"} : comment)], "postprocess": R.always(null)}
 ]
   , ParserStart: "Start"
 }

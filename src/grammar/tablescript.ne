@@ -2,7 +2,8 @@
   const moo = require("moo");
 
   const lexer = moo.compile({
-    space: {match: /\s+/, lineBreaks: true},
+    //space: { match: /[ \t\n]+/, lineBreaks: true },
+    whitespace: { match: /\s/, lineBreaks: true },
     true: 'true',
     false: 'false',
     fn: 'fn',
@@ -16,13 +17,16 @@
     decimalInteger: /0|[1-9][0-9]*/,
     nonZeroDecimalInteger: /[1-9][0-9]*/,
     undefined: 'undefined',
+    comment: { match: /#[^\r\n]*/, lineBreaks: true },
     '==': '==',
+    '!=': '!=',
     '=': '=',
     '(': '(',
     ')': ')',
     '{': '{',
     '}': '}',
     ',': ',',
+    '.': '.',
     ':': ':',
     '[': '[',
     ']': ']',
@@ -96,7 +100,9 @@
 @lexer lexer
 
 # Start -> _ Expression:* {% R.nth(1) %}
-Start -> _ ExpressionList _ {% R.nth(1) %}
+Start ->
+  _ {% R.always([]) %}
+  | _ ExpressionList _ {% R.nth(1) %}
 
 ExpressionList ->
   Expression
@@ -157,17 +163,7 @@ IdentifierReference ->
   Identifier {% id %}
 
 Identifier ->
-  IdentifierName {%
-  (data, _, reject) => {
-    if (R.includes(data.join(''), reservedWords)) {
-      return reject;
-    }
-    return {
-      type: 'identifier',
-      name: data.join(''),
-    };
-  }
-%}
+  IdentifierName {% ([name]) => ({ type: 'identifier', name }) %}
 
 Literal ->
   UndefinedLiteral {% id %}
@@ -308,52 +304,45 @@ TableEntryBody ->
   Expression {% id %}
   | "{" _ ExpressionList _ "}" {% R.nth(2) %}
 
-UndefinedLiteral -> "undefined" {% () => createUndefinedLiteral() %}
+UndefinedLiteral -> "undefined" {% () => ({ type: 'undefinedLiteral' }) %}
 
 BooleanLiteral ->
   %true {% () => ({ type: 'boolean', value: true }) %}
   | %false {% () => ({ type: 'boolean', value: false }) %}
 
-ArrayLiteral -> "[" _ ElementList _ "]"
+ArrayLiteral -> "[" _ ElementList _ "]" {% ([ , , elements]) => ({ type: 'arrayLiteral', elements }) %}
 
 ElementList ->
-  AssignmentExpression {% id %}
+  AssignmentExpression
   | ElementList _ "," _ AssignmentExpression {% ([list, , , , e]) => ([...list, e]) %}
 
-ObjectLiteral -> "{" _ PropertyDefinitionList _ "}"
+ObjectLiteral -> "{" _ PropertyDefinitionList _ "}" {% ([ , , properties]) => ({ type: 'objectLiteral', properties }) %}
 
 PropertyDefinitionList ->
   PropertyDefinition
-  | PropertyDefinitionList _ "," _ PropertyDefinition
+  | PropertyDefinitionList _ "," _ PropertyDefinition {% ([list, , , , e]) => ([...list, e]) %}
 
 PropertyDefinition ->
-  IdentifierReference
-  | PropertyName _ ":" _ AssignmentExpression
-  | "..." _ AssignmentExpression
+  IdentifierReference {% id %}
+  | PropertyName _ ":" _ AssignmentExpression {% ([name, , , , e]) => ({ type: 'property', name, e }) %}
+  | "..." _ AssignmentExpression {% ([ , , e]) => ({ type: 'spreadProperty', e }) %}
 
 PropertyName ->
-  LiteralPropertyName
-  | ComputedPropertyName
+  LiteralPropertyName {% id %}
+  | ComputedPropertyName {% id %}
 
 LiteralPropertyName ->
-  IdentifierName
-  | StringLiteral
-  | NumericLiteral
+  IdentifierName {% id %}
+  | StringLiteral {% id %}
+  | NumericLiteral {% id %}
 
 ComputedPropertyName ->
-  "[" _ AssignmentExpression _ "]"
+  "[" _ AssignmentExpression _ "]" {% ([ , , e]) => ({ type: 'computedPropertyName', e }) %}
 
 DiceLiteral ->
   %dice {% ([dice]) => ({ type: 'diceLiteral', dice: dice.value }) %}
 
 DiceLiteralSuffix -> [+-] [lLhH] NonZeroDecimalInteger:?
-
-LineTerminator ->
-  "\n"
-  | "\r\n"
-  | "\r"
-
-Comment -> "#" [^\n(\r\n)\r]:*
 
 NumericLiteral ->
   %decimal {% ([n]) => ({ type: 'numericLiteral', value: parseFloat(n) }) %}
@@ -362,7 +351,7 @@ NumericLiteral ->
 NonZeroDecimalInteger -> %nonZeroDecimalInteger {% ([n]) => parseInt(n, 10) %}
 
 IdentifierName ->
-  %identifierName {% id %}
+  %identifierName {% R.compose(R.prop('value'), R.nth(0)) %}
 
 StringLiteral ->
   %doubleQuoteString {% ([data]) => ({ type: 'stringLiteral', s: data.value }) %}
@@ -370,7 +359,10 @@ StringLiteral ->
 
 _ ->
   null
-  | %space {% R.always(null) %}
+  | _ %whitespace {% R.always(null) %}
+  | _ %comment {% R.always(null) %}
 
 __ ->
-  %space {% R.always(null) %}
+  %whitespace {% R.always(null) %}
+  | __ %whitespace {% R.always(null) %}
+  | __ %comment {% R.always(null) %}
