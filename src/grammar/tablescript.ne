@@ -8,12 +8,15 @@
     fn: 'fn',
     choice: 'choice',
     table: 'table',
+    doubleQuoteString: /"(?:\\["bfnrt\/\\]|[^"\\])*"/,
+    singleQuoteString: /'(?:\\'|[^'\\])*'/,
     dice: /(?:[1-9][0-9]*)?[dD][1-9][0-9]*/,
     identifierName: /[_a-zA-Z][_a-zA-Z0-9]*/,
     decimal: /[0|[1-9][0-9]*]?\.[0-9]+/,
     decimalInteger: /0|[1-9][0-9]*/,
     nonZeroDecimalInteger: /[1-9][0-9]*/,
     undefined: 'undefined',
+    '==': '==',
     '=': '=',
     '(': '(',
     ')': ')',
@@ -21,6 +24,9 @@
     '}': '}',
     ',': ',',
     ':': ':',
+    '[': '[',
+    ']': ']',
+    '+': '+',
   });
 
   const R = require('ramda');
@@ -118,11 +124,12 @@ LeftHandSideExpression ->
 
 MemberExpression ->
   PrimaryExpression {% id %}
-  | MemberExpression _ "[" _ Expression _ "]"
-  | MemberExpression _ "." _ IdentifierName
+  | MemberExpression _ "[" _ Expression _ "]" {% ([target, , , , index]) => ({ type: 'member', target, index }) %}
+  | MemberExpression _ "." _ IdentifierName {% ([target, , , , property]) => ({ type: 'property', target, property }) %}
 
 CallExpression ->
-  CallExpression _ Arguments {% ([target, , args]) => ({ type: 'call', target, args }) %}
+  MemberExpression _ Arguments {% ([target, , args]) => ({ type: 'call', target, args }) %}
+  | CallExpression _ Arguments {% ([target, , args]) => ({ type: 'call', target, args }) %}
   | CallExpression _ "[" _ Expression _ "]" {% ([target, , , , e]) => ({ type: 'index', target, e }) %}
   | CallExpression _ "." _ IdentifierName {% ([target, , , , property]) => ({ type: 'property', target, property }) %}
 
@@ -131,7 +138,7 @@ Arguments ->
   | "(" _ ArgumentList _ ")" {% R.nth(2) %}
 
 ArgumentList ->
-  AssignmentExpression {% id %}
+  AssignmentExpression
   | ArgumentList _ "," _ AssignmentExpression {% ([list, , , , e]) => ([...list, e]) %}
 
 PrimaryExpression ->
@@ -175,16 +182,16 @@ ConditionalExpression ->
 
 LogicalOrExpression ->
   LogicalAndExpression {% id %}
-  | LogicalOrExpression _ "or" _ LogicalAndExpression
+  | LogicalOrExpression _ "or" _ LogicalAndExpression {% ([left, , , , right]) => ({ type: 'logicalOr', left, right }) %}
 
 LogicalAndExpression ->
   EqualityExpression {% id %}
-  | LogicalAndExpression _ "and" _ EqualityExpression
+  | LogicalAndExpression _ "and" _ EqualityExpression {% ([left, , , , right]) => ({ type: 'logicalAnd', left, right }) %}
 
 EqualityExpression ->
   RelationalExpression {% id %}
-  | EqualityExpression _ "==" _ RelationalExpression
-  | EqualityExpression _ "!=" _ RelationalExpression
+  | EqualityExpression _ "==" _ RelationalExpression {% ([left, , , , right]) => ({ type: 'equality', left, right }) %}
+  | EqualityExpression _ "!=" _ RelationalExpression {% ([left, , , , right]) => ({ type: 'inequality', left, right }) %}
 
 RelationalExpression ->
   AdditiveExpression {% id %}
@@ -196,18 +203,18 @@ RelationalExpression ->
 AdditiveExpression ->
   MultiplicativeExpression {% id %}
   | AdditiveExpression _ "+" _ MultiplicativeExpression {% ([left, , , , right]) => ({ type: 'add', left, right }) %}
-  | AdditiveExpression _ "-" _ MultiplicativeExpression
+  | AdditiveExpression _ "-" _ MultiplicativeExpression {% ([left, , , , right]) => ({ type: 'subtract', left, right }) %}
 
 MultiplicativeExpression ->
   UnaryExpression {% id %}
-  | MultiplicativeExpression _ "*" _ UnaryExpression
-  | MultiplicativeExpression _ "/" _ UnaryExpression
-  | MultiplicativeExpression _ "%" _ UnaryExpression
+  | MultiplicativeExpression _ "*" _ UnaryExpression {% ([left, , , , right]) => ({ type: 'multiply', left, right }) %}
+  | MultiplicativeExpression _ "/" _ UnaryExpression {% ([left, , , , right]) => ({ type: 'divide', left, right }) %}
+  | MultiplicativeExpression _ "%" _ UnaryExpression {% ([left, , , , right]) => ({ type: 'modulo', left, right }) %}
 
 UnaryExpression ->
   LeftHandSideExpression {% id %}
-  | "not" __ UnaryExpression
-  | "-" _ UnaryExpression
+  | "not" __ UnaryExpression {% ([ , , e]) => ({ type: 'logicalNot', e }) %}
+  | "-" _ UnaryExpression {% ([ , , e]) => ({ type: 'negate', e }) %}
 
 SpreadExpression -> "..." Expression
 
@@ -358,16 +365,8 @@ IdentifierName ->
   %identifierName {% id %}
 
 StringLiteral ->
-  "'" SingleQuoteStringCharacter:* "'" {% ([_, cs]) => cs.join('') %}
-  | "\"" DoubleQuoteStringCharacter:* "\"" {% ([_, cs]) => cs.join('') %}
-
-DoubleQuoteStringCharacter ->
-  "\\\"" {% id %}
-  | [^"] {% id %}
-
-SingleQuoteStringCharacter ->
-  "\\'" {% id %}
-  | [^'] {% id %}
+  %doubleQuoteString {% ([data]) => ({ type: 'stringLiteral', s: data.value }) %}
+  | %singleQuoteString {% ([data]) => ({ type: 'stringLiteral', s: data.value }) %}
 
 _ ->
   null
