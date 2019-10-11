@@ -86,21 +86,29 @@ Expression ->
 
 AssignmentExpression ->
   LeftHandSideExpression _ "=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'assign', left, right }) %}
-  | LeftHandSideExpression _ "+=" _ ConditionalExpression
-  | LeftHandSideExpression _ "-=" _ ConditionalExpression
-  | LeftHandSideExpression _ "*=" _ ConditionalExpression
-  | LeftHandSideExpression _ "/=" _ ConditionalExpression
-  | LeftHandSideExpression _ "%%=" _ ConditionalExpression
+  | LeftHandSideExpression _ "+=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'plusEquals', left, right }) %}
+  | LeftHandSideExpression _ "-=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'minusEquals', left, right }) %}
+  | LeftHandSideExpression _ "*=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'timesEquals', left, right }) %}
+  | LeftHandSideExpression _ "/=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'divideEquals', left, right }) %}
+  | LeftHandSideExpression _ "%%=" _ ConditionalExpression {% ([left, , , , right]) => ({ type: 'modEquals', left, right }) %}
   | ConditionalExpression {% id %}
 
 LeftHandSideExpression ->
   CallExpression {% id %}
 
 CallExpression ->
-  CallExpression _ "(" _ ArgumentList:? _ ")"
+  CallExpression _ Arguments {% ([target, , args]) => { console.log('yup'); return ({ type: 'call', target, args }); } %}
+  | CallExpression _ "[" _ Expression _ "]" {% ([target, , , , e]) => ({ type: 'index', target, e }) %}
+  | CallExpression _ "." _ IdentifierName {% ([target, , , , property]) => ({ type: 'property', target, property }) %}
   | MemberExpression {% id %}
 
-ArgumentList -> AssignmentExpression (_ "," _ AssignmentExpression):*
+Arguments ->
+  "(" _ ")" {% R.always([]) %}
+  | "(" _ ArgumentList _ ")" {% R.nth(2) %}
+
+ArgumentList ->
+  AssignmentExpression {% id %}
+  | ArgumentList _ "," _ AssignmentExpression {% ([list, , , , e]) => ([...list, e]) %}
 
 MemberExpression ->
   MemberExpression _ "[" _ Expression _ "]"
