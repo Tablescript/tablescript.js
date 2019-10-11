@@ -24,7 +24,6 @@
     identifierName: /[_a-zA-Z][_a-zA-Z0-9]*/,
     decimal: /[0|[1-9][0-9]*]?\.[0-9]+/,
     decimalInteger: /0|[1-9][0-9]*/,
-    nonZeroDecimalInteger: /[1-9][0-9]*/,
     comment: { match: /#[^\r\n]*/, lineBreaks: true },
     '==': '==',
     '!=': '!=',
@@ -307,7 +306,7 @@ ChoiceEntryList ->
 
 ChoiceEntry ->
   SpreadExpression {% id %}
-  | TableEntryBody {% id %}
+  | Expression {% id %}
 
 TableExpression ->
   %table _ "(" _ FormalParameters _ ")" _ "{" _ TableEntries _ "}" {% ([ , , , , formalParams, , , , , , entries]) => ({ type: 'table', formalParams, entries }) %}
@@ -327,9 +326,14 @@ TableEntrySelector ->
   NonZeroDecimalInteger "-" NonZeroDecimalInteger {% ([from, , to]) => ({ type: 'tableEntrySelector', from, to }) %}
   | NonZeroDecimalInteger {% ([n]) => ({ type: 'tableEntrySelector', n }) %}
 
+DecimalInteger ->
+  %decimalInteger {% ([n]) => parseInt(n, 10) %}
+
+NonZeroDecimalInteger ->
+  %decimalInteger {% ([n], _, reject) => { const value = parseInt(n, 10); if (n === 0) { return reject; } return value; } %}
+
 TableEntryBody ->
-  Expression
-  | "{" _ ExpressionList _ "}" {% R.nth(2) %}
+  Expression {% id %}
 
 UndefinedLiteral -> %undefinedToken {% () => ({ type: 'undefinedLiteral' }) %}
 
@@ -378,8 +382,6 @@ DiceLiteralSuffix -> [+-] [lLhH] NonZeroDecimalInteger:?
 NumericLiteral ->
   %decimal {% ([n]) => ({ type: 'numericLiteral', value: parseFloat(n) }) %}
   | %decimalInteger {% ([n]) => ({ type: 'numericLiteral', value: parseInt(n, 10) }) %}
-
-NonZeroDecimalInteger -> %nonZeroDecimalInteger {% ([n]) => parseInt(n, 10) %}
 
 IdentifierName ->
   %identifierName {% R.compose(R.prop('value'), R.nth(0)) %}
