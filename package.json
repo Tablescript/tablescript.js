@@ -9,6 +9,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "build": "node_modules/.bin/babel src --ignore __tests__ --out-dir dist",
+    "build:neparser": "nearleyc src/grammar/tablescript.ne > src/parser/custom-parser.js",
     "build:parser": "node_modules/.bin/pegjs --cache --output src/parser/tablescript-grammar-parser.js src/grammar/tablescript.pegjs",
     "build:tracing-parser": "node_modules/.bin/pegjs --trace --cache --output src/parser/tablescript-grammar-parser.js src/grammar/tablescript.pegjs",
     "build:template-string-parser": "node_modules/.bin/pegjs --cache --output src/parser/template-string-grammar-parser.js src/grammar/template-string.pegjs",
@@ -43,6 +44,8 @@
     "madge": "^3.4.4",
     "mocha": "*",
     "mocha-junit-reporter": "^1.23.1",
+    "moo": "^0.5.1",
+    "nearley": "^2.19.0",
     "pegjs": "^0.10.0"
   },
   "dependencies": {
