@@ -44,6 +44,7 @@
     ',': ',',
     '.': '.',
     ':': ':',
+    ';': ';',
     '[': '[',
     ']': ']',
     '+': '+',
@@ -51,6 +52,7 @@
     '*': '*',
     '/': '/',
     '%': '%',
+    '?': '?',
   });
 
   const R = require('ramda');
@@ -119,18 +121,18 @@
 
 @lexer lexer
 
-# Start -> _ Expression:* {% R.nth(1) %}
 Start ->
-  _ {% R.always([]) %}
-  | _ ExpressionList _ {% R.nth(1) %}
+  _ CompoundExpression {% ([ , list]) => list %}
 
-ExpressionList ->
-  Expression
-  | ExpressionList __ Expression {% ([list, , e]) => ([...list, e]) %}
+ExpressionBlock ->
+  SingleExpression {% id %}
+  | "{" _ CompoundExpression _ "}" {% R.nth(2) %}
 
-Expression ->
-  AssignmentExpression {% id %}
-  | "{" _ ExpressionList _ "}" {% R.nth(2) %}
+CompoundExpression ->
+  SingleExpression:+ {% id %}
+
+SingleExpression ->
+  AssignmentExpression _ ";" _ {% R.nth(0) %}
 
 AssignmentExpression ->
   ConditionalExpression {% id %}
@@ -143,56 +145,6 @@ AssignmentOperator ->
   | "*=" {% R.compose(R.prop('value'), R.nth(0)) %}
   | "/=" {% R.compose(R.prop('value'), R.nth(0)) %}
   | "%=" {% R.compose(R.prop('value'), R.nth(0)) %}
-
-LeftHandSideExpression ->
-  MemberExpression {% id %}
-  | CallExpression {% id %}
-
-MemberExpression ->
-  PrimaryExpression {% id %}
-  | MemberExpression _ "[" _ Expression _ "]" {% ([target, , , , index]) => ({ type: 'member', target, index }) %}
-  | MemberExpression _ "." _ IdentifierName {% ([target, , , , property]) => ({ type: 'property', target, property }) %}
-
-CallExpression ->
-  MemberExpression _ Arguments {% ([target, , args]) => ({ type: 'call', target, args }) %}
-  | CallExpression _ Arguments {% ([target, , args]) => ({ type: 'call', target, args }) %}
-  | CallExpression _ "[" _ Expression _ "]" {% ([target, , , , e]) => ({ type: 'index', target, e }) %}
-  | CallExpression _ "." _ IdentifierName {% ([target, , , , property]) => ({ type: 'property', target, property }) %}
-
-Arguments ->
-  "(" _ ")" {% R.always([]) %}
-  | "(" _ ArgumentList _ ")" {% R.nth(2) %}
-
-ArgumentList ->
-  AssignmentExpression
-  | %spread _ AssignmentExpression {% ([ , , e]) => ([{ type: 'spread', e }]) %}
-  | ArgumentList _ "," _ AssignmentExpression {% ([list, , , , e]) => ([...list, e]) %}
-  | ArgumentList _ "," _ %spread _ AssignmentExpression {% ([list, , , , , , e]) => ([...list, { type: 'spread', e }]) %}
-
-PrimaryExpression ->
-  IdentifierReference               {% id %}
-  | Literal                         {% id %}
-  | ArrayLiteral                    {% id %}
-  | ObjectLiteral                   {% id %}
-  | FunctionExpression              {% id %}
-  | ChoiceExpression                {% id %}
-  | TableExpression                 {% id %}
-  | IfExpression                    {% id %}
-  | WhileExpression                 {% id %}
-  | UntilExpression                 {% id %}
-
-IdentifierReference ->
-  Identifier {% id %}
-
-Identifier ->
-  IdentifierName {% ([name]) => ({ type: 'identifier', name }) %}
-
-Literal ->
-  UndefinedLiteral {% id %}
-  | BooleanLiteral {% id %}
-  | NumericLiteral {% id %}
-  | StringLiteral {% id %}
-  | DiceLiteral {% id %}
 
 ConditionalExpression ->
   LogicalOrExpression {% id %}
@@ -234,17 +186,66 @@ UnaryExpression ->
   | %not __ UnaryExpression {% ([ , , e]) => ({ type: 'logicalNot', e }) %}
   | "-" _ UnaryExpression {% ([ , , e]) => ({ type: 'negate', e }) %}
 
-SpreadExpression -> "..." Expression
+LeftHandSideExpression ->
+  CallExpression {% id %}
+  | MemberExpression {% id %}
+
+CallExpression ->
+  MemberExpression _ Arguments {% ([target, , args]) => ({ type: 'call', target, args }) %}
+  | CallExpression _ Arguments {% ([target, , args]) => ({ type: 'call', target, args }) %}
+  | CallExpression _ "[" _ AssignmentExpression _ "]" {% ([target, , , , e]) => ({ type: 'index', target, e }) %}
+  | CallExpression _ "." _ IdentifierName {% ([target, , , , property]) => ({ type: 'property', target, property }) %}
+
+Arguments ->
+  "(" _ ")" {% R.always([]) %}
+  | "(" _ ArgumentList _ ")" {% R.nth(2) %}
+
+ArgumentList ->
+  AssignmentExpression
+  | %spread _ AssignmentExpression {% ([ , , e]) => ([{ type: 'spread', e }]) %}
+  | ArgumentList _ "," _ AssignmentExpression {% ([list, , , , e]) => ([...list, e]) %}
+  | ArgumentList _ "," _ %spread _ AssignmentExpression {% ([list, , , , , , e]) => ([...list, { type: 'spread', e }]) %}
+
+MemberExpression ->
+  PrimaryExpression {% id %}
+  | MemberExpression _ "[" _ AssignmentExpression _ "]" {% ([target, , , , index]) => ({ type: 'member', target, index }) %}
+  | MemberExpression _ "." _ IdentifierName {% ([target, , , , property]) => ({ type: 'property', target, property }) %}
+
+PrimaryExpression ->
+  IdentifierReference               {% id %}
+  | Literal                         {% id %}
+  | ArrayLiteral                    {% id %}
+  | ObjectLiteral                   {% id %}
+  | FunctionExpression              {% id %}
+  | ChoiceExpression                {% id %}
+  | TableExpression                 {% id %}
+  | IfExpression                    {% id %}
+  | WhileExpression                 {% id %}
+  | UntilExpression                 {% id %}
+  | "(" _ AssignmentExpression _ ")"          {% R.nth(2) %}
+
+IdentifierReference ->
+  Identifier {% id %}
+
+Identifier ->
+  IdentifierName {% ([name]) => ({ type: 'identifier', name }) %}
+
+Literal ->
+  UndefinedLiteral {% id %}
+  | BooleanLiteral {% id %}
+  | NumericLiteral {% id %}
+  | StringLiteral {% id %}
+  | DiceLiteral {% id %}
 
 IfExpression ->
-  %ifToken _ "(" _ Expression _ ")" _ Expression _ %elseToken _ Expression {% ([ , , , , test, , , , ifExpression, , , , elseExpression]) => ({ type: 'if', test, ifExpression, elseExpression }) %}
-  | %ifToken _ "(" _ Expression _ ")" _ Expression {% ([ , , , , test, , , , ifExpression]) => ({ type: 'if', test, ifExpression }) %}
+  %ifToken _ "(" _ AssignmentExpression _ ")" _ ExpressionBlock _ %elseToken _ ExpressionBlock {% ([ , , , , test, , , , ifExpression, , , , elseExpression]) => ({ type: 'if', test, ifExpression, elseExpression }) %}
+  | %ifToken _ "(" _ AssignmentExpression _ ")" _ ExpressionBlock {% ([ , , , , test, , , , ifExpression]) => ({ type: 'if', test, ifExpression }) %}
 
-WhileExpression -> %whileToken _ "(" _ Expression _ ")" _ Expression {% ([ , , , , test, , , , loopBlock ]) => ({ type: 'while', test, loopBlock }) %}
+WhileExpression -> %whileToken _ "(" _ AssignmentExpression _ ")" _ ExpressionBlock {% ([ , , , , test, , , , loopBlock ]) => ({ type: 'while', test, loopBlock }) %}
 
-UntilExpression -> %untilToken _ "(" _ Expression _ ")" _ Expression {% ([ , , , , test, , , , loopBlock ]) => ({ type: 'until', test, loopBlock }) %}
+UntilExpression -> %untilToken _ "(" _ AssignmentExpression _ ")" _ ExpressionBlock {% ([ , , , , test, , , , loopBlock ]) => ({ type: 'until', test, loopBlock }) %}
 
-FunctionExpression -> %fn _ "(" _ FormalParameters _ ")" _ "{" _ FunctionBody _ "}" {% ([ , , , , formalParams, , , , , , body]) => ({ type: 'function', formalParams, body }) %}
+FunctionExpression -> %fn _ "(" _ FormalParameters _ ")" _ "{" _ CompoundExpression _ "}" {% ([ , , , , formalParams, , , , , , body]) => ({ type: 'function', formalParams, body }) %}
 
 FormalParameters ->
   null {% R.always([]) %}
@@ -290,12 +291,6 @@ BindingElementList ->
   BindingElement
   | BindingElementList _ "," _ BindingElement
 
-FunctionBody ->
-  FunctionExpressionList {% id %}
-
-FunctionExpressionList ->
-  ExpressionList {% id %}
-
 ChoiceExpression ->
   %choice _ "(" _ FormalParameters _ ")" _ "{" _ ChoiceEntryList _ "}" {% ([ , , , , formalParams, , , , , , entries]) => ({ type: 'choice', formalParams, entries }) %}
   | %choice _ "{" _ ChoiceEntryList _ "}" {% ([ , , , , entries]) => ({ type: 'choice', entries }) %}
@@ -305,8 +300,9 @@ ChoiceEntryList ->
   | ChoiceEntryList __ ChoiceEntry {% ([list, , e]) => ([...list, e]) %}
 
 ChoiceEntry ->
-  SpreadExpression {% id %}
-  | Expression {% id %}
+  %spread _ AssignmentExpression {% R.nth(2) %}
+  | AssignmentExpression {% id %}
+  | "{" _ CompoundExpression _ "}" {% R.nth(2) %}
 
 TableExpression ->
   %table _ "(" _ FormalParameters _ ")" _ "{" _ TableEntries _ "}" {% ([ , , , , formalParams, , , , , , entries]) => ({ type: 'table', formalParams, entries }) %}
@@ -320,7 +316,9 @@ TableEntryList ->
   TableEntry
   | TableEntryList __ TableEntry {% ([list, , e]) => ([...list, e]) %}
 
-TableEntry -> TableEntrySelector _ ":" _ TableEntryBody {% ([selector, , , body]) => ({ type: 'tableEntry', selector, body }) %}
+TableEntry ->
+  TableEntrySelector _ ":" _ AssignmentExpression {% ([selector, , , body]) => ({ type: 'tableEntry', selector, body }) %}
+  | TableEntrySelector _ ":" _ "{" _ CompoundExpression _ "}" {% ([selector, , , , , , body]) => ({ type: 'tableEntry', selector, body }) %}
 
 TableEntrySelector ->
   NonZeroDecimalInteger "-" NonZeroDecimalInteger {% ([from, , to]) => ({ type: 'tableEntrySelector', from, to }) %}
@@ -331,9 +329,6 @@ DecimalInteger ->
 
 NonZeroDecimalInteger ->
   %decimalInteger {% ([n], _, reject) => { const value = parseInt(n, 10); if (n === 0) { return reject; } return value; } %}
-
-TableEntryBody ->
-  Expression {% id %}
 
 UndefinedLiteral -> %undefinedToken {% () => ({ type: 'undefinedLiteral' }) %}
 
@@ -360,7 +355,7 @@ PropertyDefinitionList ->
 PropertyDefinition ->
   IdentifierReference {% id %}
   | PropertyName _ ":" _ AssignmentExpression {% ([name, , , , e]) => ({ type: 'property', name, e }) %}
-  | "..." _ AssignmentExpression {% ([ , , e]) => ({ type: 'spreadProperty', e }) %}
+  | %spread _ AssignmentExpression {% ([ , , e]) => ({ type: 'spreadProperty', e }) %}
 
 PropertyName ->
   LiteralPropertyName {% id %}

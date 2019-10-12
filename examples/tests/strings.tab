@@ -1,52 +1,52 @@
-s = 'I have a ham radio'
-assert(s.length() == 18)
+s = 'I have a ham radio';
+assert(s.length() == 18);
 
-assert(s[0] == 'I')
-assert(s[-1] == 'o')
+assert(s[0] == 'I');
+assert(s[-1] == 'o');
 
-assert(s[100] == undefined)
-assert(s[-100] == undefined)
+assert(s[100] == undefined);
+assert(s[-100] == undefined);
 
-s += ', honest'
-assert(s == 'I have a ham radio, honest')
+s += ', honest';
+assert(s == 'I have a ham radio, honest');
 
-assert(s.split(' ') == ['I', 'have', 'a', 'ham', 'radio,', 'honest'])
-assert(s.split() == ['I have a ham radio, honest'])
+assert(s.split(' ') == ['I', 'have', 'a', 'ham', 'radio,', 'honest']);
+assert(s.split() == ['I have a ham radio, honest']);
 
-assert('a'.capitalize() == 'A')
-assert('alf'.capitalize() == 'Alf')
+assert('a'.capitalize() == 'A');
+assert('alf'.capitalize() == 'Alf');
 
-assert('cucumber'.uppercase() == 'CUCUMBER')
-assert('CUCUMBER'.lowercase() == 'cucumber')
-assert('cUCumBer'.lowercase() == 'cucumber')
-assert('cucumber'.uppercase().lowercase() == 'cucumber')
+assert('cucumber'.uppercase() == 'CUCUMBER');
+assert('CUCUMBER'.lowercase() == 'cucumber');
+assert('cUCumBer'.lowercase() == 'cucumber');
+assert('cucumber'.uppercase().lowercase() == 'cucumber');
 
-assert('cucumber'.includes('umb'))
-assert(not 'cucumber'.includes('nailpolish'))
+assert('cucumber'.includes('umb'));
+assert(not 'cucumber'.includes('nailpolish'));
 
-assert('cucumber'.indexOf('m') == 4)
-assert('cucumber'.indexOf('umb') == 3)
+assert('cucumber'.indexOf('m') == 4);
+assert('cucumber'.indexOf('umb') == 3);
 
-assert('cucumber'.startsWith('cucu'))
-assert(not 'cucumber'.startsWith('poodle'))
-assert('cucumber'.endsWith('ber'))
-assert(not 'cucumber'.endsWith('poodle'))
+assert('cucumber'.startsWith('cucu'));
+assert(not 'cucumber'.startsWith('poodle'));
+assert('cucumber'.endsWith('ber'));
+assert(not 'cucumber'.endsWith('poodle'));
 
-assert('     eleven  '.trim() == 'eleven')
-assert('     four  '.trimLeft() == 'four  ')
-assert('     four  '.trimRight() == '     four')
+assert('     eleven  '.trim() == 'eleven');
+assert('     four  '.trimLeft() == 'four  ');
+assert('     four  '.trimRight() == '     four');
 
-assert('cucumber'.slice(3) == 'umber')
-assert('cucumber'.slice(1, 4) == 'ucu')
+assert('cucumber'.slice(3) == 'umber');
+assert('cucumber'.slice(1, 4) == 'ucu');
 
-assert('cucumber' * 3 == 'cucumbercucumbercucumber')
+assert('cucumber' * 3 == 'cucumbercucumbercucumber');
 
-assert(123 + 'abc' == '123abc')
+assert(123 + 'abc' == '123abc');
 
-x = 9
-assert("string #{x} interpolation" == 'string 9 interpolation')
+x = 9;
+assert("string #{x} interpolation" == 'string 9 interpolation');
 
-assert("\"interpolated\" 'string'" == '"interpolated" \'string\'')
+assert("\"interpolated\" 'string'" == '"interpolated" \'string\'');
 
-results = ['2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-assert(results.includes("#{2d6}"))
+results = ['2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+assert(results.includes("#{2d6}"));

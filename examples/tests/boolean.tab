@@ -1,18 +1,18 @@
-assert(true)
-assert(not false)
+assert(true);
+assert(not false);
 
-assert(true or false)
-assert(true and true)
-assert(true and not false)
-assert(true or not true)
-assert(false or true)
+assert(true or false);
+assert(true and true);
+assert(true and not false);
+assert(true or not true);
+assert(false or true);
 
-assert(true and true or false and true)
-assert(true or false or false and true)
-assert(true and not false or false)
+assert(true and true or false and true);
+assert(true or false or false and true);
+assert(true and not false or false);
 
-assert('' + true == 'true')
-assert('' + false == 'false')
+assert('' + true == 'true');
+assert('' + false == 'false');
 
-assert(not_defined or 9 == 9)
-assert('yup' or 9 == 'yup')
+assert(not_defined or 9 == 9);
+assert('yup' or 9 == 'yup');

@@ -1,0 +1,5 @@
+t = choice {
+  'red'
+  'green'
+  'blue'
+};
