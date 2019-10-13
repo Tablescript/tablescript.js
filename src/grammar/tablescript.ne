@@ -126,17 +126,19 @@
 @lexer lexer
 
 Start ->
-  _ CompoundExpression {% ([ , list]) => list %}
+  _ SingleExpression _ {% ([ , e]) => ([e]) %}
+  | _ CompoundExpression _ {% ([ , list]) => list %}
 
 ExpressionBlock ->
   SingleExpression {% id %}
   | "{" _ CompoundExpression _ "}" {% R.nth(2) %}
 
 CompoundExpression ->
-  SingleExpression:+ {% id %}
+  SingleExpression
+  | CompoundExpression _ SingleExpression {% ([list, , e]) => ([...list, e]) %}
 
 SingleExpression ->
-  AssignmentExpression _ ";" _ {% R.nth(0) %}
+  AssignmentExpression _ ";" {% R.nth(0) %}
 
 AssignmentExpression ->
   ConditionalExpression {% id %}
@@ -249,7 +251,12 @@ WhileExpression -> %whileToken _ "(" _ AssignmentExpression _ ")" _ ExpressionBl
 
 UntilExpression -> %untilToken _ "(" _ AssignmentExpression _ ")" _ ExpressionBlock {% ([ , , , , test, , , , loopBlock ]) => ({ type: 'until', test, loopBlock }) %}
 
-FunctionExpression -> %fn _ "(" _ FormalParameters _ ")" _ "{" _ CompoundExpression _ "}" {% ([ , , , , formalParams, , , , , , body]) => ({ type: 'function', formalParams, body }) %}
+FunctionExpression ->
+  %fn _ "(" _ FormalParameters _ ")" _ "{" _ FunctionBody _ "}" {% ([ , , , , formalParams, , , , , , body]) => ({ type: 'function', formalParams, body }) %}
+
+FunctionBody ->
+  null {% () => { console.log('or here'); return []; } %}
+  | CompoundExpression {% (data) => { console.log('here!', data); return data; } %}
 
 FormalParameters ->
   null {% R.always([]) %}
