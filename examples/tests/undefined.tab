@@ -30,8 +30,8 @@ assert(a[10] == undefined);
 ############################################################################
 # Tables indexed past their maximum roll are undefined
 t = choice {
-  'red',
-  'green',
+  'red'
+  'green'
   'blue'
 };
 assert(t[1] != undefined);

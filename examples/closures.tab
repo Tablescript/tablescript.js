@@ -1,7 +1,7 @@
 add = fn(x) {
   addX = fn(y) {
     x + y;
-  }
+  };
   addX;
 };
 

@@ -22,5 +22,5 @@ if (x == 2) {
 y = if (x == 1) { 9; } else { 12; };
 assert(y == 9);
 
-y = if (x == 1) 9; else 12;
+y = if (x == 1) 9 else 12;
 assert(y == 9);

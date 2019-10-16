@@ -1,4 +1,4 @@
-choices = ['red', 'green', 'blue']
-assert(choices.includes(choose(choices)))
+choices = ['red', 'green', 'blue'];
+assert(choices.includes(choose(choices)));
 
-print(range(5).map(fn(i) { choose(choices) }))
+print(range(5).map(fn(i) choose(choices)));
