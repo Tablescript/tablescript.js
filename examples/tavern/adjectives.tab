@@ -1,17 +1,17 @@
 colour = choice {
-  red
-  orange
-  yellow
-  green
-  blue
-  violet
-  indigo
-  purple
-  black
-  white
-  silver
-  gold
-}
+  'red'
+  'orange'
+  'yellow'
+  'green'
+  'blue'
+  'violet'
+  'indigo'
+  'purple'
+  'black'
+  'white'
+  'silver'
+  'gold'
+};
 
 action = choice {
   'prancing'
@@ -21,7 +21,7 @@ action = choice {
   'dancing'
   'dying'
   'rotting'
-}
+};
 
 description = choice {
   'marvelous'
@@ -37,17 +37,17 @@ description = choice {
   'mean'
   'jolly'
   'quick'
-}
+};
 
 adjective = choice {
-  colour().capitalize()
-  action().capitalize()
-  description().capitalize()
-}
+  { colour(); }
+  { action(); }
+  { description(); }
+};
 
 {
-  adjective: adjective,
-  colour: colour,
-  action: action,
-  description: description
-}
+  adjective,
+  colour,
+  action,
+  description
+};

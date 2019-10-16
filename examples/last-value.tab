@@ -1,7 +1,7 @@
 {
   a: 'I have a ham radio',
   b: 12,
-  c: fn() { 11 },
+  c: fn() 11,
   d: {
     e: 99
   },
@@ -9,4 +9,4 @@
     'Something'
     'Something else'
   }
-}
+};

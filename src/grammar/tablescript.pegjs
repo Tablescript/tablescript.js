@@ -73,23 +73,25 @@
 }
 
 Start
-  = __ body:Expressions? __ {
+  = __ body:ExpressionList? __ {
     return createCompoundExpression(createLocation(location(), options), optionalList(body));
   }
 
-Expressions
-  = head:Expression tail:(__ Expression)* {
-    return buildList(head, tail, 1);
+ExpressionList
+  = head:Expression __ tail:ExpressionList {
+    return composeList(head, tail);
+  }
+  / e:Expression {
+    return [e];
   }
 
 Block "block"
-  = '{' __ body:(Expressions __)? '}' {
+  = '{' __ body:(ExpressionList __)? '}' {
     return createBlockExpression(createLocation(location(), options), optionalList(extractOptional(body, 0)));
   }
 
 Expression "expression"
-  = Block
-  / e:AssignmentExpression __ ';' __ {
+  = e:AssignmentExpression __ ';' {
     return e;
   }
 
@@ -242,13 +244,30 @@ MemberExpression "member expression"
   }
 
 FunctionExpression "function expression"
-  = FunctionToken __ '(' __ params:(FormalParameterList __)? ')' __ body:Block {
-    return createFunctionExpression(createLocation(location(), options), params ? params[0] : [], body);
+  = FunctionToken __ '(' __ params:FormalParameterList __ ')' __ body:FunctionBody {
+    return createFunctionExpression(createLocation(location(), options), params, body);
+  }
+  / FunctionToken __ '(' __ ')' __ body:FunctionBody {
+    return createFunctionExpression(createLocation(location(), options), [], body);
   }
 
 FormalParameterList "formal parameter list"
-  = head:Identifier tail:(__ Comma __ Identifier)* {
-    return composeList(head, extractList(tail, 3));
+  = head:Identifier __ ',' __ tail:FormalParameterList {
+    return composeList(head, tail);
+  }
+  / i:Identifier {
+    return [i];
+  }
+
+FunctionBody "function body"
+  = '{' __ list:ExpressionList __ '}' {
+    return createBlockExpression(createLocation(location(), options), list);
+  }
+  / '{' __ '}' {
+    return createBlockExpression(createLocation(location(), options), []);
+  }
+  / e:AssignmentExpression {
+    return createBlockExpression(createLocation(location(), options), [e]);
   }
 
 ChoiceExpression "choice expression"
@@ -260,7 +279,7 @@ ChoiceExpression "choice expression"
   }
 
 ChoiceEntries "choice entries"
-  = head:ChoiceEntry __ ',' __ tail:ChoiceEntries {
+  = head:ChoiceEntry __ tail:ChoiceEntries {
     return composeList(head, tail);
   }
   / e:ChoiceEntry {
@@ -271,11 +290,11 @@ ChoiceEntry "choice entry"
   = "..." e:AssignmentExpression {
     return createSpreadTableEntryExpression(createSpreadExpression(createLocation(location(), options), e));
   }
-  / e:AssignmentExpression {
-    return createSimpleTableEntryExpression(e);
+  / '{' __ list:ExpressionList __ '}' {
+    return createSimpleTableEntryExpression(createBlockExpression(createLocation(location(), options), list));
   }
-  / e:Block {
-    return createSimpleTableEntryExpression(e);
+  / s:StringLiteral {
+    return createSimpleTableEntryExpression(s);
   }
 
 TableExpression "table expression"
@@ -287,8 +306,11 @@ TableExpression "table expression"
   }
 
 TableEntries "table entries"
-  = head:TableEntry tail:(__ ';' __ TableEntry)* {
-    return composeList(head, extractList(tail, 1));
+  = head:TableEntry __ tail:TableEntries {
+    return composeList(head, tail);
+  }
+  / e:TableEntry {
+    return [e];
   }
 
 TableEntry "table entry"
@@ -305,8 +327,10 @@ TableEntrySelector "table entry selector"
   }
 
 TableEntryBody "table entry body"
-  = AssignmentExpression
-  / Block
+  = '{' __ list:ExpressionList __ '}' {
+    return createBlockExpression(createLocation(location(), options), list);
+  }
+  / StringLiteral
 
 IfExpression "if expression"
   = IfToken __ '(' __ e:AssignmentExpression __ ')' __ ifBlock:IfBlock __ ElseToken __ elseBlock:IfBlock {
@@ -422,6 +446,9 @@ ObjectProperty
   }
   / key:Identifier __ ':' __ value:AssignmentExpression {
     return createObjectLiteralPropertyExpression(key, value);
+  }
+  / key:Identifier {
+    return createObjectLiteralPropertyExpression(key, createVariableExpression(key));
   }
   / "..." e:AssignmentExpression {
     return createSpreadExpression(createLocation(location(), options), e);

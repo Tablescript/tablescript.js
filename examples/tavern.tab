@@ -1,4 +1,4 @@
 
-taverns = require('./tavern/taverns')
+taverns = require('./tavern/taverns');
 
-print(taverns.tavern())
+print(taverns.tavern());

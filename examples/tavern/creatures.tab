@@ -12,7 +12,7 @@ farm_animal = choice {
   'dog'
   'donkey'
   'ass'
-}
+};
 
 animal = choice {
   'tiger'
@@ -25,7 +25,7 @@ animal = choice {
   'falcon'
   'ferret'
   'badger'
-}
+};
 
 monster = choice {
   'kobold'
@@ -37,7 +37,7 @@ monster = choice {
   'pegasus'
   'ogre'
   'giant'
-}
+};
 
 human = choice {
   'witch'
@@ -54,19 +54,19 @@ human = choice {
   'fool'
   'bard'
   'maid'
-}
+};
 
 creature = choice {
-  farm_animal()
-  animal()
-  monster()
-  human()
-}
+  { farm_animal(); }
+  { animal(); }
+  { monster(); }
+  { human(); }
+};
 
 {
-  creature: creature,
-  farm_animal: farm_animal,
-  animal: animal,
-  monster: monster,
-  human: human
-}
+  creature,
+  farm_animal,
+  animal,
+  monster,
+  human
+};

@@ -1,7 +1,7 @@
-required = require('./required', 12, 'I have a ham radio', fn(x) { x * 3 })
+required = require('./required', 12, 'I have a ham radio', fn(x) x * 3);
 
-print(required.a)
-print(required.double(5))
-print(required.t())
+print(required.a);
+print(required.double(5));
+print(required.t());
 
-print(arguments)
+print(arguments);

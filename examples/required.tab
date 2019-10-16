@@ -1,20 +1,20 @@
-a = 'I also have a ham radio'
+a = 'I also have a ham radio';
 double = fn(x) {
-  x * 2
-}
+  x * 2;
+};
 t = table {
   1: 'first'
   2: 'second'
-}
+};
 
 if (arguments.length) {
-  print(arguments[0])
-  print(arguments[1])
-  print(arguments[2](3))
-}
+  print(arguments[0]);
+  print(arguments[1]);
+  print(arguments[2](3));
+};
 
 {
-  a: a,
-  double: double,
-  t: t
-}
+  a,
+  double,
+  t
+};

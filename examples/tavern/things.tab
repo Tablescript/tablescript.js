@@ -6,7 +6,7 @@ body_part = choice {
   'ankle'
   'knee'
   'elbow'
-}
+};
 
 dungeon_thing = choice {
   'chest'
@@ -14,7 +14,7 @@ dungeon_thing = choice {
   'sack'
   'wagon'
   'cheese'
-}
+};
 
 weapon = choice {
   'whip'
@@ -26,7 +26,7 @@ weapon = choice {
   'longbow'
   'bow'
   'lance'
-}
+};
 
 tree = choice {
   'pine'
@@ -35,7 +35,7 @@ tree = choice {
   'birch'
   'palm'
   'elm'
-}
+};
 
 instrument = choice {
   'harp'
@@ -43,12 +43,12 @@ instrument = choice {
   'banjo'
   'fiddle'
   'lute'
-}
+};
 
 {
-  body_part: body_part,
-  dungeon_thing: dungeon_thing,
-  weapon: weapon,
-  tree: tree,
-  instrument: instrument
-}
+  body_part,
+  dungeon_thing,
+  weapon,
+  tree,
+  instrument
+};

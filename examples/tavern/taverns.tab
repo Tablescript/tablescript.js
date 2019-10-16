@@ -1,42 +1,40 @@
-adjectives = require('./adjectives')
-creatures = require('./creatures')
-things = require('./things')
-names = require('./names')
-rumours = require('./rumours')
+adjectives = require('./adjectives');
+creatures = require('./creatures');
+things = require('./things');
+names = require('./names');
+rumours = require('./rumours');
 
 suffix = table {
   1-5: 'Inn'
   6-9: 'Tavern'
   10: 'Pub'
-}
+};
 
 noun = choice {
-  creatures.creature().capitalize()
-  things.body_part().capitalize()
-  things.dungeon_thing().capitalize()
-  things.weapon().capitalize()
-  things.tree().capitalize()
-  things.instrument().capitalize()
-}
+  { creatures.creature().capitalize(); }
+  { things.body_part().capitalize(); }
+  { things.dungeon_thing().capitalize(); }
+  { things.weapon().capitalize(); }
+  { things.tree().capitalize(); }
+  { things.instrument().capitalize(); }
+};
 
-join_and_capitalize = fn(words) { words.map(fn(w) { w.capitalize() }).join(' ') }
+join_and_capitalize = fn(words) words.map(fn(w) w.capitalize()).join(' ');
 
 tavern_name = choice {
-  join_and_capitalize(['The', adjectives.adjective(), noun(), suffix()])
-  join_and_capitalize(['The', adjectives.adjective(), noun()])
-  join_and_capitalize([adjectives.adjective(), noun(), suffix()])
-  join_and_capitalize([adjectives.adjective(), noun()])
-}
+  { join_and_capitalize(['The', adjectives.adjective(), noun(), suffix()]); }
+  { join_and_capitalize(['The', adjectives.adjective(), noun()]); }
+  { join_and_capitalize([adjectives.adjective(), noun(), suffix()]); }
+  { join_and_capitalize([adjectives.adjective(), noun()]); }
+};
 
-tavern = fn() {
-  {
-    name: tavern_name(),
-    owner: names.name(),
-    rumours: rumours.rumours(2)
-  }
-}
+tavern = fn() ({
+  name: tavern_name(),
+  owner: names.name(),
+  rumours: rumours.rumours(2)
+});
 
 {
   name: tavern_name,
-  tavern: tavern
-}
+  tavern
+};

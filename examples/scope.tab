@@ -1,26 +1,14 @@
-f2 = fn() {
-  9
-}
+f2 = fn() 9;
 
-f1 = fn() {
-  f2()
-}
+f1 = fn() f2();
 
-assert(f1() == 9)
+assert(f1() == 9);
 
 baz = fn() {
-  bar = fn(foo) {
-    fn() {
-      foo()
-    }
-  }
-  foo = fn() {
-    'foo'
-  }
-  nan = fn() {
-    'wabble'
-  }
-  bar(nan)()
-}
+  bar = fn(foo) fn() foo();
+  foo = fn() 'foo';
+  nan = fn() 'wabble';
+  bar(nan)();
+};
 
-assert(baz() == 'wabble')
+assert(baz() == 'wabble');

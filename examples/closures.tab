@@ -1,12 +1,12 @@
 add = fn(x) {
   addX = fn(y) {
-    x + y
+    x + y;
   }
-  addX
-}
+  addX;
+};
 
-add1 = add(1)
-add5 = add(5)
+add1 = add(1);
+add5 = add(5);
 
-print(add1(3))
-print(add5(3))
+print(add1(3));
+print(add5(3));
