@@ -22,6 +22,7 @@ import { TablescriptError } from '../error';
 
 const entryExpander = context => (p, entry) => {
   return p.then(acc => new Promise((resolve, reject) => {
+    console.log('***', JSON.stringify(entry, null, 2));
     entry.expand(context).then(expandedEntries => {
       resolve([
         ...acc,

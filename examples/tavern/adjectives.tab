@@ -1,16 +1,16 @@
 colour = choice {
-  'red'
-  'orange'
-  'yellow'
-  'green'
-  'blue'
-  'violet'
-  'indigo'
-  'purple'
-  'black'
-  'white'
-  'silver'
-  'gold'
+  red
+  orange
+  yellow
+  green
+  blue
+  violet
+  indigo
+  purple
+  black
+  white
+  silver
+  gold
 }
 
 action = choice {

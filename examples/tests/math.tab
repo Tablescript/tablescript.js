@@ -1,11 +1,11 @@
-a = [1,2,3,4,5]
-assert(math.max(...a) == 5)
-assert(math.min(...a) == 1)
+a = [1,2,3,4,5];
+assert(math.max(...a) == 5);
+assert(math.min(...a) == 1);
 
-assert(math.round(3.14159) == 3)
-assert(math.round(2.75) == 3)
+assert(math.round(3.14159) == 3);
+assert(math.round(2.75) == 3);
 
-assert(math.floor(3.14159) == 3)
-assert(math.ceil(3.14159) == 4)
+assert(math.floor(3.14159) == 3);
+assert(math.ceil(3.14159) == 4);
 
-assert(math.pow(2, 10) == 1024)
+assert(math.pow(2, 10) == 1024);

@@ -1,13 +1,13 @@
 ############################################################################
 # Undefined variables are undefined
-a = 12
-assert(a != undefined)
-assert(foo == undefined)
+a = 12;
+assert(a != undefined);
+assert(foo == undefined);
 ############################################################################
 
 ############################################################################
 # Undefined is undefined
-assert(undefined == undefined)
+assert(undefined == undefined);
 ############################################################################
 
 ############################################################################
@@ -15,25 +15,25 @@ assert(undefined == undefined)
 o = {
   a: 12,
   b: 19
-}
-assert(o.a != undefined)
-assert(o.c == undefined)
+};
+assert(o.a != undefined);
+assert(o.c == undefined);
 ############################################################################
 
 ############################################################################
 # Arrays indexed past the end are undefined
-a = [1, 2, 3]
-assert(a[0] != undefined)
-assert(a[10] == undefined)
+a = [1, 2, 3];
+assert(a[0] != undefined);
+assert(a[10] == undefined);
 ############################################################################
 
 ############################################################################
 # Tables indexed past their maximum roll are undefined
 t = choice {
-  'red'
-  'green'
+  'red',
+  'green',
   'blue'
-}
-assert(t[1] != undefined)
-assert(t[4] == undefined)
+};
+assert(t[1] != undefined);
+assert(t[4] == undefined);
 ############################################################################

@@ -89,7 +89,7 @@ Block "block"
 
 Expression "expression"
   = Block
-  / e:AssignmentExpression __ {
+  / e:AssignmentExpression __ ';' __ {
     return e;
   }
 
@@ -109,7 +109,7 @@ AssignmentOperator "assignment operator"
   / '%='
 
 ConditionalExpression "conditional"
-  = test:LogicalOrExpression __ '?' __ consequent:Expression __ ':' __ alternate:Expression {
+  = test:LogicalOrExpression __ '?' __ consequent:AssignmentExpression __ ':' __ alternate:AssignmentExpression {
     return createConditionalExpression(createLocation(location(), options), test, consequent, alternate);
   }
   / LogicalOrExpression
@@ -188,7 +188,7 @@ CallExpression "call expression"
     __ args:Arguments {
       return { type: 'call', args }
     }
-    / '[' __ property:Expression __ ']' {
+    / '[' __ property:AssignmentExpression __ ']' {
       return { 'type': 'member', property };
     }
     / '.' __ property:Identifier {
@@ -205,13 +205,25 @@ CallExpression "call expression"
   }
 
 Arguments "arguments"
-  = '(' __ args:(ArgumentList __)? ')' {
-    return args ? args[0] : [];
+  = '(' __ args:ArgumentList __ ')' {
+    return args;
+  }
+  / '(' __ ')' {
+    return [];
   }
 
 ArgumentList
-  = head:AssignmentExpression tail:(__ Comma __ AssignmentExpression)* {
-    return composeList(head, extractList(tail, 3));
+  = head:Argument __ ',' __ tail:ArgumentList {
+    return composeList(head, tail);
+  }
+  / e:Argument {
+    return [e];
+  }
+
+Argument
+  = AssignmentExpression
+  / "..." e:AssignmentExpression {
+    return createSpreadExpression(createLocation(location(), options), e);
   }
 
 MemberExpression "member expression"
@@ -219,7 +231,7 @@ MemberExpression "member expression"
     PrimaryExpression
   )
   tail:(
-    '[' __ property:Expression __ ']' {
+    '[' __ property:AssignmentExpression __ ']' {
       return { property };
     }
     / '.' __ property:Identifier {
@@ -247,9 +259,23 @@ ChoiceExpression "choice expression"
     return createTableExpression(createLocation(location(), options), [], entries);
   }
 
-ChoiceEntries "table entries"
-  = head:SimpleTableEntry tail:(__ SimpleTableEntry)* {
-    return composeList(head, extractList(tail, 1));
+ChoiceEntries "choice entries"
+  = head:ChoiceEntry __ ',' __ tail:ChoiceEntries {
+    return composeList(head, tail);
+  }
+  / e:ChoiceEntry {
+    return [e];
+  }
+
+ChoiceEntry "choice entry"
+  = "..." e:AssignmentExpression {
+    return createSpreadTableEntryExpression(createSpreadExpression(createLocation(location(), options), e));
+  }
+  / e:AssignmentExpression {
+    return createSimpleTableEntryExpression(e);
+  }
+  / e:Block {
+    return createSimpleTableEntryExpression(e);
   }
 
 TableExpression "table expression"
@@ -261,7 +287,7 @@ TableExpression "table expression"
   }
 
 TableEntries "table entries"
-  = head:TableEntry tail:(__ TableEntry)* {
+  = head:TableEntry tail:(__ ';' __ TableEntry)* {
     return composeList(head, extractList(tail, 1));
   }
 
@@ -278,52 +304,39 @@ TableEntrySelector "table entry selector"
     return createExactTableSelector(roll);
   }
 
-SimpleTableEntry "simple table entry"
-  = spread:SpreadExpression {
-    return createSpreadTableEntryExpression(spread);
-  }
-  / body:TableEntryBody {
-    return createSimpleTableEntryExpression(body);
-  }
-
 TableEntryBody "table entry body"
-  = Expression
+  = AssignmentExpression
   / Block
 
 IfExpression "if expression"
-  = IfToken __ '(' __ e:Expression __ ')' __ ifBlock:IfBlock __ ElseToken __ elseBlock:IfBlock {
+  = IfToken __ '(' __ e:AssignmentExpression __ ')' __ ifBlock:IfBlock __ ElseToken __ elseBlock:IfBlock {
     return createIfExpression(createLocation(location(), options), e, ifBlock, elseBlock);
   }
-  / IfToken __ '(' __ e:Expression __ ')' __ ifBlock:IfBlock {
+  / IfToken __ '(' __ e:AssignmentExpression __ ')' __ ifBlock:IfBlock {
     return createIfExpression(createLocation(location(), options), e, ifBlock);
   }
 
 IfBlock "if block"
-  = e:AssignmentExpression {
+  = e:AssignmentExpression __ ';' __ {
     return createBlockExpression(createLocation(location(), options), [e]);
   }
   / Block
 
 WhileExpression "while expression"
-  = WhileToken __ '(' __ e:Expression __ ')' __ loopBlock:LoopBlock {
+  = WhileToken __ '(' __ e:AssignmentExpression __ ')' __ loopBlock:LoopBlock {
     return createWhileExpression(createLocation(location(), options), e, loopBlock);
   }
 
 UntilExpression "until expression"
-  = UntilToken __ '(' __ e:Expression __ ')' __ loopBlock:LoopBlock {
+  = UntilToken __ '(' __ e:AssignmentExpression __ ')' __ loopBlock:LoopBlock {
     return createUntilExpression(createLocation(location(), options), e, loopBlock);
   }
 
 LoopBlock "loop block"
-  = e:AssignmentExpression {
+  = e:AssignmentExpression __ ';' __ {
     return createBlockExpression(createLocation(location(), options), [e]);
   }
   / Block
-
-SpreadExpression "spread"
-  = '...' e:Expression {
-    return createSpreadExpression(createLocation(location(), options), e);
-  }
 
 PrimaryExpression
   = Literal
@@ -333,13 +346,12 @@ PrimaryExpression
   / FunctionExpression
   / ChoiceExpression
   / TableExpression
-  / '(' __ e:AdditiveExpression __ ')' {
+  / '(' __ e:AssignmentExpression __ ')' {
     return e;
   }
   / IfExpression
   / WhileExpression
   / UntilExpression
-  / SpreadExpression
 
 Literal
   = DiceLiteral
@@ -372,11 +384,17 @@ ArrayLiteral "array"
   }
 
 ArrayEntries
-  = head:Expression tail:(__ Comma __ Expression)* {
-    return composeList(head, extractList(tail, 3));
+  = head:ArrayEntry __ ',' __ tail:ArrayEntries {
+    return composeList(head, tail);
   }
-  / e:Expression {
+  / e:ArrayEntry {
     return [e];
+  }
+
+ArrayEntry
+  = AssignmentExpression
+  / "..." e:AssignmentExpression {
+    return createSpreadExpression(createLocation(location(), options), e);
   }
 
 ObjectLiteral "object"
@@ -388,7 +406,7 @@ ObjectLiteral "object"
   }
 
 ObjectProperties
-  = head:ObjectProperty __ Comma __ tail:ObjectProperties {
+  = head:ObjectProperty __ ',' __ tail:ObjectProperties {
     return composeList(head, tail);
   }
   / p:ObjectProperty {
@@ -399,13 +417,15 @@ Comma ","
   = ','
 
 ObjectProperty
-  = key:String __ ':' __ value:Expression {
+  = key:String __ ':' __ value:AssignmentExpression {
     return createObjectLiteralPropertyExpression(key, value);
   }
-  / key:Identifier __ ':' __ value:Expression {
+  / key:Identifier __ ':' __ value:AssignmentExpression {
     return createObjectLiteralPropertyExpression(key, value);
   }
-  / SpreadExpression
+  / "..." e:AssignmentExpression {
+    return createSpreadExpression(createLocation(location(), options), e);
+  }
 
 DiceLiteral "dice"
   = count:NonZeroInteger ('d' / 'D') die:NonZeroInteger suffix:DiceLiteralSuffix? {

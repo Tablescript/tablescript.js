@@ -4,30 +4,30 @@
 # Without a range specifier, the "next" single roll will be used. Each
 # entry has an equal chance of being rolled.
 t1 = choice {
-  'first'
-  'second'
+  'first',
+  'second',
   'third'
-}
+};
 
 # Manually select table entries by indexing them like arrays. Note, however,
 # that table entries are indexed by their roll and are usually 1-indexed.
-assert(t1[1] == 'first')
-assert(t1[2] == 'second')
-assert(t1[3] == 'third')
+assert(t1[1] == 'first');
+assert(t1[2] == 'second');
+assert(t1[3] == 'third');
 
 # Indexing past the end of the table, or before the beginning will result
 # in undefined
-assert(t1[0] == undefined)
-assert(t1[100] == undefined)
+assert(t1[0] == undefined);
+assert(t1[100] == undefined);
 
 # Roll on the table by calling the table as you would a function.
-expected_values = ['first', 'second', 'third']
-actual_value = t1()
-assert(expected_values.includes(actual_value))
+expected_values = ['first', 'second', 'third'];
+actual_value = t1();
+assert(expected_values.includes(actual_value));
 
 range(10).map(fn() {
-  assert(expected_values.includes(t1()))
-})
+  assert(expected_values.includes(t1()));
+});
 ############################################################################
 
 ############################################################################
@@ -35,27 +35,27 @@ range(10).map(fn() {
 #
 # By specifying a range, you control the probability
 t1 = table {
-  1-2: 'first'
-  3: 'second'
-  4-5: 'third'
+  1-2: 'first';
+  3: 'second';
+  4-5: 'third';
   6-10: 'fourth'
-}
+};
 
-assert(t1[1] == 'first')
-assert(t1[2] == 'first')
-assert(t1[3] == 'second')
-assert(t1[4] == 'third')
-assert(t1[5] == 'third')
-assert(t1[6] == 'fourth')
-assert(t1[7] == 'fourth')
-assert(t1[8] == 'fourth')
-assert(t1[9] == 'fourth')
-assert(t1[10] == 'fourth')
+assert(t1[1] == 'first');
+assert(t1[2] == 'first');
+assert(t1[3] == 'second');
+assert(t1[4] == 'third');
+assert(t1[5] == 'third');
+assert(t1[6] == 'fourth');
+assert(t1[7] == 'fourth');
+assert(t1[8] == 'fourth');
+assert(t1[9] == 'fourth');
+assert(t1[10] == 'fourth');
 
-expected_values = ['first', 'second', 'third', 'fourth']
+expected_values = ['first', 'second', 'third', 'fourth'];
 range(10).map(fn() {
-  assert(expected_values.includes(t1()))
-})
+  assert(expected_values.includes(t1()));
+});
 ############################################################################
 
 ############################################################################
@@ -63,53 +63,53 @@ range(10).map(fn() {
 #
 # The 'roll' value is provided when evaluating the table entry.
 t1 = table {
-  1-2: "first #{roll}"
-  3: "second #{roll}"
-  4-5: "third #{roll}"
+  1-2: "first #{roll}";
+  3: "second #{roll}";
+  4-5: "third #{roll}";
   6-10: "fourth #{roll}"
-}
+};
 
-assert(t1[1] == 'first 1')
-assert(t1[3] == 'second 3')
-assert(t1[4] == 'third 4')
-assert(t1[10] == 'fourth 10')
+assert(t1[1] == 'first 1');
+assert(t1[3] == 'second 3');
+assert(t1[4] == 'third 4');
+assert(t1[10] == 'fourth 10');
 
 expected_value = [
   'first 1', 'first 2',
   'second 3',
   'third 4', 'third 5',
   'fourth 6', 'fourth 7', 'fourth 8', 'fourth 9', 'fourth 10'
-]
+];
 range(10).map(fn() {
-  assert(expected_value.includes(t1()))
-})
+  assert(expected_value.includes(t1()));
+});
 
 t1 = choice {
-  "first #{roll}"
-  "second #{roll}"
+  "first #{roll}",
+  "second #{roll}",
   "third #{roll}"
-}
+};
 
-expected_value = ['first 1', 'second 2', 'third 3', 'fourth 4']
+expected_value = ['first 1', 'second 2', 'third 3', 'fourth 4'];
 range(10).map(fn() {
-  assert(expected_value.includes(t1()))
-})
+  assert(expected_value.includes(t1()));
+});
 ############################################################################
 
 ############################################################################
 # Spreading an array into a table.
 #
 # You can spread an array into a table of simple entries.
-a = ['first', 'second', 'third']
+a = ['first', 'second', 'third'];
 t1 = choice {
-  ...a
+  ...a,
   'fourth'
-}
+};
 
-assert(t1[1] == 'first')
-assert(t1[2] == 'second')
-assert(t1[3] == 'third')
-assert(t1[4] == 'fourth')
+assert(t1[1] == 'first');
+assert(t1[2] == 'second');
+assert(t1[3] == 'third');
+assert(t1[4] == 'fourth');
 ############################################################################
 
 ############################################################################
@@ -119,67 +119,67 @@ assert(t1[4] == 'fourth')
 # simple entries. Spread entries are expanded based on their original
 # probabilities.
 t1 = table {
-  1-2: 'first'
-  3: 'second'
+  1-2: 'first';
+  3: 'second';
   4-6: 'third'
-}
+};
 
 t2 = choice {
-  ...t1
+  ...t1,
   'fourth'
-}
+};
 
-assert(t2[1] == 'first')
-assert(t2[2] == 'first')
-assert(t2[3] == 'second')
-assert(t2[4] == 'third')
-assert(t2[5] == 'third')
-assert(t2[6] == 'third')
+assert(t2[1] == 'first');
+assert(t2[2] == 'first');
+assert(t2[3] == 'second');
+assert(t2[4] == 'third');
+assert(t2[5] == 'third');
+assert(t2[6] == 'third');
 ############################################################################
 
 ############################################################################
 # Table entries are evaluated when the table is called.
 t1 = choice {
-  "first #{roll}"
+  "first #{roll}",
   "second #{roll}"
-}
+};
 t2 = choice {
-  "third #{roll}"
+  "third #{roll}",
   ...t1
-}
+};
 
-expected_values = ['third 1', 'first 2', 'second 3']
+expected_values = ['third 1', 'first 2', 'second 3'];
 range(10).map(fn() {
-  assert(expected_values.includes(t2()))
-})
+  assert(expected_values.includes(t2()));
+});
 ############################################################################
 
 ############################################################################
 # Tables from split string.
 #
 # Generate table entries from any array.
-colours = 'red orange yellow green blue violet'
+colours = 'red orange yellow green blue violet';
 t1 = choice {
   ...(colours.split(' '))
-}
+};
 
 range(10).map(fn() {
-  assert(colours.includes(t1()))
-})
+  assert(colours.includes(t1()));
+});
 ############################################################################
 
 ############################################################################
 # Calling one table from another.
 t1 = choice {
-  'first'
-  'second'
+  'first',
+  'second',
   'third'
-}
+};
 
 t2 = choice {
-  "#{t1()} from first"
+  "#{t1()} from first",
   "#{t1()} from second"
-}
+};
 
 expected_values = [
   'first from first',
@@ -188,10 +188,10 @@ expected_values = [
   'first from second',
   'second from second',
   'third from second'
-]
+];
 range(10).map(fn() {
-  assert(expected_values.includes(t2()))
-})
+  assert(expected_values.includes(t2()));
+});
 ############################################################################
 
 ############################################################################
@@ -199,28 +199,28 @@ range(10).map(fn() {
 #
 # You can define parameters to be passed into tables when called.
 t1 = choice(p1, p2) {
-  "first #{p1}"
+  "first #{p1}",
   "second #{p2}"
-}
+};
 
 expected_values = [
   'first a',
   'second b'
-]
+];
 range(10).map(fn() {
-  assert(expected_values.includes(t1('a', 'b')))
-})
+  assert(expected_values.includes(t1('a', 'b')));
+});
 ############################################################################
 # Hackity Hack
 t1 = choice(entries) {
   choose(entries)
-}
+};
 
-expected_values = ['red', 'green', 'blue']
+expected_values = ['red', 'green', 'blue'];
 
 range(10).map(fn() {
-  assert(expected_values.includes(t1(['red', 'green', 'blue'])))
-})
+  assert(expected_values.includes(t1(['red', 'green', 'blue'])));
+});
 ############################################################################
 
 ############################################################################
@@ -228,20 +228,20 @@ range(10).map(fn() {
 #
 # Table parameters can be any type.
 t1 = choice(object, choices) {
-  object[choose(keys(object))]
+  object[choose(keys(object))],
   choose(choices)
-}
+};
 
 o = {
   a: 1,
   b: 2,
   c: 3
-}
+};
 
-a = ['red', 'green', 'blue']
+a = ['red', 'green', 'blue'];
 
-expected_values = [1, 2, 3, 'red', 'green', 'blue']
+expected_values = [1, 2, 3, 'red', 'green', 'blue'];
 range(10).map(fn() {
-  assert(expected_values.includes(t1(o, a)))
-})
+  assert(expected_values.includes(t1(o, a)));
+});
 ############################################################################
