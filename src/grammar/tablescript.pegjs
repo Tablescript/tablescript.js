@@ -88,11 +88,6 @@ ExpressionList
     return [e];
   }
 
-Block
-  = '{' __ body:(ExpressionList __)? '}' {
-    return createBlockExpression(createLocation(location(), options), optionalList(extractOptional(body, 0)));
-  }
-
 Expression
   = e:AssignmentExpression __ ';' {
     return e;
@@ -112,72 +107,6 @@ AssignmentOperator "assignment operator"
   / '*='
   / '/='
   / '%='
-
-ConditionalExpression
-  = test:LogicalOrExpression __ '?' __ consequent:AssignmentExpression __ ':' __ alternate:AssignmentExpression {
-    return createConditionalExpression(createLocation(location(), options), test, consequent, alternate);
-  }
-  / LogicalOrExpression
-
-LogicalOrExpression
-  = head:LogicalAndExpression tail:(__ OrToken __ LogicalAndExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-LogicalAndExpression
-  = head:EqualityExpression tail:(__ AndToken __ EqualityExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-EqualityExpression
-  = head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-EqualityOperator "equality operator"
-  = '=='
-  / '!='
-
-RelationalExpression
-  = head:AdditiveExpression tail:(__ RelationalOperator __ AdditiveExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-RelationalOperator "relational operator"
-  = '<='
-  / '>='
-  / '<'
-  / '>'
-
-AdditiveExpression
-  = head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-AdditiveOperator "addition or subtraction operator"
-  = $('+' !'=')
-  / $('-' !'=')
-
-MultiplicativeExpression
-  = head:UnaryExpression tail:(__ MultiplicativeOperator __ UnaryExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-MultiplicativeOperator "multiply, divide, or modulo operator"
-  = $('*' !'=')
-  / $('/' !'=')
-  / $('%' !'=')
-
-UnaryExpression
-  = LeftHandSideExpression
-  / operator:UnaryOperator __ argument:UnaryExpression {
-    return createUnaryExpression(createLocation(location(), options), operator, argument);
-  }
-
-UnaryOperator "unary operator"
-  = $('+' !'=')
-  / $('-' !'=')
-  / NotToken
 
 LeftHandSideExpression
   = CallExpression
@@ -246,6 +175,105 @@ MemberExpression
     return tail.reduce((result, element) => createObjectPropertyExpression(createLocation(location(), options), result, element.property), head);
   }
 
+///////////////////////////////////////////////////////////////////////////
+// Arithmetic Expression
+///////////////////////////////////////////////////////////////////////////
+
+ConditionalExpression
+  = test:LogicalOrExpression __ '?' __ consequent:AssignmentExpression __ ':' __ alternate:AssignmentExpression {
+    return createConditionalExpression(createLocation(location(), options), test, consequent, alternate);
+  }
+  / LogicalOrExpression
+
+LogicalOrExpression
+  = head:LogicalAndExpression tail:(__ OrToken __ LogicalAndExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+LogicalAndExpression
+  = head:EqualityExpression tail:(__ AndToken __ EqualityExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+EqualityExpression
+  = head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+EqualityOperator "equality operator"
+  = '=='
+  / '!='
+
+RelationalExpression
+  = head:AdditiveExpression tail:(__ RelationalOperator __ AdditiveExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+RelationalOperator "relational operator"
+  = '<='
+  / '>='
+  / '<'
+  / '>'
+
+AdditiveExpression
+  = head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+AdditiveOperator "addition or subtraction operator"
+  = $('+' !'=')
+  / $('-' !'=')
+
+MultiplicativeExpression
+  = head:UnaryExpression tail:(__ MultiplicativeOperator __ UnaryExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+MultiplicativeOperator "multiply, divide, or modulo operator"
+  = $('*' !'=')
+  / $('/' !'=')
+  / $('%' !'=')
+
+UnaryExpression
+  = LeftHandSideExpression
+  / operator:UnaryOperator __ argument:UnaryExpression {
+    return createUnaryExpression(createLocation(location(), options), operator, argument);
+  }
+
+UnaryOperator "unary operator"
+  = $('+' !'=')
+  / $('-' !'=')
+  / NotToken
+
+PrimaryExpression
+  = Literal
+  / i:Identifier __ {
+    return createVariableExpression(i);
+  }
+  / FunctionExpression
+  / ChoiceExpression
+  / TableExpression
+  / '(' __ e:AssignmentExpression __ ')' {
+    return e;
+  }
+  / TemplateLiteral
+  / IfExpression
+  / WhileExpression
+  / UntilExpression
+
+Literal
+  = DiceLiteral
+  / IntegerLiteral
+  / StringLiteral
+  / ArrayLiteral
+  / ObjectLiteral
+  / BooleanLiteral
+  / UndefinedLiteral
+
+///////////////////////////////////////////////////////////////////////////
+// Functions
+///////////////////////////////////////////////////////////////////////////
+
 FunctionExpression
   = FunctionToken __ '(' __ params:FormalParameterList __ ')' __ body:FunctionBody {
     return createFunctionExpression(createLocation(location(), options), params, body);
@@ -272,6 +300,10 @@ FunctionBody
   / e:AssignmentExpression {
     return createBlockExpression(createLocation(location(), options), [e]);
   }
+
+///////////////////////////////////////////////////////////////////////////
+// Tables
+///////////////////////////////////////////////////////////////////////////
 
 ChoiceExpression
   = ChoiceToken __ '(' __ params:(FormalParameterList __)? ')' __ '{' __ entries:ChoiceEntries __ '}' {
@@ -379,6 +411,10 @@ TableEntryTemplateTail
     return createStringLiteral(s.join(''));
   }
 
+///////////////////////////////////////////////////////////////////////////
+// Control Flow
+///////////////////////////////////////////////////////////////////////////
+
 IfExpression
   = IfToken __ '(' __ e:AssignmentExpression __ ')' __ ifBlock:IfBlock __ ElseToken __ elseBlock:IfBlock {
     return createIfExpression(createLocation(location(), options), e, ifBlock, elseBlock);
@@ -419,30 +455,9 @@ LoopBlock
     return createBlockExpression(createLocation(location(), options), [e]);
   }
 
-PrimaryExpression
-  = Literal
-  / i:Identifier __ {
-    return createVariableExpression(i);
-  }
-  / FunctionExpression
-  / ChoiceExpression
-  / TableExpression
-  / '(' __ e:AssignmentExpression __ ')' {
-    return e;
-  }
-  / TemplateLiteral
-  / IfExpression
-  / WhileExpression
-  / UntilExpression
-
-Literal
-  = DiceLiteral
-  / IntegerLiteral
-  / StringLiteral
-  / ArrayLiteral
-  / ObjectLiteral
-  / BooleanLiteral
-  / UndefinedLiteral
+///////////////////////////////////////////////////////////////////////////
+// Literals
+///////////////////////////////////////////////////////////////////////////
 
 UndefinedLiteral "undefined"
   = UndefinedToken {
@@ -456,6 +471,10 @@ BooleanLiteral "boolean"
   / FalseToken {
     return createBooleanLiteral(false);
   }
+
+///////////////////////////////////////////////////////////////////////////
+// Array Literals
+///////////////////////////////////////////////////////////////////////////
 
 ArrayLiteral
   = '[' __ e:ArrayEntries __ ']' {
@@ -479,6 +498,10 @@ ArrayEntry
     return createSpreadExpression(createLocation(location(), options), e);
   }
 
+///////////////////////////////////////////////////////////////////////////
+// Object Literals
+///////////////////////////////////////////////////////////////////////////
+
 ObjectLiteral
   = '{' __ p:ObjectProperties __ '}' {
     return createObjectLiteral(createLocation(location(), options), p);
@@ -495,9 +518,6 @@ ObjectProperties
     return [p];
   }
 
-Comma ","
-  = ','
-
 ObjectProperty
   = '[' __ key:AssignmentExpression __ ']' __ ':' __ value:AssignmentExpression {
     return createObjectLiteralPropertyExpressionWithEvaluatedKey(key, value);
@@ -511,6 +531,10 @@ ObjectProperty
   / "..." e:AssignmentExpression {
     return createSpreadExpression(createLocation(location(), options), e);
   }
+
+///////////////////////////////////////////////////////////////////////////
+// Dice Literals
+///////////////////////////////////////////////////////////////////////////
 
 DiceLiteral "dice"
   = count:NonZeroInteger ('d' / 'D') die:NonZeroInteger suffix:DiceLiteralSuffix? {
@@ -535,6 +559,10 @@ DiceLiteralSuffixSpecifier
   / 'h'
   / 'H'
 
+///////////////////////////////////////////////////////////////////////////
+// Whitespace
+///////////////////////////////////////////////////////////////////////////
+
 LineTerminator
   = [\n\r]
 
@@ -551,6 +579,10 @@ Comment "comment"
   
 __
   = (Whitespace / Comment)*
+
+///////////////////////////////////////////////////////////////////////////
+// Numeric Literals
+///////////////////////////////////////////////////////////////////////////
 
 IntegerLiteral "integer"
   = f:Float {
@@ -587,6 +619,10 @@ NonZeroDigit
 DecimalDigit
   = [0-9]
 
+///////////////////////////////////////////////////////////////////////////
+// Identifiers
+///////////////////////////////////////////////////////////////////////////
+
 Identifier "identifier"
   = !ReservedWord head:IdentifierStart tail:IdentifierPart* {
     return head + tail.join('');
@@ -598,6 +634,10 @@ IdentifierStart
 IdentifierPart
   = IdentifierStart
   / [0-9]
+
+///////////////////////////////////////////////////////////////////////////
+// String Literals
+///////////////////////////////////////////////////////////////////////////
 
 StringLiteral "string"
   = '"' s:DoubleQuoteStringCharacter* '"' {
@@ -658,6 +698,10 @@ SingleQuoteStringCharacter
     return text();
   }
 
+///////////////////////////////////////////////////////////////////////////
+// Template String Literals
+///////////////////////////////////////////////////////////////////////////
+
 TemplateLiteral
   = NoSubstitutionTemplate
   / SubstitutionTemplate
@@ -705,7 +749,7 @@ TemplateCharacter
   / !("`" / "\\" / "$" / LineTerminator) . {
     return text();
   }
-  
+
 ReservedWord
   = TrueToken
   / FalseToken
