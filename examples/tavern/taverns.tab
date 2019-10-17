@@ -5,9 +5,9 @@ names = require('./names');
 rumours = require('./rumours');
 
 suffix = table {
-  1-5: 'Inn'
-  6-9: 'Tavern'
-  10: 'Pub'
+  1-5: Inn
+  6-9: Tavern
+  10: Pub
 };
 
 noun = choice {

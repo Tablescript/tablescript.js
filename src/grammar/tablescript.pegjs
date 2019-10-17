@@ -298,10 +298,7 @@ ChoiceEntry
   / '>' __ e:Expression {
     return createSimpleTableEntryExpression(e);
   }
-  / s:StringLiteral {
-    return createSimpleTableEntryExpression(s);
-  }
-  / s:TemplateLiteral {
+  / s:TableEntryTemplateLiteral {
     return createSimpleTableEntryExpression(s);
   }
 
@@ -341,8 +338,45 @@ TableEntryBody
   / '>' __ e:Expression {
     return e;
   }
-  / StringLiteral
-  / TemplateLiteral
+  / TableEntryTemplateLiteral
+
+TableEntryTemplateLiteral
+  = NoSubstitutionTableEntryTemplate
+  / SubstitutionTableEntryTemplate
+
+NoSubstitutionTableEntryTemplate
+  = s:TableEntryTemplateCharacter* LineTerminatorSequence {
+    return createStringLiteral(s.join(''));
+  }
+
+TableEntryTemplateCharacter
+  = "$" !("{") {
+    return '$';
+  }
+  / "\\" EscapeSequence
+  / !("\\" / "$" / "}" / LineTerminator) . {
+    return text();
+  }
+
+SubstitutionTableEntryTemplate
+  = head:TableEntryTemplateHead e:AssignmentExpression middle:(TableEntryTemplateMiddle AssignmentExpression)* tail:TableEntryTemplateTail {
+    return createTemplateStringLiteral([head, e, ...flattenList(middle), tail]);
+  }
+
+TableEntryTemplateHead
+  = s:TableEntryTemplateCharacter* "${" {
+    return createStringLiteral(s.join(''));
+  }
+
+TableEntryTemplateMiddle
+  = "}" s:TableEntryTemplateCharacter* "${" {
+    return createStringLiteral(s.join(''));
+  }
+
+TableEntryTemplateTail
+  = "}" s:TableEntryTemplateCharacter* LineTerminatorSequence {
+    return createStringLiteral(s.join(''));
+  }
 
 IfExpression
   = IfToken __ '(' __ e:AssignmentExpression __ ')' __ ifBlock:IfBlock __ ElseToken __ elseBlock:IfBlock {

@@ -1,48 +1,48 @@
 body_part = choice {
-  'head'
-  'arm'
-  'leg'
-  'foot'
-  'ankle'
-  'knee'
-  'elbow'
+  head
+  arm
+  leg
+  foot
+  ankle
+  knee
+  elbow
 };
 
 dungeon_thing = choice {
-  'chest'
-  'coin'
-  'sack'
-  'wagon'
-  'cheese'
+  chest
+  coin
+  sack
+  wagon
+  cheese
 };
 
 weapon = choice {
-  'whip'
-  'sword'
-  'flail'
-  'lance'
-  'halberd'
-  'broadsword'
-  'longbow'
-  'bow'
-  'lance'
+  whip
+  sword
+  flail
+  lance
+  halberd
+  broadsword
+  longbow
+  bow
+  lance
 };
 
 tree = choice {
-  'pine'
-  'yew'
-  'spruce'
-  'birch'
-  'palm'
-  'elm'
+  pine
+  yew
+  spruce
+  birch
+  palm
+  elm
 };
 
 instrument = choice {
-  'harp'
-  'guitar'
-  'banjo'
-  'fiddle'
-  'lute'
+  harp
+  guitar
+  banjo
+  fiddle
+  lute
 };
 
 {

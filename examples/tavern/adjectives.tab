@@ -1,42 +1,42 @@
 colour = choice {
-  'red'
-  'orange'
-  'yellow'
-  'green'
-  'blue'
-  'violet'
-  'indigo'
-  'purple'
-  'black'
-  'white'
-  'silver'
-  'gold'
+  red
+  orange
+  yellow
+  green
+  blue
+  violet
+  indigo
+  purple
+  black
+  white
+  silver
+  gold
 };
 
 action = choice {
-  'prancing'
-  'flying'
-  'hanging'
-  'drooping'
-  'dancing'
-  'dying'
-  'rotting'
+  prancing
+  flying
+  hanging
+  drooping
+  dancing
+  dying
+  rotting
 };
 
 description = choice {
-  'marvelous'
-  'smelly'
-  'beautiful'
-  'pretty'
-  'injured'
-  'dead'
-  'wounded'
-  'foul'
-  'rusty'
-  'faded'
-  'mean'
-  'jolly'
-  'quick'
+  marvelous
+  smelly
+  beautiful
+  pretty
+  injured
+  dead
+  wounded
+  foul
+  rusty
+  faded
+  mean
+  jolly
+  quick
 };
 
 adjective = choice {

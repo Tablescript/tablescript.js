@@ -1,59 +1,59 @@
 farm_animal = choice {
-  'pony'
-  'pig'
-  'horse'
-  'mare'
-  'cow'
-  'goat'
-  'sheep'
-  'ewe'
-  'lamb'
-  'cat'
-  'dog'
-  'donkey'
-  'ass'
+  pony
+  pig
+  horse
+  mare
+  cow
+  goat
+  sheep
+  ewe
+  lamb
+  cat
+  dog
+  donkey
+  ass
 };
 
 animal = choice {
-  'tiger'
-  'lion'
-  'boar'
-  'bear'
-  'crow'
-  'eagle'
-  'hawk'
-  'falcon'
-  'ferret'
-  'badger'
+  tiger
+  lion
+  boar
+  bear
+  crow
+  eagle
+  hawk
+  falcon
+  ferret
+  badger
 };
 
 monster = choice {
-  'kobold'
-  'goblin'
-  'orc'
-  'bugbear'
-  'dragon'
-  'hippogriff'
-  'pegasus'
-  'ogre'
-  'giant'
+  kobold
+  goblin
+  orc
+  bugbear
+  dragon
+  hippogriff
+  pegasus
+  ogre
+  giant
 };
 
 human = choice {
-  'witch'
-  'hag'
-  'wizard'
-  'warlock'
-  'blacksmith'
-  'tinker'
-  'farmer'
-  'adventurer'
-  'ranger'
-  'druid'
-  'explorer'
-  'fool'
-  'bard'
-  'maid'
+  witch
+  hag
+  wizard
+  warlock
+  blacksmith
+  tinker
+  farmer
+  adventurer
+  ranger
+  druid
+  explorer
+  fool
+  bard
+  maid
 };
 
 creature = choice {

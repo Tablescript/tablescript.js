@@ -50,9 +50,9 @@ a = [
   { a: 3, b: 'def' },
   [4, 5, [6]],
   choice {
-    'first'
-    'second'
-    'third'
+    first
+    second
+    third
   },
   fn(n) { n * 3; }
 ];

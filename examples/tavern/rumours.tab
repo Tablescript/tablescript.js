@@ -50,36 +50,36 @@ create_person = fn(name, lair, pronouns) ({
 });
 
 lair = choice {
-  'lair'
-  'cave'
-  'tower'
-  'fortress'
-  'mine'
-  'camp'
+  lair
+  cave
+  tower
+  fortress
+  mine
+  camp
 };
 
 person_description = choice {
-  'aromatic'
-  'old'
-  'unscrupulous'
-  'blind'
-  'decrepid'
-  'drunk'
-  'drunken'
-  'famous'
-  'grizzled'
-  'lonely'
-  'lost'
-  'mysterious'
-  'reknowned'
-  'secretive'
-  'smart'
-  'stupid'
-  'tired'
-  'travelling'
-  'wise'
-  'withered'
-  'young'
+  aromatic
+  old
+  unscrupulous
+  blind
+  decrepid
+  drunk
+  drunken
+  famous
+  grizzled
+  lonely
+  lost
+  mysterious
+  reknowned
+  secretive
+  smart
+  stupid
+  tired
+  travelling
+  wise
+  withered
+  young
 };
 
 person = choice {
