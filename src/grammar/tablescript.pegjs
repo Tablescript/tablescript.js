@@ -66,6 +66,7 @@
   const composeList = (head, tail) => [head, ...tail];
   const buildList = (head, tail, index) => [head, ...extractList(tail, index)];
   const flattenList = (list) => list.reduce((acc, e) => ([...acc, ...e]), []);
+  const filterSublists = (list, indices) => list.map(sublist => sublist.filter((e, i) => indices.includes(i)));
 
   const createLocation = (location, options) => ({
     path: options.path,
@@ -359,8 +360,8 @@ TableEntryTemplateCharacter
   }
 
 SubstitutionTableEntryTemplate
-  = head:TableEntryTemplateHead e:AssignmentExpression middle:(TableEntryTemplateMiddle AssignmentExpression)* tail:TableEntryTemplateTail {
-    return createTemplateStringLiteral([head, e, ...flattenList(middle), tail]);
+  = head:TableEntryTemplateHead __ e:AssignmentExpression __ middle:(TableEntryTemplateMiddle __ AssignmentExpression __)* tail:TableEntryTemplateTail {
+    return createTemplateStringLiteral([head, e, ...flattenList(filterSublists(middle, [0, 2])), tail]);
   }
 
 TableEntryTemplateHead
@@ -478,7 +479,7 @@ ArrayEntry
     return createSpreadExpression(createLocation(location(), options), e);
   }
 
-ObjectLiteral "object"
+ObjectLiteral
   = '{' __ p:ObjectProperties __ '}' {
     return createObjectLiteral(createLocation(location(), options), p);
   }
@@ -667,8 +668,8 @@ NoSubstitutionTemplate
   }
 
 SubstitutionTemplate
-  = head:TemplateHead e:AssignmentExpression middles:(TemplateMiddle AssignmentExpression)* tail:TemplateTail {
-    return createTemplateStringLiteral([head, e, ...flattenList(middles), tail]);
+  = head:TemplateHead __ e:AssignmentExpression __ middles:(TemplateMiddle __ AssignmentExpression __)* tail:TemplateTail {
+    return createTemplateStringLiteral([head, e, ...flattenList(filterSublists(middles, [0, 2])), tail]);
   }
 
 TemplateHead
