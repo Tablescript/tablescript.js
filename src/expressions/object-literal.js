@@ -47,3 +47,12 @@ export const createObjectLiteralPropertyExpression = (key, value) => createExpre
   expressionTypes.OBJECT_PROPERTY,
   evaluateObjectProperty(key, value)
 );
+
+const evaluateObjectPropertyAndKey = (key, value) => async context => { return createObjectValue({
+  [(await key.evaluate(context)).asNativeString()]: await value.evaluate(context),
+}); };
+
+export const createObjectLiteralPropertyExpressionWithEvaluatedKey = (key, value) => createExpression(
+  expressionTypes.OBJECT_PROPERTY,
+  evaluateObjectPropertyAndKey(key, value)
+);

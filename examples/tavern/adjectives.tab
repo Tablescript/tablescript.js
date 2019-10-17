@@ -40,9 +40,9 @@ description = choice {
 };
 
 adjective = choice {
-  { colour(); }
-  { action(); }
-  { description(); }
+  > colour();
+  > action();
+  > description();
 };
 
 {

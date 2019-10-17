@@ -3,15 +3,15 @@ things = require('./things');
 creatures = require('./creatures');
 
 all_things = choice {
-  ...things.body_part
-  ...things.dungeon_thing
-  ...things.weapon
-  ...things.tree
-  ...things.instrument
-  ...creatures.farm_animal
-  ...creatures.animal
-  ...creatures.monster
-  ...creatures.human
+  ...things.body_part;
+  ...things.dungeon_thing;
+  ...things.weapon;
+  ...things.tree;
+  ...things.instrument;
+  ...creatures.farm_animal;
+  ...creatures.animal;
+  ...creatures.monster;
+  ...creatures.human;
 };
 
 special_nouns = {
@@ -26,18 +26,18 @@ articlize = fn(thing) {
     special_nouns[things].article;
   } else {
     if (is_vowel(thing[0])) {
-      'an ' + thing;
+      `an ${thing}`;
     } else {
-      'a ' + thing;
+      `a ${thing}`;
     };
   };
 };
 
 possessivethize = fn(name) {
   if (name[-1] == 's') {
-    name + "'";
+    `${name}'`;
   } else {
-    name + "'s";
+    `${name}'s`;
   };
 };
 
@@ -83,13 +83,13 @@ person_description = choice {
 };
 
 person = choice {
-  { create_person('wizard', lair(), ['his', 'her']); }
-  { create_person('sorcerer', lair(), ['his', 'her']); }
-  { create_person('goblin king', lair(), ['his']); }
-  { create_person('dragon', lair(), ['his', 'her', 'its']); }
-  { create_person('orc chieftan', lair(), ['his', 'her', 'its']); }
-  { create_person('ogre', lair(), ['his', 'her', 'its']); }
-  { create_person('ogre chieftan', lair(), ['his', 'her', 'its']); }
+  > create_person('wizard', lair(), ['his', 'her']);
+  > create_person('sorcerer', lair(), ['his', 'her']);
+  > create_person('goblin king', lair(), ['his']);
+  > create_person('dragon', lair(), ['his', 'her', 'its']);
+  > create_person('orc chieftan', lair(), ['his', 'her', 'its']);
+  > create_person('ogre', lair(), ['his', 'her', 'its']);
+  > create_person('ogre chieftan', lair(), ['his', 'her', 'its']);
 };
 
 relations = [
@@ -138,14 +138,10 @@ roles = [
 });
 
 local = choice {
-  {
-    { name: names.first_name() };
-  }
-  {
-    { name: names.name() };
-  }
-  ...relations.map(fn(n) ({ name: n }))
-  ...roles.map(fn(n) ({ name: n }))
+  > ({ name: names.first_name() });
+  > { name: names.name() };
+  ...relations.map(fn(n) ({ name: n }));
+  ...roles.map(fn(n) ({ name: n }));
 };
 
 create_thing = fn(thing, possible_adjectives) {
@@ -164,18 +160,18 @@ create_thing = fn(thing, possible_adjectives) {
 };
 
 desirable_thing = choice {
-  { create_thing('amulet', ['magic', 'jeweled', 'golden', 'silver', 'platinum']); }
-  { create_thing('treasure', ['long lost']); }
-  { create_thing('chalice', ['magic', 'jeweled', 'golden', 'silver', 'platinum']); }
-  { create_thing('scroll', ['magic']); }
-  { create_thing('sword', ['magic', 'jeweled', 'lost']); }
-  { create_thing('spellbook', ['long lost']); }
+  > create_thing('amulet', ['magic', 'jeweled', 'golden', 'silver', 'platinum']);
+  > create_thing('treasure', ['long lost']);
+  > create_thing('chalice', ['magic', 'jeweled', 'golden', 'silver', 'platinum']);
+  > create_thing('scroll', ['magic']);
+  > create_thing('sword', ['magic', 'jeweled', 'lost']);
+  > create_thing('spellbook', ['long lost']);
 };
 
 found_thing = choice {
-  ...desirable_thing
-  { create_thing('cart', ['overturned']); }
-  { create_thing('wagon', ['overturned']); }
+  ...desirable_thing;
+  > create_thing('cart', ['overturned']);
+  > create_thing('wagon', ['overturned']);
 };
 
 create_location = fn(name, areas, types) {
@@ -194,90 +190,90 @@ create_location = fn(name, areas, types) {
 
 directions = ['north', 'south', 'east', 'west'];
 
-area_modifiers = ['in the', 'near the', ...directions.map(fn(d) 'on the ' + d + ' side of the')];
-hill_modifiers = ['on the', 'near the', 'on the other side of the', ...directions.map(fn(d) 'on the ' + d + ' side of the')];
+area_modifiers = ['in the', 'near the', ...directions.map(fn(d) `on the ${d} side of the`)];
+hill_modifiers = ['on the', 'near the', 'on the other side of the', ...directions.map(fn(d) `on the ${d} side of the`)];
 mine_modifiers = [...area_modifiers, 'near the entrance to the', 'deep in the', 'just outside the'];
-forest_modifiers = [...area_modifiers, 'near the edge of the', 'on the edge of the', 'just outside the', ...directions.map(fn(d) 'at the ' + d + ' edge of the')];
-river_modifiers = [...area_modifiers, 'on the edge of the', 'on the shore of the', ...directions.map(fn(d) 'on the ' + d + ' shore of the')];
+forest_modifiers = [...area_modifiers, 'near the edge of the', 'on the edge of the', 'just outside the', ...directions.map(fn(d) `at the ${d} edge of the`)];
+river_modifiers = [...area_modifiers, 'on the edge of the', 'on the shore of the', ...directions.map(fn(d) `on the ${d} shore of the`)];
 mine_types = ['diamond', 'gold', 'silver', 'platinum', 'copper', 'creepy', 'haunted'];
 forest_types = ['pine', 'spruce', 'dark', 'creepy', 'haunted'];
 building_types = ['ruined', 'crumbling', 'ancient', 'dark'];
 
 locations = choice {
-  { create_location('mine', mine_modifiers, mine_types); }
-  { create_location('mines', mine_modifiers, mine_types); }
-  { create_location('forest', forest_modifiers, forest_types); }
-  { create_location('fortress', mine_modifiers, building_types); }
-  { create_location('ruins', mine_modifiers, ['ancient']); }
-  { create_location('tower', mine_modifiers, building_types); }
-  { create_location('lake', river_modifiers, []); }
-  { create_location('sewer', mine_modifiers, ['ancient']); }
-  { create_location('sewers', mine_modifiers, ['ancient']); }
-  { create_location('pond', river_modifiers, ['mill', 'town']); }
-  { create_location('monastery', mine_modifiers, building_types); }
-  { create_location('river', river_modifiers, []); }
-  { create_location('stream', river_modifiers, []); }
-  { create_location('cave', mine_modifiers, ['dark']); }
-  { create_location('caves', mine_modifiers, ['dark']); }
-  { create_location('hill', hill_modifiers, []); }
-  { create_location('foothills', hill_modifiers, []); }
-  { create_location('tavern', area_modifiers, []); }
-  { create_location('farm', hill_modifiers, []); }
+  > create_location('mine', mine_modifiers, mine_types);
+  > create_location('mines', mine_modifiers, mine_types);
+  > create_location('forest', forest_modifiers, forest_types);
+  > create_location('fortress', mine_modifiers, building_types);
+  > create_location('ruins', mine_modifiers, ['ancient']);
+  > create_location('tower', mine_modifiers, building_types);
+  > create_location('lake', river_modifiers, []);
+  > create_location('sewer', mine_modifiers, ['ancient']);
+  > create_location('sewers', mine_modifiers, ['ancient']);
+  > create_location('pond', river_modifiers, ['mill', 'town']);
+  > create_location('monastery', mine_modifiers, building_types);
+  > create_location('river', river_modifiers, []);
+  > create_location('stream', river_modifiers, []);
+  > create_location('cave', mine_modifiers, ['dark']);
+  > create_location('caves', mine_modifiers, ['dark']);
+  > create_location('hill', hill_modifiers, []);
+  > create_location('foothills', hill_modifiers, []);
+  > create_location('tavern', area_modifiers, []);
+  > create_location('farm', hill_modifiers, []);
 };
 
 rumour_template = choice {
-  {
+  > {
     subject = person();
     description = choose([[], [person_description()]]);
     object = desirable_thing();
     ['the', ...description, subject.name, 'wants', ...choose([['their', object.name], [object.article], ['the', object.name]])];
   }
-  {
+  > {
     subject = person();
     description = choose([[], [person_description()]]);
     object = desirable_thing();
     ['the', ...description, subject.name, 'wants', ...choose([[subject.pronoun, object.name], [object.article], ['the', object.name]]), 'delivered to', subject.pronoun, subject.lair];
   }
-  {
+  > {
     subject = person();
     description = choose([[], [person_description()]]);
     object = desirable_thing();
     ['the', ...description, subject.name, 'is searching for', ...choose([[subject.pronoun, object.name], [object.article]])];
   }
-  {
+  > {
     subject = local();
     object = desirable_thing();
     antagonist = person();
     [subject.name, 'has been looking for', object.article, 'for the', antagonist.name];
   }
-  {
+  > {
     subject = person();
     object = desirable_thing();
     ['there will be a delivery of', object.article, 'to the', subject.possessive, subject.lair];
   }
-  {
+  > {
     subject = local();
     object = found_thing();
     location = locations();
     [subject.name, 'found', object.article, location.area];
   }
-  {
+  > {
     password = range(d3).map(fn() all_things()).join(' ');
-    ['the password is', '"' + password + '"'];
+    ['the password is', `"${password}"`];
   }
-  {
+  > {
     subject = local();
     [subject.name, choose(['has been missing for', "hasn't been seen for"]), d6 + 1, choose(['days', 'weeks'])];
   }
 };
 
 prefix = table {
-  1: { ['I heard' + choose([' that', ''])]; }
-  2: { ['I hear' + choose([' that', ''])]; }
-  3: { ['I overheard ' + local().name + ' saying' + choose([' that', ''])]; }
-  4: { ['I overheard ' + local().name + ' say' + choose([' that', ''])]; }
-  5-10: { [local().name + choose([' said', ' told me']) + choose([' that', ''])]; }
-  11-20: { []; }
+  1: > [`I heard${choose([' that', ''])}`];
+  2: > [`I hear${choose([' that', ''])}`];
+  3: > [`I overheard ${local().name} saying${choose([' that', ''])}`];
+  4: > [`I overheard ${local().name} say${choose([' that', ''])}`];
+  5-10: > [`${local().name}${choose([' said', ' told me'])}${choose([' that', ''])}`];
+  11-20: > [];
 };
 
 rumour = fn() {

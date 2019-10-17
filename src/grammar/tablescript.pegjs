@@ -40,7 +40,8 @@
   const { createArrayLiteral } = require('../expressions/array-literal');
   const {
     createObjectLiteral,
-    createObjectLiteralPropertyExpression
+    createObjectLiteralPropertyExpression,
+    createObjectLiteralPropertyExpressionWithEvaluatedKey
   } = require('../expressions/object-literal');
   const {
     createDiceLiteral,
@@ -64,6 +65,7 @@
   const extractList = (list, index) => list.map(e => e[index]);
   const composeList = (head, tail) => [head, ...tail];
   const buildList = (head, tail, index) => [head, ...extractList(tail, index)];
+  const flattenList = (list) => list.reduce((acc, e) => ([...acc, ...e]), []);
 
   const createLocation = (location, options) => ({
     path: options.path,
@@ -287,13 +289,19 @@ ChoiceEntries
   }
 
 ChoiceEntry
-  = "..." e:AssignmentExpression {
+  = "..." e:Expression {
     return createSpreadTableEntryExpression(createSpreadExpression(createLocation(location(), options), e));
   }
-  / '{' __ list:ExpressionList __ '}' {
+  / '>' __ '{' __ list:ExpressionList __ '}' {
     return createSimpleTableEntryExpression(createBlockExpression(createLocation(location(), options), list));
   }
+  / '>' __ e:Expression {
+    return createSimpleTableEntryExpression(e);
+  }
   / s:StringLiteral {
+    return createSimpleTableEntryExpression(s);
+  }
+  / s:TemplateLiteral {
     return createSimpleTableEntryExpression(s);
   }
 
@@ -327,10 +335,14 @@ TableEntrySelector
   }
 
 TableEntryBody
-  = '{' __ list:ExpressionList __ '}' {
+  = '>' __ '{' __ list:ExpressionList __ '}' {
     return createBlockExpression(createLocation(location(), options), list);
   }
+  / '>' __ e:Expression {
+    return e;
+  }
   / StringLiteral
+  / TemplateLiteral
 
 IfExpression
   = IfToken __ '(' __ e:AssignmentExpression __ ')' __ ifBlock:IfBlock __ ElseToken __ elseBlock:IfBlock {
@@ -383,6 +395,7 @@ PrimaryExpression
   / '(' __ e:AssignmentExpression __ ')' {
     return e;
   }
+  / TemplateLiteral
   / IfExpression
   / WhileExpression
   / UntilExpression
@@ -451,8 +464,8 @@ Comma ","
   = ','
 
 ObjectProperty
-  = key:String __ ':' __ value:AssignmentExpression {
-    return createObjectLiteralPropertyExpression(key, value);
+  = '[' __ key:AssignmentExpression __ ']' __ ':' __ value:AssignmentExpression {
+    return createObjectLiteralPropertyExpressionWithEvaluatedKey(key, value);
   }
   / key:Identifier __ ':' __ value:AssignmentExpression {
     return createObjectLiteralPropertyExpression(key, value);
@@ -487,7 +500,10 @@ DiceLiteralSuffixSpecifier
   / 'h'
   / 'H'
 
-LineTerminator "end of line"
+LineTerminator
+  = [\n\r]
+
+LineTerminatorSequence "end of line"
   = "\n"
   / "\r\n"
   / "\r"
@@ -549,25 +565,55 @@ IdentifierPart
   / [0-9]
 
 StringLiteral "string"
-  = s:String {
-    return createStringLiteral(s);
+  = '"' s:DoubleQuoteStringCharacter* '"' {
+    return createStringLiteral(s.join(''));
   }
-  / '"' s:DoubleQuoteStringCharacter* '"' {
-    return createTemplateStringLiteral(s.join(''));
-  }
-
-String
-  = "'" s:SingleQuoteStringCharacter* "'" {
-    return s.join('');
+  / "'" s:SingleQuoteStringCharacter* "'" {
+    return createStringLiteral(s.join(''));
   }
 
 DoubleQuoteStringCharacter
-  = '\\\"' {
-    return '"';
-  }
-  / !('"') . {
+  = !('"' / "\\" / LineTerminator) . {
     return text();
   }
+  / "\\" sequence:EscapeSequence {
+    return sequence;
+  }
+  / LineContinuation
+
+LineContinuation
+  = "\\" LineTerminatorSequence {
+    return '';
+  }
+
+EscapeSequence
+  = CharacterEscapeSequence
+
+CharacterEscapeSequence
+  = SingleEscapeCharacter
+  / NonEscapeCharacter
+
+SingleEscapeCharacter
+  = "'"
+  / '"'
+  / "\\"
+  / "b" { return "\b"; }
+  / "f" { return "\f"; }
+  / "n" { return "\n"; }
+  / "r" { return "\r"; }
+  / "t" { return "\t"; }
+  / "v" { return "\v"; }
+
+NonEscapeCharacter
+  = !(EscapeCharacter / LineTerminator) . {
+    return text();
+  }
+
+EscapeCharacter
+  = SingleEscapeCharacter
+  / DecimalDigit
+  / "x"
+  / "u"
 
 SingleQuoteStringCharacter
   = "\\\'" {
@@ -577,6 +623,54 @@ SingleQuoteStringCharacter
     return text();
   }
 
+TemplateLiteral
+  = NoSubstitutionTemplate
+  / SubstitutionTemplate
+
+NoSubstitutionTemplate
+  = "`" s:TemplateCharacter* "`" {
+    return createStringLiteral(s.join(''));
+  }
+
+SubstitutionTemplate
+  = head:TemplateHead e:AssignmentExpression middles:(TemplateMiddle AssignmentExpression)* tail:TemplateTail {
+    return createTemplateStringLiteral([head, e, ...flattenList(middles), tail]);
+  }
+
+TemplateHead
+  = "`" s:TemplateCharacter* "${" {
+    return createStringLiteral(s.join(''));
+  }
+
+TemplateMiddle
+  = "}" s:TemplateCharacter* "${" {
+    return createStringLiteral(s.join(''));
+  }
+
+TemplateTail
+  = "}" s:TemplateCharacter* "`" {
+    return createStringLiteral(s.join(''));
+  }
+
+TemplateCharacters
+  = head:TemplateCharacter tail:TemplateCharacters {
+    return composeList(head, tail);
+  }
+  / c:TemplateCharacter {
+    return [c];
+  }
+
+TemplateCharacter
+  = "$" !("{") {
+    return '$';
+  }
+  / "\\" EscapeSequence
+  / LineContinuation
+  / LineTerminatorSequence
+  / !("`" / "\\" / "$" / LineTerminator) . {
+    return text();
+  }
+  
 ReservedWord
   = TrueToken
   / FalseToken

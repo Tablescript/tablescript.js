@@ -13,9 +13,7 @@ first_name = fn() {
   choose([male_first_name, female_first_name])();
 };
 
-name = fn() {
-  first_name() + ' ' + last_name();
-};
+name = fn() `${first_name()} ${last_name()}`;
 
 {
   name,

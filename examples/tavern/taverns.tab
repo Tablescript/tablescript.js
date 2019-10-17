@@ -11,21 +11,21 @@ suffix = table {
 };
 
 noun = choice {
-  { creatures.creature().capitalize(); }
-  { things.body_part().capitalize(); }
-  { things.dungeon_thing().capitalize(); }
-  { things.weapon().capitalize(); }
-  { things.tree().capitalize(); }
-  { things.instrument().capitalize(); }
+  > creatures.creature().capitalize();
+  > things.body_part().capitalize();
+  > things.dungeon_thing().capitalize();
+  > things.weapon().capitalize();
+  > things.tree().capitalize();
+  > things.instrument().capitalize();
 };
 
 join_and_capitalize = fn(words) words.map(fn(w) w.capitalize()).join(' ');
 
 tavern_name = choice {
-  { join_and_capitalize(['The', adjectives.adjective(), noun(), suffix()]); }
-  { join_and_capitalize(['The', adjectives.adjective(), noun()]); }
-  { join_and_capitalize([adjectives.adjective(), noun(), suffix()]); }
-  { join_and_capitalize([adjectives.adjective(), noun()]); }
+  > join_and_capitalize(['The', adjectives.adjective(), noun(), suffix()]);
+  > join_and_capitalize(['The', adjectives.adjective(), noun()]);
+  > join_and_capitalize([adjectives.adjective(), noun(), suffix()]);
+  > join_and_capitalize([adjectives.adjective(), noun()]);
 };
 
 tavern = fn() ({

@@ -63,10 +63,10 @@ range(10).map(fn() {
 #
 # The 'roll' value is provided when evaluating the table entry.
 t1 = table {
-  1-2: "first #{roll}"
-  3: "second #{roll}"
-  4-5: "third #{roll}"
-  6-10: "fourth #{roll}"
+  1-2: `first ${roll}`
+  3: `second ${roll}`
+  4-5: `third ${roll}`
+  6-10: `fourth ${roll}`
 };
 
 assert(t1[1] == 'first 1');
@@ -85,9 +85,9 @@ range(10).map(fn() {
 });
 
 t1 = choice {
-  "first #{roll}"
-  "second #{roll}"
-  "third #{roll}"
+  `first ${roll}`
+  `second ${roll}`
+  `third ${roll}`
 };
 
 expected_value = ['first 1', 'second 2', 'third 3', 'fourth 4'];
@@ -102,7 +102,7 @@ range(10).map(fn() {
 # You can spread an array into a table of simple entries.
 a = ['first', 'second', 'third'];
 t1 = choice {
-  ...a
+  ...a;
   'fourth'
 };
 
@@ -125,7 +125,7 @@ t1 = table {
 };
 
 t2 = choice {
-  ...t1
+  ...t1;
   'fourth'
 };
 
@@ -140,12 +140,12 @@ assert(t2[6] == 'third');
 ############################################################################
 # Table entries are evaluated when the table is called.
 t1 = choice {
-  "first #{roll}"
-  "second #{roll}"
+  `first ${roll}`
+  `second ${roll}`
 };
 t2 = choice {
-  "third #{roll}"
-  ...t1
+  `third ${roll}`
+  ...t1;
 };
 
 expected_values = ['third 1', 'first 2', 'second 3'];
@@ -160,7 +160,7 @@ range(10).map(fn() {
 # Generate table entries from any array.
 colours = 'red orange yellow green blue violet';
 t1 = choice {
-  ...(colours.split(' '))
+  ...(colours.split(' '));
 };
 
 range(10).map(fn() {
@@ -177,8 +177,8 @@ t1 = choice {
 };
 
 t2 = choice {
-  "#{t1()} from first"
-  "#{t1()} from second"
+  `${t1()} from first`
+  `${t1()} from second`
 };
 
 expected_values = [
@@ -199,8 +199,8 @@ range(10).map(fn() {
 #
 # You can define parameters to be passed into tables when called.
 t1 = choice(p1, p2) {
-  "first #{p1}"
-  "second #{p2}"
+  `first ${p1}`
+  `second ${p2}`
 };
 
 expected_values = [
@@ -213,7 +213,7 @@ range(10).map(fn() {
 ############################################################################
 # Hackity Hack
 t1 = choice(entries) {
-  { choose(entries); }
+  > choose(entries);
 };
 
 expected_values = ['red', 'green', 'blue'];
@@ -228,8 +228,8 @@ range(10).map(fn() {
 #
 # Table parameters can be any type.
 t1 = choice(object, choices) {
-  { object[choose(keys(object))]; }
-  { choose(choices); }
+  > object[choose(keys(object))];
+  > choose(choices);
 };
 
 o = {

@@ -1,0 +1,12 @@
+print(`abc`);
+print(`abc${9}def`);
+
+x = 9;
+print(`abc${x}def`);
+
+y = 'gooberface';
+print(`abc${x}def${y}ghi`);
+
+print(`${9}abc`);
+print(``);
+print(`abc${9}`);

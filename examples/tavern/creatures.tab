@@ -57,10 +57,10 @@ human = choice {
 };
 
 creature = choice {
-  { farm_animal(); }
-  { animal(); }
-  { monster(); }
-  { human(); }
+  > farm_animal();
+  > animal();
+  > monster();
+  > human();
 };
 
 {

@@ -1,7 +1,7 @@
 o = {
-  'foo': 9,
-  'bar': 'I have a ham radio',
-  'baz': fn(x, y) {
+  foo: 9,
+  ['bar']: 'I have a ham radio',
+  ['baz']: fn(x, y) {
     x * y;
   },
   flung: 'flamber',
