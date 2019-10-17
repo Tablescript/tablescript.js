@@ -76,41 +76,286 @@
 }
 
 Start
-  = __ body:ExpressionList? __ {
-    return createCompoundExpression(createLocation(location(), options), optionalList(body));
+  = __ program:Program __ {
+    return program;
   }
 
-ExpressionList
-  = head:Expression __ tail:ExpressionList {
+///////////////////////////////////////////////////////////////////////////
+// Lexical Grammar
+///////////////////////////////////////////////////////////////////////////
+
+SourceCharacter
+  = .
+
+Whitespace "whitespace"
+  = [ \t\v\f]
+
+LineTerminator
+  = [\n\r]
+
+LineTerminatorSequence "end of line"
+  = "\n"
+  / "\r\n"
+  / "\r"
+
+Comment "comment"
+  = '#' (!LineTerminator SourceCharacter)*
+
+Identifier
+  = !ReservedWord name:IdentifierName {
+    return createVariableExpression(name);
+  }
+
+IdentifierName "identifier"
+  = head:IdentifierStart tail:IdentifierPart* {
+    return head + tail.join('');
+  }
+
+IdentifierStart
+  = [_a-zA-Z]
+
+IdentifierPart
+  = IdentifierStart
+  / [0-9]
+
+ReservedWord
+  = Keyword
+  / UndefinedLiteral
+  / BooleanLiteral
+
+Keyword
+  = AndToken
+  / ChoiceToken
+  / ElseToken
+  / FalseToken
+  / FunctionToken
+  / IfToken
+  / NotToken
+  / OrToken
+  / TableToken
+  / TrueToken
+  / UntilToken
+  / WhileToken
+
+Literal
+  = UndefinedLiteral
+  / BooleanLiteral
+  / DiceLiteral
+  / NumericLiteral
+  / StringLiteral
+
+UndefinedLiteral
+  = UndefinedToken {
+    return createUndefinedLiteral();
+  }
+
+BooleanLiteral
+  = TrueToken {
+    return createBooleanLiteral(true);
+  }
+  / FalseToken {
+    return createBooleanLiteral(false);
+  }
+
+NumericLiteral
+  = DecimalLiteral
+
+DecimalLiteral
+  = DecimalIntegerLiteral "." DecimalDigit* {
+    return createNumberLiteral(parseFloat(text()));
+  }
+  / "." DecimalDigit+ {
+    return createNumberLiteral(parseFloat(text()));
+  }
+  / DecimalIntegerLiteral {
+    return createNumberLiteral(parseFloat(text()));
+  }
+
+DecimalIntegerLiteral
+  = "0"
+  / NonZeroDigit DecimalDigit*
+
+DecimalDigit
+  = [0-9]
+
+NonZeroDigit
+  = [1-9]
+
+NonZeroInteger
+  = NonZeroDigit DecimalDigit* {
+    return parseInt(text(), 10);
+  }
+
+StringLiteral "string"
+  = '"' s:DoubleQuoteStringCharacter* '"' {
+    return createStringLiteral(s.join(''));
+  }
+  / "'" s:SingleQuoteStringCharacter* "'" {
+    return createStringLiteral(s.join(''));
+  }
+
+DoubleQuoteStringCharacter
+  = !('"' / "\\" / LineTerminator) SourceCharacter {
+    return text();
+  }
+  / "\\" sequence:EscapeSequence {
+    return sequence;
+  }
+  / LineContinuation
+
+SingleQuoteStringCharacter
+  = "\\\'" {
+    return "'";
+  }
+  / !("'") SourceCharacter {
+    return text();
+  }
+
+LineContinuation
+  = "\\" LineTerminatorSequence {
+    return '';
+  }
+
+EscapeSequence
+  = CharacterEscapeSequence
+
+CharacterEscapeSequence
+  = SingleEscapeCharacter
+  / NonEscapeCharacter
+
+SingleEscapeCharacter
+  = "'"
+  / '"'
+  / "\\"
+  / "b" { return "\b"; }
+  / "f" { return "\f"; }
+  / "n" { return "\n"; }
+  / "r" { return "\r"; }
+  / "t" { return "\t"; }
+  / "v" { return "\v"; }
+
+NonEscapeCharacter
+  = !(EscapeCharacter / LineTerminator) SourceCharacter {
+    return text();
+  }
+
+EscapeCharacter
+  = SingleEscapeCharacter
+  / DecimalDigit
+  / "x"
+  / "u"
+
+TrueToken = "true" !IdentifierPart
+FalseToken = "false" !IdentifierPart
+IfToken = "if" !IdentifierPart
+ElseToken = "else" !IdentifierPart
+WhileToken = "while" !IdentifierPart
+UntilToken = "until" !IdentifierPart
+AndToken = $("and" !IdentifierPart)
+OrToken = $("or" !IdentifierPart)
+NotToken = "not" !IdentifierPart { return "not"; }
+FunctionToken = "fn" !IdentifierPart
+ChoiceToken = "choice" !IdentifierPart
+TableToken = "table" !IdentifierPart
+UndefinedToken = "undefined" !IdentifierPart
+
+__
+  = (Whitespace / LineTerminatorSequence / Comment)*
+
+///////////////////////////////////////////////////////////////////////////
+// Expressions
+///////////////////////////////////////////////////////////////////////////
+
+PrimaryExpression
+  = Literal
+  / Identifier
+  / TemplateLiteral
+  / ArrayLiteral
+  / ObjectLiteral
+  / '(' __ e:AssignmentExpression __ ')' {
+    return e;
+  }
+  / FunctionExpression
+  / ChoiceExpression
+  / TableExpression
+  / IfExpression
+  / WhileExpression
+  / UntilExpression
+
+///////////////////////////////////////////////////////////////////////////
+// Array Literals
+///////////////////////////////////////////////////////////////////////////
+
+ArrayLiteral
+  = '[' __ e:ArrayEntries __ ']' {
+    return createArrayLiteral(createLocation(location(), options), e);
+  }
+  / '[' __ ']' {
+    return createArrayLiteral(createLocation(location(), options), []);
+  }
+
+ArrayEntries
+  = head:ArrayEntry __ ',' __ tail:ArrayEntries {
     return composeList(head, tail);
   }
-  / e:Expression {
+  / e:ArrayEntry {
     return [e];
   }
 
-Expression
-  = e:AssignmentExpression __ ';' {
-    return e;
+ArrayEntry
+  = AssignmentExpression
+  / "..." e:AssignmentExpression {
+    return createSpreadExpression(createLocation(location(), options), e);
   }
 
-AssignmentExpression
-  = l:LeftHandSideExpression __ o:AssignmentOperator __ e:ConditionalExpression {
-    return createAssignmentExpression(createLocation(location(), options), l, o, e);
+///////////////////////////////////////////////////////////////////////////
+// Object Literals
+///////////////////////////////////////////////////////////////////////////
+
+ObjectLiteral
+  = '{' __ p:ObjectProperties __ '}' {
+    return createObjectLiteral(createLocation(location(), options), p);
   }
-  / ConditionalExpression
+  / '{' __ '}' {
+    return createObjectLiteral(createLocation(location(), options), []);
+  }
 
-AssignmentOperator "assignment operator"
-  = '=' !'=' { return '='; }
-  / '=' !'>' { return '='; }
-  / '+='
-  / '-='
-  / '*='
-  / '/='
-  / '%='
+ObjectProperties
+  = head:ObjectProperty __ ',' __ tail:ObjectProperties {
+    return composeList(head, tail);
+  }
+  / p:ObjectProperty {
+    return [p];
+  }
 
-LeftHandSideExpression
-  = CallExpression
-  / MemberExpression
+ObjectProperty
+  = '[' __ key:AssignmentExpression __ ']' __ ':' __ value:AssignmentExpression {
+    return createObjectLiteralPropertyExpressionWithEvaluatedKey(key, value);
+  }
+  / key:IdentifierName __ ':' __ value:AssignmentExpression {
+    return createObjectLiteralPropertyExpression(key, value);
+  }
+  / key:IdentifierName {
+    return createObjectLiteralPropertyExpression(key, createVariableExpression(key));
+  }
+  / "..." e:AssignmentExpression {
+    return createSpreadExpression(createLocation(location(), options), e);
+  }
+
+MemberExpression
+  = head:(
+    PrimaryExpression
+  )
+  tail:(
+    '[' __ property:AssignmentExpression __ ']' {
+      return { property };
+    }
+    / '.' __ property:IdentifierName {
+      return { property: createStringLiteral(property) };
+    }
+  )* {
+    return tail.reduce((result, element) => createObjectPropertyExpression(createLocation(location(), options), result, element.property), head);
+  }
 
 CallExpression
   = head:(
@@ -125,7 +370,7 @@ CallExpression
     / '[' __ property:AssignmentExpression __ ']' {
       return { 'type': 'member', property };
     }
-    / '.' __ property:Identifier {
+    / '.' __ property:IdentifierName {
       return { 'type': 'member', property: createStringLiteral(property) };
     }
   )* {
@@ -160,79 +405,9 @@ Argument
     return createSpreadExpression(createLocation(location(), options), e);
   }
 
-MemberExpression
-  = head:(
-    PrimaryExpression
-  )
-  tail:(
-    '[' __ property:AssignmentExpression __ ']' {
-      return { property };
-    }
-    / '.' __ property:Identifier {
-      return { property: createStringLiteral(property) };
-    }
-  )* {
-    return tail.reduce((result, element) => createObjectPropertyExpression(createLocation(location(), options), result, element.property), head);
-  }
-
-///////////////////////////////////////////////////////////////////////////
-// Arithmetic Expression
-///////////////////////////////////////////////////////////////////////////
-
-ConditionalExpression
-  = test:LogicalOrExpression __ '?' __ consequent:AssignmentExpression __ ':' __ alternate:AssignmentExpression {
-    return createConditionalExpression(createLocation(location(), options), test, consequent, alternate);
-  }
-  / LogicalOrExpression
-
-LogicalOrExpression
-  = head:LogicalAndExpression tail:(__ OrToken __ LogicalAndExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-LogicalAndExpression
-  = head:EqualityExpression tail:(__ AndToken __ EqualityExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-EqualityExpression
-  = head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-EqualityOperator "equality operator"
-  = '=='
-  / '!='
-
-RelationalExpression
-  = head:AdditiveExpression tail:(__ RelationalOperator __ AdditiveExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-RelationalOperator "relational operator"
-  = '<='
-  / '>='
-  / '<'
-  / '>'
-
-AdditiveExpression
-  = head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-AdditiveOperator "addition or subtraction operator"
-  = $('+' !'=')
-  / $('-' !'=')
-
-MultiplicativeExpression
-  = head:UnaryExpression tail:(__ MultiplicativeOperator __ UnaryExpression)* {
-    return composeBinaryExpression(createLocation(location(), options), head, tail);
-  }
-
-MultiplicativeOperator "multiply, divide, or modulo operator"
-  = $('*' !'=')
-  / $('/' !'=')
-  / $('%' !'=')
+LeftHandSideExpression
+  = CallExpression
+  / MemberExpression
 
 UnaryExpression
   = LeftHandSideExpression
@@ -245,30 +420,80 @@ UnaryOperator "unary operator"
   / $('-' !'=')
   / NotToken
 
-PrimaryExpression
-  = Literal
-  / i:Identifier __ {
-    return createVariableExpression(i);
+MultiplicativeExpression
+  = head:UnaryExpression tail:(__ MultiplicativeOperator __ UnaryExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
   }
-  / FunctionExpression
-  / ChoiceExpression
-  / TableExpression
-  / '(' __ e:AssignmentExpression __ ')' {
+
+MultiplicativeOperator "multiply, divide, or modulo operator"
+  = $('*' !'=')
+  / $('/' !'=')
+  / $('%' !'=')
+
+AdditiveExpression
+  = head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+AdditiveOperator "addition or subtraction operator"
+  = $('+' !'=')
+  / $('-' !'=')
+
+RelationalExpression
+  = head:AdditiveExpression tail:(__ RelationalOperator __ AdditiveExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+RelationalOperator "relational operator"
+  = '<='
+  / '>='
+  / '<'
+  / '>'
+
+EqualityExpression
+  = head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+EqualityOperator "equality operator"
+  = '=='
+  / '!='
+
+LogicalAndExpression
+  = head:EqualityExpression tail:(__ AndToken __ EqualityExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+LogicalOrExpression
+  = head:LogicalAndExpression tail:(__ OrToken __ LogicalAndExpression)* {
+    return composeBinaryExpression(createLocation(location(), options), head, tail);
+  }
+
+ConditionalExpression
+  = test:LogicalOrExpression __ '?' __ consequent:AssignmentExpression __ ':' __ alternate:AssignmentExpression {
+    return createConditionalExpression(createLocation(location(), options), test, consequent, alternate);
+  }
+  / LogicalOrExpression
+
+AssignmentExpression
+  = l:LeftHandSideExpression __ o:AssignmentOperator __ e:ConditionalExpression {
+    return createAssignmentExpression(createLocation(location(), options), l, o, e);
+  }
+  / ConditionalExpression
+
+AssignmentOperator "assignment operator"
+  = '=' !'=' { return '='; }
+  / '=' !'>' { return '='; }
+  / '+='
+  / '-='
+  / '*='
+  / '/='
+  / '%='
+
+Expression
+  = e:AssignmentExpression __ ";" {
     return e;
   }
-  / TemplateLiteral
-  / IfExpression
-  / WhileExpression
-  / UntilExpression
-
-Literal
-  = DiceLiteral
-  / IntegerLiteral
-  / StringLiteral
-  / ArrayLiteral
-  / ObjectLiteral
-  / BooleanLiteral
-  / UndefinedLiteral
 
 ///////////////////////////////////////////////////////////////////////////
 // Functions
@@ -283,10 +508,10 @@ FunctionExpression
   }
 
 FormalParameterList "formal parameter list"
-  = head:Identifier __ ',' __ tail:FormalParameterList {
+  = head:IdentifierName __ ',' __ tail:FormalParameterList {
     return composeList(head, tail);
   }
-  / i:Identifier {
+  / i:IdentifierName {
     return [i];
   }
 
@@ -387,7 +612,7 @@ TableEntryTemplateCharacter
     return '$';
   }
   / "\\" EscapeSequence
-  / !("\\" / "$" / "}" / LineTerminator) . {
+  / !("\\" / "$" / "}" / LineTerminator) SourceCharacter {
     return text();
   }
 
@@ -456,83 +681,6 @@ LoopBlock
   }
 
 ///////////////////////////////////////////////////////////////////////////
-// Literals
-///////////////////////////////////////////////////////////////////////////
-
-UndefinedLiteral "undefined"
-  = UndefinedToken {
-    return createUndefinedLiteral();
-  }
-
-BooleanLiteral "boolean"
-  = TrueToken {
-    return createBooleanLiteral(true);
-  }
-  / FalseToken {
-    return createBooleanLiteral(false);
-  }
-
-///////////////////////////////////////////////////////////////////////////
-// Array Literals
-///////////////////////////////////////////////////////////////////////////
-
-ArrayLiteral
-  = '[' __ e:ArrayEntries __ ']' {
-    return createArrayLiteral(createLocation(location(), options), e);
-  }
-  / '[' __ ']' {
-    return createArrayLiteral(createLocation(location(), options), []);
-  }
-
-ArrayEntries
-  = head:ArrayEntry __ ',' __ tail:ArrayEntries {
-    return composeList(head, tail);
-  }
-  / e:ArrayEntry {
-    return [e];
-  }
-
-ArrayEntry
-  = AssignmentExpression
-  / "..." e:AssignmentExpression {
-    return createSpreadExpression(createLocation(location(), options), e);
-  }
-
-///////////////////////////////////////////////////////////////////////////
-// Object Literals
-///////////////////////////////////////////////////////////////////////////
-
-ObjectLiteral
-  = '{' __ p:ObjectProperties __ '}' {
-    return createObjectLiteral(createLocation(location(), options), p);
-  }
-  / '{' __ '}' {
-    return createObjectLiteral(createLocation(location(), options), []);
-  }
-
-ObjectProperties
-  = head:ObjectProperty __ ',' __ tail:ObjectProperties {
-    return composeList(head, tail);
-  }
-  / p:ObjectProperty {
-    return [p];
-  }
-
-ObjectProperty
-  = '[' __ key:AssignmentExpression __ ']' __ ':' __ value:AssignmentExpression {
-    return createObjectLiteralPropertyExpressionWithEvaluatedKey(key, value);
-  }
-  / key:Identifier __ ':' __ value:AssignmentExpression {
-    return createObjectLiteralPropertyExpression(key, value);
-  }
-  / key:Identifier {
-    return createObjectLiteralPropertyExpression(key, createVariableExpression(key));
-  }
-  / "..." e:AssignmentExpression {
-    return createSpreadExpression(createLocation(location(), options), e);
-  }
-
-///////////////////////////////////////////////////////////////////////////
 // Dice Literals
 ///////////////////////////////////////////////////////////////////////////
 
@@ -558,145 +706,6 @@ DiceLiteralSuffixSpecifier
   / 'L'
   / 'h'
   / 'H'
-
-///////////////////////////////////////////////////////////////////////////
-// Whitespace
-///////////////////////////////////////////////////////////////////////////
-
-LineTerminator
-  = [\n\r]
-
-LineTerminatorSequence "end of line"
-  = "\n"
-  / "\r\n"
-  / "\r"
-
-Whitespace "whitespace"
-  = [ \t\n\r]
-
-Comment "comment"
-  = '#' (!LineTerminator .)*
-  
-__
-  = (Whitespace / Comment)*
-
-///////////////////////////////////////////////////////////////////////////
-// Numeric Literals
-///////////////////////////////////////////////////////////////////////////
-
-IntegerLiteral "integer"
-  = f:Float {
-    return createNumberLiteral(f);
-  }
-  / i:Integer {
-    return createNumberLiteral(i);
-  }
-
-Float
-  = "0." DecimalDigit* {
-    return parseFloat(text());
-  }
-  / NonZeroDigit DecimalDigit* "." DecimalDigit+ {
-    return parseFloat(text());
-  }
-
-Integer
-  = "0" {
-    return 0;
-  }
-  / i:NonZeroInteger {
-    return parseInt(text());
-  }
-
-NonZeroInteger
-  = NonZeroDigit DecimalDigit* {
-    return parseInt(text());
-  }
-
-NonZeroDigit
-  = [1-9]
-
-DecimalDigit
-  = [0-9]
-
-///////////////////////////////////////////////////////////////////////////
-// Identifiers
-///////////////////////////////////////////////////////////////////////////
-
-Identifier "identifier"
-  = !ReservedWord head:IdentifierStart tail:IdentifierPart* {
-    return head + tail.join('');
-  }
-
-IdentifierStart
-  = [_a-zA-Z]
-
-IdentifierPart
-  = IdentifierStart
-  / [0-9]
-
-///////////////////////////////////////////////////////////////////////////
-// String Literals
-///////////////////////////////////////////////////////////////////////////
-
-StringLiteral "string"
-  = '"' s:DoubleQuoteStringCharacter* '"' {
-    return createStringLiteral(s.join(''));
-  }
-  / "'" s:SingleQuoteStringCharacter* "'" {
-    return createStringLiteral(s.join(''));
-  }
-
-DoubleQuoteStringCharacter
-  = !('"' / "\\" / LineTerminator) . {
-    return text();
-  }
-  / "\\" sequence:EscapeSequence {
-    return sequence;
-  }
-  / LineContinuation
-
-LineContinuation
-  = "\\" LineTerminatorSequence {
-    return '';
-  }
-
-EscapeSequence
-  = CharacterEscapeSequence
-
-CharacterEscapeSequence
-  = SingleEscapeCharacter
-  / NonEscapeCharacter
-
-SingleEscapeCharacter
-  = "'"
-  / '"'
-  / "\\"
-  / "b" { return "\b"; }
-  / "f" { return "\f"; }
-  / "n" { return "\n"; }
-  / "r" { return "\r"; }
-  / "t" { return "\t"; }
-  / "v" { return "\v"; }
-
-NonEscapeCharacter
-  = !(EscapeCharacter / LineTerminator) . {
-    return text();
-  }
-
-EscapeCharacter
-  = SingleEscapeCharacter
-  / DecimalDigit
-  / "x"
-  / "u"
-
-SingleQuoteStringCharacter
-  = "\\\'" {
-    return "'";
-  }
-  / !("'") . {
-    return text();
-  }
 
 ///////////////////////////////////////////////////////////////////////////
 // Template String Literals
@@ -746,35 +755,20 @@ TemplateCharacter
   / "\\" EscapeSequence
   / LineContinuation
   / LineTerminatorSequence
-  / !("`" / "\\" / "$" / LineTerminator) . {
+  / !("`" / "\\" / "$" / LineTerminator) SourceCharacter {
     return text();
   }
 
-ReservedWord
-  = TrueToken
-  / FalseToken
-  / IfToken
-  / ElseToken
-  / WhileToken
-  / UntilToken
-  / AndToken
-  / OrToken
-  / NotToken
-  / FunctionToken
-  / ChoiceToken
-  / TableToken
-  / UndefinedToken
 
-TrueToken = "true" !IdentifierPart
-FalseToken = "false" !IdentifierPart
-IfToken = "if" !IdentifierPart
-ElseToken = "else" !IdentifierPart
-WhileToken = "while" !IdentifierPart
-UntilToken = "until" !IdentifierPart
-AndToken = $("and" !IdentifierPart)
-OrToken = $("or" !IdentifierPart)
-NotToken = "not" !IdentifierPart { return 'not'; }
-FunctionToken = "fn" !IdentifierPart
-ChoiceToken = "choice" !IdentifierPart
-TableToken = "table" !IdentifierPart
-UndefinedToken = "undefined" !IdentifierPart
+Program
+  = body:ExpressionList? {
+    return createCompoundExpression(createLocation(location(), options), optionalList(body));
+  }
+
+ExpressionList
+  = head:Expression __ tail:ExpressionList {
+    return composeList(head, tail);
+  }
+  / e:Expression {
+    return [e];
+  }
