@@ -19,12 +19,6 @@ import { rollDice } from '../util/random';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = (count, die, suffix) => async context => context.factory.createNumericValue(rollDice(count, die, suffix));
+const evaluate = (count, die, suffixes) => async context => context.factory.createNumericValue(rollDice(count, die, suffixes));
 
-export const createDiceLiteral = (count, die, suffix) => createExpression(expressionTypes.DICE, evaluate(count, die, suffix));
-
-export const createDiceLiteralSuffix = (operator, specifier, count) => ({
-  operator,
-  specifier,
-  count
-});
+export const createDiceLiteral = (count, die, suffixes) => createExpression(expressionTypes.DICE, evaluate(count, die, suffixes));

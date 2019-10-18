@@ -15,50 +15,121 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
+
 export const randomNumber = n => {
   return Math.floor(Math.random() * n) + 1;
 };
 
-const createRollSet = (count, die) => {
-  let rolls = [];
-  for (let i = 0; i < count; i++) {
-    rolls.push(randomNumber(die));
-  }
-  return rolls;
-}
+const fateRoll = () => randomNumber(3) - 2;
 
-const sort = rolls => ([...rolls].sort());
+const basicRoll = die => () => randomNumber(die);
 
-const dropRolls = (sortedRolls, suffix, count) => {
-  if (suffix.specifier === 'l') {
-    return sortedRolls.slice(count);
-  } else {
-    return sortedRolls.slice(0, -1 * count);
-  }
-}
+const createFateRollSet = (count) => R.range(0, count).map(fateRoll);
 
-const reAddRolls = (sortedRolls, suffix, count) => {
-  if (suffix.specifier === 'l') {
-    return sort([...sortedRolls.slice(0, count), ...sortedRolls]);
-  } else {
-    return sort([...sortedRolls, ...sortedRolls.slice(-1 * count)]);
-  }
-}
+const createBasicRollSet = (count, die) => R.range(0, count).map(basicRoll(die));
 
-const applySuffix = (rolls, suffix) => {
-  if (suffix) {
-    const sortedRolls = sort(rolls);
-    const count = suffix.count || 1;
-    if (suffix.operator === '-') {
-      return dropRolls(sortedRolls, suffix, count);
-    }
-    return reAddRolls(sortedRolls, suffix, count);
+const createRollSet = (count, die) => (die === 'F' ? createFateRollSet(count) : createBasicRollSet(count, die));
+
+const rollPasses = (roll, test) => {
+  if (test.equal) {
+    return roll === test.equal;
   }
-  return rolls;
+  if (test.atLeast) {
+    return roll >= test.atLeast;
+  }
+  if (test.noMoreThan) {
+    return roll <= test.noMoreThan;
+  }
+  throw new Error(`Unrecognized test (${R.keys(test)})`);
 };
 
-export const rollDice = (count, die, suffix) => applySuffix(createRollSet(count, die), suffix)
-  .reduce((sum, roll) => sum + roll, 0);
+const rerollWhen = (die, test) => roll => {
+  let reroll = roll;
+  let count = 0;
+  while (rollPasses(reroll, test) && count < 100) {
+    reroll = randomNumber(die);
+    count += 1;
+  }
+  return reroll;
+};
+
+const applyReroll = die => (rolls, rerollSuffix) => R.map(rerollWhen(die, rerollSuffix.test), rolls);
+
+const log = msg => o => {
+  console.log(msg, JSON.stringify(o, null, 2));
+  return o;
+};
+
+const applyAnyRerolls = (die, suffixes) => rolls => R.pipe(
+  R.map(R.prop('reroll')),
+  R.filter(R.compose(R.not, R.isNil)),
+  R.reduce(applyReroll(die), rolls),
+)(suffixes);
+
+const keepRoll = (rolls, {specifier, count}) => {
+  if (specifier === 'h') {
+    return R.takeLast(count, rolls);
+  }
+  if (specifier === 'l') {
+    return R.take(count, rolls);
+  }
+  throw new Error(`Invalid keep specifier (${specifier})`);
+};
+
+const dropRoll = (rolls, {specifier, count}) => {
+  if (specifier === 'l') {
+    return R.takeLast(R.max(0, R.length(rolls) - count), rolls);
+  }
+  if (specifier === 'h') {
+    return R.take(R.max(0, R.length(rolls) - count), rolls);
+  }
+  throw new Error(`Invalid drop specifier (${specifier})`);
+};
+
+const toSuccess = test => roll => {
+  let successes = 0;
+  if (rollPasses(roll, test)) {
+    successes += 1;
+  }
+  if (test.failure && rollPasses(roll, test.failure)) {
+    successes -= 1;
+  }
+  return successes;
+};
+
+const countSuccess = (rolls, testSuffix) => R.map(toSuccess(testSuffix), rolls);
+
+const keepRolls = suffixes => rolls => R.pipe(
+  R.map(R.prop('keep')),
+  R.filter(R.compose(R.not, R.isNil)),
+  R.reduce(keepRoll, rolls),
+)(suffixes);
+
+const dropRolls = suffixes => rolls => R.pipe(
+  R.map(R.prop('drop')),
+  R.filter(R.compose(R.not, R.isNil)),
+  R.reduce(dropRoll, rolls),
+)(suffixes);
+
+const countSuccesses = suffixes => rolls => R.pipe(
+  R.filter(R.has('test')),
+  R.map(R.prop('test')),
+  R.reduce(countSuccess, rolls),
+)(suffixes);
+
+const applySuffixes = (die, suffixes) => (rolls) => R.pipe(
+  applyAnyRerolls(die, suffixes),
+  R.sort(R.comparator(R.lt)),
+  keepRolls(suffixes),
+  dropRolls(suffixes),
+  countSuccesses(suffixes),
+)(rolls);
+
+export const rollDice = (count, die, suffixes) => R.pipe(
+  applySuffixes(die, suffixes),
+  R.sum,
+)(createRollSet(count, die));
 
 export const rollDiceFromString = s => {
   const matches = s.match(/([1-9][0-9]*)d([1-9][0-9]*)(([-+])([lh])([1-9][0-9]*)?)?/i);
@@ -68,11 +139,14 @@ export const rollDiceFromString = s => {
   const count = parseInt(matches[1]);
   const die = parseInt(matches[2]);
   if (matches[3]) {
-    return rollDice(count, die, {
-      operator: matches[4],
-      specifier: matches[5],
-      count: matches[6] ? parseInt(matches[6]) : 1,
-    });
+    return rollDice(count, die, [
+      {
+        drop: {
+          specifier: matches[5],
+          count: matches[6] ? parseInt(matches[6], 10) : 1,
+        },
+      }
+    ]);
   }
-  return rollDice(count, die);
+  return rollDice(count, die, []);
 };

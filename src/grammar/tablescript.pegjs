@@ -45,7 +45,6 @@
   } = require('../expressions/object-literal');
   const {
     createDiceLiteral,
-    createDiceLiteralSuffix
   } = require('../expressions/dice-literal');
   const { createNumberLiteral } = require('../expressions/number-literal');
   const { createStringLiteral } = require('../expressions/string-literal');
@@ -688,27 +687,86 @@ LoopBlock
 ///////////////////////////////////////////////////////////////////////////
 
 DiceLiteral "dice"
-  = count:NonZeroInteger ('d' / 'D') die:NonZeroInteger suffix:DiceLiteralSuffix? {
-    return createDiceLiteral(count, die, suffix);
+  = count:DiceLiteralCount 'd' die:DiceLiteralDie suffixes:DiceLiteralSuffix* {
+    return createDiceLiteral(count, die, suffixes);
   }
-  / ('d' / 'D') die:NonZeroInteger suffix:DiceLiteralSuffix? {
-    return createDiceLiteral(1, die, suffix);
+
+DiceLiteralCount
+  = count:NonZeroInteger? {
+    return count || 1;
   }
+
+DiceLiteralDie
+  = NonZeroInteger
+  / 'F'
 
 DiceLiteralSuffix
-  = operator:DiceLiteralSuffixOperator specifier:DiceLiteralSuffixSpecifier count:NonZeroInteger? {
-    return createDiceLiteralSuffix(operator, specifier.toLowerCase(), count);
+  = 'd' specifier:[lh]? count:NonZeroInteger {
+    return {
+      drop: {
+        specifier: specifier || 'l',
+        count,
+      },
+    };
+  }
+  / 'k' specifier:[lh]? count:NonZeroInteger {
+    return {
+      keep: {
+        specifier: specifier || 'h',
+        count,
+      },
+    };
+  }
+  / 'r' test:DiceLiteralSuffixTest {
+    return {
+      reroll: {
+        ...test,
+      },
+    };
+  }
+  / 'r' value:NonZeroInteger {
+    return {
+      reroll: {
+        test: {
+          equal: value,
+        },
+      },
+    };
+  }
+  / 'r' {
+    return {
+      reroll: {
+        test: {
+          equal: 1,
+        },
+      },
+    };
+  }
+  / test:DiceLiteralSuffixTest 'f' failure:DiceLiteralSuffixTest {
+    return {
+      test: {
+        ...test,
+        failure,
+      },
+    };
+  }
+  / test:DiceLiteralSuffixTest {
+    return {
+      test,
+    };
   }
 
-DiceLiteralSuffixOperator
-  = '-'
-  / '+'
+DiceLiteralSuffixTest
+  = op:DiceLiteralSuffixTestOperator value:NonZeroInteger {
+    return {
+      [op]: value,
+    };
+  }
 
-DiceLiteralSuffixSpecifier
-  = 'l'
-  / 'L'
-  / 'h'
-  / 'H'
+DiceLiteralSuffixTestOperator
+  = '=' { return 'equal'; }
+  / '>' { return 'atLeast'; }
+  / '<' { return 'noMoreThan'; }
 
 ///////////////////////////////////////////////////////////////////////////
 // Template String Literals

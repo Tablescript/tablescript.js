@@ -19,8 +19,8 @@ all_rolls_for_d = fn(count) { range(count).map(fn(n) { n + 1; }); };
 # Basics.
 #
 # d1 rolls a 1-sided die. It is like saying 1d1, i.e. "roll 1 1-sided dice".
-# i.e. "always return 1". This is probably not useful. 2d2 rolls 2 1-sided
-# dice and adds the results. 3d2 rolls and adds 3 1-sided dice, etc.
+# i.e. "always return 1". This is probably not useful. 2d1 rolls 2 1-sided
+# dice and adds the results. 3d1 rolls and adds 3 1-sided dice, etc.
 assert(d1 == 1);
 assert(1d1 == 1);
 assert(2d1 == 2);
@@ -93,66 +93,90 @@ test_rolls(roll, expected_results);
 ############################################################################
 # Drop rolls.
 #
-# Append -l (or -L) with an optional count to drop the low rolls. -l drops
-# 1 die. Append -h (or -H) with an optional count to drop the high rolls.
-# -h drops 1 die.
+# Append 'd' to drop dice from the total. By default, the lowest dice are
+# dropped. Add 'h' to drop the highest dice instead.
 expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
-roll = fn() { 4d6-l; };
+roll = fn() { 4d6d1; };
 test_rolls(roll, expected_results);
 
-roll = fn() { 5d6-l2; };
+roll = fn() { 5d6d2; };
 test_rolls(roll, expected_results);
 
-roll = fn() { 4d6-h; };
+roll = fn() { 4d6dh1; };
 test_rolls(roll, expected_results);
 
-roll = fn() { 5d6-h2; };
-test_rolls(roll, expected_results);
-############################################################################
-
-############################################################################
-# Re-add rolls.
-#
-# Append +l (or +L) with an optional count to re-add the low rolls. +l
-# re-adds 1 die. Append +h (or +H) with an optional count to re-add the
-# high rolls. +h re-adds 1 die.
-expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-
-roll = fn() { 4d6-l; };
-test_rolls(roll, expected_results);
-
-roll = fn() { 5d6-l2; };
-test_rolls(roll, expected_results);
-
-roll = fn() { 2d6+h; };
-test_rolls(roll, expected_results);
-
-roll = fn() { 3d4+h2; };
-expected_results = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+roll = fn() { 5d6dh2; };
 test_rolls(roll, expected_results);
 
 # If you drop too many dice, you get 0.
-assert(3d6-l3 == 0);
-assert(3d6-l100 == 0);
+assert(3d6d3 == 0);
+assert(3d6dh100 == 0);
+############################################################################
 
-# If you re-add more dice than were rolled, you get the sum of fewer rolls
-# than expected.
-roll = fn() { 2d4+l5; };
-expected_results = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+############################################################################
+# Keep rolls.
+#
+# Append 'k' to keep dice in the total (and drop the rest). By default, the
+# highest dice are kept. Add 'l' to keep the lowest dice instead.
+expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+roll = fn() { 4d6k3; };
+test_rolls(roll, expected_results);
+
+roll = fn() { 4d6kl3; };
+test_rolls(roll, expected_results);
+
+# If you keep more dice than were rolled, you get the sum of the rolled dice
+# only.
+roll = fn() { 2d6k20; };
+expected_results = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 test_rolls(roll, expected_results);
 ############################################################################
 
 ############################################################################
-# D&D 5E "Advantage"
+# Successes and failures.
 #
-# 2d20-l means roll 2 d20s and drop the lowest. (2d20-h is "disadvantage".)
+# Use compare points (Roll20 verbiage) to convert rolls into successes and
+# failures. If a die matches the compare point, it is counted as a success
+# (+1).
+# The value of the roll is the total number of successes.
+# If a failure compare point is specified, rolls matching the failure
+# compare point count as failures (-1).
+expected_results = [0, 1, 2, 3, 4];
+
+roll = fn() { 4d6>3; };
+test_rolls(roll, expected_results);
+
+roll = fn() { 4d6=3; };
+test_rolls(roll, expected_results);
+
+roll = fn() { 4d6<2; };
+test_rolls(roll, expected_results);
+
+roll = fn() { 4d6>5f<1; };
+expected_results = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+test_rolls(roll, expected_results);
+############################################################################
+
+############################################################################
+# D&D 5E "Advantage".
+#
+# 2d20d1 (or 2d20k1) means roll 2 d20s and drop the lowest (or keep the
+# highest - same thing).
+# 2d20dh1 (or 2d20kl1) is "disadvantage".
 expected_results = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
-roll = fn() { 2d20-l; };
+roll = fn() { 2d20d1; };
 test_rolls(roll, expected_results);
 
-roll = fn() { 2d20-h; };
+roll = fn() { 2d20k1; };
+test_rolls(roll, expected_results);
+
+roll = fn() { 2d20dh1; };
+test_rolls(roll, expected_results);
+
+roll = fn() { 2d20kl1; };
 test_rolls(roll, expected_results);
 ############################################################################
 
