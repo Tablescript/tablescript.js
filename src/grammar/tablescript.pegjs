@@ -329,14 +329,17 @@ ObjectProperties
   }
 
 ObjectProperty
-  = '[' __ key:AssignmentExpression __ ']' __ ':' __ value:AssignmentExpression {
-    return createObjectLiteralPropertyExpressionWithEvaluatedKey(key, value);
-  }
-  / key:IdentifierName __ ':' __ value:AssignmentExpression {
+  = key:IdentifierName __ ':' __ value:AssignmentExpression {
     return createObjectLiteralPropertyExpression(key, value);
   }
   / key:IdentifierName {
     return createObjectLiteralPropertyExpression(key, createVariableExpression(key));
+  }
+  / key:StringLiteral __ ':' __ value:AssignmentExpression {
+    return createObjectLiteralPropertyExpressionWithEvaluatedKey(key, value);
+  }
+  / '[' __ key:AssignmentExpression __ ']' __ ':' __ value:AssignmentExpression {
+    return createObjectLiteralPropertyExpressionWithEvaluatedKey(key, value);
   }
   / "..." e:AssignmentExpression {
     return createSpreadExpression(createLocation(location(), options), e);
