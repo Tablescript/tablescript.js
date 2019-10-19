@@ -52,13 +52,13 @@ const multiplyBy = value => (context, other) => {
   return context.factory.createStringValue(value.repeat(count));
 };
 
-const lessThan = value => (context, other) => value < other.asNativeString();
+const lessThan = value => (context, other) => context.factory.createBooleanValue(value < other.asNativeString());
 
-const greaterThan = value => (context, other) => value > other.asNativeString();
+const greaterThan = value => (context, other) => context.factory.createBooleanValue(value > other.asNativeString());
 
-const lessThanOrEquals = value => (context, other) => value <= other.asNativeString();
+const lessThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value <= other.asNativeString());
 
-const greaterThanOrEquals = value => (context, other) => value >= other.asNativeString();
+const greaterThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value >= other.asNativeString());
 
 const compare = value => (context, other) => context.factory.createNumericValue(value.localeCompare(other.asNativeString()));
 
@@ -127,17 +127,14 @@ const startsWith = value => createNativeFunctionValue(
 
 const endsWith = value => createNativeFunctionValue(['s'], context => {
   const s = requiredParameter(context, 's');
-  if (!isString(s)) {
-    throwRuntimeError(`endsWith(s) s must be a string`, context);
-  }
   return context.factory.createBooleanValue(value.endsWith(s.asNativeString()));
 });
 
-const trim = value => createNativeFunctionValue([], context => createStringValue(value.trim()));
+const trim = value => createNativeFunctionValue([], context => context.factory.createStringValue(value.trim()));
 
-const trimLeft = value => createNativeFunctionValue([], context => createStringValue(value.trimLeft()));
+const trimLeft = value => createNativeFunctionValue([], context => context.factory.createStringValue(value.trimLeft()));
 
-const trimRight = value => createNativeFunctionValue([], context => createStringValue(value.trimRight()));
+const trimRight = value => createNativeFunctionValue([], context => context.factory.createStringValue(value.trimRight()));
 
 const empty = value => createNativeFunctionValue([], context => context.factory.createBooleanValue(value.length === 0));
 

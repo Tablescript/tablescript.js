@@ -53,13 +53,13 @@ const modulo = value => (context, other) => {
   return context.factory.createNumericValue(value % other.asNativeNumber());
 };
 
-const lessThan = value => (context, other) => value < other.asNativeNumber();
+const lessThan = value => (context, other) => context.factory.createBooleanValue(value < other.asNativeNumber());
 
-const greaterThan = value => (context, other) => value > other.asNativeNumber();
+const greaterThan = value => (context, other) => context.factory.createBooleanValue(value > other.asNativeNumber());
 
-const lessThanOrEquals = value => (context, other) => value <= other.asNativeNumber();
+const lessThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value <= other.asNativeNumber());
 
-const greaterThanOrEquals = value => (context, other) => value >= other.asNativeNumber();
+const greaterThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value >= other.asNativeNumber());
 
 const floor = value => createNativeFunctionValue([], context => context.factory.createNumericValue(Math.floor(value)));
 

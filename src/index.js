@@ -5,6 +5,7 @@ import { loadFsFile } from './fs-loader';
 import { createArrayValue } from './values/array';
 import { createBooleanValue } from './values/boolean';
 import { createNumericValue } from './values/numeric';
+import { createObjectValue } from './values/object';
 import { createStringValue } from './values/string';
 import { createUndefined } from './values/undefined';
 
@@ -35,6 +36,7 @@ const defaultValueFactory = {
   createArrayValue,
   createBooleanValue,
   createNumericValue,
+  createObjectValue,
   createStringValue,
   createUndefined,
 };

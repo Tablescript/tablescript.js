@@ -19,7 +19,7 @@ import { createObjectValue } from '../values/object';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluator = context => (acc, entry) => {
+const mergeObjectEntries = context => (acc, entry) => {
   const value = entry.evaluate(context);
   return {
     ...acc,
@@ -29,23 +29,23 @@ const evaluator = context => (acc, entry) => {
 
 const evaluate = (location, entries) => context => {
   context.setLocation(location);
-  return createObjectValue(entries.reduce(evaluator(context), {}));
+  return createObjectValue(entries.reduce(mergeObjectEntries(context), {}));
 };
 
 export const createObjectLiteral = (location, entries) => createExpression(expressionTypes.OBJECT, evaluate(location, entries));
 
-const evaluateObjectProperty = (key, value) => context => { return createObjectValue({
+const evaluateObjectProperty = (key, value) => context => context.factory.createObjectValue({
   [key]: value.evaluate(context),
-}); };
+});
 
 export const createObjectLiteralPropertyExpression = (key, value) => createExpression(
   expressionTypes.OBJECT_PROPERTY,
   evaluateObjectProperty(key, value)
 );
 
-const evaluateObjectPropertyAndKey = (key, value) => context => { return createObjectValue({
+const evaluateObjectPropertyAndKey = (key, value) => context => context.factory.createObjectValue({
   [(key.evaluate(context)).asNativeString()]: value.evaluate(context),
-}); };
+});
 
 export const createObjectLiteralPropertyExpressionWithEvaluatedKey = (key, value) => createExpression(
   expressionTypes.OBJECT_PROPERTY,

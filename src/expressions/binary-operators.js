@@ -37,12 +37,12 @@ const minus = (context, leftValue, rightValue) => leftValue.subtract(context, ri
 const multiply = (context, leftValue, rightValue) => leftValue.multiplyBy(context, rightValue);
 const divide = (context, leftValue, rightValue) => leftValue.divideBy(context, rightValue);
 const modulo = (context, leftValue, rightValue) => leftValue.modulo(context, rightValue);
-const equals = (context, leftValue, rightValue) => createBooleanValue(leftValue.nativeEquals(rightValue));
-const notEquals = (context, leftValue, rightValue) => createBooleanValue(!leftValue.nativeEquals(rightValue));
-const lessThan = (context, leftValue, rightValue) => createBooleanValue(leftValue.lessThan(context, rightValue));
-const greaterThan = (context, leftValue, rightValue) => createBooleanValue(leftValue.greaterThan(context, rightValue));
-const lessThanOrEquals = (context, leftValue, rightValue) => createBooleanValue(leftValue.lessThanOrEquals(context, rightValue));
-const greaterThanOrEquals = (context, leftValue, rightValue) => createBooleanValue(leftValue.lessThan(context, rightValue));
+const equals = (context, leftValue, rightValue) => context.factory.createBooleanValue(leftValue.nativeEquals(rightValue));
+const notEquals = (context, leftValue, rightValue) => context.factory.createBooleanValue(!leftValue.nativeEquals(rightValue));
+const lessThan = (context, leftValue, rightValue) => leftValue.lessThan(context, rightValue);
+const greaterThan = (context, leftValue, rightValue) => leftValue.greaterThan(context, rightValue);
+const lessThanOrEquals = (context, leftValue, rightValue) => leftValue.lessThanOrEquals(context, rightValue);
+const greaterThanOrEquals = (context, leftValue, rightValue) => leftValue.lessThan(context, rightValue);
 
 const evaluateLeft = f => (context, leftExpression, rightExpression) => {
   const leftValue = leftExpression.evaluate(context);

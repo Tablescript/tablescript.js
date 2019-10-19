@@ -15,16 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes, isObject } from './types';
-import { createUndefined } from './undefined';
 
-const propertiesAsNativeValues = (o) => {
-  return Object.keys(o).reduce((result, key) => ({
-    ...result,
-    [key]: o[key].asNativeValue()
-  }), {});
-};
+const propertiesAsNativeValues = R.compose(
+  R.fromPairs,
+  R.map(([key, value]) => ([key, value.asNativeValue()])),
+  R.toPairs,
+);
 
 const asNativeString = o => () => JSON.stringify(propertiesAsNativeValues(o));
 
@@ -55,7 +54,7 @@ const getProperty = o => (context, name) => {
   if (o[propertyName]) {
     return o[propertyName];
   }
-  return createUndefined();
+  return context.factory.createUndefined();
 };
 
 const setProperty = o => (context, name, value) => {
