@@ -29,7 +29,7 @@ const evaluate = (location, operator, argument) => context => {
     return context.factory.createNumericValue(value.asNativeNumber(context));
   }
   if (operator === 'not') {
-    return context.factory.createBooleanValue(!value.asNativeBoolean(context));
+    return context.factory.createBooleanValue(!value.asNativeBoolean());
   }
   throwRuntimeError(`Invalid operator ${operator}`, context);
 };

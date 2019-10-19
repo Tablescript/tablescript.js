@@ -22,7 +22,7 @@ const evaluate = (location, condition, loopBlock) => context => {
   context.setLocation(location);
   let expressionValue = condition.evaluate(context);
   let result = context.factory.createUndefined();
-  while (expressionValue.asNativeBoolean(context)) {
+  while (expressionValue.asNativeBoolean()) {
     result = loopBlock.evaluate(context);
     expressionValue = condition.evaluate(context);
   }

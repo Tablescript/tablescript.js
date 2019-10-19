@@ -21,7 +21,7 @@ import { expressionTypes } from './types';
 const evaluate = (location, condition, ifBlock, elseBlock) => context => {
   context.setLocation(location);
   const expressionValue = condition.evaluate(context);
-  if (expressionValue.asNativeBoolean(context)) {
+  if (expressionValue.asNativeBoolean()) {
     return ifBlock.evaluate(context);
   } else {
     if (elseBlock) {

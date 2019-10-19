@@ -21,7 +21,7 @@ import { requiredParameter, optionalParameter } from '../util/parameters';
 export const assertBuiltIn = context => {
   const condition = requiredParameter(context, 'condition');
   const message = optionalParameter(context, 'message');
-  if (!condition.asNativeBoolean(context)) {
+  if (!condition.asNativeBoolean()) {
     if (message) {
       const messageText = message.asNativeString(context);
       throwRuntimeError(`assertion failed: ${messageText}`, context);

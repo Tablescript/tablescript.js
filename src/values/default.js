@@ -21,7 +21,7 @@ asNativeValue(context) : any<native>;
 identicalTo(other) : boolean;
 asNativeNumber(context) : number;
 asNativeString(context) : string;
-asNativeBoolean(context) : boolean;
+asNativeBoolean() : boolean;
 asNativeArray(context) : array[any<native>];
 asNativeObject(context) : object<string => any<native>];
 nativeEquals(context, other : VALUE) : boolean;

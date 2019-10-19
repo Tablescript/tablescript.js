@@ -18,18 +18,18 @@
 import { createBooleanValue } from '../values/boolean';
 
 const or = (context, leftValue, rightExpression) => {
-  if (leftValue.asNativeBoolean(context)) {
+  if (leftValue.asNativeBoolean()) {
     return leftValue;
   }
   return rightExpression.evaluate(context);
 };
 
 const and = (context, leftValue, rightExpression) => {
-  if (!leftValue.asNativeBoolean(context)) {
+  if (!leftValue.asNativeBoolean()) {
     return createBooleanValue(false);
   }
   const rightValue = rightExpression.evaluate(context);
-  return createBooleanValue(rightValue.asNativeBoolean(context));
+  return createBooleanValue(rightValue.asNativeBoolean());
 };
 
 const plus = (context, leftValue, rightValue) => leftValue.add(context, rightValue);

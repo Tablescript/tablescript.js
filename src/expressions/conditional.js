@@ -21,7 +21,7 @@ import { createExpression } from './default';
 const evaluate = (location, testExpression, consequentExpression, alternateExpression) => context => {
   context.setLocation(location);
   const testValue = testExpression.evaluate(context);
-  if (testValue.asNativeBoolean(context)) {
+  if (testValue.asNativeBoolean()) {
     return consequentExpression.evaluate(context);
   }
   return alternateExpression.evaluate(context);

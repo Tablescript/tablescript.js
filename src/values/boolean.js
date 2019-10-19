@@ -24,7 +24,7 @@ const asNativeString = value => () => value ? 'true' : 'false';
 
 const asNativeBoolean = value => () => value;
 
-const nativeEquals = value => (context, other) => value === other.asNativeBoolean(context);
+const nativeEquals = value => (context, other) => value === other.asNativeBoolean();
 
 export const createBooleanValue = value => createValue(
   valueTypes.BOOLEAN,

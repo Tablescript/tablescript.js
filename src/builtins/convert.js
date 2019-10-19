@@ -36,7 +36,7 @@ export const intBuiltIn = context => {
     return context.factory.createNumericValue(parseInt(i.asNativeString(context)));
   }
   if (isBoolean(i)) {
-    return context.factory.createNumericValue(i.asNativeBoolean(context) ? 1 : 0);
+    return context.factory.createNumericValue(i.asNativeBoolean() ? 1 : 0);
   }
   throwRuntimeError(`Cannot convert #{i.type} to NUMBER`);
 };

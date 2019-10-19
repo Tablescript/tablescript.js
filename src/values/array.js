@@ -29,7 +29,7 @@ const identicalTo = entries => (context, other) => isArray(other) && entriesAsNa
 
 const asNativeString = entries => context => JSON.stringify(entriesAsNativeValues(context, entries));
 
-const asNativeBoolean = () => () => true;
+const asNativeBoolean = () => true;
 
 const asNativeArray = entries => context => entriesAsNativeValues(context, entries);
 
@@ -115,7 +115,7 @@ const filter = entries => createNativeFunctionValue(['f'], context => {
   const result = [];
   for (let i = 0; i < entries.length; i++) {
     const testValue = f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]);
-    if (testValue.asNativeBoolean(context)) {
+    if (testValue.asNativeBoolean()) {
       result.push(entries[i]);
     }
   }
@@ -149,7 +149,7 @@ const find = entries => createNativeFunctionValue(['f'], context => {
   const f = requiredParameter(context, 'f');
   for (let i = 0; i < entries.length; i++) {
     const testValue = f.callFunction(context, [entries[i]]);
-    if (testValue.asNativeBoolean(context)) {
+    if (testValue.asNativeBoolean()) {
       return entries[i];
     }
   }
@@ -160,7 +160,7 @@ const findIndex = entries => createNativeFunctionValue(['f'], context => {
   const f = requiredParameter(context, 'f');
   for (let i = 0; i < entries.length; i++) {
     const testValue = f.callFunction(context, [entries[i]]);
-    if (testValue.asNativeBoolean(context)) {
+    if (testValue.asNativeBoolean()) {
       return context.factory.createNumericValue(i);
     }
   }
@@ -244,7 +244,7 @@ export const createArrayValue = entries => createValue(
   },
   {
     asNativeString: asNativeString(entries),
-    asNativeBoolean: asNativeBoolean(),
+    asNativeBoolean,
     asNativeArray: asNativeArray(entries),
     asArray: asArray(entries),
     setProperty: setProperty(entries),
