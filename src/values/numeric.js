@@ -30,27 +30,27 @@ const nativeEquals = value => other => isNumber(other) && value === other.asNati
 
 const add = value => (context, other) => {
   if (isString(other)) {
-    return context.factory.createStringValue(value.toString() + other.asNativeString());
+    return context.factory.createStringValue(`${ value }${ other.asNativeString() }`);
   }
-  return context.factory.createNumericValue(value + other.asNativeNumber());
+  return createNumericValue(value + other.asNativeNumber());
 };
 
-const subtract = value => (context, other) => context.factory.createNumericValue(value - other.asNativeNumber());
+const subtract = value => (context, other) => createNumericValue(value - other.asNativeNumber());
 
-const multiplyBy = value => (context, other) => context.factory.createNumericValue(value * other.asNativeNumber());
+const multiplyBy = value => (context, other) => createNumericValue(value * other.asNativeNumber());
 
 const divideBy = value => (context, other) => {
   if (other.asNativeNumber() === 0) {
     throwRuntimeError('Divide by zero', context);
   }
-  return context.factory.createNumericValue(value / other.asNativeNumber());
+  return createNumericValue(value / other.asNativeNumber());
 };
 
 const modulo = value => (context, other) => {
   if (other.asNativeNumber() === 0) {
     throwRuntimeError('Divide by zero', context);
   }
-  return context.factory.createNumericValue(value % other.asNativeNumber());
+  return createNumericValue(value % other.asNativeNumber());
 };
 
 const lessThan = value => (context, other) => context.factory.createBooleanValue(value < other.asNativeNumber());
@@ -61,9 +61,9 @@ const lessThanOrEquals = value => (context, other) => context.factory.createBool
 
 const greaterThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value >= other.asNativeNumber());
 
-const floor = value => createNativeFunctionValue([], context => context.factory.createNumericValue(Math.floor(value)));
+const floor = value => createNativeFunctionValue([], context => createNumericValue(Math.floor(value)));
 
-const ceiling = value => createNativeFunctionValue([], context => context.factory.createNumericValue(Math.ceil(value)));
+const ceiling = value => createNativeFunctionValue([], context => createNumericValue(Math.ceil(value)));
 
 export const createNumericValue = value => createValue(
   valueTypes.NUMBER,

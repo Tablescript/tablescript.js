@@ -17,7 +17,6 @@
 
 import { expressionTypes } from './types';
 import { createExpression } from './default';
-import { createTableValue } from '../values/table';
 import { TablescriptError } from '../error';
 
 const entryExpander = context => (acc, entry) => {
@@ -61,7 +60,7 @@ const expandEntries = (context, entries) => {
 
 const evaluate = (location, formalParameters, entries) => context => {
   context.setLocation(location);
-  return createTableValue(formalParameters, expandEntries(context, entries), context.getScope());
+  return context.factory.createTableValue(formalParameters, expandEntries(context, entries), context.getScope());
 };
 
 export const createTableExpression = (location, formalParameters, entries) => createExpression(

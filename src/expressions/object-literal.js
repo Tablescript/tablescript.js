@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createObjectValue } from '../values/object';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
@@ -29,7 +28,7 @@ const mergeObjectEntries = context => (acc, entry) => {
 
 const evaluate = (location, entries) => context => {
   context.setLocation(location);
-  return createObjectValue(entries.reduce(mergeObjectEntries(context), {}));
+  return context.factory.createObjectValue(entries.reduce(mergeObjectEntries(context), {}));
 };
 
 export const createObjectLiteral = (location, entries) => createExpression(expressionTypes.OBJECT, evaluate(location, entries));

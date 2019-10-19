@@ -7,6 +7,7 @@ import { createBooleanValue } from './values/boolean';
 import { createNumericValue } from './values/numeric';
 import { createObjectValue } from './values/object';
 import { createStringValue } from './values/string';
+import { createTableValue } from './values/table';
 import { createUndefined } from './values/undefined';
 
 const defaultInterpreterOptions = options => ({
@@ -38,6 +39,7 @@ const defaultValueFactory = {
   createNumericValue,
   createObjectValue,
   createStringValue,
+  createTableValue,
   createUndefined,
 };
 

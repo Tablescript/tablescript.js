@@ -39,17 +39,17 @@ const getElement = value => (context, index) => {
   if (indexValue < 0 || indexValue >= value.length) {
     return context.factory.createUndefined();
   }
-  return context.factory.createStringValue(value[indexValue]);
+  return createStringValue(value[indexValue]);
 };
 
-const add = value => (context, other) => context.factory.createStringValue(`${ value }${ other.asNativeString() }`);
+const add = value => (context, other) => createStringValue(`${ value }${ other.asNativeString() }`);
 
 const multiplyBy = value => (context, other) => {
   const count = other.asNativeNumber();
   if (count < 0) {
     throwRuntimeError('string repeat count must be greater than 0', context);
   }
-  return context.factory.createStringValue(value.repeat(count));
+  return createStringValue(value.repeat(count));
 };
 
 const lessThan = value => (context, other) => context.factory.createBooleanValue(value < other.asNativeString());
@@ -68,20 +68,20 @@ const split = value => createNativeFunctionValue(
     const separator = optionalParameter(context, 'separator');
     if (separator) {
       const separatorValue = separator.asNativeString();
-      return context.factory.createArrayValue(value.split(separatorValue).map(context.factory.createStringValue));
+      return context.factory.createArrayValue(value.split(separatorValue).map(createStringValue));
     }
-    return context.factory.createArrayValue(value.split().map(context.factory.createStringValue));
+    return context.factory.createArrayValue(value.split().map(createStringValue));
   }
 );
 
 const capitalize = value => createNativeFunctionValue(
   [],
-  context => context.factory.createStringValue(value.length === 0 ? value : `${ value[0].toUpperCase() }${ value.slice(1) }`)
+  context => createStringValue(value.length === 0 ? value : `${ value[0].toUpperCase() }${ value.slice(1) }`)
 );
 
-const uppercase = value => createNativeFunctionValue([], context => context.factory.createStringValue(value.toUpperCase()));
+const uppercase = value => createNativeFunctionValue([], context => createStringValue(value.toUpperCase()));
 
-const lowercase = value => createNativeFunctionValue([], context => context.factory.createStringValue(value.toLowerCase()));
+const lowercase = value => createNativeFunctionValue([], context => createStringValue(value.toLowerCase()));
 
 const includes = value => createNativeFunctionValue(
   ['s'],
@@ -111,9 +111,9 @@ const slice = value => createNativeFunctionValue(
       if (!isNumber(endValue)) {
         throwRuntimeError(`slice(start, end) end must be a number`, context);
       }
-      return context.factory.createStringValue(value.slice(startValue.asNativeNumber(), endValue.asNativeNumber()));
+      return createStringValue(value.slice(startValue.asNativeNumber(), endValue.asNativeNumber()));
     }
-    return context.factory.createStringValue(value.slice(startValue.asNativeNumber()));
+    return createStringValue(value.slice(startValue.asNativeNumber()));
   }
 );
 
@@ -130,11 +130,11 @@ const endsWith = value => createNativeFunctionValue(['s'], context => {
   return context.factory.createBooleanValue(value.endsWith(s.asNativeString()));
 });
 
-const trim = value => createNativeFunctionValue([], context => context.factory.createStringValue(value.trim()));
+const trim = value => createNativeFunctionValue([], context => createStringValue(value.trim()));
 
-const trimLeft = value => createNativeFunctionValue([], context => context.factory.createStringValue(value.trimLeft()));
+const trimLeft = value => createNativeFunctionValue([], context => createStringValue(value.trimLeft()));
 
-const trimRight = value => createNativeFunctionValue([], context => context.factory.createStringValue(value.trimRight()));
+const trimRight = value => createNativeFunctionValue([], context => createStringValue(value.trimRight()));
 
 const empty = value => createNativeFunctionValue([], context => context.factory.createBooleanValue(value.length === 0));
 

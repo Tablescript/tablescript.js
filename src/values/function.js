@@ -19,13 +19,7 @@ import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
 import { mapFunctionParameters } from '../util/parameters';
-
-const callWithSwappedScopes = (context, scopes, theThing) => {
-  const oldScopes = context.swapScopes(scopes);
-  const result = theThing(context);
-  context.swapScopes(oldScopes);
-  return result;
-};
+import { callWithSwappedScopes } from '../util/calls';
 
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = R.always('function(native)');

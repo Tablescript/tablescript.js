@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createBooleanValue } from '../values/boolean';
-
 const or = (context, leftValue, rightExpression) => {
   if (leftValue.asNativeBoolean()) {
     return leftValue;
@@ -26,10 +24,10 @@ const or = (context, leftValue, rightExpression) => {
 
 const and = (context, leftValue, rightExpression) => {
   if (!leftValue.asNativeBoolean()) {
-    return createBooleanValue(false);
+    return context.factory.createBooleanValue(false);
   }
   const rightValue = rightExpression.evaluate(context);
-  return createBooleanValue(rightValue.asNativeBoolean());
+  return context.factory.createBooleanValue(rightValue.asNativeBoolean());
 };
 
 const plus = (context, leftValue, rightValue) => leftValue.add(context, rightValue);

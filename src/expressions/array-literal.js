@@ -17,7 +17,6 @@
 
 import { isArraySpread, isObjectSpread } from '../values/types';
 import { throwRuntimeError } from '../error';
-import { createArrayValue } from '../values/array';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
@@ -40,7 +39,7 @@ const evaluate = (location, values) => context => {
       ];
     }
   }
-  return createArrayValue(result);
+  return context.factory.createArrayValue(result);
 };
 
 export const createArrayLiteral = (location, values) => createExpression(expressionTypes.ARRAY, evaluate(location, values));

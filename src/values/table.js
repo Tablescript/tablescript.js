@@ -19,9 +19,8 @@ import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
 import { randomNumber } from '../util/random';
-import { createUndefined } from './undefined';
-import { createNumericValue } from './numeric';
 import { mapFunctionParameters } from '../util/parameters';
+import { callWithSwappedScopes } from '../util/calls';
 
 const asNativeString = () => 'table';
 
@@ -29,8 +28,8 @@ const asNativeBoolean = () => true;
 
 const asArray = entries => () => entries;
 
-const tableEntryScope = (formalParameters, entries, closure, roll) => ({
-  'roll': createNumericValue(roll),
+const tableEntryScope = (context, formalParameters, entries, closure, roll) => ({
+  'roll': context.factory.createNumericValue(roll),
   'this': createTableValue(formalParameters, entries, closure),
 });
 
@@ -38,15 +37,16 @@ const getElement = (formalParameters, entries, closure) => (context, index) => {
   const roll = index.asNativeNumber();
   const selectedEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
   if (selectedEntry) {
-    const oldScopes = context.swapScopes([
-      closure,
-      tableEntryScope(formalParameters, entries, closure, roll),
-    ]);
-    const result = selectedEntry.evaluate(context);
-    context.swapScopes(oldScopes);
-    return result;
+    return callWithSwappedScopes(
+      context,
+      [
+        closure,
+        tableEntryScope(context, formalParameters, entries, closure, roll),
+      ],
+      selectedEntry.evaluate,
+    );
   }
-  return createUndefined();
+  return context.factory.createUndefined();
 };
 
 const getTableDie = entries => entries.reduce((max, entry, index) => Math.max(max, entry.getHighestSelector(index + 1)), 0);
@@ -58,14 +58,15 @@ const getRolledEntry = (entries, roll) => entries.find((e, index) => e.rollAppli
 const callFunction = (formalParameters, entries, closure) => (context, parameters) => {
   const roll = getTableRoll(entries);
   const rolledEntry = getRolledEntry(entries, roll);
-  const oldScopes = context.swapScopes([
-    closure,
-    mapFunctionParameters(context, formalParameters, parameters),
-    tableEntryScope(formalParameters, entries, closure, roll),  
-  ]);
-  const result = rolledEntry.evaluate(context);
-  context.swapScopes(oldScopes);
-  return result;
+  return callWithSwappedScopes(
+    context,
+    [
+      closure,
+      mapFunctionParameters(context, formalParameters, parameters),
+      tableEntryScope(context, formalParameters, entries, closure, roll),  
+    ],
+    rolledEntry.evaluate,
+  );
 };
 
 export const createTableValue = (formalParameters, entries, closure) => createValue(
