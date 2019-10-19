@@ -131,22 +131,92 @@ export const rollDice = (count, die, suffixes) => R.pipe(
   R.sum,
 )(createRollSet(count, die));
 
+const dropSuffixes = {
+  d: count => ({ drop: { specifier: 'l', count } }),
+  dl: count => ({ drop: { specifier: 'l', count } }),
+  dh: count => ({ drop: { specifier: 'h', count } }),
+  k: count => ({ keep: { specifier: 'h', count } }),
+  kl: count => ({ keep: { specifier: 'l', count } }),
+  kh: count => ({ keep: { specifier: 'h', count } }),
+};
+
+const dropSuffix = (mode, count) => dropSuffixes[mode](count);
+
+const opSuffixes = {
+  '=': value => ({ equal: value }),
+  '>': value => ({ atLeast: value }),
+  '<': value => ({ noMoreThan: value }),
+};
+
+const rerollSuffix = (op, value) => ({ reroll: opSuffixes[op](value) });
+
+const successSuffix = (op, value) => ({ test: opSuffixes[op](value) });
+
+const successWithFailureSuffix = (op, value, failureOp, failureValue) => ({
+  test: {
+    ...opSuffixes[op](value),
+    failure: opSuffixes[failureOp](failureValue),
+  }
+});
+
+const extractSuffixes = s => {
+  let suffixes = [];
+  let suffix = s;
+  while (R.length(suffix) > 0) {
+    const dropPattern = /^(d|dl|dh|k|kl|kh)([1-9][0-9]*)?/;
+    const dropMatches = suffix.match(dropPattern);
+    if (dropMatches) {
+      suffixes.push(dropSuffix(dropMatches[1], dropMatches[2] ? parseInt(dropMatches[2], 10) : 1));
+      suffix = R.slice(R.length(dropMatches[0]), Infinity, suffix);
+      continue;
+    }
+
+    const rerollPattern = /^r(?:([1-9][0-9]*)|(?:([><=])([1-9][0-9]*)))?/;
+    const rerollMatches = suffix.match(rerollPattern);
+    if (rerollMatches) {
+      if (rerollMatches[2]) {
+        suffixes.push(rerollSuffix(rerollMatches[2], parseInt(rerollMatches[3], 10)));
+      } else {
+        suffixes.push(rerollSuffix('=', parseInt(rerollMatches[1], 10)));
+      }
+      suffix = R.slice(R.length(rerollMatches[0]), Infinity, suffix);
+      continue;
+    }
+
+    const successPattern = /^([><=])([1-9][0-9]*)(?:f([><=])([1-9][0-9]*))?/;
+    const successMatches = suffix.match(successPattern);
+    if (successMatches) {
+      if (successMatches[3]) {
+        suffixes.push(successWithFailureSuffix(successMatches[1], parseInt(successMatches[2], 10), successMatches[3], parseInt(successMatches[4], 10)));
+      } else {
+        suffixes.push(successSuffix(successMatches[1], parseInt(successMatches[2], 10)));
+      }
+      suffix = R.slice(R.length(rerollMatches[0]), Infinity, suffix);
+      continue;
+    }
+
+    const endOfStringPattern = /\s*$/;
+    if (suffix.match(endOfStringPattern)) {
+      break;
+    }
+
+    throw new Error(`Invalid dice string: ${suffix}`)
+  }
+
+  return suffixes;
+}
 export const rollDiceFromString = s => {
-  const matches = s.match(/([1-9][0-9]*)d([1-9][0-9]*)(([-+])([lh])([1-9][0-9]*)?)?/i);
+  const dicePattern = /^\s*([1-9][0-9]*)?d([1-9][0-9]*)/;
+  const matches = s.match(dicePattern);
   if (!matches) {
     throw new Error('Invalid dice string');
   }
-  const count = parseInt(matches[1]);
-  const die = parseInt(matches[2]);
-  if (matches[3]) {
-    return rollDice(count, die, [
-      {
-        drop: {
-          specifier: matches[5],
-          count: matches[6] ? parseInt(matches[6], 10) : 1,
-        },
-      }
-    ]);
-  }
-  return rollDice(count, die, []);
+  const count = parseInt(matches[1], 10);
+  const die = parseInt(matches[2], 10);
+
+  const suffix = R.slice(R.length(matches[0]), Infinity, s);
+  const suffixes = extractSuffixes(suffix);
+
+  console.log('suffixes', JSON.stringify(suffixes, null, 2));
+  return rollDice(count, die, suffixes);
 };

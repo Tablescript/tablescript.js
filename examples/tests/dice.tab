@@ -183,6 +183,6 @@ test_rolls(roll, expected_results);
 ############################################################################
 # String to dice
 
-roll = fn() { '4d6-l'.roll(); };
+roll = fn() { '4d6d1k2'.roll(); };
 expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 test_rolls(roll, expected_results);

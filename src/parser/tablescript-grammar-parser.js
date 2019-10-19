@@ -520,18 +520,14 @@ function peg$parse(input, options) {
       peg$c226 = function(value) {
           return {
             reroll: {
-              test: {
-                equal: value,
-              },
+              equal: value,
             },
           };
         },
       peg$c227 = function() {
           return {
             reroll: {
-              test: {
-                equal: 1,
-              },
+              equal: 1,
             },
           };
         },

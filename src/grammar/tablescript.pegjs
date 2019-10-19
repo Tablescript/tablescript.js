@@ -727,18 +727,14 @@ DiceLiteralSuffix
   / 'r' value:NonZeroInteger {
     return {
       reroll: {
-        test: {
-          equal: value,
-        },
+        equal: value,
       },
     };
   }
   / 'r' {
     return {
       reroll: {
-        test: {
-          equal: 1,
-        },
+        equal: 1,
       },
     };
   }
