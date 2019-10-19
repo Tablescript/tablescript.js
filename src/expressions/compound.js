@@ -17,14 +17,10 @@
 
 import { expressionTypes } from './types';
 import { createExpression } from './default';
+import { withSetLocation } from './util/context';
+import { evaluateExpressions } from './util/evaluate';
 
-const evaluate = (location, expressions) => context => {
-  context.setLocation(location);
-  let result = context.factory.createUndefined();
-  for (const expression of expressions) {
-    result = expression.evaluate(context);
-  }
-  return result;
-};
-
-export const createCompoundExpression = (location, expressions) => createExpression(expressionTypes.COMPOUND, evaluate(location, expressions));
+export const createCompoundExpression = (location, expressions) => createExpression(
+  expressionTypes.COMPOUND,
+  withSetLocation(location, evaluateExpressions(expressions)),
+);

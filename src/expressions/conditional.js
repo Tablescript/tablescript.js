@@ -17,9 +17,9 @@
 
 import { expressionTypes } from './types';
 import { createExpression } from './default';
+import { withSetLocation } from './util/context';
 
-const evaluate = (location, testExpression, consequentExpression, alternateExpression) => context => {
-  context.setLocation(location);
+const evaluate = (testExpression, consequentExpression, alternateExpression) => context => {
   const testValue = testExpression.evaluate(context);
   if (testValue.asNativeBoolean()) {
     return consequentExpression.evaluate(context);
@@ -27,6 +27,12 @@ const evaluate = (location, testExpression, consequentExpression, alternateExpre
   return alternateExpression.evaluate(context);
 };
 
-export const createConditionalExpression = (location, testExpression, consequentExpression, alternateExpression) => {
-  return createExpression(expressionTypes.CONDITIONAL, evaluate(location, testExpression, consequentExpression, alternateExpression));
-};
+export const createConditionalExpression = (
+  location,
+  testExpression,
+  consequentExpression,
+  alternateExpression
+) => createExpression(
+  expressionTypes.CONDITIONAL,
+  withSetLocation(location, evaluate(testExpression, consequentExpression, alternateExpression)),
+);

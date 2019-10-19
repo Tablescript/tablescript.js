@@ -20,7 +20,7 @@ import { createValue } from './default';
 import { valueTypes } from './types';
 import { randomNumber } from '../util/random';
 import { mapFunctionParameters } from '../util/parameters';
-import { callWithSwappedScopes } from '../util/calls';
+import { callWithSwappedScopes, withSwappedScopes } from './util/context';
 
 const asNativeString = () => 'table';
 
@@ -37,14 +37,13 @@ const getElement = (formalParameters, entries, closure) => (context, index) => {
   const roll = index.asNativeNumber();
   const selectedEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
   if (selectedEntry) {
-    return callWithSwappedScopes(
-      context,
-      [
+    return withSwappedScopes(
+      context => ([
         closure,
         tableEntryScope(context, formalParameters, entries, closure, roll),
-      ],
-      selectedEntry.evaluate,
-    );
+      ]),
+      selectedEntry.evaluate
+    )(context);
   }
   return context.factory.createUndefined();
 };
@@ -58,15 +57,14 @@ const getRolledEntry = (entries, roll) => entries.find((e, index) => e.rollAppli
 const callFunction = (formalParameters, entries, closure) => (context, parameters) => {
   const roll = getTableRoll(entries);
   const rolledEntry = getRolledEntry(entries, roll);
-  return callWithSwappedScopes(
-    context,
-    [
+  return withSwappedScopes(
+    (context, parameters) => ([
       closure,
       mapFunctionParameters(context, formalParameters, parameters),
       tableEntryScope(context, formalParameters, entries, closure, roll),  
-    ],
-    rolledEntry.evaluate,
-  );
+    ]),
+    rolledEntry.evaluate
+  )(context, parameters);
 };
 
 export const createTableValue = (formalParameters, entries, closure) => createValue(

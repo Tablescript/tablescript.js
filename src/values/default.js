@@ -25,7 +25,7 @@ asNativeBoolean() : boolean;
 asNativeArray() : array[any<native>];
 asNativeObject() : object<string => any<native>];
 nativeEquals(other : VALUE) : boolean;
-asArray(context) : array<VALUE>;
+asArray() : array<VALUE>;
 asObject(context) : object<string => VALUE>;;
 getProperty(context, name : STRING) : VALUE | UNDEFINED;
 setProperty(context, name : STRING, value : VALUE) : VALUE;

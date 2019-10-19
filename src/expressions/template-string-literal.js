@@ -19,7 +19,10 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 import * as R from 'ramda';
 
-const toValue = context => (acc, part) => ([...acc, part.evaluate(context).asNativeString()]);
+const toValue = context => (acc, part) => ([
+  ...acc,
+  part.evaluate(context).asNativeString()
+]);
 
 const evaluate = parts => context => context.factory.createStringValue(R.join('', R.reduce(toValue(context), [], parts)));
 

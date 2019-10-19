@@ -17,15 +17,10 @@
 
 import { expressionTypes } from './types';
 import { createExpression } from './default';
+import { evaluateExpressions } from './util/evaluate';
+import { withRestoredLocation } from './util/context';
 
-const evaluate = (location, expressions) => context => {
-  context.pushLocation(location);
-  let result = context.factory.createUndefined();
-  for (const expression of expressions) {
-    result = expression.evaluate(context);
-  }
-  context.popLocation();
-  return result;
-};
-
-export const createBlockExpression = (location, expressions) => createExpression(expressionTypes.BLOCK, evaluate(location, expressions));
+export const createBlockExpression = (location, expressions) => createExpression(
+  expressionTypes.BLOCK,
+  withRestoredLocation(location, evaluateExpressions(expressions)),
+);

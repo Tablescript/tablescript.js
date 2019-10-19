@@ -20,9 +20,9 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { isArray, isObject, isTable } from '../values/types';
 import { createArraySpread, createObjectSpread, createTableSpread } from '../values/spread';
+import { withSetLocation } from './util/context';
 
-const evaluate = (location, expression) => context => {
-  context.setLocation(location);
+const evaluate = expression => context => {
   const value = expression.evaluate(context);
   if (isArray(value)) {
     return createArraySpread(value);
@@ -36,4 +36,7 @@ const evaluate = (location, expression) => context => {
   throwRuntimeError('Spreads only apply to ARRAY, OBJECT, and TABLE', context);
 };
 
-export const createSpreadExpression = (location, expression) => createExpression(expressionTypes.SPREAD, evaluate(location, expression));
+export const createSpreadExpression = (location, expression) => createExpression(
+  expressionTypes.SPREAD,
+  withSetLocation(location, evaluate(expression)),
+);

@@ -18,9 +18,9 @@
 import { createExpression } from './default';
 import { throwRuntimeError } from '../error';
 import { expressionTypes } from './types';
+import { withSetLocation } from './util/context';
 
-const evaluate = (location, operator, argument) => context => {
-  context.setLocation(location);
+const evaluate = (operator, argument) => context => {
   const value = argument.evaluate(context);
   if (operator === '-') {
     return context.factory.createNumericValue(-1 * value.asNativeNumber());
@@ -36,5 +36,5 @@ const evaluate = (location, operator, argument) => context => {
 
 export const createUnaryExpression = (location, operator, argument) => createExpression(
   expressionTypes.UNARY,
-  evaluate(location, operator, argument)
+  withSetLocation(location, evaluate(operator, argument)),
 );

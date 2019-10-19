@@ -19,10 +19,8 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { createLeftHandSideValue } from '../values/left-hand-side';
 
-const evaluate = name => context => {
-  const result = context.getVariable(name) || context.factory.createUndefined();
-  return result;
-};
+const evaluate = name => context => context.getVariable(name) || context.factory.createUndefined();
+
 const evaluateAsLeftHandSide = name => () => createLeftHandSideValue(name);
 
 export const createVariableExpression = name => createExpression(expressionTypes.VARIABLE, evaluate(name), evaluateAsLeftHandSide(name));

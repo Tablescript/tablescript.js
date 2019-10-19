@@ -18,14 +18,18 @@
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { allOperators } from './binary-operators';
+import { withSetLocation } from './util/context';
 
-const evaluate = (location, operators, leftExpression, operator, rightExpression) => context => {
-  context.setLocation(location);
-  return operators[operator](context, leftExpression, rightExpression);
-};
+const evaluate = (operators, leftExpression, operator, rightExpression) => context => operators[operator](context, leftExpression, rightExpression);
 
-export const createBinaryExpressionWithOperators = operators => (location, leftExpression, operator, rightExpression) => {
-  return createExpression(expressionTypes.BINARY, evaluate(location, operators, leftExpression, operator, rightExpression));
-};
+export const createBinaryExpressionWithOperators = operators => (
+  location,
+  leftExpression,
+  operator,
+  rightExpression
+) => createExpression(
+  expressionTypes.BINARY,
+  withSetLocation(location, evaluate(operators, leftExpression, operator, rightExpression)),
+);
 
 export const createBinaryExpression = createBinaryExpressionWithOperators(allOperators);

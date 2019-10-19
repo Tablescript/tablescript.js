@@ -19,6 +19,7 @@ import { isLeftHandSide } from '../values/types';
 import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { withSetLocation } from './util/context';
 
 const operators = {
   '=': (context, leftHandSideValue, leftValue, value) => {
@@ -52,8 +53,7 @@ const operators = {
   },
 };
 
-const evaluate = (location, leftHandSideExpression, operator, valueExpression) => context => {
-  context.setLocation(location);
+const evaluate = (leftHandSideExpression, operator, valueExpression) => context => {
   const leftHandSideValue = leftHandSideExpression.evaluateAsLeftHandSide(context);
   if (!isLeftHandSide(leftHandSideValue)) {
     throwRuntimeError('Cannot assign to a non-left-hand-side type', context);
@@ -66,6 +66,12 @@ const evaluate = (location, leftHandSideExpression, operator, valueExpression) =
   throwRuntimeError(`Unknown operator ${operator}`, context);
 };
 
-export const createAssignmentExpression = (location, leftHandSideExpression, operator, valueExpression) => {
-  return createExpression(expressionTypes.ASSIGNMENT, evaluate(location, leftHandSideExpression, operator, valueExpression));
-};
+export const createAssignmentExpression = (
+  location,
+  leftHandSideExpression,
+  operator,
+  valueExpression
+) => createExpression(
+  expressionTypes.ASSIGNMENT,
+  withSetLocation(location, evaluate(leftHandSideExpression, operator, valueExpression)),
+);

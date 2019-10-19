@@ -18,28 +18,31 @@
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { isArraySpread } from '../values/types';
+import { withSetLocation } from './util/context';
 
-const mergeValues = (previousParameters, value) => isArraySpread(value)
-  ? [
-      ...previousParameters,
+const evaluateParameter = context => (values, parameter) => {
+  const value = parameter.evaluate(context);
+  if (isArraySpread(value)) {
+    return [
+      ...values,
       ...value.asArray(),
-    ]
-  : [
-      ...previousParameters,
-      value,
     ];
+  }
+  return [
+    ...values,
+    value,
+  ];
+};
 
-const evaluateParameter = (context, parameter, previousParameters) => mergeValues(previousParameters, parameter.evaluate(context));
+const evaluateParameters = (context, parameters) => parameters.reduce(evaluateParameter(context), []);
 
-const parameterReducer = context => (previousParameters, parameter) => evaluateParameter(context, parameter, previousParameters);
-
-const evaluateParameters = (context, parameters) => parameters.reduce(parameterReducer(context), []);
-
-const evaluate = (location, callee, parameters) => context => {
-  context.setLocation(location);
+const evaluate = (callee, parameters) => context => {
   const calleeValue = callee.evaluate(context);
   const evaluatedParameters = evaluateParameters(context, parameters);
   return calleeValue.callFunction(context, evaluatedParameters);
 };
 
-export const createCallExpression = (location, callee, parameters) => createExpression(expressionTypes.CALL, evaluate(location, callee, parameters));
+export const createCallExpression = (location, callee, parameters) => createExpression(
+  expressionTypes.CALL,
+  withSetLocation(location, evaluate(callee, parameters)),
+);

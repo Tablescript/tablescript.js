@@ -15,31 +15,39 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { isArraySpread, isObjectSpread } from '../values/types';
+import * as R from 'ramda';
+import { isArraySpread, isObjectSpread, isTableSpread } from '../values/types';
 import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { withSetLocation } from './util/context';
 
-const evaluate = (location, values) => context => {
-  context.setLocation(location);
-  let result = [];
-  for (let i = 0; i < values.length; i++) {
-    const value = values[i].evaluate(context);
-    if (isArraySpread(value)) {
-      result = [
-        ...result,
-        ...value.asArray(context)
-      ];
-    } else if (isObjectSpread(value)) {
-      throwRuntimeError('Cannot spread object into array', context);
-    } else {
-      result = [
-        ...result,
-        value
-      ];
-    }
+const valueToEntries = context => (entries, value) => {
+  const v = value.evaluate(context);
+  if (isObjectSpread(v)) {
+    throwRuntimeError('Cannot spread object into array', context);
   }
-  return context.factory.createArrayValue(result);
+  if (isTableSpread(v)) {
+    throwRuntimeError('Cannot spread table into array', context);
+  }
+  if (isArraySpread(v)) {
+    return [
+      ...entries,
+      ...v.asArray(),
+    ];
+  }
+  return [
+    ...entries,
+    v,
+  ];
 };
 
-export const createArrayLiteral = (location, values) => createExpression(expressionTypes.ARRAY, evaluate(location, values));
+const evaluate = values => context => R.compose(
+  context.factory.createArrayValue,
+  R.reduce(valueToEntries(context), []),
+)(values);
+
+export const createArrayLiteral = (location, values) => createExpression(
+  expressionTypes.ARRAY,
+  withSetLocation(location, evaluate(values)),
+);

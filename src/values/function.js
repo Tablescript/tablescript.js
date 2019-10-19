@@ -19,18 +19,10 @@ import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
 import { mapFunctionParameters } from '../util/parameters';
-import { callWithSwappedScopes } from '../util/calls';
+import { withSwappedScopes } from './util/context';
 
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = R.always('function(native)');
-
-  const callFunction = (context, parameters) => callWithSwappedScopes(
-    context,
-    [
-      mapFunctionParameters(context, formalParameters, parameters)
-    ],
-    f
-  );
 
   return createValue(
     valueTypes.FUNCTION,
@@ -41,7 +33,12 @@ export const createNativeFunctionValue = (formalParameters, f) => {
     {
       asNativeString,
       asNativeBoolean: R.T,
-      callFunction,
+      callFunction: withSwappedScopes(
+        (context, parameters) => ([
+          mapFunctionParameters(context, formalParameters, parameters),
+        ]),
+        f
+      ),
     },
   );
 };
@@ -49,15 +46,6 @@ export const createNativeFunctionValue = (formalParameters, f) => {
 export const createFunctionValue = (formalParameters, body, closure) => {
   const asNativeString = R.always('function(tablescript)');
 
-  const callFunction = (context, parameters) => callWithSwappedScopes(
-    context,
-    [
-      mapFunctionParameters(context, formalParameters, parameters),
-      closure,
-    ],
-    body.evaluate
-  );
-
   return createValue(
     valueTypes.FUNCTION,
     asNativeString,
@@ -67,7 +55,13 @@ export const createFunctionValue = (formalParameters, body, closure) => {
     {
       asNativeString,
       asNativeBoolean: R.T,
-      callFunction,
+      callFunction: withSwappedScopes(
+        (context, parameters) => ([
+          mapFunctionParameters(context, formalParameters, parameters),
+          closure,
+        ]),
+        body.evaluate,
+      ),
     }
   );
 };

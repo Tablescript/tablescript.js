@@ -17,17 +17,10 @@
 
 import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { evaluateLoop } from './util/loop';
+import { withSetLocation } from './util/context';
 
-const evaluate = (location, condition, loopBlock) => context => {
-  context.setLocation(location);
-  let expressionValue = condition.evaluate(context);
-  let result = context.factory.createUndefined();
-  while (expressionValue.asNativeBoolean()) {
-    result = loopBlock.evaluate(context);
-    expressionValue = condition.evaluate(context);
-  }
-  return result;
-};
+const evaluate = (condition, loopBlock) => context => evaluateLoop(context, condition, v => v.asNativeBoolean(), loopBlock);
 
 export const createWhileExpression = (
   location,
@@ -35,5 +28,5 @@ export const createWhileExpression = (
   loopBlock
 ) => createExpression(
   expressionTypes.WHILE,
-  evaluate(location, condition, loopBlock)
+  withSetLocation(location, evaluate(condition, loopBlock)),
 );

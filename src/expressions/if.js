@@ -17,9 +17,9 @@
 
 import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { withSetLocation } from './util/context';
 
-const evaluate = (location, condition, ifBlock, elseBlock) => context => {
-  context.setLocation(location);
+const evaluate = (condition, ifBlock, elseBlock) => context => {
   const expressionValue = condition.evaluate(context);
   if (expressionValue.asNativeBoolean()) {
     return ifBlock.evaluate(context);
@@ -38,5 +38,5 @@ export const createIfExpression = (
   elseBlock
 ) => createExpression(
   expressionTypes.IF,
-  evaluate(location, condition, ifBlock, elseBlock)
+  withSetLocation(location, evaluate(condition, ifBlock, elseBlock)),
 );

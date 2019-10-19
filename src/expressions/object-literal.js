@@ -17,6 +17,7 @@
 
 import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { withSetLocation } from './util/context';
 
 const mergeObjectEntries = context => (acc, entry) => {
   const value = entry.evaluate(context);
@@ -26,15 +27,15 @@ const mergeObjectEntries = context => (acc, entry) => {
   };
 };
 
-const evaluate = (location, entries) => context => {
-  context.setLocation(location);
-  return context.factory.createObjectValue(entries.reduce(mergeObjectEntries(context), {}));
-};
+const evaluate = entries => context => context.factory.createObjectValue(entries.reduce(mergeObjectEntries(context), {}));
 
-export const createObjectLiteral = (location, entries) => createExpression(expressionTypes.OBJECT, evaluate(location, entries));
+export const createObjectLiteral = (location, entries) => createExpression(
+  expressionTypes.OBJECT,
+  withSetLocation(location, evaluate(entries)),
+);
 
-const evaluateObjectProperty = (key, value) => context => context.factory.createObjectValue({
-  [key]: value.evaluate(context),
+const evaluateObjectProperty = (keyString, value) => context => context.factory.createObjectValue({
+  [keyString]: value.evaluate(context),
 });
 
 export const createObjectLiteralPropertyExpression = (key, value) => createExpression(
@@ -42,8 +43,8 @@ export const createObjectLiteralPropertyExpression = (key, value) => createExpre
   evaluateObjectProperty(key, value)
 );
 
-const evaluateObjectPropertyAndKey = (key, value) => context => context.factory.createObjectValue({
-  [(key.evaluate(context)).asNativeString()]: value.evaluate(context),
+const evaluateObjectPropertyAndKey = (keyExpression, value) => context => context.factory.createObjectValue({
+  [(keyExpression.evaluate(context)).asNativeString()]: value.evaluate(context),
 });
 
 export const createObjectLiteralPropertyExpressionWithEvaluatedKey = (key, value) => createExpression(

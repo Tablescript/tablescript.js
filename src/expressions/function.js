@@ -18,11 +18,9 @@
 import { createFunctionValue } from '../values/function';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
+import { withSetLocation } from './util/context';
 
-const evaluate = (location, formalParameters, body) => context => {
-  context.setLocation(location);
-  return createFunctionValue(formalParameters, body, context.getScope());
-};
+const evaluate = (formalParameters, body) => context => createFunctionValue(formalParameters, body, context.getScope());
 
 export const createFunctionExpression = (
   location,
@@ -30,5 +28,5 @@ export const createFunctionExpression = (
   body
 ) => createExpression(
   expressionTypes.FUNCTION,
-  evaluate(location, formalParameters, body)
+  withSetLocation(location, evaluate(formalParameters, body)),
 );

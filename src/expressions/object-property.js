@@ -23,9 +23,9 @@ import {
 } from '../values/left-hand-side';
 import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
+import { withSetLocation } from './util/context';
 
-const evaluate = (location, objectExpression, propertyNameExpression) => context => {
-  context.setLocation(location);
+const evaluate = (objectExpression, propertyNameExpression) => context => {
   const objectValue = objectExpression.evaluate(context);
   const propertyNameValue = propertyNameExpression.evaluate(context);
   if (isNumber(propertyNameValue)) {
@@ -34,8 +34,7 @@ const evaluate = (location, objectExpression, propertyNameExpression) => context
   return objectValue.getProperty(context, propertyNameValue);
 };
 
-const evaluateAsLeftHandSide = (location, objectExpression, propertyNameExpression) => context => {
-  context.setLocation(location);
+const evaluateAsLeftHandSide = (objectExpression, propertyNameExpression) => context => {
   const objectValue = objectExpression.evaluate(context);
   if (!(isObject(objectValue) || isArray(objectValue))) {
     throwRuntimeError('Cannot assign to non-object non-array type', context);
@@ -52,6 +51,6 @@ const evaluateAsLeftHandSide = (location, objectExpression, propertyNameExpressi
 
 export const createObjectPropertyExpression = (location, objectExpression, propertyNameExpression) => createExpression(
   expressionTypes.OBJECT_PROPERTY,
-  evaluate(location, objectExpression, propertyNameExpression),
-  evaluateAsLeftHandSide(location, objectExpression, propertyNameExpression),
+  withSetLocation(location, evaluate(objectExpression, propertyNameExpression)),
+  withSetLocation(location, evaluateAsLeftHandSide(objectExpression, propertyNameExpression)),
 );
