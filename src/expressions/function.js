@@ -19,7 +19,7 @@ import { createFunctionValue } from '../values/function';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = (location, formalParameters, body) => async context => {
+const evaluate = (location, formalParameters, body) => context => {
   context.setLocation(location);
   return createFunctionValue(formalParameters, body, context.getScope());
 };

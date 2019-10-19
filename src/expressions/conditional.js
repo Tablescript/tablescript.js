@@ -18,9 +18,9 @@
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 
-const evaluate = (location, testExpression, consequentExpression, alternateExpression) => async context => {
+const evaluate = (location, testExpression, consequentExpression, alternateExpression) => context => {
   context.setLocation(location);
-  const testValue = await testExpression.evaluate(context);
+  const testValue = testExpression.evaluate(context);
   if (testValue.asNativeBoolean(context)) {
     return consequentExpression.evaluate(context);
   }

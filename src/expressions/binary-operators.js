@@ -17,18 +17,18 @@
 
 import { createBooleanValue } from '../values/boolean';
 
-const or = async (context, leftValue, rightExpression) => {
+const or = (context, leftValue, rightExpression) => {
   if (leftValue.asNativeBoolean(context)) {
     return leftValue;
   }
   return rightExpression.evaluate(context);
 };
 
-const and = async (context, leftValue, rightExpression) => {
+const and = (context, leftValue, rightExpression) => {
   if (!leftValue.asNativeBoolean(context)) {
     return createBooleanValue(false);
   }
-  const rightValue = await rightExpression.evaluate(context);
+  const rightValue = rightExpression.evaluate(context);
   return createBooleanValue(rightValue.asNativeBoolean(context));
 };
 
@@ -44,14 +44,14 @@ const greaterThan = (context, leftValue, rightValue) => createBooleanValue(leftV
 const lessThanOrEquals = (context, leftValue, rightValue) => createBooleanValue(leftValue.lessThanOrEquals(context, rightValue));
 const greaterThanOrEquals = (context, leftValue, rightValue) => createBooleanValue(leftValue.lessThan(context, rightValue));
 
-const evaluateLeft = f => async (context, leftExpression, rightExpression) => {
-  const leftValue = await leftExpression.evaluate(context);
+const evaluateLeft = f => (context, leftExpression, rightExpression) => {
+  const leftValue = leftExpression.evaluate(context);
   return f(context, leftValue, rightExpression);
 };
 
-const evaluateBoth = f => async (context, leftExpression, rightExpression) => {
-  const leftValue = await leftExpression.evaluate(context);
-  const rightValue = await rightExpression.evaluate(context);
+const evaluateBoth = f => (context, leftExpression, rightExpression) => {
+  const leftValue = leftExpression.evaluate(context);
+  const rightValue = rightExpression.evaluate(context);
   return f(context, leftValue, rightValue);
 };
 

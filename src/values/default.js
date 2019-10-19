@@ -30,7 +30,7 @@ asObject(context) : object<string => VALUE>;;
 getProperty(context, name : STRING) : VALUE | UNDEFINED;
 setProperty(context, name : STRING, value : VALUE) : VALUE;
 getElement(context, index : NUMBER) : VALUE | UNDEFINED;
-callFunction(context, parameters : ARRAY<VALUE>) : Promise<VALUE>;
+callFunction(context, parameters : ARRAY<VALUE>) : <VALUE>;
 add(context, other : NUMBER | STRING) : NUMBER | STRING;
 subtract(context, other) : NUMBER;
 multiplyBy(context, other) : NUMBER;

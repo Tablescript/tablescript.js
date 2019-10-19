@@ -82,39 +82,39 @@ const multiplyBy = entries => (context, other) => createArrayValue(
   ).reduce((all,n) => ([...all, ...entries]), [])
 );
 
-const each = entries => createNativeFunctionValue(['f'], async context => {
+const each = entries => createNativeFunctionValue(['f'], context => {
   const f = requiredParameter(context, 'f');
   let result = context.factory.createUndefined();
   for (let i = 0; i < entries.length; i++) {
-    result = await f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]);
+    result = f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]);
   }
   return result;
 });
 
-const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], async context => {
+const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], context => {
   const reducer = requiredParameter(context, 'reducer');
   const initialValue = requiredParameter(context, 'initialValue');
   let result = initialValue;
   for (let i = 0; i < entries.length; i++) {
-    result = await reducer.callFunction(context, [result, entries[i], context.factory.createNumericValue(i)]);
+    result = reducer.callFunction(context, [result, entries[i], context.factory.createNumericValue(i)]);
   }
   return result;
 });
 
-const map = entries => createNativeFunctionValue(['mapf'], async context => {
+const map = entries => createNativeFunctionValue(['mapf'], context => {
   const f = requiredParameter(context, 'mapf');
   const result = [];
   for (let i = 0; i < entries.length; i++) {
-    result.push(await f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]));
+    result.push(f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]));
   }
   return createArrayValue(result);
 });
 
-const filter = entries => createNativeFunctionValue(['f'], async context => {
+const filter = entries => createNativeFunctionValue(['f'], context => {
   const f = requiredParameter(context, 'f');
   const result = [];
   for (let i = 0; i < entries.length; i++) {
-    const testValue = await f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]);
+    const testValue = f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]);
     if (testValue.asNativeBoolean(context)) {
       result.push(entries[i]);
     }
@@ -122,7 +122,7 @@ const filter = entries => createNativeFunctionValue(['f'], async context => {
   return createArrayValue(result);
 });
 
-const includes = entries => createNativeFunctionValue(['value'], async context => {
+const includes = entries => createNativeFunctionValue(['value'], context => {
   const value = optionalParameter(context, 'value');
   if (value) {
     return context.factory.createBooleanValue(
@@ -135,7 +135,7 @@ const includes = entries => createNativeFunctionValue(['value'], async context =
   return context.factory.createUndefined();
 });
 
-const indexOf = entries => createNativeFunctionValue(['value'], async context => {
+const indexOf = entries => createNativeFunctionValue(['value'], context => {
   const value = optionalParameter(context, 'value');
   for (let i = 0; i < entries.length; i++) {
     if (entries[i].nativeEquals(context, value)) {
@@ -145,10 +145,10 @@ const indexOf = entries => createNativeFunctionValue(['value'], async context =>
   return context.factory.createNumericValue(-1);
 });
 
-const find = entries => createNativeFunctionValue(['f'], async context => {
+const find = entries => createNativeFunctionValue(['f'], context => {
   const f = requiredParameter(context, 'f');
   for (let i = 0; i < entries.length; i++) {
-    const testValue = await f.callFunction(context, [entries[i]]);
+    const testValue = f.callFunction(context, [entries[i]]);
     if (testValue.asNativeBoolean(context)) {
       return entries[i];
     }
@@ -156,10 +156,10 @@ const find = entries => createNativeFunctionValue(['f'], async context => {
   return context.factory.createUndefined();
 });
 
-const findIndex = entries => createNativeFunctionValue(['f'], async context => {
+const findIndex = entries => createNativeFunctionValue(['f'], context => {
   const f = requiredParameter(context, 'f');
   for (let i = 0; i < entries.length; i++) {
-    const testValue = await f.callFunction(context, [entries[i]]);
+    const testValue = f.callFunction(context, [entries[i]]);
     if (testValue.asNativeBoolean(context)) {
       return context.factory.createNumericValue(i);
     }
@@ -167,19 +167,19 @@ const findIndex = entries => createNativeFunctionValue(['f'], async context => {
   return context.factory.createNumericValue(-1);
 });
 
-const defaultSorter = createNativeFunctionValue(['a', 'b'], async context => {
+const defaultSorter = createNativeFunctionValue(['a', 'b'], context => {
   return requiredParameter(context, 'a').compare(context, requiredParameter(context, 'b'));
 });
 
-const sort = entries => createNativeFunctionValue(['f'], async context => {
+const sort = entries => createNativeFunctionValue(['f'], context => {
   const f = optionalParameter(context, 'f');
   if (f) {
-    return createArrayValue(await quickSort(context, [...entries], f));
+    return createArrayValue(quickSort(context, [...entries], f));
   }
-  return createArrayValue(await quickSort(context, [...entries], defaultSorter));
+  return createArrayValue(quickSort(context, [...entries], defaultSorter));
 });
 
-const join = entries => createNativeFunctionValue(['separator'], async context => {
+const join = entries => createNativeFunctionValue(['separator'], context => {
   const separator = optionalParameter(context, 'separator');
   if (separator) {
     if (!isString(separator)) {
@@ -190,11 +190,11 @@ const join = entries => createNativeFunctionValue(['separator'], async context =
   return context.factory.createStringValue(entries.map(e => e.asNativeString(context)).join());
 });
 
-const reverse = entries => createNativeFunctionValue([], async context => {
+const reverse = entries => createNativeFunctionValue([], context => {
   return createArrayValue([...entries].reverse());
 });
 
-const slice = entries => createNativeFunctionValue(['begin', 'end'], async context => {
+const slice = entries => createNativeFunctionValue(['begin', 'end'], context => {
   const begin = optionalParameter(context, 'begin');
   if (begin) {
     const end = optionalParameter(context, 'end');
@@ -206,7 +206,7 @@ const slice = entries => createNativeFunctionValue(['begin', 'end'], async conte
   return createArrayValue(entries.slice());
 });
 
-const unique = entries => createNativeFunctionValue([], async context => {
+const unique = entries => createNativeFunctionValue([], context => {
   const results = [];
   for (const entry of entries) {
     if (!results.find(r => r.identicalTo(context, entry))) {
@@ -217,7 +217,7 @@ const unique = entries => createNativeFunctionValue([], async context => {
   return createArrayValue(results);
 });
 
-const length = entries => createNativeFunctionValue([], async context => {
+const length = entries => createNativeFunctionValue([], context => {
   return context.factory.createNumericValue(entries.length);
 });
 

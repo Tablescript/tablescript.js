@@ -18,7 +18,7 @@
 import { randomNumber } from '../util/random';
 import { requiredParameter } from '../util/parameters';
 
-export const chooseBuiltIn = async context => {
+export const chooseBuiltIn = context => {
   const items = requiredParameter(context, 'items').asArray();
   const roll = randomNumber(items.length) - 1;
   return items[roll];

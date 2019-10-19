@@ -19,7 +19,7 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { allOperators } from './binary-operators';
 
-const evaluate = (location, operators, leftExpression, operator, rightExpression) => async context => {
+const evaluate = (location, operators, leftExpression, operator, rightExpression) => context => {
   context.setLocation(location);
   return operators[operator](context, leftExpression, rightExpression);
 };

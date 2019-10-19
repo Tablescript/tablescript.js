@@ -17,7 +17,6 @@
 
 import fs from 'fs';
 import path from 'path';
-import { asyncReduce } from './util/async';
 
 const pathedPrefixes = ['/', './', '../'];
 
@@ -35,21 +34,22 @@ const bundlePaths = () => ([
 const allPaths = (context, filename) => isPathed(filename) ? pathFromContext(context) : bundlePaths();
 
 const fileContents = filePath => {
-  return new Promise(resolve => {
-    fs.readFile(filePath, 'utf8', (error, contents) => {
-      if (error) {
-        resolve(undefined);
-      } else {
-        resolve({ path: filePath, body: contents });
-      }
-    });
-  });
+  try {
+    const contents = fs.readFileSync(filePath, 'utf8');
+    return {
+      path: filePath,
+      body: contents,
+    };
+  } catch (e) {
+    // ignore
+  }
+  return undefined;
 };
 
-const tryPath = async (thePath, filename) => {
+const tryPath = (thePath, filename) => {
   const resolvedPath = path.resolve(thePath, filename);
   const bundleFilename = path.resolve(resolvedPath, 'main.tab');
-  const bundleContents = await fileContents(bundleFilename);
+  const bundleContents = fileContents(bundleFilename);
   if (bundleContents) {
     return bundleContents;
   }
@@ -57,6 +57,6 @@ const tryPath = async (thePath, filename) => {
   return fileContents(resolvedFilename);
 };
 
-const tryAllPaths = (paths, filename) => asyncReduce(paths, (result, path) => result || tryPath(path, filename), undefined);
+const tryAllPaths = (paths, filename) => paths.reduce((result, path) => result || tryPath(path, filename), undefined);
 
-export const loadFsFile = async (context, filename) => tryAllPaths(allPaths(context, filename), filename);
+export const loadFsFile = (context, filename) => tryAllPaths(allPaths(context, filename), filename);

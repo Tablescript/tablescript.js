@@ -18,11 +18,11 @@
 import { loadAndRunScript } from '../runner';
 import { requiredParameter } from '../util/parameters';
 
-export const requireBuiltIn = async context => {
+export const requireBuiltIn = context => {
   const filename = requiredParameter(context, 'filename').asNativeString(context);
   const args = requiredParameter(context, 'arguments').asArray().slice(1);
   const oldScopes = context.swapScopes([context.initializeScope(args, context.options)]);
-  const result = await loadAndRunScript(context, filename);
+  const result = loadAndRunScript(context, filename);
   context.swapScopes(oldScopes);
   return result;
 };

@@ -52,15 +52,15 @@ const operators = {
   },
 };
 
-const evaluate = (location, leftHandSideExpression, operator, valueExpression) => async context => {
+const evaluate = (location, leftHandSideExpression, operator, valueExpression) => context => {
   context.setLocation(location);
-  const leftHandSideValue = await leftHandSideExpression.evaluateAsLeftHandSide(context);
+  const leftHandSideValue = leftHandSideExpression.evaluateAsLeftHandSide(context);
   if (!isLeftHandSide(leftHandSideValue)) {
     throwRuntimeError('Cannot assign to a non-left-hand-side type', context);
   }
-  const value = await valueExpression.evaluate(context);
+  const value = valueExpression.evaluate(context);
   if (operators[operator]) {
-    const leftValue = (operator === '=') ? undefined : await leftHandSideExpression.evaluate(context);
+    const leftValue = (operator === '=') ? undefined : leftHandSideExpression.evaluate(context);
     return operators[operator](context, leftHandSideValue, leftValue, value);
   }
   throwRuntimeError(`Unknown operator ${operator}`, context);

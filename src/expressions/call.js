@@ -19,7 +19,7 @@ import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { isArraySpread } from '../values/types';
 
-const mergeValues = previousParameters => value => isArraySpread(value)
+const mergeValues = (previousParameters, value) => isArraySpread(value)
   ? [
       ...previousParameters,
       ...value.asArray(),
@@ -29,16 +29,16 @@ const mergeValues = previousParameters => value => isArraySpread(value)
       value,
     ];
 
-const evaluateParameter = (context, parameter) => previousParameters => parameter.evaluate(context).then(mergeValues(previousParameters));
+const evaluateParameter = (context, parameter, previousParameters) => mergeValues(previousParameters, parameter.evaluate(context));
 
-const parameterReducer = context => (acc, parameter) => acc.then(evaluateParameter(context, parameter));
+const parameterReducer = context => (previousParameters, parameter) => evaluateParameter(context, parameter, previousParameters);
 
-const evaluateParameters = async (context, parameters) => parameters.reduce(parameterReducer(context), Promise.resolve([]));
+const evaluateParameters = (context, parameters) => parameters.reduce(parameterReducer(context), []);
 
-const evaluate = (location, callee, parameters) => async context => {
+const evaluate = (location, callee, parameters) => context => {
   context.setLocation(location);
-  const calleeValue = await callee.evaluate(context);
-  const evaluatedParameters = await evaluateParameters(context, parameters);
+  const calleeValue = callee.evaluate(context);
+  const evaluatedParameters = evaluateParameters(context, parameters);
   return calleeValue.callFunction(context, evaluatedParameters);
 };
 

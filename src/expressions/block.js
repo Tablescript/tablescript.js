@@ -18,11 +18,11 @@
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 
-const evaluate = (location, expressions) => async context => {
+const evaluate = (location, expressions) => context => {
   context.pushLocation(location);
   let result = context.factory.createUndefined();
   for (const expression of expressions) {
-    result = await expression.evaluate(context);
+    result = expression.evaluate(context);
   }
   context.popLocation();
   return result;

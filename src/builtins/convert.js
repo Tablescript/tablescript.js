@@ -19,7 +19,7 @@ import { requiredParameter } from '../util/parameters';
 import { isString, isNumber, isBoolean } from '../values/types';
 import { throwRuntimeError } from '../error';
 
-export const strBuiltIn = async context => {
+export const strBuiltIn = context => {
   const s = requiredParameter(context, 's');
   if (isString(s)) {
     return s;
@@ -27,7 +27,7 @@ export const strBuiltIn = async context => {
   return context.factory.createStringValue(s.asNativeString(context));
 };
 
-export const intBuiltIn = async context => {
+export const intBuiltIn = context => {
   const i = requiredParameter(context, 'i');
   if (isNumber(i)) {
     return context.factory.createNumericValue(Math.round(i.asNativeValue(context)));

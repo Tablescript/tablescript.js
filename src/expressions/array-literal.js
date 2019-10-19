@@ -21,11 +21,11 @@ import { createArrayValue } from '../values/array';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = (location, values) => async context => {
+const evaluate = (location, values) => context => {
   context.setLocation(location);
   let result = [];
   for (let i = 0; i < values.length; i++) {
-    const value = await values[i].evaluate(context);
+    const value = values[i].evaluate(context);
     if (isArraySpread(value)) {
       result = [
         ...result,

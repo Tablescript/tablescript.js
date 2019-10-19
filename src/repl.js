@@ -22,17 +22,14 @@ import { TablescriptError } from './error';
 const evaluate = (cmd, context, filename, callback) => {
   try {
     const expression = parse(cmd, '');
-    expression.evaluate(context).then(value => {
-      context.setVariable('_', value);
-      callback(null, value.asNativeValue(context));
-    }).catch(e => {
-      e.context = undefined;
-      callback(e);
-    });
+    const value = expression.evaluate(context)
+    context.setVariable('_', value);
+    callback(null, value.asNativeValue(context));
   } catch (e) {
     if (e instanceof TablescriptError && e.name == 'SyntaxError') {
       return callback(new nodeRepl.Recoverable(e));
     }
+    e.context = undefined;
     return callback(e);
   }
 };

@@ -18,6 +18,6 @@
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = s => async context => context.factory.createStringValue(s);
+const evaluate = s => context => context.factory.createStringValue(s);
 
 export const createStringLiteral = s => createExpression(expressionTypes.STRING, evaluate(s));

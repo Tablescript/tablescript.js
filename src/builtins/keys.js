@@ -17,7 +17,7 @@
 
 import { requiredParameter } from '../util/parameters';
 
-export const keysBuiltIn = async context => {
+export const keysBuiltIn = context => {
   const object = requiredParameter(context, 'o').asObject();
   const keys = Object.keys(object)
   keys.sort();

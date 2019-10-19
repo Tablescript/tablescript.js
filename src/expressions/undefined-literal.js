@@ -15,10 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createUndefined } from '../values/undefined';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = async context => context.factory.createUndefined();
+const evaluate = context => context.factory.createUndefined();
 
 export const createUndefinedLiteral = () => createExpression(expressionTypes.UNDEFINED, evaluate);

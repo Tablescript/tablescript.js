@@ -34,7 +34,7 @@ const tableEntryScope = (formalParameters, entries, closure, roll) => ({
   'this': createTableValue(formalParameters, entries, closure),
 });
 
-const getElement = (formalParameters, entries, closure) => async (context, index) => {
+const getElement = (formalParameters, entries, closure) => (context, index) => {
   const roll = index.asNativeNumber(context);
   const selectedEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
   if (selectedEntry) {
@@ -42,7 +42,7 @@ const getElement = (formalParameters, entries, closure) => async (context, index
       closure,
       tableEntryScope(formalParameters, entries, closure, roll),
     ]);
-    const result = await selectedEntry.evaluate(context);
+    const result = selectedEntry.evaluate(context);
     context.swapScopes(oldScopes);
     return result;
   }
@@ -55,7 +55,7 @@ const getTableRoll = R.pipe(getTableDie, randomNumber);
 
 const getRolledEntry = (entries, roll) => entries.find((e, index) => e.rollApplies(roll, index + 1));
 
-const callFunction = (formalParameters, entries, closure) => async (context, parameters) => {
+const callFunction = (formalParameters, entries, closure) => (context, parameters) => {
   const roll = getTableRoll(entries);
   const rolledEntry = getRolledEntry(entries, roll);
   const oldScopes = context.swapScopes([
@@ -63,7 +63,7 @@ const callFunction = (formalParameters, entries, closure) => async (context, par
     mapFunctionParameters(context, formalParameters, parameters),
     tableEntryScope(formalParameters, entries, closure, roll),  
   ]);
-  const result = await rolledEntry.evaluate(context);
+  const result = rolledEntry.evaluate(context);
   context.swapScopes(oldScopes);
   return result;
 };

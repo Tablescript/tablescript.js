@@ -19,18 +19,8 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 import * as R from 'ramda';
 
-const convertToString = s => s.asNativeString();
+const toValue = context => (acc, part) => ([...acc, part.evaluate(context).asNativeString()]);
 
-const appendTo = acc => value => ([...acc, value]);
-
-const evaluate = parts => context => {
-  return parts.reduce((p, part) => {
-    return p.then(acc => part.evaluate(context)
-      .then(convertToString)
-      .then(appendTo(acc)));
-  }, Promise.resolve([]))
-    .then(R.join(''))
-    .then(context.factory.createStringValue);
-}
+const evaluate = parts => context => context.factory.createStringValue(R.join('', R.reduce(toValue(context), [], parts)));
 
 export const createTemplateStringLiteral = parts => createExpression(expressionTypes.TEMPLATE_STRING, evaluate(parts));

@@ -40,16 +40,16 @@ const createLiteralTableEntry = value => ({
 });
 
 export const createTableEntryExpression = (selector, body) => ({
-  expand: () => Promise.resolve([createTableEntry(selector, body)]),
+  expand: () => ([createTableEntry(selector, body)]),
 });
 
 export const createSimpleTableEntryExpression = body => ({
-  expand: () => Promise.resolve([createSimpleTableEntry(body)]),
+  expand: () => ([createSimpleTableEntry(body)]),
 });  
 
 export const createSpreadTableEntryExpression = spread => ({
-  expand: async context => {
-    const spreadValue = await spread.evaluate(context);
+  expand: context => {
+    const spreadValue = spread.evaluate(context);
     if (isArraySpread(spreadValue)) {
       return spreadValue.asArray().map(entry => createLiteralTableEntry(entry));
     }

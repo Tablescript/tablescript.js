@@ -18,13 +18,13 @@
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = (location, condition, loopBlock) => async context => {
+const evaluate = (location, condition, loopBlock) => context => {
   context.setLocation(location);
-  let expressionValue = await condition.evaluate(context);
+  let expressionValue = condition.evaluate(context);
   let result = context.factory.createUndefined();
   while (expressionValue.asNativeBoolean(context)) {
-    result = await loopBlock.evaluate(context);
-    expressionValue = await condition.evaluate(context);
+    result = loopBlock.evaluate(context);
+    expressionValue = condition.evaluate(context);
   }
   return result;
 };

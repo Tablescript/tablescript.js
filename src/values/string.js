@@ -56,7 +56,7 @@ const greaterThanOrEquals = value => (context, other) => value >= other.asNative
 
 const compare = value => (context, other) => context.factory.createNumericValue(value.localeCompare(other.asNativeString(context)));
 
-const split = value => createNativeFunctionValue(['separator'], async context => {
+const split = value => createNativeFunctionValue(['separator'], context => {
   const separator = optionalParameter(context, 'separator');
   if (separator) {
     if (!isString(separator)) {
@@ -69,14 +69,14 @@ const split = value => createNativeFunctionValue(['separator'], async context =>
 
 const capitalize = value => createNativeFunctionValue(
   [],
-  async context => createStringValue(value.length === 0 ? value : value[0].toUpperCase() + value.slice(1))
+  context => createStringValue(value.length === 0 ? value : value[0].toUpperCase() + value.slice(1))
 );
 
-const uppercase = value => createNativeFunctionValue([], async context => createStringValue(value.toUpperCase()));
+const uppercase = value => createNativeFunctionValue([], context => createStringValue(value.toUpperCase()));
 
-const lowercase = value => createNativeFunctionValue([], async context => createStringValue(value.toLowerCase()));
+const lowercase = value => createNativeFunctionValue([], context => createStringValue(value.toLowerCase()));
 
-const includes = value => createNativeFunctionValue(['s'], async context => {
+const includes = value => createNativeFunctionValue(['s'], context => {
   const s = requiredParameter(context, 's');
   if (!isString(s)) {
     throwRuntimeError(`includes(s) s must be a string`, context);
@@ -84,7 +84,7 @@ const includes = value => createNativeFunctionValue(['s'], async context => {
   return context.factory.createBooleanValue(value.includes(s.asNativeString(context)));
 });
 
-const indexOf = value => createNativeFunctionValue(['s'], async context => {
+const indexOf = value => createNativeFunctionValue(['s'], context => {
   const s = requiredParameter(context, 's');
   if (!isString(s)) {
     throwRuntimeError(`indexOf(s) s must be a string`, context);
@@ -92,7 +92,7 @@ const indexOf = value => createNativeFunctionValue(['s'], async context => {
   return context.factory.createNumericValue(value.indexOf(s.asNativeString(context)));
 });
 
-const slice = value => createNativeFunctionValue(['start', 'end'], async context => {
+const slice = value => createNativeFunctionValue(['start', 'end'], context => {
   const startValue = requiredParameter(context, 'start');
   if (!isNumber(startValue)) {
     throwRuntimeError(`slice(start, end) start must be a number`, context);
@@ -107,7 +107,7 @@ const slice = value => createNativeFunctionValue(['start', 'end'], async context
   return createStringValue(value.slice(startValue.asNativeNumber(context)));
 });
 
-const startsWith = value => createNativeFunctionValue(['s'], async context => {
+const startsWith = value => createNativeFunctionValue(['s'], context => {
   const s = requiredParameter(context, 's');
   if (!isString(s)) {
     throwRuntimeError(`startsWith(s) s must be a string`, context);
@@ -115,7 +115,7 @@ const startsWith = value => createNativeFunctionValue(['s'], async context => {
   return context.factory.createBooleanValue(value.startsWith(s.asNativeString(context)));
 });
 
-const endsWith = value => createNativeFunctionValue(['s'], async context => {
+const endsWith = value => createNativeFunctionValue(['s'], context => {
   const s = requiredParameter(context, 's');
   if (!isString(s)) {
     throwRuntimeError(`endsWith(s) s must be a string`, context);
@@ -123,17 +123,17 @@ const endsWith = value => createNativeFunctionValue(['s'], async context => {
   return context.factory.createBooleanValue(value.endsWith(s.asNativeString(context)));
 });
 
-const trim = value => createNativeFunctionValue([], async context => createStringValue(value.trim()));
+const trim = value => createNativeFunctionValue([], context => createStringValue(value.trim()));
 
-const trimLeft = value => createNativeFunctionValue([], async context => createStringValue(value.trimLeft()));
+const trimLeft = value => createNativeFunctionValue([], context => createStringValue(value.trimLeft()));
 
-const trimRight = value => createNativeFunctionValue([], async context => createStringValue(value.trimRight()));
+const trimRight = value => createNativeFunctionValue([], context => createStringValue(value.trimRight()));
 
-const empty = value => createNativeFunctionValue([], async context => context.factory.createBooleanValue(value.length === 0));
+const empty = value => createNativeFunctionValue([], context => context.factory.createBooleanValue(value.length === 0));
 
-const length = value => createNativeFunctionValue([], async context => context.factory.createNumericValue(value.length));
+const length = value => createNativeFunctionValue([], context => context.factory.createNumericValue(value.length));
 
-const roll = value => createNativeFunctionValue([], async context => {
+const roll = value => createNativeFunctionValue([], context => {
   try {
     return context.factory.createNumericValue(rollDiceFromString(value));
   } catch (e) {

@@ -19,9 +19,9 @@ import { createExpression } from './default';
 import { throwRuntimeError } from '../error';
 import { expressionTypes } from './types';
 
-const evaluate = (location, operator, argument) => async context => {
+const evaluate = (location, operator, argument) => context => {
   context.setLocation(location);
-  const value = await argument.evaluate(context);
+  const value = argument.evaluate(context);
   if (operator === '-') {
     return context.factory.createNumericValue(-1 * value.asNativeNumber(context));
   }

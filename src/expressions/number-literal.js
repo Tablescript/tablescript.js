@@ -18,6 +18,6 @@
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluate = n => async context => context.factory.createNumericValue(n);
+const evaluate = n => context => context.factory.createNumericValue(n);
 
 export const createNumberLiteral = n => createExpression(expressionTypes.NUMBER, evaluate(n));

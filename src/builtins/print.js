@@ -17,11 +17,11 @@
 
 import { requiredParameter } from '../util/parameters';
 
-export const printBuiltIn = async context => {
+export const printBuiltIn = context => {
   const s = requiredParameter(context, 'arguments')
     .asArray()
     .map(p => p.asNativeString(context))
     .join();
-  await context.options.output.print(s);
+  context.options.output.print(s);
   return context.factory.createStringValue(s);
 };

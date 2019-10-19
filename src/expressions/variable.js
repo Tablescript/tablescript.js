@@ -19,7 +19,7 @@ import { createExpression } from './default';
 import { expressionTypes } from './types';
 import { createLeftHandSideValue } from '../values/left-hand-side';
 
-const evaluate = name => async context => {
+const evaluate = name => context => {
   const result = context.getVariable(name) || context.factory.createUndefined();
   return result;
 };

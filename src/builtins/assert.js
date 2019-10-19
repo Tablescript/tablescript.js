@@ -18,7 +18,7 @@
 import { throwRuntimeError } from '../error';
 import { requiredParameter, optionalParameter } from '../util/parameters';
 
-export const assertBuiltIn = async context => {
+export const assertBuiltIn = context => {
   const condition = requiredParameter(context, 'condition');
   const message = optionalParameter(context, 'message');
   if (!condition.asNativeBoolean(context)) {

@@ -51,19 +51,15 @@ if (!filename) {
 } else {
   try {
     const script = fs.readFileSync(filename, 'utf8');
-    runScript(context, script, filename).then(value => {
-      if (options.printLastValue) {
-        console.log(value.asNativeValue(context));
-      }
-    }).catch(e => {
-      if (e instanceof TablescriptError) {
-        console.log(e.toString());
-      } else {
-        console.log(e);
-      }
-      process.exit(1);
-    });
+    const value = runScript(context, script, filename);
+    if (options.printLastValue) {
+      console.log(value.asNativeValue(context));
+    }
   } catch (e) {
-    console.log(`[RuntimeError]: Unable to read ${filename}`);
+    if (e instanceof TablescriptError) {
+      console.log(e.toString());
+    } else {
+      console.log(e);
+    }
   }
 }

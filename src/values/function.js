@@ -24,11 +24,11 @@ const asNativeBoolean = () => true;
 
 export const createNativeFunctionValue = (formalParameters, f) => {
   const asNativeString = sharedAsNativeString('native');
-  const callFunction = async (context, parameters) => {
+  const callFunction = (context, parameters) => {
     const oldScopes = context.swapScopes([
       mapFunctionParameters(context, formalParameters, parameters)
     ]);
-    const result = await f(context);
+    const result = f(context);
     context.swapScopes(oldScopes);
     return result;
   };
@@ -49,12 +49,12 @@ export const createNativeFunctionValue = (formalParameters, f) => {
 
 export const createFunctionValue = (formalParameters, body, closure) => {
   const asNativeString = sharedAsNativeString('tablescript');
-  const callFunction = async (context, parameters) => {
+  const callFunction = (context, parameters) => {
     const oldScopes = context.swapScopes([
       mapFunctionParameters(context, formalParameters, parameters),
       closure,
     ]);
-    const result = await body.evaluate(context);
+    const result = body.evaluate(context);
     context.swapScopes(oldScopes);
     return result;
   };

@@ -15,23 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-// Adapted for async/await from here:
-// https://www.nczonline.net/blog/2012/11/27/computer-science-in-javascript-quicksort/
-
 const swap = (items, i, j) => {
   const temp = items[i];
   items[i] = items[j];
   items[j] = temp;
 };
 
-const partition = async (context, items, comparator, left, right) => {
+const partition = (context, items, comparator, left, right) => {
   const pivot = items[Math.floor((right + left) / 2)];
   let i = left;
   let j = right;
 
   while (i <= j) {
     while (1) {
-      const compareValue = await comparator.callFunction(context, [items[i], pivot]);
+      const compareValue = comparator.callFunction(context, [items[i], pivot]);
       if (compareValue.asNativeNumber(context) < 0) {
         i++;
         continue;
@@ -40,7 +37,7 @@ const partition = async (context, items, comparator, left, right) => {
     }
 
     while (1) {
-      const compareValue = await comparator.callFunction(context, [items[j], pivot]);
+      const compareValue = comparator.callFunction(context, [items[j], pivot]);
       if (compareValue.asNativeNumber(context) > 0) {
         j--;
         continue;
@@ -58,20 +55,20 @@ const partition = async (context, items, comparator, left, right) => {
   return i;
 };
 
-export const quickSort = async (context, items, comparator, left = 0, right = -1) => {
+export const quickSort = (context, items, comparator, left = 0, right = -1) => {
   if (items.length > 1) {
     if (right === -1) {
       right = items.length - 1;
     }
 
-    const index = await partition(context, items, comparator, left, right);
+    const index = partition(context, items, comparator, left, right);
 
     if (left < index - 1) {
-      await quickSort(context, items, comparator, left, index - 1);
+      quickSort(context, items, comparator, left, index - 1);
     }
 
     if (index < right) {
-      await quickSort(context, items, comparator, index, right);
+      quickSort(context, items, comparator, index, right);
     }
   }
 

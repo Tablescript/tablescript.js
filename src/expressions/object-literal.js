@@ -19,28 +19,23 @@ import { createObjectValue } from '../values/object';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
 
-const evaluator = context => (p, entry) => {
-  return p.then(acc => new Promise((resolve, reject) => {
-    entry.evaluate(context).then(value => {
-      resolve({
-        ...acc,
-        ...value.asObject(),
-      });
-    }).catch(e => {
-      reject(e);
-    });
-  }));
+const evaluator = context => (acc, entry) => {
+  const value = entry.evaluate(context);
+  return {
+    ...acc,
+    ...value.asObject(),
+  };
 };
 
-const evaluate = (location, entries) => async context => {
+const evaluate = (location, entries) => context => {
   context.setLocation(location);
-  return createObjectValue(await entries.reduce(evaluator(context), Promise.resolve({})));
+  return createObjectValue(entries.reduce(evaluator(context), {}));
 };
 
 export const createObjectLiteral = (location, entries) => createExpression(expressionTypes.OBJECT, evaluate(location, entries));
 
-const evaluateObjectProperty = (key, value) => async context => { return createObjectValue({
-  [key]: await value.evaluate(context),
+const evaluateObjectProperty = (key, value) => context => { return createObjectValue({
+  [key]: value.evaluate(context),
 }); };
 
 export const createObjectLiteralPropertyExpression = (key, value) => createExpression(
@@ -48,8 +43,8 @@ export const createObjectLiteralPropertyExpression = (key, value) => createExpre
   evaluateObjectProperty(key, value)
 );
 
-const evaluateObjectPropertyAndKey = (key, value) => async context => { return createObjectValue({
-  [(await key.evaluate(context)).asNativeString()]: await value.evaluate(context),
+const evaluateObjectPropertyAndKey = (key, value) => context => { return createObjectValue({
+  [(key.evaluate(context)).asNativeString()]: value.evaluate(context),
 }); };
 
 export const createObjectLiteralPropertyExpressionWithEvaluatedKey = (key, value) => createExpression(

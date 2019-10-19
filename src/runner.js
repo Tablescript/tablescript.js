@@ -18,14 +18,14 @@
 import { parse } from './parser/tablescript-parser';
 import { throwRuntimeError } from './error';
 
-export const runScript = async (context, script, scriptPath) => {
+export const runScript = (context, script, scriptPath) => {
   const expression = parse(script, scriptPath);
   return expression.evaluate(context);
 };
 
-const loadScript = async (context, scriptPath) => {
+const loadScript = (context, scriptPath) => {
   for (const loader of context.options.input.loaders) {
-    const script = await loader(context, scriptPath);
+    const script = loader(context, scriptPath);
     if (script) {
       return script;
     }
@@ -33,7 +33,7 @@ const loadScript = async (context, scriptPath) => {
   throwRuntimeError(`Unable to load "${scriptPath}"`, context);
 };
 
-export const loadAndRunScript = async (context, scriptPath, args) => {
-  const script = await loadScript(context, scriptPath);
+export const loadAndRunScript = (context, scriptPath, args) => {
+  const script = loadScript(context, scriptPath);
   return runScript(context, script.body, script.path, args);
 };

@@ -33,7 +33,7 @@ const createRangeArray = (context, start, end, step) => {
   return context.factory.createArrayValue(result);
 };
 
-export const rangeBuiltIn = async context => {
+export const rangeBuiltIn = context => {
   const args = requiredParameter(context, 'arguments').asArray(context);
   const startValue = requiredParameter(context, 'start').asNativeNumber(context);
   if (args.length === 1) {
