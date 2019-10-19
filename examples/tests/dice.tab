@@ -3,9 +3,11 @@
 #
 # test_rolls calls the passed roll function 100 times and asserts the result
 # is in the expected_values array.
-test_rolls = fn(roll, expected_values) {
+test_rolls = fn(roll, expected_values, assertFn) {
   range(100).map(fn() {
-    assert(expected_values.includes(roll()));
+    if (not expected_values.includes(roll())) {
+      assertFn(false);
+    };
   });
 };
 
@@ -37,23 +39,23 @@ assert([2, 3, 4].includes(2d2));
 #
 roll = fn() { d4; };
 expected_results = [1, 2, 3, 4];
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { d6; };
 expected_results = [1, 2, 3, 4, 5, 6];
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 2d6; };
 expected_results = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 1d12; };
 expected_results = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { d20; };
 expected_results = all_rolls_for_d(20);
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 ############################################################################
 
 ############################################################################
@@ -62,11 +64,11 @@ test_rolls(roll, expected_results);
 # Apply roll modifiers.
 roll = fn() { 3d6 + 3; };
 expected_results = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 2d6 * 100 + 7; };
 expected_results = [207, 307, 407, 507, 607, 707, 807, 907, 1007, 1107, 1207];
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 ############################################################################
 
 ############################################################################
@@ -75,19 +77,19 @@ test_rolls(roll, expected_results);
 # Roll d100, d1000, d7, d43. Whatever you like.
 roll = fn() { d100; };
 expected_results = all_rolls_for_d(100);
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { d1000; };
 expected_results = all_rolls_for_d(1000);
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { d7; };
 expected_results = [1, 2, 3, 4, 5, 6, 7];
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { d43; };
 expected_results = all_rolls_for_d(43);
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 ############################################################################
 
 ############################################################################
@@ -98,16 +100,16 @@ test_rolls(roll, expected_results);
 expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
 roll = fn() { 4d6d1; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 5d6d2; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 4d6dh1; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 5d6dh2; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 # If you drop too many dice, you get 0.
 assert(3d6d3 == 0);
@@ -122,16 +124,16 @@ assert(3d6dh100 == 0);
 expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
 roll = fn() { 4d6k3; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 4d6kl3; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 # If you keep more dice than were rolled, you get the sum of the rolled dice
 # only.
 roll = fn() { 2d6k20; };
 expected_results = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 ############################################################################
 
 ############################################################################
@@ -146,17 +148,17 @@ test_rolls(roll, expected_results);
 expected_results = [0, 1, 2, 3, 4];
 
 roll = fn() { 4d6>3; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 4d6=3; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 4d6<2; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 4d6>5f<1; };
 expected_results = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 ############################################################################
 
 ############################################################################
@@ -168,21 +170,21 @@ test_rolls(roll, expected_results);
 expected_results = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
 roll = fn() { 2d20d1; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 2d20k1; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 2d20dh1; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() { 2d20kl1; };
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));
 ############################################################################
 
 ############################################################################
 # String to dice
 
-roll = fn() { '4d6d1k2'.roll(); };
+roll = fn() { '4d6d1'.roll(); };
 expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-test_rolls(roll, expected_results);
+test_rolls(roll, expected_results, fn() assert(false));

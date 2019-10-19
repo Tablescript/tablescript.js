@@ -163,7 +163,7 @@ const extractSuffixes = s => {
   let suffixes = [];
   let suffix = s;
   while (R.length(suffix) > 0) {
-    const dropPattern = /^(d|dl|dh|k|kl|kh)([1-9][0-9]*)?/;
+    const dropPattern = /^(dl|dh|d|kl|kh|k)([1-9][0-9]*)?/;
     const dropMatches = suffix.match(dropPattern);
     if (dropMatches) {
       suffixes.push(dropSuffix(dropMatches[1], dropMatches[2] ? parseInt(dropMatches[2], 10) : 1));
@@ -191,7 +191,7 @@ const extractSuffixes = s => {
       } else {
         suffixes.push(successSuffix(successMatches[1], parseInt(successMatches[2], 10)));
       }
-      suffix = R.slice(R.length(rerollMatches[0]), Infinity, suffix);
+      suffix = R.slice(R.length(successMatches[0]), Infinity, suffix);
       continue;
     }
 
@@ -211,12 +211,11 @@ export const rollDiceFromString = s => {
   if (!matches) {
     throw new Error('Invalid dice string');
   }
-  const count = parseInt(matches[1], 10);
+  const count = parseInt(matches[1], 10) || 1;
   const die = parseInt(matches[2], 10);
 
   const suffix = R.slice(R.length(matches[0]), Infinity, s);
   const suffixes = extractSuffixes(suffix);
 
-  console.log('suffixes', JSON.stringify(suffixes, null, 2));
   return rollDice(count, die, suffixes);
 };

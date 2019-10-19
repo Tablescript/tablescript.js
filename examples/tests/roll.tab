@@ -1,1 +1,197 @@
-print('4d6d1'.roll());
+############################################################################
+# Helpers
+#
+# test_rolls calls the passed roll function 100 times and asserts the result
+# is in the expected_values array.
+test_rolls = fn(roll, expected_values, assertFn) {
+  range(100).map(fn() {
+    if (not expected_values.includes(roll())) {
+      assertFn(false);
+    };
+  });
+};
+
+# all_rolls_for_d creates an array of possible rolls for a die with
+# the passed number of sides. e.g. all_rolls_for_d(100) creates an array
+# of 1 to 100 inclusive.
+all_rolls_for_d = fn(count) { range(count).map(fn(n) { n + 1; }); };
+############################################################################
+
+############################################################################
+# Basics.
+#
+# d1 rolls a 1-sided die. It is like saying 1d1, i.e. "roll 1 1-sided dice".
+# i.e. "always return 1". This is probably not useful. 2d1 rolls 2 1-sided
+# dice and adds the results. 3d1 rolls and adds 3 1-sided dice, etc.
+assert('d1'.roll() == 1);
+assert('1d1'.roll() == 1);
+assert('2d1'.roll() == 2);
+
+# d2 rolls a 2-sided die. Like flipping a coin, it will result in 1 or 2.
+# 2d2 will flip 2 2-sided dice and add the results.
+assert([1, 2].includes('d2'.roll()));
+assert([1, 2].includes('1d2'.roll()));
+assert([2, 3, 4].includes('2d2'.roll()));
+############################################################################
+
+############################################################################
+# "Standard" dice.
+#
+roll = fn() 'd4'.roll();
+expected_results = [1, 2, 3, 4];
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() 'd6'.roll();
+expected_results = [1, 2, 3, 4, 5, 6];
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '2d6'.roll();
+expected_results = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '1d12'.roll();
+expected_results = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() 'd20'.roll();
+expected_results = all_rolls_for_d(20);
+test_rolls(roll, expected_results, fn() assert(false));
+############################################################################
+
+############################################################################
+# Dice strings cannot contain mathematical expressions. Apply math after
+# rolling the string.
+#
+# Apply roll modifiers.
+roll = fn() '3d6'.roll() + 3;
+expected_results = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '2d6'.roll() * 100 + 7;
+expected_results = [207, 307, 407, 507, 607, 707, 807, 907, 1007, 1107, 1207];
+test_rolls(roll, expected_results, fn() assert(false));
+############################################################################
+
+############################################################################
+# Die is not limited to physical dice.
+#
+# Roll d100, d1000, d7, d43. Whatever you like.
+roll = fn() 'd100'.roll();
+expected_results = all_rolls_for_d(100);
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() 'd1000'.roll();
+expected_results = all_rolls_for_d(1000);
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() 'd7'.roll();
+expected_results = [1, 2, 3, 4, 5, 6, 7];
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() 'd43'.roll();
+expected_results = all_rolls_for_d(43);
+test_rolls(roll, expected_results, fn() assert(false));
+############################################################################
+
+############################################################################
+# Drop rolls.
+#
+# Append 'd' to drop dice from the total. By default, the lowest dice are
+# dropped. Add 'h' to drop the highest dice instead.
+expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+roll = fn() '4d6d1'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '5d6d2'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '4d6dh1'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '5d6dh2'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+# If you drop too many dice, you get 0.
+assert('3d6d3'.roll() == 0);
+assert('3d6dh100'.roll() == 0);
+############################################################################
+
+############################################################################
+# Keep rolls.
+#
+# Append 'k' to keep dice in the total (and drop the rest). By default, the
+# highest dice are kept. Add 'l' to keep the lowest dice instead.
+expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+roll = fn() '4d6k3'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '4d6kl3'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+# If you keep more dice than were rolled, you get the sum of the rolled dice
+# only.
+roll = fn() '2d6k20'.roll();
+expected_results = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+test_rolls(roll, expected_results, fn() assert(false));
+############################################################################
+
+############################################################################
+# Successes and failures.
+#
+# Use compare points (Roll20 verbiage) to convert rolls into successes and
+# failures. If a die matches the compare point, it is counted as a success
+# (+1).
+# The value of the roll is the total number of successes.
+# If a failure compare point is specified, rolls matching the failure
+# compare point count as failures (-1).
+expected_results = [0, 1, 2, 3, 4];
+
+roll = fn() '4d6>3'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '4d6=3'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '4d6<2'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '4d6>5f<1'.roll();
+expected_results = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+test_rolls(roll, expected_results, fn() assert(false));
+############################################################################
+
+############################################################################
+# D&D 5E "Advantage".
+#
+# 2d20d1 (or 2d20k1) means roll 2 d20s and drop the lowest (or keep the
+# highest - same thing).
+# 2d20dh1 (or 2d20kl1) is "disadvantage".
+expected_results = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+roll = fn() '2d20d1'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '2d20k1'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '2d20dh1'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() '2d20kl1'.roll();
+test_rolls(roll, expected_results, fn() assert(false));
+############################################################################
+
+############################################################################
+# Dynamic dice strings.
+#
+# Using string rolls you can build dynamic sets of rolls for any situation.
+
+fireball_hit_dice = d6; # randomly select the fireball power
+fireball_damage = `${ fireball_hit_dice + 3 }d6`;
+
+expected_results = range(fireball_hit_dice + 3, 9 * 6 + 1);
+
+roll = fn() fireball_damage.roll();
+test_rolls(roll, expected_results, fn() assert(false));
