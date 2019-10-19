@@ -21,7 +21,7 @@ import { valueTypes, isString, isNumber } from './types';
 import { createNativeFunctionValue } from './function';
 import { throwRuntimeError } from '../error';
 import { requiredParameter, optionalParameter } from '../util/parameters';
-import { rollDiceFromString } from '../util/random';
+import { rollDiceFromString } from '../util/dice-strings';
 
 const identicalTo = value => other => isString(other) && value === other.asNativeString();
 
