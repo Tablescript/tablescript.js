@@ -23,104 +23,114 @@ import { throwRuntimeError } from '../error';
 import { requiredParameter, optionalParameter } from '../util/parameters';
 import { rollDiceFromString } from '../util/random';
 
-const identicalTo = value => (context, other) => isString(other) && value === other.asNativeString(context);
+const identicalTo = value => other => isString(other) && value === other.asNativeString();
 
 const asNativeString = value => () => value;
 
 const asNativeBoolean = value => () => value === '' ? false : true;
 
-const nativeEquals = value => (context, other) => value === other.asNativeString(context);
+const nativeEquals = value => other => value === other.asNativeString();
 
 const getElement = value => (context, index) => {
-  let indexValue = index.asNativeNumber(context);
+  let indexValue = index.asNativeNumber();
   if (indexValue < 0) {
     indexValue = value.length + indexValue;
   }
   if (indexValue < 0 || indexValue >= value.length) {
     return context.factory.createUndefined();
   }
-  return createStringValue(value[indexValue]);
+  return context.factory.createStringValue(value[indexValue]);
 };
 
-const add = value => (context, other) => createStringValue(value + other.asNativeString(context));
+const add = value => (context, other) => context.factory.createStringValue(`${ value }${ other.asNativeString() }`);
 
-const multiplyBy = value => (context, other) => createStringValue(value.repeat(other.asNativeNumber(context)));
-
-const lessThan = value => (context, other) => value < other.asNativeString(context);
-
-const greaterThan = value => (context, other) => value > other.asNativeString(context);
-
-const lessThanOrEquals = value => (context, other) => value <= other.asNativeString(context);
-
-const greaterThanOrEquals = value => (context, other) => value >= other.asNativeString(context);
-
-const compare = value => (context, other) => context.factory.createNumericValue(value.localeCompare(other.asNativeString(context)));
-
-const split = value => createNativeFunctionValue(['separator'], context => {
-  const separator = optionalParameter(context, 'separator');
-  if (separator) {
-    if (!isString(separator)) {
-      throwRuntimeError(`split(separator) separator must be a string`, context);
-    }
-    return context.factory.createArrayValue(value.split(separator.asNativeString(context)).map(s => createStringValue(s)));
+const multiplyBy = value => (context, other) => {
+  const count = other.asNativeNumber();
+  if (count < 0) {
+    throwRuntimeError('string repeat count must be greater than 0', context);
   }
-  return context.factory.createArrayValue(value.split().map(s => createStringValue(s)));
-});
+  return context.factory.createStringValue(value.repeat(count));
+};
+
+const lessThan = value => (context, other) => value < other.asNativeString();
+
+const greaterThan = value => (context, other) => value > other.asNativeString();
+
+const lessThanOrEquals = value => (context, other) => value <= other.asNativeString();
+
+const greaterThanOrEquals = value => (context, other) => value >= other.asNativeString();
+
+const compare = value => (context, other) => context.factory.createNumericValue(value.localeCompare(other.asNativeString()));
+
+const split = value => createNativeFunctionValue(
+  ['separator'],
+  context => {
+    const separator = optionalParameter(context, 'separator');
+    if (separator) {
+      const separatorValue = separator.asNativeString();
+      return context.factory.createArrayValue(value.split(separatorValue).map(context.factory.createStringValue));
+    }
+    return context.factory.createArrayValue(value.split().map(context.factory.createStringValue));
+  }
+);
 
 const capitalize = value => createNativeFunctionValue(
   [],
-  context => createStringValue(value.length === 0 ? value : value[0].toUpperCase() + value.slice(1))
+  context => context.factory.createStringValue(value.length === 0 ? value : `${ value[0].toUpperCase() }${ value.slice(1) }`)
 );
 
-const uppercase = value => createNativeFunctionValue([], context => createStringValue(value.toUpperCase()));
+const uppercase = value => createNativeFunctionValue([], context => context.factory.createStringValue(value.toUpperCase()));
 
-const lowercase = value => createNativeFunctionValue([], context => createStringValue(value.toLowerCase()));
+const lowercase = value => createNativeFunctionValue([], context => context.factory.createStringValue(value.toLowerCase()));
 
-const includes = value => createNativeFunctionValue(['s'], context => {
-  const s = requiredParameter(context, 's');
-  if (!isString(s)) {
-    throwRuntimeError(`includes(s) s must be a string`, context);
+const includes = value => createNativeFunctionValue(
+  ['s'],
+  context => {
+    const s = requiredParameter(context, 's');
+    return context.factory.createBooleanValue(value.includes(s.asNativeString()));
   }
-  return context.factory.createBooleanValue(value.includes(s.asNativeString(context)));
-});
+);
 
-const indexOf = value => createNativeFunctionValue(['s'], context => {
-  const s = requiredParameter(context, 's');
-  if (!isString(s)) {
-    throwRuntimeError(`indexOf(s) s must be a string`, context);
+const indexOf = value => createNativeFunctionValue(
+  ['s'],
+  context => {
+    const s = requiredParameter(context, 's');
+    return context.factory.createNumericValue(value.indexOf(s.asNativeString()));
   }
-  return context.factory.createNumericValue(value.indexOf(s.asNativeString(context)));
-});
+);
 
-const slice = value => createNativeFunctionValue(['start', 'end'], context => {
-  const startValue = requiredParameter(context, 'start');
-  if (!isNumber(startValue)) {
-    throwRuntimeError(`slice(start, end) start must be a number`, context);
-  }
-  const endValue = optionalParameter(context, 'end');
-  if (endValue) {
-    if (!isNumber(endValue)) {
-      throwRuntimeError(`slice(start, end) end must be a number`, context);
+const slice = value => createNativeFunctionValue(
+  ['start', 'end'],
+  context => {
+    const startValue = requiredParameter(context, 'start');
+    if (!isNumber(startValue)) {
+      throwRuntimeError(`slice(start, end) start must be a number`, context);
     }
-    return createStringValue(value.slice(startValue.asNativeNumber(context), endValue.asNativeNumber(context)));
+    const endValue = optionalParameter(context, 'end');
+    if (endValue) {
+      if (!isNumber(endValue)) {
+        throwRuntimeError(`slice(start, end) end must be a number`, context);
+      }
+      return context.factory.createStringValue(value.slice(startValue.asNativeNumber(), endValue.asNativeNumber()));
+    }
+    return context.factory.createStringValue(value.slice(startValue.asNativeNumber()));
   }
-  return createStringValue(value.slice(startValue.asNativeNumber(context)));
-});
+);
 
-const startsWith = value => createNativeFunctionValue(['s'], context => {
-  const s = requiredParameter(context, 's');
-  if (!isString(s)) {
-    throwRuntimeError(`startsWith(s) s must be a string`, context);
+const startsWith = value => createNativeFunctionValue(
+  ['s'],
+  context => {
+    const s = requiredParameter(context, 's');
+    return context.factory.createBooleanValue(value.startsWith(s.asNativeString()));
   }
-  return context.factory.createBooleanValue(value.startsWith(s.asNativeString(context)));
-});
+);
 
 const endsWith = value => createNativeFunctionValue(['s'], context => {
   const s = requiredParameter(context, 's');
   if (!isString(s)) {
     throwRuntimeError(`endsWith(s) s must be a string`, context);
   }
-  return context.factory.createBooleanValue(value.endsWith(s.asNativeString(context)));
+  return context.factory.createBooleanValue(value.endsWith(s.asNativeString()));
 });
 
 const trim = value => createNativeFunctionValue([], context => createStringValue(value.trim()));

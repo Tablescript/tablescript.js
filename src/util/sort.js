@@ -29,7 +29,7 @@ const partition = (context, items, comparator, left, right) => {
   while (i <= j) {
     while (1) {
       const compareValue = comparator.callFunction(context, [items[i], pivot]);
-      if (compareValue.asNativeNumber(context) < 0) {
+      if (compareValue.asNativeNumber() < 0) {
         i++;
         continue;
       }
@@ -38,7 +38,7 @@ const partition = (context, items, comparator, left, right) => {
 
     while (1) {
       const compareValue = comparator.callFunction(context, [items[j], pivot]);
-      if (compareValue.asNativeNumber(context) > 0) {
+      if (compareValue.asNativeNumber() > 0) {
         j--;
         continue;
       }

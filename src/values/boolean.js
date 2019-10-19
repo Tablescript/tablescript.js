@@ -18,13 +18,13 @@
 import { createValue } from './default';
 import { valueTypes, isBoolean } from './types';
 
-const identicalTo = value => (context, other) => isBoolean(other) && value === other.asNativeBoolean();
+const identicalTo = value => other => isBoolean(other) && value === other.asNativeBoolean();
 
 const asNativeString = value => () => value ? 'true' : 'false';
 
 const asNativeBoolean = value => () => value;
 
-const nativeEquals = value => (context, other) => value === other.asNativeBoolean();
+const nativeEquals = value => other => value === other.asNativeBoolean();
 
 export const createBooleanValue = value => createValue(
   valueTypes.BOOLEAN,

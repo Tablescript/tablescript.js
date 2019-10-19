@@ -35,15 +35,15 @@ const createRangeArray = (context, start, end, step) => {
 
 export const rangeBuiltIn = context => {
   const args = requiredParameter(context, 'arguments').asArray(context);
-  const startValue = requiredParameter(context, 'start').asNativeNumber(context);
+  const startValue = requiredParameter(context, 'start').asNativeNumber();
   if (args.length === 1) {
     return createRangeArray(context, 0, startValue, startValue > 0 ? 1 : -1);
   }
-  const endValue = requiredParameter(context, 'end').asNativeNumber(context);
+  const endValue = requiredParameter(context, 'end').asNativeNumber();
   if (args.length === 2) {
     return createRangeArray(context, startValue, endValue, startValue <= endValue ? 1 : -1);
   }
-  const stepValue = requiredParameter(context, 'step').asNativeNumber(context);
+  const stepValue = requiredParameter(context, 'step').asNativeNumber();
   if (endValue < startValue && stepValue >= 0) {
     throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be negative if end is less than start', context);
   }

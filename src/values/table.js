@@ -35,7 +35,7 @@ const tableEntryScope = (formalParameters, entries, closure, roll) => ({
 });
 
 const getElement = (formalParameters, entries, closure) => (context, index) => {
-  const roll = index.asNativeNumber(context);
+  const roll = index.asNativeNumber();
   const selectedEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
   if (selectedEntry) {
     const oldScopes = context.swapScopes([

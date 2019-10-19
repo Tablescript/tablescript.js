@@ -19,20 +19,20 @@ import { createValue } from './default';
 import { valueTypes, isObject } from './types';
 import { createUndefined } from './undefined';
 
-const propertiesAsNativeValues = (context, o) => {
+const propertiesAsNativeValues = (o) => {
   return Object.keys(o).reduce((result, key) => ({
     ...result,
-    [key]: o[key].asNativeValue(context)
+    [key]: o[key].asNativeValue()
   }), {});
 };
 
-const asNativeString = o => context => JSON.stringify(propertiesAsNativeValues(context, o));
+const asNativeString = o => () => JSON.stringify(propertiesAsNativeValues(o));
 
 const asNativeBoolean = () => true;
 
-const asNativeObject = o => context => propertiesAsNativeValues(context, o);
+const asNativeObject = o => () => propertiesAsNativeValues(o);
 
-const nativeEquals = o => (context, other) => {
+const nativeEquals = o => (other) => {
   if (!isObject(other)) {
     return false;
   }
@@ -44,14 +44,14 @@ const nativeEquals = o => (context, other) => {
     if (!otherProperties[key]) {
       return false;
     }
-    return result && o[key].nativeEquals(context, otherProperties[key]);
+    return result && o[key].nativeEquals(otherProperties[key]);
   }, true);
 };
 
 const asObject = o => () => o;
 
 const getProperty = o => (context, name) => {
-  const propertyName = name.asNativeString(context);
+  const propertyName = name.asNativeString();
   if (o[propertyName]) {
     return o[propertyName];
   }
@@ -59,7 +59,7 @@ const getProperty = o => (context, name) => {
 };
 
 const setProperty = o => (context, name, value) => {
-  o[name.asNativeString(context)] = value;
+  o[name.asNativeString()] = value;
 };
 
 export const createObjectValue = o => createValue(

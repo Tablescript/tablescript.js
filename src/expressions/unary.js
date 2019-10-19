@@ -23,10 +23,10 @@ const evaluate = (location, operator, argument) => context => {
   context.setLocation(location);
   const value = argument.evaluate(context);
   if (operator === '-') {
-    return context.factory.createNumericValue(-1 * value.asNativeNumber(context));
+    return context.factory.createNumericValue(-1 * value.asNativeNumber());
   }
   if (operator === '+') {
-    return context.factory.createNumericValue(value.asNativeNumber(context));
+    return context.factory.createNumericValue(value.asNativeNumber());
   }
   if (operator === 'not') {
     return context.factory.createBooleanValue(!value.asNativeBoolean());

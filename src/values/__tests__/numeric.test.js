@@ -43,15 +43,15 @@ describe('numeric value', () => {
     });
 
     it('is identical to the same number', () => {
-      expect(value.identicalTo({}, createNumericValue(9))).to.be.true;
+      expect(value.identicalTo(createNumericValue(9))).to.be.true;
     });
 
     it('is not identical to a different number', () => {
-      expect(value.identicalTo({}, createNumericValue(777))).to.be.false;
+      expect(value.identicalTo(createNumericValue(777))).to.be.false;
     });
 
     it('is not identical to a string', () => {
-      expect(value.identicalTo({}, createStringValue('nope'))).to.be.false;
+      expect(value.identicalTo(createStringValue('nope'))).to.be.false;
     });
 
     it('has its own value', () => {
@@ -76,11 +76,11 @@ describe('numeric value', () => {
 
     describe('equivalency', () => {
       it('is equal to its own value', () => {
-        expect(value.nativeEquals({}, createNumericValue(9))).to.be.true;
+        expect(value.nativeEquals(createNumericValue(9))).to.be.true;
       });
 
       it('is not equal to a different value', () => {
-        expect(value.nativeEquals({}, createNumericValue(9999))).to.be.false;
+        expect(value.nativeEquals(createNumericValue(9999))).to.be.false;
       });
     });
 

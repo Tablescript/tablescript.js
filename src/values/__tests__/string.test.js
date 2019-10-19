@@ -50,11 +50,11 @@ xdescribe('string value', () => {
 
     describe('equivalency', () => {
       it('is equal to the same string', () => {
-        expect(value.nativeEquals({}, createStringValue('I have a ham radio'))).to.be.true;
+        expect(value.nativeEquals(createStringValue('I have a ham radio'))).to.be.true;
       });
 
       it('is not equal to a different string', () => {
-        expect(value.nativeEquals({}, createStringValue('I do not have a ham radio'))).to.be.false;
+        expect(value.nativeEquals(createStringValue('I do not have a ham radio'))).to.be.false;
       });
     });
 
@@ -150,11 +150,11 @@ xdescribe('string value', () => {
 
     describe('equivalency', () => {
       it('is equal to the same string', () => {
-        expect(value.nativeEquals({}, createStringValue(''))).to.be.true;
+        expect(value.nativeEquals(createStringValue(''))).to.be.true;
       });
 
       it('is not equal to a different string', () => {
-        expect(value.nativeEquals({}, createStringValue('I do not have a ham radio'))).to.be.false;
+        expect(value.nativeEquals(createStringValue('I do not have a ham radio'))).to.be.false;
       });
     });
 

@@ -42,15 +42,15 @@ describe('boolean', () => {
     });
 
     it('is identical to true', () => {
-      expect(value.identicalTo({}, createBooleanValue(true))).to.be.true;
+      expect(value.identicalTo(createBooleanValue(true))).to.be.true;
     });
 
     it('is not identical to false', () => {
-      expect(value.identicalTo({}, createBooleanValue(false))).to.be.false;
+      expect(value.identicalTo(createBooleanValue(false))).to.be.false;
     });
     
     it('is not identical to a string', () => {
-      expect(value.identicalTo({}, createStringValue('nope'))).to.be.false;
+      expect(value.identicalTo(createStringValue('nope'))).to.be.false;
     });
 
     it('cannot convert implicitly to number', () => {
@@ -75,11 +75,11 @@ describe('boolean', () => {
 
     describe('equivalency', () => {
       it('equals another value that is also true', () => {
-        expect(value.nativeEquals({}, createBooleanValue(true))).to.be.true;
+        expect(value.nativeEquals(createBooleanValue(true))).to.be.true;
       });
 
       it('does not equal another value that is not true', () => {
-        expect(value.nativeEquals({}, createBooleanValue(false))).to.be.false;
+        expect(value.nativeEquals(createBooleanValue(false))).to.be.false;
       });
     });
 
@@ -160,15 +160,15 @@ describe('boolean', () => {
     });
 
     it('is identical to false', () => {
-      expect(value.identicalTo({}, createBooleanValue(false))).to.be.true;
+      expect(value.identicalTo(createBooleanValue(false))).to.be.true;
     });
 
     it('is not identical to true', () => {
-      expect(value.identicalTo({}, createBooleanValue(true))).to.be.false;
+      expect(value.identicalTo(createBooleanValue(true))).to.be.false;
     });
     
     it('is not identical to a string', () => {
-      expect(value.identicalTo({}, createStringValue('nope'))).to.be.false;
+      expect(value.identicalTo(createStringValue('nope'))).to.be.false;
     });
 
     it('cannot convert implicitly to number', () => {
@@ -193,11 +193,11 @@ describe('boolean', () => {
 
     describe('equivalency', () => {
       it('equals another value that is also false', () => {
-        expect(value.nativeEquals({}, createBooleanValue(false))).to.be.true;
+        expect(value.nativeEquals(createBooleanValue(false))).to.be.true;
       });
 
       it('does not equal another value that is not false', () => {
-        expect(value.nativeEquals({}, createBooleanValue(true))).to.be.false;
+        expect(value.nativeEquals(createBooleanValue(true))).to.be.false;
       });
     });
 

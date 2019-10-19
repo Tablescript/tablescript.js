@@ -23,7 +23,7 @@ export const assertBuiltIn = context => {
   const message = optionalParameter(context, 'message');
   if (!condition.asNativeBoolean()) {
     if (message) {
-      const messageText = message.asNativeString(context);
+      const messageText = message.asNativeString();
       throwRuntimeError(`assertion failed: ${messageText}`, context);
     } else {
       throwRuntimeError('assertion failed', context);

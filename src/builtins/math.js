@@ -19,42 +19,42 @@ import { norm } from './norm';
 import { createNativeFunctionValue } from '../values/function';
 import { requiredParameter, optionalParameterOr } from '../util/parameters';
 
-const parametersAsNativeNumbers = context => requiredParameter(context, 'arguments').asArray().map(p => p.asNativeNumber(context));
+const parametersAsNativeNumbers = context => requiredParameter(context, 'arguments').asArray().map(p => p.asNativeNumber());
 
 const mathMax = context => context.factory.createNumericValue(Math.max(...parametersAsNativeNumbers(context)));
 
 const mathMin = context => context.factory.createNumericValue(Math.min(...parametersAsNativeNumbers(context)));
 
 const mathRound = context => context.factory.createNumericValue(
-  Math.round(requiredParameter(context, 'n').asNativeNumber(context))
+  Math.round(requiredParameter(context, 'n').asNativeNumber())
 );
 
 const mathFloor = context =>context.factory.createNumericValue(
-  Math.floor(requiredParameter(context, 'n').asNativeNumber(context))
+  Math.floor(requiredParameter(context, 'n').asNativeNumber())
 );
 
 const mathCeil = context => context.factory.createNumericValue(
-  Math.ceil(requiredParameter(context, 'n').asNativeNumber(context))
+  Math.ceil(requiredParameter(context, 'n').asNativeNumber())
 );
 
 const mathPow = context => context.factory.createNumericValue(
   Math.pow(
-    requiredParameter(context, 'x').asNativeNumber(context),
-    requiredParameter(context, 'y').asNativeNumber(context)
+    requiredParameter(context, 'x').asNativeNumber(),
+    requiredParameter(context, 'y').asNativeNumber()
   )
 );
 
 const mathNorm = context => context.factory.createNumericValue(
   norm(
-    requiredParameter(context, 'mean').asNativeNumber(context),
-    optionalParameterOr(context, 'stdev', context.factory.createNumericValue(1.0)).asNativeNumber(context),
+    requiredParameter(context, 'mean').asNativeNumber(),
+    optionalParameterOr(context, 'stdev', context.factory.createNumericValue(1.0)).asNativeNumber(),
   )
 );
 const mathNormI = context => context.factory.createNumericValue(
   Math.round(
     norm(
-      requiredParameter(context, 'mean').asNativeNumber(context),
-      optionalParameterOr(context, 'stdev', context.factory.createNumericValue(1.0)).asNativeNumber(context),
+      requiredParameter(context, 'mean').asNativeNumber(),
+      optionalParameterOr(context, 'stdev', context.factory.createNumericValue(1.0)).asNativeNumber(),
     )
   )
 );

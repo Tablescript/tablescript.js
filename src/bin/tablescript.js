@@ -53,7 +53,7 @@ if (!filename) {
     const script = fs.readFileSync(filename, 'utf8');
     const value = runScript(context, script, filename);
     if (options.printLastValue) {
-      console.log(value.asNativeValue(context));
+      console.log(value.asNativeValue());
     }
   } catch (e) {
     if (e instanceof TablescriptError) {

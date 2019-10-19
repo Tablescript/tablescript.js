@@ -23,17 +23,17 @@ import { createNativeFunctionValue } from './function';
 import { requiredParameter, optionalParameter } from '../util/parameters';
 import { quickSort } from '../util/sort';
 
-const entriesAsNativeValues = (context, entries) => entries.map(e => e.asNativeValue(context));
+const entriesAsNativeValues = entries => entries.map(e => e.asNativeValue());
 
-const identicalTo = entries => (context, other) => isArray(other) && entriesAsNativeValues(context, entries) == other.asNativeArray(context);
+const identicalTo = entries => other => isArray(other) && entriesAsNativeValues(entries) == other.asNativeArray();
 
-const asNativeString = entries => context => JSON.stringify(entriesAsNativeValues(context, entries));
+const asNativeString = entries => () => JSON.stringify(entriesAsNativeValues(entries));
 
 const asNativeBoolean = () => true;
 
-const asNativeArray = entries => context => entriesAsNativeValues(context, entries);
+const asNativeArray = entries => () => entriesAsNativeValues(entries);
 
-const nativeEquals = entries => (context, other) => {
+const nativeEquals = entries => (other) => {
   if (!isArray(other)) {
     return false;
   }
@@ -41,13 +41,13 @@ const nativeEquals = entries => (context, other) => {
   if (otherEntries.length !== entries.length) {
     return false;
   }
-  return entries.reduce((result, entry, index) => result && entry.nativeEquals(context, otherEntries[index]), true);
+  return entries.reduce((result, entry, index) => result && entry.nativeEquals(otherEntries[index]), true);
 };
 
 const asArray = entries => () => entries;
 
 const mapArrayIndex = (context, index, entries) => {
-  const mappedIndex = index.asNativeNumber(context);
+  const mappedIndex = index.asNativeNumber();
   if (mappedIndex < 0) {
     return entries.length + mappedIndex;
   }
@@ -78,7 +78,7 @@ const add = entries => (context, other) => createArrayValue([...entries, other])
 const multiplyBy = entries => (context, other) => createArrayValue(
   R.range(
     0,
-    other.asNativeNumber(context)
+    other.asNativeNumber()
   ).reduce((all,n) => ([...all, ...entries]), [])
 );
 
@@ -127,7 +127,7 @@ const includes = entries => createNativeFunctionValue(['value'], context => {
   if (value) {
     return context.factory.createBooleanValue(
       entries.reduce(
-        (result, entry) => result || entry.nativeEquals(context, value),
+        (result, entry) => result || entry.nativeEquals(value),
         false
       )
     );
@@ -138,7 +138,7 @@ const includes = entries => createNativeFunctionValue(['value'], context => {
 const indexOf = entries => createNativeFunctionValue(['value'], context => {
   const value = optionalParameter(context, 'value');
   for (let i = 0; i < entries.length; i++) {
-    if (entries[i].nativeEquals(context, value)) {
+    if (entries[i].nativeEquals(value)) {
       return context.factory.createNumericValue(i);
     }
   }
@@ -185,9 +185,9 @@ const join = entries => createNativeFunctionValue(['separator'], context => {
     if (!isString(separator)) {
       throwRuntimeError(`join([separator]) separator must be a string`, context);
     }
-    return context.factory.createStringValue(entries.map(e => e.asNativeString(context)).join(separator.asNativeString(context)));
+    return context.factory.createStringValue(entries.map(e => e.asNativeString()).join(separator.asNativeString()));
   }
-  return context.factory.createStringValue(entries.map(e => e.asNativeString(context)).join());
+  return context.factory.createStringValue(entries.map(e => e.asNativeString()).join());
 });
 
 const reverse = entries => createNativeFunctionValue([], context => {
@@ -199,9 +199,9 @@ const slice = entries => createNativeFunctionValue(['begin', 'end'], context => 
   if (begin) {
     const end = optionalParameter(context, 'end');
     if (end) {
-      return createArrayValue(entries.slice(begin.asNativeNumber(context), end.asNativeNumber(context)));
+      return createArrayValue(entries.slice(begin.asNativeNumber(), end.asNativeNumber()));
     }
-    return createArrayValue(entries.slice(begin.asNativeNumber(context)));
+    return createArrayValue(entries.slice(begin.asNativeNumber()));
   }
   return createArrayValue(entries.slice());
 });
@@ -209,7 +209,7 @@ const slice = entries => createNativeFunctionValue(['begin', 'end'], context => 
 const unique = entries => createNativeFunctionValue([], context => {
   const results = [];
   for (const entry of entries) {
-    if (!results.find(r => r.identicalTo(context, entry))) {
+    if (!results.find(r => r.identicalTo(entry))) {
       results.push(entry);
       continue;
     }

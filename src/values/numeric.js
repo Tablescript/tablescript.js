@@ -26,50 +26,44 @@ const asNativeString = value => () => value.toString();
 
 const asNativeBoolean = value => () => value == 0 ? false : true;
 
-const nativeEquals = value => (context, other) => isNumber(other) && value === other.asNativeNumber(context);
+const nativeEquals = value => other => isNumber(other) && value === other.asNativeNumber();
 
 const add = value => (context, other) => {
   if (isString(other)) {
     return context.factory.createStringValue(value.toString() + other.asNativeString());
   }
-  return createNumericValue(value + other.asNativeNumber(context));
+  return context.factory.createNumericValue(value + other.asNativeNumber());
 };
 
-const subtract = value => (context, other) => createNumericValue(value - other.asNativeNumber(context));
+const subtract = value => (context, other) => context.factory.createNumericValue(value - other.asNativeNumber());
 
-const multiplyBy = value => (context, other) => createNumericValue(value * other.asNativeNumber(context));
+const multiplyBy = value => (context, other) => context.factory.createNumericValue(value * other.asNativeNumber());
 
 const divideBy = value => (context, other) => {
-  if (other.asNativeNumber(context) === 0) {
+  if (other.asNativeNumber() === 0) {
     throwRuntimeError('Divide by zero', context);
   }
-  return createNumericValue(value / other.asNativeNumber(context));
+  return context.factory.createNumericValue(value / other.asNativeNumber());
 };
 
 const modulo = value => (context, other) => {
-  if (other.asNativeNumber(context) === 0) {
+  if (other.asNativeNumber() === 0) {
     throwRuntimeError('Divide by zero', context);
   }
-  return createNumericValue(value % other.asNativeNumber(context));
+  return context.factory.createNumericValue(value % other.asNativeNumber());
 };
 
-const lessThan = value => (context, other) => value < other.asNativeNumber(context);
+const lessThan = value => (context, other) => value < other.asNativeNumber();
 
-const greaterThan = value => (context, other) => value > other.asNativeNumber(context);
+const greaterThan = value => (context, other) => value > other.asNativeNumber();
 
-const lessThanOrEquals = value => (context, other) => value <= other.asNativeNumber(context);
+const lessThanOrEquals = value => (context, other) => value <= other.asNativeNumber();
 
-const greaterThanOrEquals = value => (context, other) => value >= other.asNativeNumber(context);
+const greaterThanOrEquals = value => (context, other) => value >= other.asNativeNumber();
 
-const floor = value => createNativeFunctionValue([], context => createNumericValue(Math.floor(value)));
-const ceiling = value => createNativeFunctionValue([], context => createNumericValue(Math.ceil(value)));
+const floor = value => createNativeFunctionValue([], context => context.factory.createNumericValue(Math.floor(value)));
 
-export const createCustomNumericValue = (value, methods) => createValue(
-  valueTypes.NUMBER,
-  asNativeNumber(value),
-  {},
-  methods,
-);
+const ceiling = value => createNativeFunctionValue([], context => context.factory.createNumericValue(Math.ceil(value)));
 
 export const createNumericValue = value => createValue(
   valueTypes.NUMBER,

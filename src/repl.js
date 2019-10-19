@@ -24,7 +24,7 @@ const evaluate = (cmd, context, filename, callback) => {
     const expression = parse(cmd, '');
     const value = expression.evaluate(context)
     context.setVariable('_', value);
-    callback(null, value.asNativeValue(context));
+    callback(null, value.asNativeValue());
   } catch (e) {
     if (e instanceof TablescriptError && e.name == 'SyntaxError') {
       return callback(new nodeRepl.Recoverable(e));

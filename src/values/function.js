@@ -15,59 +15,64 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
 import { mapFunctionParameters } from '../util/parameters';
 
-const sharedAsNativeString = type => () => `function(${type})`;
-const asNativeBoolean = () => true;
+const callWithSwappedScopes = (context, scopes, theThing) => {
+  const oldScopes = context.swapScopes(scopes);
+  const result = theThing(context);
+  context.swapScopes(oldScopes);
+  return result;
+};
 
 export const createNativeFunctionValue = (formalParameters, f) => {
-  const asNativeString = sharedAsNativeString('native');
-  const callFunction = (context, parameters) => {
-    const oldScopes = context.swapScopes([
+  const asNativeString = R.always('function(native)');
+
+  const callFunction = (context, parameters) => callWithSwappedScopes(
+    context,
+    [
       mapFunctionParameters(context, formalParameters, parameters)
-    ]);
-    const result = f(context);
-    context.swapScopes(oldScopes);
-    return result;
-  };
+    ],
+    f
+  );
 
   return createValue(
     valueTypes.FUNCTION,
     asNativeString,
-    () => false,
-    () => false,
+    R.F,
+    R.F,
     {},
     {
       asNativeString,
-      asNativeBoolean,
+      asNativeBoolean: R.T,
       callFunction,
     },
   );
 };
 
 export const createFunctionValue = (formalParameters, body, closure) => {
-  const asNativeString = sharedAsNativeString('tablescript');
-  const callFunction = (context, parameters) => {
-    const oldScopes = context.swapScopes([
+  const asNativeString = R.always('function(tablescript)');
+
+  const callFunction = (context, parameters) => callWithSwappedScopes(
+    context,
+    [
       mapFunctionParameters(context, formalParameters, parameters),
       closure,
-    ]);
-    const result = body.evaluate(context);
-    context.swapScopes(oldScopes);
-    return result;
-  };
+    ],
+    body.evaluate
+  );
 
   return createValue(
     valueTypes.FUNCTION,
     asNativeString,
-    () => false,
-    () => false,
+    R.F,
+    R.F,
     {},
     {
       asNativeString,
-      asNativeBoolean,
+      asNativeBoolean: R.T,
       callFunction,
     }
   );

@@ -17,14 +17,14 @@
 
 /*
 
-asNativeValue(context) : any<native>;
+asNativeValue() : any<native>;
 identicalTo(other) : boolean;
-asNativeNumber(context) : number;
-asNativeString(context) : string;
+asNativeNumber() : number;
+asNativeString() : string;
 asNativeBoolean() : boolean;
-asNativeArray(context) : array[any<native>];
-asNativeObject(context) : object<string => any<native>];
-nativeEquals(context, other : VALUE) : boolean;
+asNativeArray() : array[any<native>];
+asNativeObject() : object<string => any<native>];
+nativeEquals(other : VALUE) : boolean;
 asArray(context) : array<VALUE>;
 asObject(context) : object<string => VALUE>;;
 getProperty(context, name : STRING) : VALUE | UNDEFINED;
@@ -48,7 +48,7 @@ import { valueTypeName } from './types';
 import { runtimeErrorThrower } from '../error';
 
 const getProperty = properties => (context, name) => {
-  const nameValue = name.asNativeString(context);
+  const nameValue = name.asNativeString();
   if (properties[nameValue]) {
     return properties[nameValue];
   }

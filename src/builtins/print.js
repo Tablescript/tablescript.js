@@ -20,7 +20,7 @@ import { requiredParameter } from '../util/parameters';
 export const printBuiltIn = context => {
   const s = requiredParameter(context, 'arguments')
     .asArray()
-    .map(p => p.asNativeString(context))
+    .map(p => p.asNativeString())
     .join();
   context.options.output.print(s);
   return context.factory.createStringValue(s);

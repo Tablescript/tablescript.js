@@ -24,16 +24,16 @@ export const strBuiltIn = context => {
   if (isString(s)) {
     return s;
   }
-  return context.factory.createStringValue(s.asNativeString(context));
+  return context.factory.createStringValue(s.asNativeString());
 };
 
 export const intBuiltIn = context => {
   const i = requiredParameter(context, 'i');
   if (isNumber(i)) {
-    return context.factory.createNumericValue(Math.round(i.asNativeValue(context)));
+    return context.factory.createNumericValue(Math.round(i.asNativeValue()));
   }
   if (isString(i)) {
-    return context.factory.createNumericValue(parseInt(i.asNativeString(context)));
+    return context.factory.createNumericValue(parseInt(i.asNativeString()));
   }
   if (isBoolean(i)) {
     return context.factory.createNumericValue(i.asNativeBoolean() ? 1 : 0);
