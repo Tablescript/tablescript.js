@@ -30,7 +30,7 @@ export const requiredParameter = (context, name) => {
   if (localVariable) {
     return localVariable;
   }
-  throwRuntimeError(`Missing required parameter ${name}`, context);
+  throwRuntimeError(`Missing required parameter "${name}"`, context);
 };
 
 export const optionalParameter = (context, name) => context.getLocalVariable(name);

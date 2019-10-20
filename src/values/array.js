@@ -82,68 +82,88 @@ const multiplyBy = entries => (context, other) => createArrayValue(
   ).reduce((all,n) => ([...all, ...entries]), [])
 );
 
-const each = entries => createNativeFunctionValue(['f'], context => {
-  const f = requiredParameter(context, 'f');
-  let result = context.factory.createUndefined();
-  for (let i = 0; i < entries.length; i++) {
-    result = f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]);
-  }
-  return result;
-});
+const indexedReduce = R.addIndex(R.reduce);
+const indexedMap = R.addIndex(R.map);
+const indexedFilter = R.addIndex(R.filter);
 
-const reduce = entries => createNativeFunctionValue(['reducer', 'initialValue'], context => {
-  const reducer = requiredParameter(context, 'reducer');
-  const initialValue = requiredParameter(context, 'initialValue');
-  let result = initialValue;
-  for (let i = 0; i < entries.length; i++) {
-    result = reducer.callFunction(context, [result, entries[i], context.factory.createNumericValue(i)]);
-  }
-  return result;
-});
+const withRequiredParameter = parameter => f => (context, ...args) => f(context, requiredParameter(context, parameter), ...args)
+const withOptionalParameter = parameter => f => (context, ...args) => f(context, optionalParameter(context, parameter), ...args);
+const withNumericResult = f => (context, ...args) => context.factory.createNumericValue(f(context, ...args));
+const withBooleanResult = f => (context, ...args) => context.factory.createBooleanValue(f(context, ...args));
+const withArrayResult = f => (context, ...args) => context.factory.createArrayValue(f(context, ...args));
 
-const map = entries => createNativeFunctionValue(['mapf'], context => {
-  const f = requiredParameter(context, 'mapf');
-  const result = [];
-  for (let i = 0; i < entries.length; i++) {
-    result.push(f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]));
-  }
-  return createArrayValue(result);
-});
+const each = entries => createNativeFunctionValue(
+  ['f'],
+  R.compose(
+    withRequiredParameter('f'),
+  )(
+    (context, f) => indexedReduce(
+      (_, entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]),
+      context.factory.createUndefined(),
+      entries,
+    ),
+  ),
+);
 
-const filter = entries => createNativeFunctionValue(['f'], context => {
-  const f = requiredParameter(context, 'f');
-  const result = [];
-  for (let i = 0; i < entries.length; i++) {
-    const testValue = f.callFunction(context, [entries[i], context.factory.createNumericValue(i)]);
-    if (testValue.asNativeBoolean()) {
-      result.push(entries[i]);
-    }
-  }
-  return createArrayValue(result);
-});
+const reduce = entries => createNativeFunctionValue(
+  ['reducer', 'initialValue'],
+  R.compose(
+    withRequiredParameter('initialValue'),
+    withRequiredParameter('reducer'),
+  )(
+    (context, reducer, initialValue) => indexedReduce(
+      (acc, entry, i) => reducer.callFunction(context, [acc, entry, context.factory.createNumericValue(i)]),
+      initialValue,
+      entries,
+    ),
+  ),
+);
 
-const includes = entries => createNativeFunctionValue(['value'], context => {
-  const value = optionalParameter(context, 'value');
-  if (value) {
-    return context.factory.createBooleanValue(
-      entries.reduce(
-        (result, entry) => result || entry.nativeEquals(value),
-        false
-      )
-    );
-  }
-  return context.factory.createUndefined();
-});
+const map = entries => createNativeFunctionValue(
+  ['mapf'],
+  R.compose(
+    withArrayResult,
+    withRequiredParameter('mapf'),
+  )(
+    (context, f) => indexedMap(
+      (entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]),
+      entries,
+    ),
+  ),
+);
 
-const indexOf = entries => createNativeFunctionValue(['value'], context => {
-  const value = optionalParameter(context, 'value');
-  for (let i = 0; i < entries.length; i++) {
-    if (entries[i].nativeEquals(value)) {
-      return context.factory.createNumericValue(i);
-    }
-  }
-  return context.factory.createNumericValue(-1);
-});
+const filter = entries => createNativeFunctionValue(
+  ['f'],
+  R.compose(
+    withArrayResult,
+    withRequiredParameter('f'),
+  )(
+    (context, f) => indexedFilter(
+      (entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]).asNativeBoolean(),
+      entries,
+    ),
+  ),
+);
+
+const includes = entries => createNativeFunctionValue(
+  ['value'],
+  R.compose(
+    withBooleanResult,
+    withRequiredParameter('value'),
+  )(
+    (context, value) => R.reduce((result, entry) => result || entry.nativeEquals(value), false, entries),
+  ),
+);
+
+const indexOf = entries => createNativeFunctionValue(
+  ['value'],
+  R.compose(
+    withNumericResult,
+    withRequiredParameter('value'),
+  )(
+    (context, value) => R.findIndex(entry => entry.nativeEquals(value), entries),
+  ),
+);
 
 const find = entries => createNativeFunctionValue(['f'], context => {
   const f = requiredParameter(context, 'f');
