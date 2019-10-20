@@ -17,7 +17,7 @@
 
 import * as R from 'ramda';
 import { createValue } from './default';
-import { valueTypes, isArray, isString } from './types';
+import { valueTypes, isArray, isString, isUndefined } from './types';
 import { throwRuntimeError } from '../error';
 import { createNativeFunctionValue } from './function';
 import { requiredParameter, optionalParameter } from '../util/parameters';
@@ -88,9 +88,18 @@ const indexedFilter = R.addIndex(R.filter);
 
 const withRequiredParameter = parameter => f => (context, ...args) => f(context, requiredParameter(context, parameter), ...args)
 const withOptionalParameter = parameter => f => (context, ...args) => f(context, optionalParameter(context, parameter), ...args);
+const withOptionalStringParameter = (parameter, msg) => f => (context, ...args) => {
+  const value = optionalParameter(context, parameter);
+  if (value && !isString(value)) {
+    throwRuntimeError(`${msg} must be a string`, context);
+  }
+  return f(context, value, ...args);
+};
+
 const withNumericResult = f => (context, ...args) => context.factory.createNumericValue(f(context, ...args));
 const withBooleanResult = f => (context, ...args) => context.factory.createBooleanValue(f(context, ...args));
 const withArrayResult = f => (context, ...args) => context.factory.createArrayValue(f(context, ...args));
+const withStringResult = f => (context, ...args) => context.factory.createStringValue(f(context, ...args));
 
 const each = entries => createNativeFunctionValue(
   ['f'],
@@ -165,81 +174,120 @@ const indexOf = entries => createNativeFunctionValue(
   ),
 );
 
-const find = entries => createNativeFunctionValue(['f'], context => {
-  const f = requiredParameter(context, 'f');
-  for (let i = 0; i < entries.length; i++) {
-    const testValue = f.callFunction(context, [entries[i]]);
-    if (testValue.asNativeBoolean()) {
-      return entries[i];
-    }
-  }
-  return context.factory.createUndefined();
-});
+const find = entries => createNativeFunctionValue(
+  ['f'],
+  R.compose(
+    withRequiredParameter('f'),
+  )(
+    (context, f) => R.reduce(
+      (foundValue, entry) => {
+        if (isUndefined(foundValue)) {
+          if (f.callFunction(context, [entry]).asNativeBoolean()) {
+            return entry;
+          }
+        }
+        return foundValue;
+      },
+      context.factory.createUndefined(),
+      entries,
+    )
+  ),
+);
 
-const findIndex = entries => createNativeFunctionValue(['f'], context => {
-  const f = requiredParameter(context, 'f');
-  for (let i = 0; i < entries.length; i++) {
-    const testValue = f.callFunction(context, [entries[i]]);
-    if (testValue.asNativeBoolean()) {
-      return context.factory.createNumericValue(i);
-    }
-  }
-  return context.factory.createNumericValue(-1);
-});
+const findIndex = entries => createNativeFunctionValue(
+  ['f'],
+  R.compose(
+    withNumericResult,
+    withRequiredParameter('f'),
+  )(
+    (context, f) => indexedReduce(
+      (foundIndex, entry, i) => {
+        if (foundIndex === -1) {
+          if (f.callFunction(context, [entry]).asNativeBoolean()) {
+            return i;
+          }
+        }
+        return foundIndex;
+      },
+      -1,
+      entries,
+    ),
+  ),
+);
 
 const defaultSorter = createNativeFunctionValue(['a', 'b'], context => {
   return requiredParameter(context, 'a').compare(context, requiredParameter(context, 'b'));
 });
 
-const sort = entries => createNativeFunctionValue(['f'], context => {
-  const f = optionalParameter(context, 'f');
-  if (f) {
-    return createArrayValue(quickSort(context, [...entries], f));
-  }
-  return createArrayValue(quickSort(context, [...entries], defaultSorter));
-});
+const sort = entries => createNativeFunctionValue(
+  ['f'],
+  R.compose(
+    withArrayResult,
+    withOptionalParameter('f'),
+  )(
+    (context, f) => (f ? quickSort(context, [...entries], f) : quickSort(context, [...entries], defaultSorter)),
+  ),
+);
 
-const join = entries => createNativeFunctionValue(['separator'], context => {
-  const separator = optionalParameter(context, 'separator');
-  if (separator) {
-    if (!isString(separator)) {
-      throwRuntimeError(`join([separator]) separator must be a string`, context);
-    }
-    return context.factory.createStringValue(entries.map(e => e.asNativeString()).join(separator.asNativeString()));
-  }
-  return context.factory.createStringValue(entries.map(e => e.asNativeString()).join());
-});
+const join = entries => createNativeFunctionValue(
+  ['separator'],
+  R.compose(
+    withStringResult,
+    withOptionalStringParameter('separator', 'join([separator])'),
+  )(
+    (context, separator) => (separator ? (
+      entries.map(e => e.asNativeString()).join(separator.asNativeString())
+    ) : (
+      entries.map(e => e.asNativeString()).join()
+    )),
+  ),
+);
 
-const reverse = entries => createNativeFunctionValue([], context => {
-  return createArrayValue([...entries].reverse());
-});
+const reverse = entries => createNativeFunctionValue(
+  [],
+  R.compose(
+    withArrayResult,
+  )(
+    context => R.reverse(entries),
+  )
+);
 
-const slice = entries => createNativeFunctionValue(['begin', 'end'], context => {
-  const begin = optionalParameter(context, 'begin');
-  if (begin) {
-    const end = optionalParameter(context, 'end');
-    if (end) {
-      return createArrayValue(entries.slice(begin.asNativeNumber(), end.asNativeNumber()));
-    }
-    return createArrayValue(entries.slice(begin.asNativeNumber()));
-  }
-  return createArrayValue(entries.slice());
-});
+const slice = entries => createNativeFunctionValue(
+  ['begin', 'end'],
+  R.compose(
+    withArrayResult,
+    withOptionalParameter('end'),
+    withOptionalParameter('begin'),
+  )(
+    (context, begin, end) => (begin ? (
+      end ? (
+        entries.slice(begin.asNativeNumber(), end.asNativeNumber())
+      ) : (
+        entries.slice(begin.asNativeNumber())
+      )
+    ) : (
+      entries.slice()
+    )),
+  ),
+);
 
-const unique = entries => createNativeFunctionValue([], context => {
-  const results = [];
-  for (const entry of entries) {
-    if (!results.find(r => r.identicalTo(entry))) {
-      results.push(entry);
-      continue;
-    }
-  }
-  return createArrayValue(results);
-});
+const unique = entries => createNativeFunctionValue(
+  [],
+  R.compose(
+    withArrayResult,
+  )(
+    context => R.uniqWith((a, b) => a.identicalTo(b), entries)
+  ),
+);
 
-const length = entries => createNativeFunctionValue([], context => {
-  return context.factory.createNumericValue(entries.length);
-});
+const length = entries => createNativeFunctionValue(
+  [],
+  R.compose(
+    withNumericResult,
+  )(
+    R.always(entries.length),
+  ),
+);
 
 export const createArrayValue = entries => createValue(
   valueTypes.ARRAY,
