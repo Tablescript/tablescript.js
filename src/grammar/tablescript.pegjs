@@ -53,6 +53,7 @@
   const { createIfExpression } = require('../expressions/if');
   const { createWhileExpression } = require('../expressions/while');
   const { createUntilExpression } = require('../expressions/until');
+  const { createForExpression } = require('../expressions/for');
   const { createSpreadExpression } = require('../expressions/spread');
 
   const composeBinaryExpression = (context, head, tail) => {
@@ -135,6 +136,8 @@ Keyword
   / TrueToken
   / UntilToken
   / WhileToken
+  / ForToken
+  / InToken
 
 Literal
   = UndefinedLiteral
@@ -250,6 +253,8 @@ IfToken = "if" !IdentifierPart
 ElseToken = "else" !IdentifierPart
 WhileToken = "while" !IdentifierPart
 UntilToken = "until" !IdentifierPart
+ForToken = "for" !IdentifierPart
+InToken = "in" !IdentifierPart
 AndToken = $("and" !IdentifierPart)
 OrToken = $("or" !IdentifierPart)
 NotToken = $("not" !IdentifierPart)
@@ -280,6 +285,7 @@ PrimaryExpression
   / IfExpression
   / WhileExpression
   / UntilExpression
+  / ForExpression
 
 ///////////////////////////////////////////////////////////////////////////
 // Array Literals
@@ -669,6 +675,11 @@ WhileExpression
 UntilExpression
   = UntilToken __ '(' __ e:AssignmentExpression __ ')' __ loopBlock:LoopBlock {
     return createUntilExpression(createLocation(location(), options), e, loopBlock);
+  }
+
+ForExpression
+  = ForToken __ '(' __ i:IdentifierName __ InToken __ e:AssignmentExpression __ ')' __ loopBlock:LoopBlock {
+    return createForExpression(createLocation(location(), options), i, e, loopBlock);
   }
 
 LoopBlock

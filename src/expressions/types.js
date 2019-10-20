@@ -26,6 +26,7 @@ export const expressionTypes = {
   COMPOUND_STRING: Symbol('COMPOUND_STRING'),
   CONDITIONAL: Symbol('CONDITIONAL'),
   DICE: Symbol('DICE'),
+  FOR: Symbol('FOR'),
   FUNCTION: Symbol('FUNCTION'),
   IF: Symbol('IF'),
   NUMBER: Symbol('NUMBER'),
@@ -64,6 +65,8 @@ export const expressionTypeName = type => {
       return 'conditional';
     case expressionTypes.DICE:
       return 'dice';
+    case expressionTypes.FOR:
+      return 'for';
     case expressionTypes.FUNCTION:
       return 'funtion';
     case expressionTypes.IF:

@@ -56,8 +56,8 @@ export const initializeContext = (initializeScope, args, options, factory) => {
     },
 
     scopes: () => stacks.scopes,
-    pushScope: () => {
-      stacks.scopes = [{}, ...stacks.scopes];
+    pushScope: (scope = {}) => {
+      stacks.scopes = [scope, ...stacks.scopes];
     },
     swapScopes: scopes => {
       const currentScopes = stacks.scopes;

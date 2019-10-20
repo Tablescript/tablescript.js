@@ -21,3 +21,8 @@ y = until (x == 10) {
 };
 assert(x == 10);
 assert(y == 10);
+
+y = for (i in range(10)) {
+  i + 1;
+};
+assert(y == 10);
