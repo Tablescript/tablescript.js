@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Copyright 2017 Jamie Hale
+// Copyright 2019 Jamie Hale
 //
 // This file is part of Tablescript.js.
 //
