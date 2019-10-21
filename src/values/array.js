@@ -225,7 +225,7 @@ const sort = entries => createNativeFunctionValue(
     withArrayResult,
     withOptionalParameter('f'),
   )(
-    (context, f) => (f ? quickSort(context, [...entries], f) : quickSort(context, [...entries], defaultSorter)),
+    (context, f) => (!isUndefined(f) ? quickSort(context, [...entries], f) : quickSort(context, [...entries], defaultSorter)),
   ),
 );
 
@@ -235,10 +235,10 @@ const join = entries => createNativeFunctionValue(
     withStringResult,
     withOptionalStringParameter('separator', 'join([separator])'),
   )(
-    (context, separator) => (separator ? (
-      entries.map(e => e.asNativeString()).join(separator.asNativeString())
-    ) : (
+    (context, separator) => (isUndefined(separator) ? (
       entries.map(e => e.asNativeString()).join()
+    ) : (
+      entries.map(e => e.asNativeString()).join(separator.asNativeString())
     )),
   ),
 );
@@ -259,8 +259,8 @@ const slice = entries => createNativeFunctionValue(
     withOptionalParameter('end'),
     withOptionalParameter('begin'),
   )(
-    (context, begin, end) => (begin ? (
-      end ? (
+    (context, begin, end) => (!isUndefined(begin) ? (
+      !isUndefined(end) ? (
         entries.slice(begin.asNativeNumber(), end.asNativeNumber())
       ) : (
         entries.slice(begin.asNativeNumber())

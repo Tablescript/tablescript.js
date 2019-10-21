@@ -18,10 +18,15 @@
 import * as R from 'ramda';
 import { throwRuntimeError } from '../error';
 
-const mapFormalParameters = (formalParameters, parameters) => parameters.reduce((acc, p, i) => ({ ...acc, [formalParameters[i]]: p }), {});
+const bindFormalParameter = (context, parameters) => (acc, formalParameter, i) => ({
+  ...acc,
+  [formalParameter]: parameters[i] || context.factory.createUndefined(),
+});
 
-export const mapFunctionParameters = (context, formalParameters, parameters) => ({
-  ...mapFormalParameters(formalParameters, R.take(formalParameters.length, parameters)),
+const bindFormalParameters = (context, formalParameters, parameters) => R.addIndex(R.reduce)(bindFormalParameter(context, parameters), {}, formalParameters);
+
+export const bindFunctionParameters = (context, formalParameters, parameters) => ({
+  ...bindFormalParameters(context, formalParameters, parameters),
   'arguments': context.factory.createArrayValue(parameters),
 });
 

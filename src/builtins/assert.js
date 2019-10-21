@@ -18,18 +18,23 @@
 import * as R from 'ramda';
 import { throwRuntimeError } from '../error';
 import { withRequiredParameter, withOptionalParameter } from '../values/util/methods';
+import { createNativeFunctionValue } from '../values/function';
+import { isUndefined, valueTypes } from '../values/types';
 
-export const assertBuiltIn = R.compose(
-  withOptionalParameter('message'),
-  withRequiredParameter('condition'),
-)(
-  (context, condition) => {
-    if (!condition.asNativeBoolean()) {
-      if (message) {
-        throwRuntimeError(`assertion failed: ${message.asNativeString()}`, context);
+export const assertBuiltIn = createNativeFunctionValue(
+  ['condition', 'message'],
+  R.compose(
+    withOptionalParameter('message'),
+    withRequiredParameter('condition'),
+  )(
+    (context, condition, message) => {
+      if (!condition.asNativeBoolean()) {
+        if (message && !isUndefined(message)) {
+          throwRuntimeError(`assertion failed: ${message.asNativeString()}`, context);
+        }
+        throwRuntimeError('assertion failed', context);
       }
-      throwRuntimeError('assertion failed', context);
+      return context.factory.createUndefined();
     }
-    return context.factory.createUndefined();
-  }
+  )
 );

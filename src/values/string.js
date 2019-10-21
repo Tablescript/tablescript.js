@@ -17,7 +17,7 @@
 
 import * as R from 'ramda';
 import { createValue } from './default';
-import { valueTypes, isString, isNumber } from './types';
+import { valueTypes, isString, isUndefined } from './types';
 import { createNativeFunctionValue } from './function';
 import { throwRuntimeError } from '../error';
 import { requiredParameter, optionalParameter } from '../util/parameters';
@@ -130,10 +130,10 @@ const slice = value => createNativeFunctionValue(
     withOptionalNumericParameter('end', 'slice(start, end) end'),
     withRequiredNumericParameter('start', 'slice(start, end) start'),
   )(
-    (context, startValue, endValue) => (endValue ? (
-      value.slice(startValue.asNativeNumber(), endValue.asNativeNumber())
-    ) : (
+    (context, startValue, endValue) => (isUndefined(endValue) ? (
       value.slice(startValue.asNativeNumber())
+    ) : (
+      value.slice(startValue.asNativeNumber(), endValue.asNativeNumber())
     )),
   ),
 );

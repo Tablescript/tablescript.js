@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { norm } from './norm';
 import { createNativeFunctionValue } from '../values/function';
 import { requiredParameter, optionalParameterOr } from '../util/parameters';
@@ -61,19 +62,19 @@ const mathNormI = context => context.factory.createNumericValue(
   )
 );
 
-const extractParameter = context => f => f(context);
+const validateParameter = (context, name) => f => f(context, name);
 
-const createF = (name, parameters, f, filter) => (context) => {
-  const parameterValues = R.map(extractParameter(context), parameters);
+const createF = (name, validators, f, filter) => (context) => {
+  const parameterValues = R.map(validateParameter(context, name), validators);
   return filter(context, f(context, ...parameterValues));
 };
 
 const requiredParameterF = name => context => requiredParameter(context, name);
 
-const requiredTypedParameterF = (validator, type) => (name, msg) => context => {
-  const value = requiredParameter(context, name);
+const requiredTypedParameterF = (validator, type) => parameterName => (context, name) => {
+  const value = requiredParameter(context, parameterName);
   if (!validator(value)) {
-    throwRuntimeError(`${msg} ${name} must be ${type}`, context);
+    throwRuntimeError(`${name} ${parameterName} must be ${type}`, context);
   }
   return value;
 };
@@ -83,10 +84,10 @@ const requiredNumericParameterF = requiredTypedParameterF(isNumber, 'a number');
 const numericResult = (context, value) => context.factory.createNumericValue(value);
 
 const pow = createF(
-  'pow',
+  'pow(x,y)',
   [
-    requiredParameterF('x'),
-    requiredParameterF('y'),
+    requiredNumericParameterF('x'),
+    requiredNumericParameterF('y'),
   ],
   (context, x, y) => Math.pow(x.asNativeNumber(), y.asNativeNumber()),
   numericResult,
@@ -98,7 +99,7 @@ export const initializeMath = () => ({
   round: createNativeFunctionValue(['n'], mathRound),
   floor: createNativeFunctionValue(['n'], mathFloor),
   ceil: createNativeFunctionValue(['n'], mathCeil),
-  pow: createNativeFunctionValue(['x', 'y'], mathPow),
+  pow: createNativeFunctionValue(['x', 'y'], pow),
   norm: createNativeFunctionValue(['mean', 'stdev'], mathNorm),
   normI: createNativeFunctionValue(['mean', 'stdev'], mathNormI),
 });

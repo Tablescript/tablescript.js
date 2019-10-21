@@ -18,7 +18,7 @@
 import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
-import { mapFunctionParameters } from '../util/parameters';
+import { bindFunctionParameters } from '../util/parameters';
 import { withSwappedScopes } from './util/context';
 
 export const createNativeFunctionValue = (formalParameters, f) => {
@@ -35,7 +35,7 @@ export const createNativeFunctionValue = (formalParameters, f) => {
       asNativeBoolean: R.T,
       callFunction: withSwappedScopes(
         (context, parameters) => ([
-          mapFunctionParameters(context, formalParameters, parameters),
+          bindFunctionParameters(context, formalParameters, parameters),
         ]),
         f
       ),
@@ -57,7 +57,7 @@ export const createFunctionValue = (formalParameters, body, closure) => {
       asNativeBoolean: R.T,
       callFunction: withSwappedScopes(
         (context, parameters) => ([
-          mapFunctionParameters(context, formalParameters, parameters),
+          bindFunctionParameters(context, formalParameters, parameters),
           closure,
         ]),
         body.evaluate,

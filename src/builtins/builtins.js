@@ -27,7 +27,7 @@ import { strBuiltIn, intBuiltIn } from './convert';
 import { initializeMath } from './math';
 
 export const initializeBuiltins = () => ({
-  assert: createNativeFunctionValue(['condition', 'message'], assertBuiltIn),
+  assert: assertBuiltIn,
   choose: chooseBuiltIn,
   keys: createNativeFunctionValue(['o'], keysBuiltIn),
   print: createNativeFunctionValue([], printBuiltIn),

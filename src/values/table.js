@@ -19,7 +19,7 @@ import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
 import { randomNumber } from '../util/random';
-import { mapFunctionParameters } from '../util/parameters';
+import { bindFunctionParameters } from '../util/parameters';
 import { callWithSwappedScopes, withSwappedScopes } from './util/context';
 
 const asNativeString = () => 'table';
@@ -60,7 +60,7 @@ const callFunction = (formalParameters, entries, closure) => (context, parameter
   return withSwappedScopes(
     (context, parameters) => ([
       closure,
-      mapFunctionParameters(context, formalParameters, parameters),
+      bindFunctionParameters(context, formalParameters, parameters),
       tableEntryScope(context, formalParameters, entries, closure, roll),  
     ]),
     rolledEntry.evaluate

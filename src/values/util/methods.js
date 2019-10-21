@@ -1,6 +1,6 @@
 import { requiredParameter, optionalParameter } from '../../util/parameters';
 import { throwRuntimeError } from '../../error';
-import { isString, isNumber, isArray, isObject } from '../types';
+import { isString, isNumber, isArray, isObject, isUndefined } from '../types';
 
 export const withRequiredParameter = parameter => f => (context, ...args) => f(context, requiredParameter(context, parameter), ...args);
 
@@ -20,7 +20,7 @@ export const withOptionalParameter = parameter => f => (context, ...args) => f(c
 
 export const withOptionalStringParameter = (parameter, msg) => f => (context, ...args) => {
   const value = optionalParameter(context, parameter);
-  if (value && !isString(value)) {
+  if (!isUndefined(value) && !isString(value)) {
     throwRuntimeError(`${msg} must be a string`, context);
   }
   return f(context, value, ...args);
@@ -28,7 +28,7 @@ export const withOptionalStringParameter = (parameter, msg) => f => (context, ..
 
 export const withOptionalNumericParameter = (parameter, msg) => f => (context, ...args) => {
   const value = optionalParameter(context, parameter);
-  if (value && !isNumber(value)) {
+  if (!isUndefined(value) && !isNumber(value)) {
     throwRuntimeError(`${msg} must be a number`, context);
   }
   return f(context, value, ...args);
