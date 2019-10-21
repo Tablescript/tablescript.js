@@ -16,10 +16,13 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { randomNumber } from '../util/random';
-import { requiredParameter } from '../util/parameters';
+import { withRequiredArrayParameter } from '../values/util/methods';
+import { createNativeFunctionValue } from '../values/function';
 
-export const chooseBuiltIn = context => {
-  const items = requiredParameter(context, 'items').asArray();
-  const roll = randomNumber(items.length) - 1;
-  return items[roll];
-};
+export const chooseBuiltIn = createNativeFunctionValue(
+  ['items'],
+  withRequiredArrayParameter('items', 'choose(items)')
+  (
+    (context, items) => items.asArray()[randomNumber(items.asArray().length) - 1],
+  ),
+);

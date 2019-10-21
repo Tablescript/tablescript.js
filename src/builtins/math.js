@@ -18,6 +18,8 @@
 import { norm } from './norm';
 import { createNativeFunctionValue } from '../values/function';
 import { requiredParameter, optionalParameterOr } from '../util/parameters';
+import { throwRuntimeError } from '../error';
+import { isNumber } from '../values/types';
 
 const parametersAsNativeNumbers = context => requiredParameter(context, 'arguments').asArray().map(p => p.asNativeNumber());
 
@@ -57,6 +59,37 @@ const mathNormI = context => context.factory.createNumericValue(
       optionalParameterOr(context, 'stdev', context.factory.createNumericValue(1.0)).asNativeNumber(),
     )
   )
+);
+
+const extractParameter = context => f => f(context);
+
+const createF = (name, parameters, f, filter) => (context) => {
+  const parameterValues = R.map(extractParameter(context), parameters);
+  return filter(context, f(context, ...parameterValues));
+};
+
+const requiredParameterF = name => context => requiredParameter(context, name);
+
+const requiredTypedParameterF = (validator, type) => (name, msg) => context => {
+  const value = requiredParameter(context, name);
+  if (!validator(value)) {
+    throwRuntimeError(`${msg} ${name} must be ${type}`, context);
+  }
+  return value;
+};
+
+const requiredNumericParameterF = requiredTypedParameterF(isNumber, 'a number');
+
+const numericResult = (context, value) => context.factory.createNumericValue(value);
+
+const pow = createF(
+  'pow',
+  [
+    requiredParameterF('x'),
+    requiredParameterF('y'),
+  ],
+  (context, x, y) => Math.pow(x.asNativeNumber(), y.asNativeNumber()),
+  numericResult,
 );
 
 export const initializeMath = () => ({

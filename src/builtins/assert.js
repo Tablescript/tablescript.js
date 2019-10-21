@@ -15,19 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { throwRuntimeError } from '../error';
-import { requiredParameter, optionalParameter } from '../util/parameters';
+import { withRequiredParameter, withOptionalParameter } from '../values/util/methods';
 
-export const assertBuiltIn = context => {
-  const condition = requiredParameter(context, 'condition');
-  const message = optionalParameter(context, 'message');
-  if (!condition.asNativeBoolean()) {
-    if (message) {
-      const messageText = message.asNativeString();
-      throwRuntimeError(`assertion failed: ${messageText}`, context);
-    } else {
+export const assertBuiltIn = R.compose(
+  withOptionalParameter('message'),
+  withRequiredParameter('condition'),
+)(
+  (context, condition) => {
+    if (!condition.asNativeBoolean()) {
+      if (message) {
+        throwRuntimeError(`assertion failed: ${message.asNativeString()}`, context);
+      }
       throwRuntimeError('assertion failed', context);
     }
+    return context.factory.createUndefined();
   }
-  return context.factory.createUndefined();
-};
+);

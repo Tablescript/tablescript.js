@@ -17,11 +17,20 @@
 
 import * as R from 'ramda';
 import { createValue } from './default';
-import { valueTypes, isArray, isString, isUndefined } from './types';
+import { valueTypes, isArray, isUndefined } from './types';
 import { throwRuntimeError } from '../error';
 import { createNativeFunctionValue } from './function';
-import { requiredParameter, optionalParameter } from '../util/parameters';
 import { quickSort } from '../util/sort';
+import {
+  withRequiredParameter,
+  withOptionalParameter,
+  withOptionalStringParameter,
+  withArrayResult,
+  withBooleanResult,
+  withNumericResult,
+  withStringResult,
+} from './util/methods';
+import { randomNumber } from '../util/random';
 
 const entriesAsNativeValues = entries => entries.map(e => e.asNativeValue());
 
@@ -85,21 +94,6 @@ const multiplyBy = entries => (context, other) => createArrayValue(
 const indexedReduce = R.addIndex(R.reduce);
 const indexedMap = R.addIndex(R.map);
 const indexedFilter = R.addIndex(R.filter);
-
-const withRequiredParameter = parameter => f => (context, ...args) => f(context, requiredParameter(context, parameter), ...args)
-const withOptionalParameter = parameter => f => (context, ...args) => f(context, optionalParameter(context, parameter), ...args);
-const withOptionalStringParameter = (parameter, msg) => f => (context, ...args) => {
-  const value = optionalParameter(context, parameter);
-  if (value && !isString(value)) {
-    throwRuntimeError(`${msg} must be a string`, context);
-  }
-  return f(context, value, ...args);
-};
-
-const withNumericResult = f => (context, ...args) => context.factory.createNumericValue(f(context, ...args));
-const withBooleanResult = f => (context, ...args) => context.factory.createBooleanValue(f(context, ...args));
-const withArrayResult = f => (context, ...args) => context.factory.createArrayValue(f(context, ...args));
-const withStringResult = f => (context, ...args) => context.factory.createStringValue(f(context, ...args));
 
 const each = entries => createNativeFunctionValue(
   ['f'],
@@ -215,9 +209,15 @@ const findIndex = entries => createNativeFunctionValue(
   ),
 );
 
-const defaultSorter = createNativeFunctionValue(['a', 'b'], context => {
-  return requiredParameter(context, 'a').compare(context, requiredParameter(context, 'b'));
-});
+const defaultSorter = createNativeFunctionValue(
+  ['a', 'b'],
+  R.compose(
+    withRequiredParameter('b'),
+    withRequiredParameter('a'),
+  )(
+    (context, a, b) => a.compare(context, b)
+  ),
+);
 
 const sort = entries => createNativeFunctionValue(
   ['f'],
@@ -289,6 +289,11 @@ const length = entries => createNativeFunctionValue(
   ),
 );
 
+const choose = entries => createNativeFunctionValue(
+  [],
+  context => entries[randomNumber(entries.length) - 1],
+);
+
 export const createArrayValue = entries => createValue(
   valueTypes.ARRAY,
   asNativeArray(entries),
@@ -309,6 +314,7 @@ export const createArrayValue = entries => createValue(
     slice: slice(entries),
     unique: unique(entries),
     length: length(entries),
+    choose: choose(entries),
   },
   {
     asNativeString: asNativeString(entries),

@@ -28,7 +28,7 @@ import { initializeMath } from './math';
 
 export const initializeBuiltins = () => ({
   assert: createNativeFunctionValue(['condition', 'message'], assertBuiltIn),
-  choose: createNativeFunctionValue(['items'], chooseBuiltIn),
+  choose: chooseBuiltIn,
   keys: createNativeFunctionValue(['o'], keysBuiltIn),
   print: createNativeFunctionValue([], printBuiltIn),
   range: createNativeFunctionValue(['start', 'end', 'step'], rangeBuiltIn),

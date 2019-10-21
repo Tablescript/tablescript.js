@@ -22,6 +22,16 @@ import { createNativeFunctionValue } from './function';
 import { throwRuntimeError } from '../error';
 import { requiredParameter, optionalParameter } from '../util/parameters';
 import { rollDiceFromString } from '../util/dice-strings';
+import {
+  withRequiredParameter,
+  withRequiredNumericParameter,
+  withOptionalParameter,
+  withOptionalNumericParameter,
+  withArrayResult,
+  withStringResult,
+  withBooleanResult,
+  withNumericResult,
+} from './util/methods';
 
 const identicalTo = value => other => isString(other) && value === other.asNativeString();
 
@@ -64,89 +74,137 @@ const compare = value => (context, other) => context.factory.createNumericValue(
 
 const split = value => createNativeFunctionValue(
   ['separator'],
-  context => {
-    const separator = optionalParameter(context, 'separator');
-    if (separator) {
-      const separatorValue = separator.asNativeString();
-      return context.factory.createArrayValue(value.split(separatorValue).map(createStringValue));
-    }
-    return context.factory.createArrayValue(value.split().map(createStringValue));
-  }
+  R.compose(
+    withArrayResult,
+    withOptionalParameter('separator'),
+  )(
+    (context, separator) => (separator ? (
+      value.split(separator.asNativeString()).map(createStringValue)
+    ) : (
+      value.split().map(createStringValue)
+    )),
+  ),
 );
 
 const capitalize = value => createNativeFunctionValue(
   [],
-  context => createStringValue(value.length === 0 ? value : `${ value[0].toUpperCase() }${ value.slice(1) }`)
+  withStringResult(
+    context => (value.length === 0 ? value : `${ value[0].toUpperCase() }${ value.slice(1) }`)
+  ),
 );
 
-const uppercase = value => createNativeFunctionValue([], context => createStringValue(value.toUpperCase()));
+const uppercase = value => createNativeFunctionValue(
+  [],
+  withStringResult(R.always(value.toUpperCase())),
+);
 
-const lowercase = value => createNativeFunctionValue([], context => createStringValue(value.toLowerCase()));
+const lowercase = value => createNativeFunctionValue(
+  [],
+  withStringResult(R.always(value.toLowerCase())),
+);
 
 const includes = value => createNativeFunctionValue(
   ['s'],
-  context => {
-    const s = requiredParameter(context, 's');
-    return context.factory.createBooleanValue(value.includes(s.asNativeString()));
-  }
+  R.compose(
+    withBooleanResult,
+    withRequiredParameter('s'),
+  )(
+    (context, s) => value.includes(s.asNativeString()),
+  ),
 );
 
 const indexOf = value => createNativeFunctionValue(
   ['s'],
-  context => {
-    const s = requiredParameter(context, 's');
-    return context.factory.createNumericValue(value.indexOf(s.asNativeString()));
-  }
+  R.compose(
+    withNumericResult,
+    withRequiredParameter('s'),
+  )(
+    (context, s) => value.indexOf(s.asNativeString()),
+  ),
 );
 
 const slice = value => createNativeFunctionValue(
   ['start', 'end'],
-  context => {
-    const startValue = requiredParameter(context, 'start');
-    if (!isNumber(startValue)) {
-      throwRuntimeError(`slice(start, end) start must be a number`, context);
-    }
-    const endValue = optionalParameter(context, 'end');
-    if (endValue) {
-      if (!isNumber(endValue)) {
-        throwRuntimeError(`slice(start, end) end must be a number`, context);
-      }
-      return createStringValue(value.slice(startValue.asNativeNumber(), endValue.asNativeNumber()));
-    }
-    return createStringValue(value.slice(startValue.asNativeNumber()));
-  }
+  R.compose(
+    withStringResult,
+    withOptionalNumericParameter('end', 'slice(start, end) end'),
+    withRequiredNumericParameter('start', 'slice(start, end) start'),
+  )(
+    (context, startValue, endValue) => (endValue ? (
+      value.slice(startValue.asNativeNumber(), endValue.asNativeNumber())
+    ) : (
+      value.slice(startValue.asNativeNumber())
+    )),
+  ),
 );
 
 const startsWith = value => createNativeFunctionValue(
   ['s'],
-  context => {
-    const s = requiredParameter(context, 's');
-    return context.factory.createBooleanValue(value.startsWith(s.asNativeString()));
-  }
+  R.compose(
+    withBooleanResult,
+    withRequiredParameter('s'),
+  )(
+    (context, s) => value.startsWith(s.asNativeString()),
+  ),
 );
 
-const endsWith = value => createNativeFunctionValue(['s'], context => {
-  const s = requiredParameter(context, 's');
-  return context.factory.createBooleanValue(value.endsWith(s.asNativeString()));
-});
+const endsWith = value => createNativeFunctionValue(
+  ['s'],
+  R.compose(
+    withBooleanResult,
+    withRequiredParameter('s'),
+  )(
+    (context, s) => value.endsWith(s.asNativeString()),
+  ),
+);
 
-const trim = value => createNativeFunctionValue([], context => createStringValue(value.trim()));
+const trim = value => createNativeFunctionValue(
+  [],
+  withStringResult(
+    R.always(value.trim()),
+  ),
+);
 
-const trimLeft = value => createNativeFunctionValue([], context => createStringValue(value.trimLeft()));
+const trimLeft = value => createNativeFunctionValue(
+  [],
+  withStringResult(
+    R.always(value.trimLeft()),
+  ),
+);
 
-const trimRight = value => createNativeFunctionValue([], context => createStringValue(value.trimRight()));
+const trimRight = value => createNativeFunctionValue(
+  [],
+  withStringResult(
+    R.always(value.trimRight()),
+  ),
+);
 
-const empty = value => createNativeFunctionValue([], context => context.factory.createBooleanValue(value.length === 0));
+const empty = value => createNativeFunctionValue(
+  [],
+  withBooleanResult(
+    R.always(value.length === 0),
+  ),
+);
 
-const length = value => createNativeFunctionValue([], context => context.factory.createNumericValue(value.length));
+const length = value => createNativeFunctionValue(
+  [],
+  withNumericResult(
+    R.always(value.length),
+  ),
+);
 
-const roll = value => createNativeFunctionValue([], context => {
-  try {
-    return context.factory.createNumericValue(rollDiceFromString(value));
-  } catch (e) {
-    throwRuntimeError(e.message, context);
-  }
-});
+const roll = value => createNativeFunctionValue(
+  [],
+  withNumericResult(
+    context => {
+      try {
+        return rollDiceFromString(value);
+      } catch (e) {
+        throwRuntimeError(e.message, context);
+      }
+    },
+  ),
+);
 
 export const createStringValue = value => createValue(
   valueTypes.STRING,
