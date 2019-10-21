@@ -1,3 +1,2 @@
-
-s = "Some template string with undefined expression #{ nope() }"
-print(s)
+s = `Some template string with undefined expression ${ nope() }`;
+print(s);
