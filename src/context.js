@@ -46,7 +46,7 @@ export const initializeContext = (initializeScope, args, options, factory) => {
     factory,
     locations: () => stacks.locations,
     pushLocation: location => {
-      stacks.locations = [location, ...stacks.locations.slice(1)];
+      stacks.locations = [location, ...stacks.locations];
     },
     setLocation: location => {
       stacks.locations = [location, ...stacks.locations.slice(1)];
