@@ -21,7 +21,6 @@ import { keysBuiltIn } from './keys';
 import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
 import { requireBuiltIn } from './require';
-import { createNativeFunctionValue } from '../values/function';
 import { createObjectValue } from '../values/object';
 import { strBuiltIn, intBuiltIn } from './convert';
 import { initializeMath } from './math';
@@ -29,12 +28,12 @@ import { initializeMath } from './math';
 export const initializeBuiltins = () => ({
   assert: assertBuiltIn,
   choose: chooseBuiltIn,
-  keys: createNativeFunctionValue(['o'], keysBuiltIn),
-  print: createNativeFunctionValue([], printBuiltIn),
-  range: createNativeFunctionValue(['start', 'end', 'step'], rangeBuiltIn),
-  require: createNativeFunctionValue(['filename'], requireBuiltIn),
-  str: createNativeFunctionValue(['s'], strBuiltIn),
-  int: createNativeFunctionValue(['i'], intBuiltIn),
+  keys: keysBuiltIn,
+  print: printBuiltIn,
+  range: rangeBuiltIn,
+  require: requireBuiltIn,
+  str: strBuiltIn,
+  int: intBuiltIn,
   math: createObjectValue({
     ...initializeMath(),
   }),

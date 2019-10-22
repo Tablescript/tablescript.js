@@ -16,13 +16,22 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { loadAndRunScript } from '../runner';
-import { requiredParameter } from '../util/parameters';
+import {
+  createNativeFunctionValue,
+  nativeFunctionParameter,
+  requiredStringParameterF,
+  toNativeString
+} from '../values/native-function';
 
-export const requireBuiltIn = context => {
-  const filename = requiredParameter(context, 'filename').asNativeString();
-  const args = requiredParameter(context, 'arguments').asArray().slice(1);
-  const oldScopes = context.swapScopes([context.initializeScope(args, context.options)]);
-  const result = loadAndRunScript(context, filename);
-  context.swapScopes(oldScopes);
-  return result;
-};
+export const requireBuiltIn = createNativeFunctionValue(
+  'require',
+  [
+    nativeFunctionParameter('filename', requiredStringParameterF(toNativeString)),
+  ],
+  (context, args, filename) => {
+    const oldScopes = context.swapScopes([context.initializeScope(args.slice(1), context.options)]);
+    const result = loadAndRunScript(context, filename);
+    context.swapScopes(oldScopes);
+    return result;
+  },
+);

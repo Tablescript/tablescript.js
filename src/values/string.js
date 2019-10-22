@@ -17,21 +17,23 @@
 
 import * as R from 'ramda';
 import { createValue } from './default';
-import { valueTypes, isString, isUndefined } from './types';
-import { createNativeFunctionValue } from './function';
-import { throwRuntimeError } from '../error';
-import { requiredParameter, optionalParameter } from '../util/parameters';
-import { rollDiceFromString } from '../util/dice-strings';
+import { valueTypes, isString } from './types';
 import {
-  withRequiredParameter,
-  withRequiredNumericParameter,
-  withOptionalParameter,
-  withOptionalNumericParameter,
-  withArrayResult,
-  withStringResult,
-  withBooleanResult,
-  withNumericResult,
-} from './util/methods';
+  createNativeFunctionValue,
+  nativeFunctionParameter,
+  requiredNumericParameterF,
+  requiredStringParameterF,
+  optionalNumericParameterF,
+  optionalStringParameterF,
+  toNativeNumber,
+  toNativeString,
+  toArrayResult,
+  toStringResult,
+  toBooleanResult,
+  toNumericResult,
+} from './native-function';
+import { throwRuntimeError } from '../error';
+import { rollDiceFromString } from '../util/dice-strings';
 
 const identicalTo = value => other => isString(other) && value === other.asNativeString();
 
@@ -73,137 +75,135 @@ const greaterThanOrEquals = value => (context, other) => context.factory.createB
 const compare = value => (context, other) => context.factory.createNumericValue(value.localeCompare(other.asNativeString()));
 
 const split = value => createNativeFunctionValue(
-  ['separator'],
-  R.compose(
-    withArrayResult,
-    withOptionalParameter('separator'),
-  )(
-    (context, separator) => (separator ? (
-      value.split(separator.asNativeString()).map(createStringValue)
-    ) : (
-      value.split().map(createStringValue)
-    )),
-  ),
+  'split',
+  [
+    nativeFunctionParameter('separator', optionalStringParameterF(toNativeString)),
+  ],
+  (context, args, separator) => (args.length === 1 ? (
+    value.split(separator).map(createStringValue)
+  ) : (
+    value.split().map(createStringValue)
+  )),
+  toArrayResult,
 );
 
 const capitalize = value => createNativeFunctionValue(
+  'capitalize',
   [],
-  withStringResult(
-    context => (value.length === 0 ? value : `${ value[0].toUpperCase() }${ value.slice(1) }`)
-  ),
+  () => (value.length === 0 ? value : `${ value[0].toUpperCase() }${ value.slice(1) }`),
+  toStringResult,
 );
 
 const uppercase = value => createNativeFunctionValue(
+  'uppercase',
   [],
-  withStringResult(R.always(value.toUpperCase())),
+  R.always(value.toUpperCase()),
+  toStringResult,
 );
 
 const lowercase = value => createNativeFunctionValue(
+  'lowercase',
   [],
-  withStringResult(R.always(value.toLowerCase())),
+  R.always(value.toLowerCase()),
+  toStringResult,
 );
 
 const includes = value => createNativeFunctionValue(
-  ['s'],
-  R.compose(
-    withBooleanResult,
-    withRequiredParameter('s'),
-  )(
-    (context, s) => value.includes(s.asNativeString()),
-  ),
+  'includes',
+  [
+    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
+  ],
+  (context, args, s) => value.includes(s),
+  toBooleanResult,
 );
 
 const indexOf = value => createNativeFunctionValue(
-  ['s'],
-  R.compose(
-    withNumericResult,
-    withRequiredParameter('s'),
-  )(
-    (context, s) => value.indexOf(s.asNativeString()),
-  ),
+  'indexOf',
+  [
+    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
+  ],
+  (context, args, s) => value.indexOf(s),
+  toNumericResult,
 );
 
 const slice = value => createNativeFunctionValue(
-  ['start', 'end'],
-  R.compose(
-    withStringResult,
-    withOptionalNumericParameter('end', 'slice(start, end) end'),
-    withRequiredNumericParameter('start', 'slice(start, end) start'),
-  )(
-    (context, startValue, endValue) => (isUndefined(endValue) ? (
-      value.slice(startValue.asNativeNumber())
-    ) : (
-      value.slice(startValue.asNativeNumber(), endValue.asNativeNumber())
-    )),
-  ),
+  'slice',
+  [
+    nativeFunctionParameter('start', requiredNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('end', optionalNumericParameterF(toNativeNumber)),
+  ],
+  (context, args, startValue, endValue) => (args.length === 1 ? (
+    value.slice(startValue)
+  ) : (
+    value.slice(startValue, endValue)
+  )),
+  toStringResult,
 );
 
 const startsWith = value => createNativeFunctionValue(
-  ['s'],
-  R.compose(
-    withBooleanResult,
-    withRequiredParameter('s'),
-  )(
-    (context, s) => value.startsWith(s.asNativeString()),
-  ),
+  'startsWith',
+  [
+    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
+  ],
+  (context, args, s) => value.startsWith(s),
+  toBooleanResult,
 );
 
 const endsWith = value => createNativeFunctionValue(
-  ['s'],
-  R.compose(
-    withBooleanResult,
-    withRequiredParameter('s'),
-  )(
-    (context, s) => value.endsWith(s.asNativeString()),
-  ),
+  'endsWith',
+  [
+    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
+  ],
+  (context, args, s) => value.endsWith(s),
+  toBooleanResult,
 );
 
 const trim = value => createNativeFunctionValue(
+  'trim',
   [],
-  withStringResult(
-    R.always(value.trim()),
-  ),
+  R.always(value.trim()),
+  toStringResult,
 );
 
 const trimLeft = value => createNativeFunctionValue(
+  'trimLeft',
   [],
-  withStringResult(
-    R.always(value.trimLeft()),
-  ),
+  R.always(value.trimLeft()),
+  toStringResult,
 );
 
 const trimRight = value => createNativeFunctionValue(
+  'trimRight',
   [],
-  withStringResult(
-    R.always(value.trimRight()),
-  ),
+  R.always(value.trimRight()),
+  toStringResult,
 );
 
 const empty = value => createNativeFunctionValue(
+  'empty',
   [],
-  withBooleanResult(
-    R.always(value.length === 0),
-  ),
+  R.always(value.length === 0),
+  toBooleanResult,
 );
 
 const length = value => createNativeFunctionValue(
+  'length',
   [],
-  withNumericResult(
-    R.always(value.length),
-  ),
+  R.always(value.length),
+  toNumericResult,
 );
 
 const roll = value => createNativeFunctionValue(
+  'roll',
   [],
-  withNumericResult(
-    context => {
-      try {
-        return rollDiceFromString(value);
-      } catch (e) {
-        throwRuntimeError(e.message, context);
-      }
-    },
-  ),
+  context => {
+    try {
+      return rollDiceFromString(value);
+    } catch (e) {
+      throwRuntimeError(e.message, context);
+    }
+  },
+  toNumericResult,
 );
 
 export const createStringValue = value => createValue(

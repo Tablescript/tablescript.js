@@ -15,28 +15,48 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { requiredParameter } from '../util/parameters';
 import { isString, isNumber, isBoolean } from '../values/types';
 import { throwRuntimeError } from '../error';
+import {
+  createNativeFunctionValue,
+  nativeFunctionParameter,
+  requiredParameterF,
+  toNumericResult
+} from '../values/native-function';
 
-export const strBuiltIn = context => {
-  const s = requiredParameter(context, 's');
-  if (isString(s)) {
-    return s;
-  }
-  return context.factory.createStringValue(s.asNativeString());
-};
+export const strBuiltIn = createNativeFunctionValue(
+  'str',
+  [
+    nativeFunctionParameter('s', requiredParameterF()),
+  ],
+  (context, args, s) => {
+    if (isString(s)) {
+      return s;
+    }
+    return context.factory.createStringValue(s.asNativeString());
+  },
+);
 
-export const intBuiltIn = context => {
-  const i = requiredParameter(context, 'i');
-  if (isNumber(i)) {
-    return context.factory.createNumericValue(Math.round(i.asNativeValue()));
-  }
-  if (isString(i)) {
-    return context.factory.createNumericValue(parseInt(i.asNativeString()));
-  }
-  if (isBoolean(i)) {
-    return context.factory.createNumericValue(i.asNativeBoolean() ? 1 : 0);
-  }
-  throwRuntimeError(`Cannot convert #{i.type} to NUMBER`);
-};
+export const intBuiltIn = createNativeFunctionValue(
+  'int',
+  [
+    nativeFunctionParameter('i', requiredParameterF()),
+  ],
+  (context, args, i) => {
+    if (isNumber(i)) {
+      return Math.round(i.asNativeValue());
+    }
+    if (isString(i)) {
+      const value = parseInt(i.asNativeString(), 10);
+      if (isNaN(value)) {
+        throwRuntimeError(`Cannot convert ${i.type} to NUMBER`);
+      }
+      return value;
+    }
+    if (isBoolean(i)) {
+      return i.asNativeBoolean() ? 1 : 0;
+    }
+    throwRuntimeError(`Cannot convert ${i.type} to NUMBER`);
+  },
+  toNumericResult,
+);

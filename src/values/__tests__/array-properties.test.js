@@ -20,7 +20,7 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-import { createNativeFunctionValue } from '../function';
+import { createNativeFunctionValue } from '../native-function';
 import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
 import { createBooleanValue } from '../boolean';

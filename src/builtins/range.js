@@ -16,7 +16,14 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import { throwRuntimeError } from '../error';
-import { requiredParameter } from '../util/parameters';
+import {
+  createNativeFunctionValue,
+  nativeFunctionParameter,
+  requiredNumericParameterF,
+  optionalNumericParameterF,
+  toNativeNumber,
+  toArrayResult
+} from '../values/native-function';
 
 const createRangeArray = (context, start, end, step) => {
   const result = [];
@@ -30,25 +37,30 @@ const createRangeArray = (context, start, end, step) => {
     }
   }
 
-  return context.factory.createArrayValue(result);
+  return result;
 };
 
-export const rangeBuiltIn = context => {
-  const args = requiredParameter(context, 'arguments').asArray(context);
-  const startValue = requiredParameter(context, 'start').asNativeNumber();
-  if (args.length === 1) {
-    return createRangeArray(context, 0, startValue, startValue > 0 ? 1 : -1);
-  }
-  const endValue = requiredParameter(context, 'end').asNativeNumber();
-  if (args.length === 2) {
-    return createRangeArray(context, startValue, endValue, startValue <= endValue ? 1 : -1);
-  }
-  const stepValue = requiredParameter(context, 'step').asNativeNumber();
-  if (endValue < startValue && stepValue >= 0) {
-    throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be negative if end is less than start', context);
-  }
-  if (endValue > startValue && stepValue <= 0) {
-    throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be positive if start is less than end', context);
-  }
-  return createRangeArray(context, startValue, endValue, stepValue);
-};
+export const rangeBuiltIn = createNativeFunctionValue(
+  'range',
+  [
+    nativeFunctionParameter('start', requiredNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('end', optionalNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('step', optionalNumericParameterF(toNativeNumber)),
+  ],
+  (context, args, startValue, endValue, stepValue) => {
+    if (args.length === 1) {
+      return createRangeArray(context, 0, startValue, startValue > 0 ? 1 : -1);
+    }
+    if (args.length === 2) {
+      return createRangeArray(context, startValue, endValue, startValue <= endValue ? 1 : -1);
+    }
+    if (endValue < startValue && stepValue >= 0) {
+      throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be negative if end is less than start', context);
+    }
+    if (endValue > startValue && stepValue <= 0) {
+      throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be positive if start is less than end', context);
+    }
+    return createRangeArray(context, startValue, endValue, stepValue);
+  },
+  toArrayResult,
+);

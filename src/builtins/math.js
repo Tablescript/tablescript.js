@@ -15,91 +15,96 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
 import { norm } from './norm';
-import { createNativeFunctionValue } from '../values/function';
-import { requiredParameter, optionalParameterOr } from '../util/parameters';
-import { throwRuntimeError } from '../error';
-import { isNumber } from '../values/types';
+import {
+  createNativeFunctionValue,
+  nativeFunctionParameter,
+  requiredNumericParameterF,
+  optionalNumericParameterF,
+  toNativeNumber,
+  toNumericResult
+} from '../values/native-function';
 
-const parametersAsNativeNumbers = context => requiredParameter(context, 'arguments').asArray().map(p => p.asNativeNumber());
+const parametersAsNativeNumbers = args => args.map(p => p.asNativeNumber());
 
-const mathMax = context => context.factory.createNumericValue(Math.max(...parametersAsNativeNumbers(context)));
-
-const mathMin = context => context.factory.createNumericValue(Math.min(...parametersAsNativeNumbers(context)));
-
-const mathRound = context => context.factory.createNumericValue(
-  Math.round(requiredParameter(context, 'n').asNativeNumber())
+const mathMax = createNativeFunctionValue(
+  'max',
+  [],
+  (context, args) => Math.max(...parametersAsNativeNumbers(args)),
+  toNumericResult,
 );
 
-const mathFloor = context =>context.factory.createNumericValue(
-  Math.floor(requiredParameter(context, 'n').asNativeNumber())
+const mathMin = createNativeFunctionValue(
+  'min',
+  [],
+  (context, args) => Math.min(...parametersAsNativeNumbers(args)),
+  toNumericResult,
 );
 
-const mathCeil = context => context.factory.createNumericValue(
-  Math.ceil(requiredParameter(context, 'n').asNativeNumber())
-);
-
-const mathPow = context => context.factory.createNumericValue(
-  Math.pow(
-    requiredParameter(context, 'x').asNativeNumber(),
-    requiredParameter(context, 'y').asNativeNumber()
-  )
-);
-
-const mathNorm = context => context.factory.createNumericValue(
-  norm(
-    requiredParameter(context, 'mean').asNativeNumber(),
-    optionalParameterOr(context, 'stdev', context.factory.createNumericValue(1.0)).asNativeNumber(),
-  )
-);
-const mathNormI = context => context.factory.createNumericValue(
-  Math.round(
-    norm(
-      requiredParameter(context, 'mean').asNativeNumber(),
-      optionalParameterOr(context, 'stdev', context.factory.createNumericValue(1.0)).asNativeNumber(),
-    )
-  )
-);
-
-const validateParameter = (context, name) => f => f(context, name);
-
-const createF = (name, validators, f, filter) => (context) => {
-  const parameterValues = R.map(validateParameter(context, name), validators);
-  return filter(context, f(context, ...parameterValues));
-};
-
-const requiredParameterF = name => context => requiredParameter(context, name);
-
-const requiredTypedParameterF = (validator, type) => parameterName => (context, name) => {
-  const value = requiredParameter(context, parameterName);
-  if (!validator(value)) {
-    throwRuntimeError(`${name} ${parameterName} must be ${type}`, context);
-  }
-  return value;
-};
-
-const requiredNumericParameterF = requiredTypedParameterF(isNumber, 'a number');
-
-const numericResult = (context, value) => context.factory.createNumericValue(value);
-
-const pow = createF(
-  'pow(x,y)',
+const mathRound = createNativeFunctionValue(
+  'round',
   [
-    requiredNumericParameterF('x'),
-    requiredNumericParameterF('y'),
+    nativeFunctionParameter('n', requiredNumericParameterF(toNativeNumber)),
   ],
-  (context, x, y) => Math.pow(x.asNativeNumber(), y.asNativeNumber()),
-  numericResult,
+  (_, args, n) => Math.round(n),
+  toNumericResult,
+);
+
+const mathFloor = createNativeFunctionValue(
+  'floor',
+  [
+    nativeFunctionParameter('n', requiredNumericParameterF(toNativeNumber)),
+  ],
+  (_, args, n) => Math.floor(n),
+  toNumericResult,
+);
+
+const mathCeil = createNativeFunctionValue(
+  'ceil',
+  [
+    nativeFunctionParameter('n', requiredNumericParameterF(toNativeNumber)),
+  ],
+  (_, args, n) => Math.ceil(n),
+  toNumericResult,
+);
+
+const mathPow = createNativeFunctionValue(
+  'pow',
+  [
+    nativeFunctionParameter('x', requiredNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('y', requiredNumericParameterF(toNativeNumber)),
+  ],
+  (_, args, x, y) => Math.pow(x, y),
+  toNumericResult,
+);
+
+const mathNorm = createNativeFunctionValue(
+  'norm',
+  [
+    nativeFunctionParameter('mean', requiredNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('stdev', optionalNumericParameterF(toNativeNumber, 1.0)),
+  ],
+  (_, args, mean, stdev) => norm(mean, stdev),
+  toNumericResult,
+);
+
+const mathNormI = createNativeFunctionValue(
+  'normI',
+  [
+    nativeFunctionParameter('mean', requiredNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('stdev', optionalNumericParameterF(toNativeNumber, 1.0)),
+  ],  
+  (_, args, mean, stdev) => Math.round(norm(mean, stdev)),
+  toNumericResult,
 );
 
 export const initializeMath = () => ({
-  max: createNativeFunctionValue([], mathMax),
-  min: createNativeFunctionValue([], mathMin),
-  round: createNativeFunctionValue(['n'], mathRound),
-  floor: createNativeFunctionValue(['n'], mathFloor),
-  ceil: createNativeFunctionValue(['n'], mathCeil),
-  pow: createNativeFunctionValue(['x', 'y'], pow),
-  norm: createNativeFunctionValue(['mean', 'stdev'], mathNorm),
-  normI: createNativeFunctionValue(['mean', 'stdev'], mathNormI),
+  max: mathMax,
+  min: mathMin,
+  round: mathRound,
+  floor: mathFloor,
+  ceil: mathCeil,
+  pow: mathPow,
+  norm: mathNorm,
+  normI: mathNormI,
 });

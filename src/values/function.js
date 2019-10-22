@@ -21,28 +21,6 @@ import { valueTypes } from './types';
 import { bindFunctionParameters } from '../util/parameters';
 import { withSwappedScopes } from './util/context';
 
-export const createNativeFunctionValue = (formalParameters, f) => {
-  const asNativeString = R.always('function(native)');
-
-  return createValue(
-    valueTypes.FUNCTION,
-    asNativeString,
-    R.F,
-    R.F,
-    {},
-    {
-      asNativeString,
-      asNativeBoolean: R.T,
-      callFunction: withSwappedScopes(
-        (context, parameters) => ([
-          bindFunctionParameters(context, formalParameters, parameters),
-        ]),
-        f
-      ),
-    },
-  );
-};
-
 export const createFunctionValue = (formalParameters, body, closure) => {
   const asNativeString = R.always('function(tablescript)');
 

@@ -16,15 +16,23 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import * as R from 'ramda';
-import { withRequiredObjectParameter, withArrayResult } from '../values/util/methods';
+import {
+  createNativeFunctionValue,
+  nativeFunctionParameter,
+  requiredObjectParameterF,
+  toObject,
+  toArrayResult
+} from '../values/native-function';
 
-export const keysBuiltIn = R.compose(
-  withArrayResult,
-  withRequiredObjectParameter('o', 'keys(o)')
-)(
-  (context, o) => R.compose(
+export const keysBuiltIn = createNativeFunctionValue(
+  'keys',
+  [
+    nativeFunctionParameter('o', requiredObjectParameterF(toObject)),
+  ],
+  (context, args, o) => R.compose(
     R.map(context.factory.createStringValue),
     R.sort(R.comparator(R.lt)),
     R.keys,
-  )(o.asNativeObject()),
+  )(o),
+  toArrayResult,
 );

@@ -15,26 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
 import { throwRuntimeError } from '../error';
-import { withRequiredParameter, withOptionalParameter } from '../values/util/methods';
-import { createNativeFunctionValue } from '../values/function';
-import { isUndefined, valueTypes } from '../values/types';
+import {
+  createNativeFunctionValue,
+  nativeFunctionParameter,
+  requiredParameterF,
+  optionalStringParameterF,
+  toNativeBoolean,
+  toUndefinedResult
+} from '../values/native-function';
+import { isUndefined } from '../values/types';
 
 export const assertBuiltIn = createNativeFunctionValue(
-  ['condition', 'message'],
-  R.compose(
-    withOptionalParameter('message'),
-    withRequiredParameter('condition'),
-  )(
-    (context, condition, message) => {
-      if (!condition.asNativeBoolean()) {
-        if (message && !isUndefined(message)) {
-          throwRuntimeError(`assertion failed: ${message.asNativeString()}`, context);
-        }
-        throwRuntimeError('assertion failed', context);
+  'assert',
+  [
+    nativeFunctionParameter('condition', requiredParameterF(toNativeBoolean)),
+    nativeFunctionParameter('message', optionalStringParameterF()),
+  ],
+  (context, args, condition, message) => {
+    if (!condition) {
+      if (message && !isUndefined(message)) {
+        throwRuntimeError(`assertion failed: ${message.asNativeString()}`, context);
       }
-      return context.factory.createUndefined();
+      throwRuntimeError('assertion failed', context);
     }
-  )
+  },
+  toUndefinedResult,
 );
