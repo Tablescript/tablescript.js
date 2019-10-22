@@ -18,7 +18,7 @@
 import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
-import { bindFunctionParameters } from '../util/parameters';
+import { bindFunctionParameters } from './util/parameters';
 import { withSwappedScopes } from './util/context';
 
 export const createFunctionValue = (formalParameters, body, closure) => {
