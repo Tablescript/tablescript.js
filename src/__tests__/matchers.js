@@ -1,6 +1,6 @@
 import { isUndefined, isArray, isString, isNumber, isBoolean } from '../values/types';
 
-const toBeTsUndefined = (received) => {
+const toBeTsUndefined = received => {
   if (isUndefined(received)) {
     return {
       message: () => `Expected ${received.typeName} not to be UNDEFINED`,
@@ -14,7 +14,7 @@ const toBeTsUndefined = (received) => {
   }
 };
 
-const toBeTsArray = (received) => {
+const toBeTsArray = received => {
   if (isArray(received)) {
     return {
       message: () => `Expected ${received.typeName} not to be ARRAY`,
@@ -28,7 +28,7 @@ const toBeTsArray = (received) => {
   }
 };
 
-const toBeTsString = (received) => {
+const toBeTsString = received => {
   if (isString(received)) {
     return {
       message: () => `Expected ${received.typeName} not to be STRING`,
@@ -42,7 +42,7 @@ const toBeTsString = (received) => {
   }
 };
 
-const toBeTsBoolean = (received) => {
+const toBeTsBoolean = received => {
   if (isBoolean(received)) {
     return {
       message: () => `expected ${received.typeName}) not to be BOOLEAN`,
