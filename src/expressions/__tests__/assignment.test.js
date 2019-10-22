@@ -15,13 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-import spies from 'chai-spies-next';
-chai.use(chaiAsPromised);
-chai.use(spies);
-const expect = chai.expect;
-
 import { valueTypes } from '../../values/types';
 import { createAssignmentExpression } from '../assignment';
 

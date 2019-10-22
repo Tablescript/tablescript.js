@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-chai.use(chaiAsPromised);
-const expect = chai.expect;
 
 import { createBooleanLiteral } from '../boolean-literal';
 
@@ -36,21 +32,17 @@ describe('createBooleanValue', () => {
 
     it('evaluates a true literal to a true boolean value', () => {
       const expression = createBooleanLiteral(true);
-      return expression.evaluate(mockContext).then(v => {
-        expect(v).to.equal(true);
-      });
+      expect(expression.evaluate(mockContext)).toEqual(true);
     });
 
     it('evaluates a false literal to a false boolean value', () => {
       const expression = createBooleanLiteral(false);
-      return expression.evaluate(mockContext).then(v => {
-        expect(v).to.equal(false);
-      });
+      expect(expression.evaluate(mockContext)).toEqual(false);
     });
   });
 
   it('throws when evaluated as a lhs', () => {
     const expression = createBooleanLiteral(true);
-    expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to boolean expression');
+    expect(() => expression.evaluateAsLeftHandSide()).toThrow('Cannot assign to boolean expression');
   });
 });

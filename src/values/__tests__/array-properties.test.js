@@ -15,11 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-chai.use(chaiAsPromised);
-const expect = chai.expect;
-
 import { createNativeFunctionValue } from '../native-function';
 import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';

@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-chai.use(chaiAsPromised);
-const expect = chai.expect;
 
 import { createBinaryExpression, createBinaryExpressionWithOperators } from '../binary';
 import { numericValue } from '../../__tests__/util';
@@ -54,8 +50,8 @@ xdescribe('createBinaryExpressionWithOperators', () => {
   });
 });
 
-describe('createBinaryExpression', () => {
-  xit('evaluates', () => {
+xdescribe('createBinaryExpression', () => {
+  it('evaluates', () => {
     const leftExpression = {
       evaluate: () => createNumericValue(9),
     };

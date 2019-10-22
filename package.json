@@ -13,10 +13,9 @@
     "build:tracing-parser": "node_modules/.bin/pegjs --trace --cache --output src/parser/tablescript-grammar-parser.js src/grammar/tablescript.pegjs",
     "dependency-graph": "madge --image tablescript-graph.svg src/bin/tablescript.js",
     "lint": "node_modules/.bin/eslint src",
-    "test": "mocha --require @babel/core --require @babel/register --require @babel/polyfill src/**/*.test.js",
+    "test": "jest",
     "test:examples": "yarn build:parser && yarn build && find examples/tests -name \"*.tab\" -exec echo {} \\; -exec node dist/bin/tablescript.js {} \\;",
     "ci:test": "mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./test-results/mocha/results.xml --require @babel/core --require @babel/register --require @babel/polyfill src/**/*.test.js",
-    "test:watch": "mocha --watch --require @babel/core --require @babel/register --require @babel/polyfill src/**/*.test.js",
     "postversion": "git push --tags && yarn publish . --tag $npm_package_version && git push && echo \"Successfully released version $npm_package_version!\""
   },
   "author": {
@@ -34,15 +33,12 @@
     "@babel/core": "^7.6.3",
     "@babel/preset-env": "^7.6.3",
     "@babel/register": "^7.6.2",
-    "chai": "*",
-    "chai-as-promised": "*",
-    "chai-spies-next": "*",
+    "babel-jest": "^24.9.0",
     "eslint": "*",
     "eslint-config-google": "*",
     "eslint-plugin-standard": "*",
+    "jest": "^24.9.0",
     "madge": "^3.4.4",
-    "mocha": "*",
-    "mocha-junit-reporter": "^1.23.1",
     "pegjs": "^0.10.0"
   },
   "dependencies": {
