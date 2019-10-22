@@ -81,7 +81,7 @@ describe('array', () => {
         });
 
         it('returns the second element', () => {
-          expect(value.getElement(mockContext, createNumericValue(1))).toEqualTsNumeric(12);
+          expect(value.getElement(mockContext, createNumericValue(1))).toEqualTsNumber(12);
         });
 
         it('returns the last element', () => {

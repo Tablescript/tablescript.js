@@ -21,26 +21,37 @@ import { createNumericValue } from '../numeric';
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
 import { numericValue, booleanValue, arrayValue } from '../../__tests__/util';
+import defaultFactory from '../../__tests__/factory';
 
-xdescribe('array', () => {
+describe('array', () => {
   const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);
   const nonEmptyNumericArray = () => createArrayValue([createNumericValue(4), createNumericValue(5), createNumericValue(6)]);
   const emptyArray = () => createArrayValue([]);
 
-  describe('methods', () => {
+  let mockContext;
+
+  beforeEach(() => {
+    mockContext = {
+      ...defaultFactory,
+    };
+  });
+
+  xdescribe('methods', () => {
     describe('length', () => {
-      const memberName = createStringValue('length');
+      const methodName = createStringValue('length');
 
       it('knows the length of non-empty arrays', () => {
-        expect(nonEmptyArray().getProperty({}, memberName)).to.satisfy(numericValue(3));
+        const f = nonEmptyArray().getProperty({}, methodName);
+        expect(f.callFunction(mockContext, [])).toEqualTsNumber(3);
       });
 
       it('knows the length of empty arrays', () => {
-        expect(emptyArray().getProperty({}, memberName)).to.satisfy(numericValue(0));
+        const f = emptyArray().getProperty({}, methodName);
+        expect(f.callFunction(mockContext, [])).toEqualTsNumber(0);
       });
     });
 
-    describe('includes', () => {
+    xdescribe('includes', () => {
       const methodName = createStringValue('includes');
 
       it('returns false for empty arrays', () => {
@@ -59,7 +70,7 @@ xdescribe('array', () => {
       });
     });
 
-    describe('map', () => {
+    xdescribe('map', () => {
       const methodName = createStringValue('map');
       let callback;
 
@@ -107,7 +118,7 @@ xdescribe('array', () => {
       });
     });
 
-    describe('reduce', () => {
+    xdescribe('reduce', () => {
       const methodName = createStringValue('reduce');
       let callback;
 
@@ -156,7 +167,7 @@ xdescribe('array', () => {
       });
     });
 
-    describe('filter', () => {
+    xdescribe('filter', () => {
       const methodName = createStringValue('filter');
       let callback;
 

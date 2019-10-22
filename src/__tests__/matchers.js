@@ -70,7 +70,7 @@ const toEqualTsString = (received, s) => {
   }
 };
 
-const toEqualTsNumeric = (received, n) => {
+const toEqualTsNumber = (received, n) => {
   if (isNumber(received) && received.asNativeNumber() === n) {
     return {
       message: () => `Expected NUMBER ${n} and got ${received.typeName} ${received.asNativeNumber()}`,
@@ -106,6 +106,6 @@ expect.extend({
   toBeTsArray,
   toBeTsUndefined,
   toEqualTsBoolean,
-  toEqualTsNumeric,
+  toEqualTsNumber,
   toEqualTsString,
 });
