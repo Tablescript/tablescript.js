@@ -85,6 +85,7 @@ const defaultMethods = (asNativeValue, identicalTo, nativeEquals, properties, ge
 export const createValue = (type, nativeValueFunction, identicalToFunction, nativeEqualsFunction, properties, methods) => ({
   type,
   typeName: valueTypeName(type),
+  value: nativeValueFunction(),
   ...defaultMethods(nativeValueFunction, identicalToFunction, nativeEqualsFunction, properties, () => valueTypeName(type)),
   ...methods,
 });

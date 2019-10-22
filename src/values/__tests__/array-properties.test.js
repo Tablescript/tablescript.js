@@ -15,13 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createNativeFunctionValue } from '../native-function';
+import * as R from 'ramda';
+import { createNativeFunctionValue, nativeFunctionParameter, requiredNumericParameterF, toNumericResult, toNativeNumber, requiredParameterF, toBooleanResult } from '../native-function';
 import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
+import { initializeContext } from '../../context';
+import { defaultValueFactory } from '../../index';
 import { numericValue, booleanValue, arrayValue } from '../../__tests__/util';
-import defaultFactory from '../../__tests__/factory';
+require('../../__tests__/matchers');
 
 describe('array', () => {
   const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);
@@ -31,12 +34,10 @@ describe('array', () => {
   let mockContext;
 
   beforeEach(() => {
-    mockContext = {
-      ...defaultFactory,
-    };
+    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
   });
 
-  xdescribe('methods', () => {
+  describe('methods', () => {
     describe('length', () => {
       const methodName = createStringValue('length');
 
@@ -51,166 +52,112 @@ describe('array', () => {
       });
     });
 
-    xdescribe('includes', () => {
+    describe('includes', () => {
       const methodName = createStringValue('includes');
 
       it('returns false for empty arrays', () => {
         const f = emptyArray().getProperty({}, methodName);
-        return expect(f.callFunction({}, [createStringValue('Not gonna find it')])).to.eventually.satisfy(booleanValue(false));
+        expect(f.callFunction(mockContext, [createStringValue('Not gonna find it')])).toEqualTsBoolean(false);
       });
 
       it('returns false for non-empty arrays without a matching value', () => {
         const f = nonEmptyArray().getProperty({}, methodName);
-        return expect(f.callFunction({}, [createStringValue('Not gonna find it')])).to.eventually.satisfy(booleanValue(false));
+        expect(f.callFunction(mockContext, [createStringValue('Not gonna find it')])).toEqualTsBoolean(false);
       });
 
       it('returns true for non-empty arrays with a matching value', () => {
         const f = nonEmptyArray().getProperty({}, methodName);
-        return expect(f.callFunction({}, [createNumericValue(12)])).to.eventually.satisfy(booleanValue(true));
+        expect(f.callFunction(mockContext, [createNumericValue(12)])).toEqualTsBoolean(true);
       });
     });
 
-    xdescribe('map', () => {
+    describe('map', () => {
       const methodName = createStringValue('map');
       let callback;
 
       beforeEach(() => {
-        callback = createNativeFunctionValue(['n'], (context, scope) => {
-          const n = scope['n'];
-          return createNumericValue(n.asNativeNumber() + 1);
-        });
+        callback = createNativeFunctionValue(
+          'inc',
+          [
+            nativeFunctionParameter('n', requiredNumericParameterF(toNativeNumber))
+          ],
+          (context, args, n) => n + 1,
+          toNumericResult
+        );
       });
 
       describe('for an empty array', () => {
-        let f;
-
-        beforeEach(() => {
-          f = emptyArray().getProperty({}, methodName);
-        });
-
         it('returns an empty array when called on an empty array', () => {
-          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(arrayValue([]));
-        });
-
-        it('does not call the callback', async () => {
-          chai.spy.on(callback, 'callFunction');
-          await f.callFunction({}, [callback]);
-          expect(callback.callFunction).not.to.have.been.called();
+          const f = emptyArray().getProperty({}, methodName);
+          expect(f.callFunction(mockContext, [callback])).toEqualTsArray(createArrayValue([]));
         });
       });
 
       describe('for a non-empty array', () => {
-        let f;
-
-        beforeEach(() => {
-          f = nonEmptyNumericArray().getProperty({}, methodName);
-        });
-
         it('returns an array of values mapped from the original array', () => {
-          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(arrayValue([5, 6, 7]));
-        });
-
-        it('calls the callback 3 times', async () => {
-          chai.spy.on(callback, 'callFunction');
-          await f.callFunction({}, [callback]);
-          expect(callback.callFunction).to.have.been.called.exactly(3);
+          const f = nonEmptyNumericArray().getProperty({}, methodName);
+          expect(f.callFunction(mockContext, [callback])).toEqualTsArray(createArrayValue([createNumericValue(5), createNumericValue(6), createNumericValue(7)]));
         });
       });
     });
 
-    xdescribe('reduce', () => {
+    describe('reduce', () => {
       const methodName = createStringValue('reduce');
       let callback;
 
       beforeEach(() => {
-        callback = createNativeFunctionValue(['acc', 'n'], (context, scope) => {
-          const acc = scope['acc'];
-          const n = scope['n'];
-          return createNumericValue(Math.max(acc.asNativeNumber(), n.asNativeNumber()));
-        });
+        callback = createNativeFunctionValue(
+          'max',
+          [
+            nativeFunctionParameter('acc', requiredParameterF(toNativeNumber)),
+            nativeFunctionParameter('n', requiredParameterF(toNativeNumber)),
+          ],
+          (context, args, acc, n) => Math.max(acc, n),
+          toNumericResult,
+        );
       });
 
       describe('for an empty array', () => {
-        let f;
-
-        beforeEach(() => {
-          f = emptyArray().getProperty({}, methodName);
-        });
-
         it('returns the initial value when called on an empty array', () => {
-          return expect(f.callFunction({}, [callback, createNumericValue(0)])).to.eventually.satisfy(numericValue(0));
-        });
-
-        it('does not call the callback', async () => {
-          chai.spy.on(callback, 'callFunction');
-          await f.callFunction({}, [callback, createNumericValue(0)]);
-          expect(callback.callFunction).not.to.have.been.called();
+          const f = emptyArray().getProperty({}, methodName);
+          expect(f.callFunction(mockContext, [callback, createNumericValue(0)])).toEqualTsNumber(0);
         });
       });
 
       describe('for a non-empty array', () => {
-        let f;
-
-        beforeEach(() => {
-          f = nonEmptyNumericArray().getProperty({}, methodName);
-        });
-
         it('returns the reduced value from the original array', () => {
-          return expect(f.callFunction({}, [callback, createNumericValue(0)])).to.eventually.satisfy(numericValue(6));
-        });
-
-        it('calls the callback 3 times', async () => {
-          chai.spy.on(callback, 'callFunction');
-          await f.callFunction({}, [callback, createNumericValue(0)]);
-          expect(callback.callFunction).to.have.been.called.exactly(3);
+          const f = nonEmptyNumericArray().getProperty({}, methodName);
+          expect(f.callFunction(mockContext, [callback, createNumericValue(0)])).toEqualTsNumber(6);
         });
       });
     });
 
-    xdescribe('filter', () => {
+    describe('filter', () => {
       const methodName = createStringValue('filter');
       let callback;
 
       beforeEach(() => {
-        callback = createNativeFunctionValue(['n'], (context, scope) => {
-          const n = scope['n'];
-          return createBooleanValue(n.asNativeNumber() % 2 === 0);
-        });
+        callback = createNativeFunctionValue(
+          'even',
+          [
+            nativeFunctionParameter('n', requiredParameterF(toNativeNumber)),
+          ],
+          (context, args, n) => n % 2 === 0,
+          toBooleanResult,
+        );
       });
 
       describe('for an empty array', () => {
-        let f;
-
-        beforeEach(() => {
-          f = emptyArray().getProperty({}, methodName);
-        });
-
         it('returns an empty array when called on an empty array', () => {
-          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(arrayValue([]));
-        });
-
-        it('does not call the callback', async () => {
-          chai.spy.on(callback, 'callFunction');
-          await f.callFunction({}, [callback]);
-          expect(callback.callFunction).not.to.have.been.called();
+          const f = emptyArray().getProperty({}, methodName);
+          expect(f.callFunction(mockContext, [callback])).toEqualTsArray(createArrayValue([]));
         });
       });
 
       describe('for a non-empty array', () => {
-        let f;
-
-        beforeEach(() => {
-          f = nonEmptyNumericArray().getProperty({}, methodName);
-        });
-
         it('returns an array of values mapped from the original array', () => {
-          return expect(f.callFunction({}, [callback])).to.eventually.satisfy(arrayValue([4, 6]));
-        });
-
-        it('calls the callback 3 times', async () => {
-          chai.spy.on(callback, 'callFunction');
-          await f.callFunction({}, [callback]);
-          expect(callback.callFunction).to.have.been.called.exactly(3);
+          const f = nonEmptyNumericArray().getProperty({}, methodName);
+          expect(f.callFunction(mockContext, [callback])).toEqualTsArray(createArrayValue([createNumericValue(4), createNumericValue(6)]));
         });
       });
     });

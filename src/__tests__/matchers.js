@@ -88,13 +88,27 @@ const toEqualTsBoolean = (received, b) => {
   if (isBoolean(received) && received.asNativeValue() === b) {
     return {
       message: () =>
-        `expected BOOLEAN ${b} not to be ${received.asNativeValue()}`,
+        `expected BOOLEAN ${received.asNativeValue()} not to be ${b}`,
       pass: true,
     };
   } else {
     return {
       message: () =>
         `expected BOOLEAN ${b} but got ${received.typeName} ${received.asNativeValue()}`,
+      pass: false,
+    };
+  }
+};
+
+const toEqualTsArray = (received, a) => {
+  if (isArray(received) && received.nativeEquals(a)) {
+    return {
+      message: () => `expected ARRAY ${received.asNativeString()} not to equal ${a.asNativeString()}`,
+      pass: true,
+    };
+  } else {
+    return {
+      message: () => `expected ${received.typeName} ${received.asNativeString()} to equal ${a.asNativeString()}`,
       pass: false,
     };
   }
@@ -108,4 +122,5 @@ expect.extend({
   toEqualTsBoolean,
   toEqualTsNumber,
   toEqualTsString,
+  toEqualTsArray,
 });
