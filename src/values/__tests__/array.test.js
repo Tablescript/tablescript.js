@@ -15,60 +15,90 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../types';
 import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
 import { createBooleanValue } from '../boolean';
-import { createUndefined } from '../undefined';
 import { createArrayValue } from '../array';
-import { TablescriptError } from '../../error';
-import { undefinedValue } from '../../__tests__/util';
+import defaultFactory from '../../__tests__/factory';
+require('../../__tests__/matchers');
 
 const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);
 const emptyArray = () => createArrayValue([]);
 
-xdescribe('array', () => {
+describe('array', () => {
 
   describe('with an initial value', () => {
     let value;
+    let mockContext;
 
     beforeEach(() => {
       value = nonEmptyArray();
+      mockContext = {
+        ...defaultFactory,
+      }
     });
 
     it('has an ARRAY type', () => {
-      expect(value.type).to.equal(valueTypes.ARRAY);
+      expect(value).toBeTsArray();
     });
 
     it('throws if cast as a number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast ARRAY to number');
+      expect(() => value.asNativeNumber()).toThrow('Cannot treat ARRAY as NUMBER');
     });
 
     it('has a JSON-ish string representation', () => {
-      expect(value.asNativeString()).to.equal('["I have a ham radio",12,false]');
+      expect(value.asNativeString()).toEqual('["I have a ham radio",12,false]');
     });
 
     it('is true', () => {
-      expect(value.asNativeBoolean()).to.be.true;
+      expect(value.asNativeBoolean()).toEqual(true);
     });
 
     it('has a native array representation', () => {
-      expect(value.asNativeArray()).to.eql(['I have a ham radio', 12, false]);
+      expect(value.asNativeArray()).toStrictEqual(['I have a ham radio', 12, false]);
     });
 
     describe('equality', () => {
       it('is equal to the same non-empty array', () => {
-        expect(value.nativeEquals(nonEmptyArray())).to.be.true;
+        expect(value.nativeEquals(nonEmptyArray())).toBeTruthy();
       });
     });
 
     describe('properties', () => {
       it('returns undefined for non-method properties', () => {
-        expect(value.getProperty({}, createStringValue('not there')).type).to.equal(valueTypes.UNDEFINED);
+        expect(value.getProperty(mockContext, createStringValue('not there'))).toBeTsUndefined();
       });
 
       describe('set', () => {
 
+      });
+    });
+
+    describe('elements', () => {
+      describe('get', () => {
+        it('returns the first element', () => {
+          expect(value.getElement(mockContext, createNumericValue(0))).toEqualTsString('I have a ham radio');
+        });
+
+        it('returns the second element', () => {
+          expect(value.getElement(mockContext, createNumericValue(1))).toEqualTsNumeric(12);
+        });
+
+        it('returns the last element', () => {
+          expect(value.getElement(mockContext, createNumericValue(2))).toEqualTsBoolean(false);
+        });
+
+        it('returns the last element when index is -1', () => {
+          expect(value.getElement(mockContext, createNumericValue(-1))).toEqualTsBoolean(false);
+        });
+
+        it('returns undefined for an index too high', () => {
+          expect(value.getElement(mockContext, createNumericValue(200))).toBeTsUndefined();
+        });
+
+        it('returns undefined for an index too low', () => {
+          expect(value.getElement(mockContext, createNumericValue(-200))).toBeTsUndefined();
+        });
       });
     });
   });

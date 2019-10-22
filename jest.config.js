@@ -82,7 +82,7 @@ module.exports = {
   // moduleNameMapper: {},
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
-  modulePathIgnorePatterns: ['dist', 'src/__tests__/util.js'],
+  modulePathIgnorePatterns: ['dist', 'src/__tests__/util.js', 'src/__tests__/matchers.js', 'src/__tests__/factory.js'],
 
   // Activates notifications for test results
   // notify: false,

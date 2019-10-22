@@ -15,8 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-
 import { createBooleanLiteral } from '../boolean-literal';
+import { isBoolean } from '../../values/types';
+
+expect.extend({
+  toBeTSBoolean(received, value) {
+    if (isBoolean(received) && received.asNativeValue() === value) {
+      return {
+        message: () =>
+          `expected TSBoolean(${received.asNativeValue()}) not to be ${value}`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () =>
+          `expected TSBoolean(${received.asNativeValue()}) to be ${value}`,
+        pass: false,
+      };
+    }
+  }
+});
 
 describe('createBooleanValue', () => {
   describe('evaluate', () => {
