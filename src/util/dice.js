@@ -22,7 +22,7 @@ const fateRoll = () => randomNumber(3) - 2;
 
 const basicRoll = die => () => randomNumber(die);
 
-const createFateRollSet = (count) => R.range(0, count).map(fateRoll);
+const createFateRollSet = count => R.range(0, count).map(fateRoll);
 
 const createBasicRollSet = (count, die) => R.range(0, count).map(basicRoll(die));
 
@@ -64,7 +64,7 @@ const applyAnyRerolls = (die, suffixes) => rolls => R.pipe(
   R.reduce(applyReroll(die), rolls),
 )(suffixes);
 
-const keepRoll = (rolls, {specifier, count}) => {
+const keepRoll = (rolls, { specifier, count }) => {
   if (specifier === 'h') {
     return R.takeLast(count, rolls);
   }
@@ -74,7 +74,7 @@ const keepRoll = (rolls, {specifier, count}) => {
   throw new Error(`Invalid keep specifier (${specifier})`);
 };
 
-const dropRoll = (rolls, {specifier, count}) => {
+const dropRoll = (rolls, { specifier, count }) => {
   if (specifier === 'l') {
     return R.takeLast(R.max(0, R.length(rolls) - count), rolls);
   }
@@ -115,7 +115,7 @@ const countSuccesses = suffixes => rolls => R.pipe(
   R.reduce(countSuccess, rolls),
 )(suffixes);
 
-const applySuffixes = (die, suffixes) => (rolls) => R.pipe(
+const applySuffixes = (die, suffixes) => rolls => R.pipe(
   applyAnyRerolls(die, suffixes),
   R.sort(R.comparator(R.lt)),
   keepRolls(suffixes),

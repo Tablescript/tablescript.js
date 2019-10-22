@@ -59,7 +59,11 @@ const expandEntries = (context, entries) => {
   return expandedEntries;
 };
 
-const evaluate = (formalParameters, entries) => context => context.factory.createTableValue(formalParameters, expandEntries(context, entries), context.getScope());
+const evaluate = (formalParameters, entries) => context => context.factory.createTableValue(
+  formalParameters,
+  expandEntries(context, entries),
+  context.getScope()
+);
 
 export const createTableExpression = (location, formalParameters, entries) => createExpression(
   expressionTypes.TABLE,

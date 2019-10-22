@@ -55,7 +55,9 @@ export const optionalParameterF = (transformer = R.identity) => (context, signat
   return context.factory.createUndefined();
 };
 
-const optionalTypedParameterF = (validator, factoryProp, typeName) => (transformer = R.identity, defaultValue) => (context, signature, parameterName) => {
+const optionalTypedParameterF = (validator, factoryProp, typeName) =>
+  (transformer = R.identity, defaultValue) =>
+  (context, signature, parameterName) => {
   const value = context.getLocalVariable(parameterName);
   if (!isUndefined(value)) {
     if (!validator(value)) {

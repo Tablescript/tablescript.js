@@ -47,7 +47,7 @@ const asNativeBoolean = () => true;
 
 const asNativeArray = entries => () => entriesAsNativeValues(entries);
 
-const nativeEquals = entries => (other) => {
+const nativeEquals = entries => other => {
   if (!isArray(other)) {
     return false;
   }

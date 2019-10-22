@@ -31,7 +31,7 @@ const asNativeBoolean = () => true;
 
 const asNativeObject = o => () => propertiesAsNativeValues(o);
 
-const nativeEquals = o => (other) => {
+const nativeEquals = o => other => {
   if (!isObject(other)) {
     return false;
   }

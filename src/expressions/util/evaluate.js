@@ -17,4 +17,10 @@
 
 import * as R from 'ramda';
 
-export const evaluateExpressions = expressions => context => R.reduce((_, expression) => expression.evaluate(context), context.factory.createUndefined(), expressions);
+const evaluateExpression = context => (_, expression) => expression.evaluate(context);
+
+export const evaluateExpressions = expressions => context => R.reduce(
+  evaluateExpression(context),
+  context.factory.createUndefined(),
+  expressions,
+);

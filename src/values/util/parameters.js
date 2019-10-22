@@ -17,12 +17,18 @@
 
 import * as R from 'ramda';
 
+const indexedReduce = R.addIndex(R.reduce);
+
 const bindFormalParameter = (context, parameters) => (acc, formalParameter, i) => ({
   ...acc,
   [formalParameter]: parameters[i] || context.factory.createUndefined(),
 });
 
-const bindFormalParameters = (context, formalParameters, parameters) => R.addIndex(R.reduce)(bindFormalParameter(context, parameters), {}, formalParameters);
+const bindFormalParameters = (
+  context,
+  formalParameters,
+  parameters
+) => indexedReduce(bindFormalParameter(context, parameters), {}, formalParameters);
 
 export const bindFunctionParameters = (context, formalParameters, parameters) => ({
   ...bindFormalParameters(context, formalParameters, parameters),
