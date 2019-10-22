@@ -15,102 +15,138 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { valueTypes } from '../types';
 import { createNumericValue } from '../numeric';
 import { createStringValue } from '../string';
-import { createNativeFunctionValue, createFunctionValue } from '../function';
+import { createFunctionValue } from '../function';
+import { createNativeFunctionValue, toArrayResult, toNumericResult, nativeFunctionParameter, optionalParameterF, optionalNumericParameterF, requiredParameterF } from '../native-function';
 import { stringValue, numericValue, booleanValue, arrayValue } from '../../__tests__/util';
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
 import { createUndefined } from '../undefined';
+import { initializeContext } from '../../context';
+import { defaultValueFactory } from '../..';
+require('../../__tests__/matchers');
 
-xdescribe('function', () => {
+describe('function', () => {
+  let mockContext;
+
+  beforeEach(() => {
+    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+  });
+
   describe('createNativeFunctionValue', () => {
     let value;
 
     beforeEach(() => {
-      value = createNativeFunctionValue([], () => undefined);
+      value = createNativeFunctionValue('test', [], () => undefined);
     });
 
     it('has type FUNCTION', () => {
-      expect(value.type).to.equal(valueTypes.FUNCTION);
+      expect(value).toBeTsFunction();
     });
 
     it('has native value "function(native)"', () => {
-      expect(value.asNativeValue()).to.equal('function(native)');
+      expect(value.asNativeValue()).toEqual('function(native)');
     });
 
     it('throws when converted to a native number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast FUNCTION to number');
+      expect(() => value.asNativeNumber()).toThrow('Cannot treat FUNCTION as NUMBER');
     });
 
     it('has native string value "function(native)"', () => {
-      expect(value.asNativeString()).to.equal('function(native)');
+      expect(value.asNativeString()).toEqual('function(native)');
     });
 
     it('has native boolean value true', () => {
-      expect(value.asNativeBoolean()).to.be.true;
+      expect(value.asNativeBoolean()).toEqual(true);
     });
 
     it('is not equal to anything', () => {
-      expect(value.nativeEquals()).to.be.false;
-    });
-
-    it('throws when converted to number', () => {
-      expect(() => value.asNumber()).to.throw('Cannot cast FUNCTION to number');
-    });
-
-    it('has string value "function(native)"', () => {
-      expect(value.asString()).to.satisfy(stringValue('function(native)'));
-    });
-
-    it('has boolean value true', () => {
-      expect(value.asBoolean()).to.satisfy(booleanValue(true));
+      expect(value.nativeEquals()).toBeFalsy();
     });
 
     it('throws when asked for a property', () => {
-      expect(() => value.getProperty()).to.throw('Cannot get property of FUNCTION');
+      expect(() => value.getProperty()).toThrow('Cannot get property of FUNCTION');
     });
 
     it('throws when asked to set a property', () => {
-      expect(() => value.setProperty()).to.throw('Cannot set property of FUNCTION');
+      expect(() => value.setProperty()).toThrow('Cannot set property of FUNCTION');
     });
 
     it('throws when asked for an element', () => {
-      expect(() => value.getElement()).to.throw('Cannot get element of FUNCTION');
+      expect(() => value.getElement()).toThrow('Cannot get element of FUNCTION');
     });
 
     describe('callFunction', () => {
       describe('with no formal parameters', () => {
         it('sets the arguments variable', () => {
-          const f = createNativeFunctionValue([], (context, scope) => scope['arguments']);
-          return expect(
-            f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])
-          ).to.eventually.satisfy(arrayValue(['string', 12, true]));
+          const f = createNativeFunctionValue(
+            'test',
+            [],
+            (context, args) => args,
+            toArrayResult,
+          );
+          const params = [createStringValue('string'), createNumericValue(12), createBooleanValue(true)];
+          expect(
+            f.callFunction(mockContext, params)
+          ).toEqualTsArray(createArrayValue(params));
         });
 
         it('returns the result of the call', () => {
-          const f = createNativeFunctionValue([], (context, scope) => createNumericValue(12));
-          return expect(f.callFunction({}, [])).to.eventually.satisfy(numericValue(12));
+          const f = createNativeFunctionValue(
+            'test',
+            [],
+            (context, args) => 12,
+            toNumericResult,
+          );
+          expect(f.callFunction(mockContext, [])).toEqualTsNumber(12);
         });
       });
 
       describe('with formal parameters', () => {
         it('sets the arguments variable', () => {
-          const f = createNativeFunctionValue(['p1', 'p2'], (context, scope) => scope['arguments']);
-          return expect(
-            f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])
-          ).to.eventually.satisfy(arrayValue(['string', 12, true]));
+          const f = createNativeFunctionValue(
+            'test',
+            [
+              nativeFunctionParameter('p1', optionalParameterF()),
+              nativeFunctionParameter('p2', optionalParameterF()),
+            ],
+            (context, args) => args,
+            toArrayResult,
+          );
+          const params = [createStringValue('string'), createNumericValue(12), createBooleanValue(true)];
+          expect(
+            f.callFunction(mockContext, params)
+          ).toEqualTsArray(createArrayValue(params));
         });
 
         it('sets the parameters', () => {
-          const f = createNativeFunctionValue(['p1', 'p2'], (context, scope) => createArrayValue([scope['p1'], scope['p2']]));
-          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12)])).to.eventually.satisfy(arrayValue(['string', 12]));
+          const f = createNativeFunctionValue(
+            'test',
+            [
+              nativeFunctionParameter('p1', requiredParameterF()),
+              nativeFunctionParameter('p2', requiredParameterF()),
+            ],
+            (context, args, p1, p2) => ([p1, p2]),
+            toArrayResult,
+          );
+          const params = [createStringValue('string'), createNumericValue(12)];
+          expect(f.callFunction(mockContext, params)).toEqualTsArray(createArrayValue(params));
         });
 
         it('does not set un-passed parameters', () => {
-          const f = createNativeFunctionValue(['p1', 'p2'], (context, scope) => createArrayValue([scope['p1'], scope['p2'] || createUndefined()]));
-          return expect(f.callFunction({}, [createStringValue('string')])).to.eventually.satisfy(arrayValue(['string', undefined]));
+          const f = createNativeFunctionValue(
+            'test',
+            [
+              nativeFunctionParameter('p1', requiredParameterF()),
+              nativeFunctionParameter('p2', optionalParameterF()),
+            ],
+            (context, args, p1, p2) => ([p1, p2]),
+            toArrayResult,
+          );
+          expect(f.callFunction(mockContext, [createStringValue('string')])).toEqualTsArray(createArrayValue([createStringValue('string'), createUndefined()]));
         });
       });
     });
@@ -124,107 +160,102 @@ xdescribe('function', () => {
     });
 
     it('has type FUNCTION', () => {
-      expect(value.type).to.equal(valueTypes.FUNCTION);
+      expect(value.type).toEqual(valueTypes.FUNCTION);
     });
 
     it('has native value "function(tablescript)"', () => {
-      expect(value.asNativeValue()).to.equal('function(tablescript)');
+      expect(value.asNativeValue()).toEqual('function(tablescript)');
     });
 
     it('throws when converted to a native number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast FUNCTION to number');
+      expect(() => value.asNativeNumber()).toThrow('Cannot treat FUNCTION as NUMBER');
     });
 
     it('has native string value "function(tablescript)"', () => {
-      expect(value.asNativeString()).to.equal('function(tablescript)');
+      expect(value.asNativeString()).toEqual('function(tablescript)');
     });
 
     it('has native boolean value true', () => {
-      expect(value.asNativeBoolean()).to.be.true;
+      expect(value.asNativeBoolean()).toEqual(true);
     });
 
     it('is not equal to anything', () => {
-      expect(value.nativeEquals()).to.be.false;
+      expect(value.nativeEquals()).toBeFalsy();
     });
 
     it('throws when converted to number', () => {
-      expect(() => value.asNumber()).to.throw('Cannot cast FUNCTION to number');
-    });
-
-    it('has string value "function(tablescript)"', () => {
-      expect(value.asString()).to.satisfy(stringValue('function(tablescript)'));
-    });
-
-    it('has boolean value true', () => {
-      expect(value.asBoolean()).to.satisfy(booleanValue(true));
+      expect(() => value.asNativeNumber()).toThrow('Cannot treat FUNCTION as NUMBER');
     });
 
     it('throws when asked for a property', () => {
-      expect(() => value.getProperty()).to.throw('Cannot get property of FUNCTION');
+      expect(() => value.getProperty()).toThrow('Cannot get property of FUNCTION');
     });
 
     it('throws when asked to set a property', () => {
-      expect(() => value.setProperty()).to.throw('Cannot set property of FUNCTION');
+      expect(() => value.setProperty()).toThrow('Cannot set property of FUNCTION');
     });
 
     it('throws when asked for an element', () => {
-      expect(() => value.getElement()).to.throw('Cannot get element of FUNCTION');
+      expect(() => value.getElement()).toThrow('Cannot get element of FUNCTION');
     });
 
     describe('callFunction', () => {
       describe('with no formal parameters', () => {
         it('sets the arguments variable', () => {
-          const f = createFunctionValue([], { evaluate: scope => scope['arguments'] }, {});
-          return expect(
-            f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])
-          ).to.eventually.satisfy(arrayValue(['string', 12, true]));
+          const f = createFunctionValue([], { evaluate: context => context.getLocalVariable('arguments') }, {});
+          expect(
+            f.callFunction(mockContext, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])
+          ).toEqualTsArray(createArrayValue([createStringValue('string'), createNumericValue(12), createBooleanValue(true)]));
         });
 
         it('sets scope from closure', () => {
-          const f = createFunctionValue([], { evaluate: scope => scope['fromClosure'] }, { fromClosure: createNumericValue(12) });
-          return expect(f.callFunction({}, [])).to.eventually.satisfy(numericValue(12));
+          const f = createFunctionValue([], { evaluate: context => context.getVariable('fromClosure') }, { fromClosure: createNumericValue(12) });
+          expect(f.callFunction(mockContext, [])).toEqualTsNumber(12);
         });
 
         it('overrides closure scope with parameters', () => {
-          const f = createFunctionValue([], { evaluate: scope => scope['arguments'] }, { 'arguments': createNumericValue(12) });
-          return expect(f.callFunction({}, [createNumericValue(13)])).to.eventually.satisfy(arrayValue([13]));
+          const f = createFunctionValue([], { evaluate: context => context.getVariable('arguments') }, { 'arguments': createNumericValue(12) });
+          expect(f.callFunction(mockContext, [createNumericValue(13)])).toEqualTsArray(createArrayValue([createNumericValue(13)]));
         });
       });
 
       describe('with formal parameters', () => {
         it('sets the arguments variable', () => {
-          const f = createFunctionValue(['p1', 'p2'], { evaluate: scope => scope['arguments'] }, {});
-          return expect(
-            f.callFunction({}, [createStringValue('string'), createNumericValue(12), createBooleanValue(true)])
-          ).to.eventually.satisfy(arrayValue(['string', 12, true]));
+          const f = createFunctionValue(['p1', 'p2'], { evaluate: context => context.getVariable('arguments') }, {});
+          const params = [createStringValue('string'), createNumericValue(12), createBooleanValue(true)];
+          expect(
+            f.callFunction(mockContext, params)
+          ).toEqualTsArray(createArrayValue(params));
         });
 
         it('sets the parameters', () => {
-          const f = createFunctionValue(['p1', 'p2'], { evaluate: scope => createArrayValue([scope['p1'], scope['p2']]) }, {});
-          return expect(f.callFunction({}, [createStringValue('string'), createNumericValue(12)])).to.eventually.satisfy(arrayValue(['string', 12]));
+          const f = createFunctionValue(['p1', 'p2'], { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2')]) }, {});
+          const params = [createStringValue('string'), createNumericValue(12)];
+          expect(f.callFunction(mockContext, params)).toEqualTsArray(createArrayValue(params));
         });
 
         it('does not set un-passed parameters', () => {
-          const f = createFunctionValue(['p1', 'p2'], { evaluate: scope => createArrayValue([scope['p1'], scope['p2'] || createUndefined()]) }, {});
-          return expect(f.callFunction({}, [createStringValue('string')])).to.eventually.satisfy(arrayValue(['string', undefined]));
+          const f = createFunctionValue(['p1', 'p2'], { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2') || createUndefined()]) }, {});
+          expect(f.callFunction(mockContext, [createStringValue('string')])).toEqualTsArray(createArrayValue([createStringValue('string'), createUndefined()]));
         });
 
         it('overrides closure scope with parameters', () => {
           const f = createFunctionValue(
             ['p1', 'p2'],
-            { evaluate: scope => createArrayValue([scope['p1'], scope['p2']]) },
+            { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2')]) },
             { p2: createStringValue('not this') }
           );
-          return expect(f.callFunction({}, [createNumericValue(12), createNumericValue(13)])).to.eventually.satisfy(arrayValue([12, 13]));
+          const params = [createNumericValue(12), createNumericValue(13)];
+          expect(f.callFunction(mockContext, params)).toEqualTsArray(createArrayValue(params));
         });
 
-        it('does not override closure scope with un-passed parameters', () => {
+        it('overrides closure scope (as undefined) with un-passed parameters', () => {
           const f = createFunctionValue(
             ['p1', 'p2'],
-            { evaluate: scope => createArrayValue([scope['p1'], scope['p2']]) },
+            { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2') || createUndefined()]) },
             { p2: createStringValue('this') }
           );
-          return expect(f.callFunction({}, [createNumericValue(12)])).to.eventually.satisfy(arrayValue([12, 'this']));
+          expect(f.callFunction(mockContext, [createNumericValue(12)])).toEqualTsArray(createArrayValue([createNumericValue(12), createUndefined()]));
         });
       });
     });
