@@ -20,8 +20,14 @@ import { valueTypes } from '../types';
 import { createNumericValue } from '../numeric';
 import { createStringValue } from '../string';
 import { createFunctionValue } from '../function';
-import { createNativeFunctionValue, toArrayResult, toNumericResult, nativeFunctionParameter, optionalParameterF, optionalNumericParameterF, requiredParameterF } from '../native-function';
-import { stringValue, numericValue, booleanValue, arrayValue } from '../../__tests__/util';
+import {
+  createNativeFunctionValue,
+  toArrayResult,
+  toNumericResult,
+  nativeFunctionParameter,
+  optionalParameterF,
+  requiredParameterF
+} from '../native-function';
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
 import { createUndefined } from '../undefined';
@@ -146,7 +152,8 @@ describe('function', () => {
             (context, args, p1, p2) => ([p1, p2]),
             toArrayResult,
           );
-          expect(f.callFunction(mockContext, [createStringValue('string')])).toEqualTsArray(createArrayValue([createStringValue('string'), createUndefined()]));
+          expect(f.callFunction(mockContext, [createStringValue('string')]))
+            .toEqualTsArray(createArrayValue([createStringValue('string'), createUndefined()]));
         });
       });
     });
@@ -229,14 +236,23 @@ describe('function', () => {
         });
 
         it('sets the parameters', () => {
-          const f = createFunctionValue(['p1', 'p2'], { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2')]) }, {});
+          const f = createFunctionValue(
+            ['p1', 'p2'],
+            { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2')]) },
+            {}
+          );
           const params = [createStringValue('string'), createNumericValue(12)];
           expect(f.callFunction(mockContext, params)).toEqualTsArray(createArrayValue(params));
         });
 
         it('does not set un-passed parameters', () => {
-          const f = createFunctionValue(['p1', 'p2'], { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2') || createUndefined()]) }, {});
-          expect(f.callFunction(mockContext, [createStringValue('string')])).toEqualTsArray(createArrayValue([createStringValue('string'), createUndefined()]));
+          const f = createFunctionValue(
+            ['p1', 'p2'],
+            { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2') || createUndefined()]) },
+            {}
+          );
+          expect(f.callFunction(mockContext, [createStringValue('string')]))
+            .toEqualTsArray(createArrayValue([createStringValue('string'), createUndefined()]));
         });
 
         it('overrides closure scope with parameters', () => {

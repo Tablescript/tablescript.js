@@ -16,7 +16,15 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import * as R from 'ramda';
-import { createNativeFunctionValue, nativeFunctionParameter, requiredNumericParameterF, toNumericResult, toNativeNumber, requiredParameterF, toBooleanResult } from '../native-function';
+import {
+  createNativeFunctionValue,
+  nativeFunctionParameter,
+  requiredNumericParameterF,
+  toNumericResult,
+  toNativeNumber,
+  requiredParameterF,
+  toBooleanResult
+} from '../native-function';
 import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
 import { createBooleanValue } from '../boolean';
@@ -96,7 +104,13 @@ describe('array', () => {
       describe('for a non-empty array', () => {
         it('returns an array of values mapped from the original array', () => {
           const f = nonEmptyNumericArray().getProperty({}, methodName);
-          expect(f.callFunction(mockContext, [callback])).toEqualTsArray(createArrayValue([createNumericValue(5), createNumericValue(6), createNumericValue(7)]));
+          expect(f.callFunction(mockContext, [callback])).toEqualTsArray(
+            createArrayValue([
+              createNumericValue(5),
+              createNumericValue(6),
+              createNumericValue(7)
+            ])
+          );
         });
       });
     });
