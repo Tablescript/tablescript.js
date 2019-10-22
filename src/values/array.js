@@ -17,24 +17,25 @@
 
 import * as R from 'ramda';
 import { createValue } from './default';
-import { valueTypes, isArray, isUndefined } from './types';
+import { valueTypes, isArray } from './types';
 import { throwRuntimeError } from '../error';
 import {
-  createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredParameterF,
-  optionalParameterF,
-  optionalNumericParameterF,
-  optionalStringParameterF,
-  toNativeNumber,
-  toNativeString,
-  toNumericResult,
-  toStringResult,
-  toBooleanResult,
-  toArrayResult,
-} from './native-function';
-import { quickSort } from '../util/sort';
-import { randomNumber } from '../util/random';
+  choose,
+  each,
+  filter,
+  includes,
+  indexOf,
+  find,
+  findIndex,
+  length,
+  join,
+  map,
+  reduce,
+  reverse,
+  slice,
+  sort,
+  unique,
+} from './array-methods';
 
 const entriesAsNativeValues = entries => entries.map(e => e.asNativeValue());
 
@@ -95,217 +96,27 @@ const multiplyBy = entries => (context, other) => createArrayValue(
   ).reduce((all,n) => ([...all, ...entries]), [])
 );
 
-const indexedReduce = R.addIndex(R.reduce);
-const indexedMap = R.addIndex(R.map);
-const indexedFilter = R.addIndex(R.filter);
-
-const each = entries => createNativeFunctionValue(
-  'each',
-  [
-    nativeFunctionParameter('f', requiredParameterF()),
-  ],
-  (context, args, f) => indexedReduce(
-    (_, entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]),
-    context.factory.createUndefined(),
-    entries,
-  ),
-);
-
-const reduce = entries => createNativeFunctionValue(
-  'reduce',
-  [
-    nativeFunctionParameter('reducer', requiredParameterF()),
-    nativeFunctionParameter('initialValue', requiredParameterF()),
-  ],
-  (context, args, reducer, initialValue) => indexedReduce(
-    (acc, entry, i) => reducer.callFunction(context, [acc, entry, context.factory.createNumericValue(i)]),
-    initialValue,
-    entries,
-  ),
-);
-
-const map = entries => createNativeFunctionValue(
-  'map',
-  [
-    nativeFunctionParameter('f', requiredParameterF()),
-  ],
-  (context, args, f) => indexedMap(
-    (entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]),
-    entries,
-  ),
-  toArrayResult,
-);
-
-const filter = entries => createNativeFunctionValue(
-  'filter',
-  [
-    nativeFunctionParameter('f', requiredParameterF()),
-  ],
-  (context, args, f) => indexedFilter(
-    (entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]).asNativeBoolean(),
-    entries,
-  ),
-  toArrayResult,
-);
-
-const includes = entries => createNativeFunctionValue(
-  'includes',
-  [
-    nativeFunctionParameter('value', requiredParameterF()),
-  ],
-  (context, args, value) => R.reduce((result, entry) => result || entry.nativeEquals(value), false, entries),
-  toBooleanResult,
-);
-
-const indexOf = entries => createNativeFunctionValue(
-  'indexOf',
-  [
-    nativeFunctionParameter('value', requiredParameterF()),
-  ],
-  (context, args, value) => R.findIndex(entry => entry.nativeEquals(value), entries),
-  toNumericResult,
-);
-
-const find = entries => createNativeFunctionValue(
-  'find',
-  [
-    nativeFunctionParameter('f', requiredParameterF()),
-  ],
-  (context, args, f) => R.reduce(
-    (foundValue, entry) => {
-      if (isUndefined(foundValue)) {
-        if (f.callFunction(context, [entry]).asNativeBoolean()) {
-          return entry;
-        }
-      }
-      return foundValue;
-    },
-    context.factory.createUndefined(),
-    entries,
-  ),
-);
-
-const findIndex = entries => createNativeFunctionValue(
-  'findIndex',
-  [
-    nativeFunctionParameter('f', requiredParameterF()),
-  ],
-  (context, args, f) => indexedReduce(
-    (foundIndex, entry, i) => {
-      if (foundIndex === -1) {
-        if (f.callFunction(context, [entry]).asNativeBoolean()) {
-          return i;
-        }
-      }
-      return foundIndex;
-    },
-    -1,
-    entries,
-  ),
-  toNumericResult,
-);
-
-const defaultSorter = createNativeFunctionValue(
-  'defaultSorter',
-  [
-    nativeFunctionParameter('a', requiredParameterF()),
-    nativeFunctionParameter('b', requiredParameterF()),
-  ],
-  (context, args, a, b) => a.compare(context, b),
-);
-
-const sort = entries => createNativeFunctionValue(
-  'sort',
-  [
-    nativeFunctionParameter('f', optionalParameterF()),
-  ],
-  (context, args, f) => (args.length === 1 ? (
-    quickSort(context, [...entries], f)
-  ) : (
-    quickSort(context, [...entries], defaultSorter)
-  )),
-  toArrayResult,
-);
-
-const join = entries => createNativeFunctionValue(
-  'join',
-  [
-    nativeFunctionParameter('separator', optionalStringParameterF(toNativeString)),
-  ],
-  (_, args, separator) => (args.length === 1 ? (
-    entries.map(e => e.asNativeString()).join(separator)
-  ) : (
-    entries.map(e => e.asNativeString()).join()
-  )),
-  toStringResult,
-);
-
-const reverse = entries => createNativeFunctionValue(
-  'reverse',
-  [],
-  () => R.reverse(entries),
-  toArrayResult,
-);
-
-const slice = entries => createNativeFunctionValue(
-  'slice',
-  [
-    nativeFunctionParameter('begin', optionalNumericParameterF(toNativeNumber)),
-    nativeFunctionParameter('end', optionalNumericParameterF(toNativeNumber)),
-  ],
-  (_, args, begin, end) => {
-    if (args.length === 2) {
-      return entries.slice(begin, end);
-    }
-    if (args.length === 1) {
-      return entries.slice(begin);
-    }
-    return entries.slice();
-  },
-  toArrayResult,
-);
-
-const unique = entries => createNativeFunctionValue(
-  'unique',
-  [],
-  () => R.uniqWith((a, b) => a.identicalTo(b), entries),
-  toArrayResult,
-);
-
-const length = entries => createNativeFunctionValue(
-  'length',
-  [],
-  R.always(entries.length),
-  toNumericResult,
-);
-
-const choose = entries => createNativeFunctionValue(
-  'choose',
-  [],
-  () => entries[randomNumber(entries.length) - 1],
-);
-
 export const createArrayValue = entries => createValue(
   valueTypes.ARRAY,
   asNativeArray(entries),
   identicalTo(entries),
   nativeEquals(entries),
   {
+    choose: choose(entries),
     each: each(entries),
-    reduce: reduce(entries),
-    map: map(entries),
     filter: filter(entries),
     includes: includes(entries),
     indexOf: indexOf(entries),
     find: find(entries),
     findIndex: findIndex(entries),
-    sort: sort(entries),
+    length: length(entries),
     join: join(entries),
+    map: map(entries),
+    reduce: reduce(entries),
     reverse: reverse(entries),
     slice: slice(entries),
+    sort: sort(entries),
     unique: unique(entries),
-    length: length(entries),
-    choose: choose(entries),
   },
   {
     asNativeString: asNativeString(entries),

@@ -15,25 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes, isString } from './types';
 import {
-  createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredNumericParameterF,
-  requiredStringParameterF,
-  optionalNumericParameterF,
-  optionalStringParameterF,
-  toNativeNumber,
-  toNativeString,
-  toArrayResult,
-  toStringResult,
-  toBooleanResult,
-  toNumericResult,
-} from './native-function';
+  split,
+  capitalize,
+  uppercase,
+  lowercase,
+  includes,
+  indexOf,
+  slice,
+  startsWith,
+  endsWith,
+  trim,
+  trimLeft,
+  trimRight,
+  empty,
+  length,
+  roll,
+} from './string-methods';
 import { throwRuntimeError } from '../error';
-import { rollDiceFromString } from '../util/dice-strings';
 
 const identicalTo = value => other => isString(other) && value === other.asNativeString();
 
@@ -73,138 +74,6 @@ const lessThanOrEquals = value => (context, other) => context.factory.createBool
 const greaterThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value >= other.asNativeString());
 
 const compare = value => (context, other) => context.factory.createNumericValue(value.localeCompare(other.asNativeString()));
-
-const split = value => createNativeFunctionValue(
-  'split',
-  [
-    nativeFunctionParameter('separator', optionalStringParameterF(toNativeString)),
-  ],
-  (context, args, separator) => (args.length === 1 ? (
-    value.split(separator).map(createStringValue)
-  ) : (
-    value.split().map(createStringValue)
-  )),
-  toArrayResult,
-);
-
-const capitalize = value => createNativeFunctionValue(
-  'capitalize',
-  [],
-  () => (value.length === 0 ? value : `${ value[0].toUpperCase() }${ value.slice(1) }`),
-  toStringResult,
-);
-
-const uppercase = value => createNativeFunctionValue(
-  'uppercase',
-  [],
-  R.always(value.toUpperCase()),
-  toStringResult,
-);
-
-const lowercase = value => createNativeFunctionValue(
-  'lowercase',
-  [],
-  R.always(value.toLowerCase()),
-  toStringResult,
-);
-
-const includes = value => createNativeFunctionValue(
-  'includes',
-  [
-    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
-  ],
-  (context, args, s) => value.includes(s),
-  toBooleanResult,
-);
-
-const indexOf = value => createNativeFunctionValue(
-  'indexOf',
-  [
-    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
-  ],
-  (context, args, s) => value.indexOf(s),
-  toNumericResult,
-);
-
-const slice = value => createNativeFunctionValue(
-  'slice',
-  [
-    nativeFunctionParameter('start', requiredNumericParameterF(toNativeNumber)),
-    nativeFunctionParameter('end', optionalNumericParameterF(toNativeNumber)),
-  ],
-  (context, args, startValue, endValue) => (args.length === 1 ? (
-    value.slice(startValue)
-  ) : (
-    value.slice(startValue, endValue)
-  )),
-  toStringResult,
-);
-
-const startsWith = value => createNativeFunctionValue(
-  'startsWith',
-  [
-    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
-  ],
-  (context, args, s) => value.startsWith(s),
-  toBooleanResult,
-);
-
-const endsWith = value => createNativeFunctionValue(
-  'endsWith',
-  [
-    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
-  ],
-  (context, args, s) => value.endsWith(s),
-  toBooleanResult,
-);
-
-const trim = value => createNativeFunctionValue(
-  'trim',
-  [],
-  R.always(value.trim()),
-  toStringResult,
-);
-
-const trimLeft = value => createNativeFunctionValue(
-  'trimLeft',
-  [],
-  R.always(value.trimLeft()),
-  toStringResult,
-);
-
-const trimRight = value => createNativeFunctionValue(
-  'trimRight',
-  [],
-  R.always(value.trimRight()),
-  toStringResult,
-);
-
-const empty = value => createNativeFunctionValue(
-  'empty',
-  [],
-  R.always(value.length === 0),
-  toBooleanResult,
-);
-
-const length = value => createNativeFunctionValue(
-  'length',
-  [],
-  R.always(value.length),
-  toNumericResult,
-);
-
-const roll = value => createNativeFunctionValue(
-  'roll',
-  [],
-  context => {
-    try {
-      return rollDiceFromString(value);
-    } catch (e) {
-      throwRuntimeError(e.message, context);
-    }
-  },
-  toNumericResult,
-);
 
 export const createStringValue = value => createValue(
   valueTypes.STRING,

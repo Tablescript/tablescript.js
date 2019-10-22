@@ -17,8 +17,8 @@
 
 import { createValue } from './default';
 import { valueTypes, isNumber, isString } from './types';
-import { createNativeFunctionValue, toNumericResult } from './native-function';
 import { throwRuntimeError } from '../error';
+import { floor, ceiling } from './numeric-methods';
 
 const asNativeNumber = value => () => value;
 
@@ -60,20 +60,6 @@ const greaterThan = value => (context, other) => context.factory.createBooleanVa
 const lessThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value <= other.asNativeNumber());
 
 const greaterThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value >= other.asNativeNumber());
-
-const floor = value => createNativeFunctionValue(
-  'floor',
-  [],
-  () => Math.floor(value),
-  toNumericResult,
-);
-
-const ceiling = value => createNativeFunctionValue(
-  'ceiling',
-  [],
-  () => Math.ceil(value),
-  toNumericResult,
-);
 
 export const createNumericValue = value => createValue(
   valueTypes.NUMBER,
