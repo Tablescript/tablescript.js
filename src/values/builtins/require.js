@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { loadAndRunScript } from '../runner';
+import { loadAndRunScript } from '../../runner';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
   requiredStringParameterF,
   toNativeString
-} from '../values/native-function';
+} from '../native-function';
 
 export const requireBuiltIn = createNativeFunctionValue(
   'require',

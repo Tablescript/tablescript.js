@@ -21,7 +21,7 @@ import { keysBuiltIn } from './keys';
 import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
 import { requireBuiltIn } from './require';
-import { createObjectValue } from '../values/object';
+import { createObjectValue } from '../object';
 import { strBuiltIn, intBuiltIn } from './convert';
 import { initializeMath } from './math';
 

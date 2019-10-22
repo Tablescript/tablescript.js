@@ -22,7 +22,7 @@ import {
   requiredObjectParameterF,
   toObject,
   toArrayResult
-} from '../values/native-function';
+} from '../native-function';
 
 export const keysBuiltIn = createNativeFunctionValue(
   'keys',

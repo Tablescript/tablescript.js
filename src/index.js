@@ -17,7 +17,7 @@
 
 import { initializeContext } from './context';
 import { runScript, loadAndRunScript } from './runner';
-import { initializeBuiltins } from './builtins/builtins';
+import { initializeBuiltins } from './values/builtins/builtins';
 import { loadFsFile } from './fs-loader';
 import { createArrayValue } from './values/array';
 import { createBooleanValue } from './values/boolean';

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { createNativeFunctionValue, toStringResult } from '../values/native-function';
+import { createNativeFunctionValue, toStringResult } from '../native-function';
 
 export const printBuiltIn = createNativeFunctionValue(
   'print',

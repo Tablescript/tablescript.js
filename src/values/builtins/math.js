@@ -23,7 +23,7 @@ import {
   optionalNumericParameterF,
   toNativeNumber,
   toNumericResult
-} from '../values/native-function';
+} from '../native-function';
 
 const parametersAsNativeNumbers = args => args.map(p => p.asNativeNumber());
 
