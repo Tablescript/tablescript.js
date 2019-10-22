@@ -59,7 +59,7 @@ jobs:
 
 workflows:
   version: 2
-  tagged-build:
+  build:
     jobs:
       - build
       - test:
