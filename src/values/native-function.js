@@ -18,7 +18,7 @@
 import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes, isNumber, isString, isArray, isObject, isUndefined } from './types';
-import { bindFunctionParameters } from '../util/parameters';
+import { bindFunctionParameters } from './util/parameters';
 import { throwRuntimeError } from '../error';
 
 export const nativeFunctionParameter = (name, extractor) => ({ name, extractor });

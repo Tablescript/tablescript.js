@@ -19,8 +19,8 @@ import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
 import { randomNumber } from '../util/random';
-import { bindFunctionParameters } from '../util/parameters';
-import { callWithSwappedScopes, withSwappedScopes } from './util/context';
+import { bindFunctionParameters } from './util/parameters';
+import { withSwappedScopes } from './util/context';
 
 const asNativeString = () => 'table';
 
