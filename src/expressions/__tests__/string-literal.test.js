@@ -15,31 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-
+import * as R from 'ramda';
 import { createStringLiteral } from '../string-literal';
+import { initializeContext } from '../../context';
+import { defaultValueFactory } from '../../index';
+import '../../__tests__/matchers';
 
-xdescribe('createStringLiteral', () => {
+describe('createStringLiteral', () => {
   describe('evaluate', () => {
     let mockContext;
 
-    beforeEach(() => {      
-      mockContext = {
-        factory: {
-          createStringValue: s => s
-        }
-      }
+    beforeEach(() => {
+      mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
     });
 
     it('evaluates a string literal to an equivalent string value', () => {
       const expression = createStringLiteral('I have a ham radio');
-      return expression.evaluate(mockContext).then(v => {
-        expect(v).to.equal('I have a ham radio');
-      });
+      expect(expression.evaluate(mockContext)).toEqualTsString('I have a ham radio');
     });
   });
 
   it('throws when evaluated as a lhs', () => {
     const expression = createStringLiteral('I have a ham radio');
-    expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to string expression');
+    expect(() => expression.evaluateAsLeftHandSide()).toThrow('Cannot assign to string expression');
   });
 });

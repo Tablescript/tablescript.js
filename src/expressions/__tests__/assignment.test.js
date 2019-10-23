@@ -15,102 +15,184 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../../values/types';
+import * as R from 'ramda';
 import { createAssignmentExpression } from '../assignment';
+import '../../__tests__/matchers';
+import { initializeContext } from '../../context';
+import { defaultValueFactory } from '../..';
+import { createBooleanLiteral } from '../boolean-literal';
+import { createVariableExpression } from '../variable';
+import { createNumberLiteral } from '../number-literal';
+import { createNumericValue } from '../../values/numeric';
+import { createObjectLiteral } from '../object-literal';
 
-const recordCall = (calls, name, args = []) => {
-  if (calls[name]) {
-    calls[name] = {
-      callCount: calls[name].callCount + 1,
-      args: [...calls[name].args, args]
-    };
-  } else {
-    calls[name] = {
-      callCount: 1,
-      args: [args]
-    };
-  }
-}
-xdescribe('createAssignmentExpression', () => {
-  let mockLeftHandExpression;
-  let mockValueExpression;
-  let expression;
+describe('createAssignmentExpression', () => {
+  let mockContext;
+
+  beforeEach(() => {
+    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+  });
 
   describe('evaluate', () => {
-    let mockLeftHandValue;
-    let mockValue;
-    let mockScope;
-    let mockContext;
-
     describe('with invalid lhs', () => {
-      beforeEach(() => {
-        mockLeftHandExpression = {
-          evaluateAsLeftHandSide: () => ({
-            type: valueTypes.UNDEFINED
-          }),
-        };
-        expression = createAssignmentExpression({}, mockLeftHandExpression);
-      });
-
-      it('throws when evaluated', done => {
-        expect(expression.evaluate({})).to.eventually.be.rejectedWith('Cannot assign to a non-left-hand-side type').and.notify(done);
+      it('throws when evaluated', () => {
+        const expression = createAssignmentExpression({}, createBooleanLiteral(true));
+        expect(() => expression.evaluate(mockContext)).toThrow('Cannot assign to boolean expression');
       });
     });
 
-    describe('with valid lhs', () => {
+    describe('=', () => {
+      let expression;
+
       beforeEach(() => {
-        mockLeftHandValue = {
-          type: valueTypes.LEFT_HAND_SIDE,
-          assignFrom: (context, scope, value) => undefined
-        };
-        mockLeftHandExpression = {
-          evaluateAsLeftHandSide: () => mockLeftHandValue
-        };
-        mockValue = 97;
-        mockValueExpression = {
-          evaluate: scope => mockValue
-        };
-        mockScope = {
-          a: 1,
-          b: 2,
-          c: 3,
-        };
-        mockContext = {
-          d: 4
-        };
-        expression = createAssignmentExpression(mockContext, mockLeftHandExpression, '=', mockValueExpression);
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '=', createNumberLiteral(12));
       });
 
-      it('evaluates the lhs as an lhs', () => {
-        chai.spy.on(mockLeftHandExpression, 'evaluateAsLeftHandSide');
-        return expression.evaluate(mockScope).then(() => {
-          expect(mockLeftHandExpression.evaluateAsLeftHandSide).to.have.been.called.with(mockContext, mockScope);
-        });
-      });
-
-      it('evalutes the value expression', () => {
-        chai.spy.on(mockValueExpression, 'evaluate');
-        return expression.evaluate(mockScope).then(() => {
-          expect(mockValueExpression.evaluate).to.have.been.called.with(mockScope);
-        });
-      });
-
-      it('delegates to the lhs value to assign', () => {
-        chai.spy.on(mockLeftHandValue, 'assignFrom');
-        return expression.evaluate(mockScope).then(() => {
-          expect(mockLeftHandValue.assignFrom).to.have.been.called.with(mockContext, mockScope, mockValue);
-        });
+      it('assigns', () => {
+        expression.evaluate(mockContext);
+        expect(mockContext.getVariable('a')).toEqualTsNumber(12);
       });
 
       it('returns the value', () => {
-        return expect(expression.evaluate(mockScope)).to.eventually.equal(mockValue);
+        expect(expression.evaluate(mockContext)).toEqualTsNumber(12);
       });
+    });
+
+    describe('+=', () => {
+      let expression;
+
+      beforeEach(() => {
+        mockContext.setVariable('a', createNumericValue(9));
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '+=', createNumberLiteral(12));
+      });
+
+      it('assigns', () => {
+        expression.evaluate(mockContext);
+        expect(mockContext.getVariable('a')).toEqualTsNumber(21);
+      });
+
+      it('returns the value', () => {
+        expect(expression.evaluate(mockContext)).toEqualTsNumber(21);
+      });
+
+      it('throws if it cannot add the value', () => {
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '+=', createObjectLiteral({}, []));
+        expect(() => expression.evaluate(mockContext)).toThrow('Cannot treat OBJECT as NUMBER');
+      });
+    });
+
+    describe('-=', () => {
+      let expression;
+
+      beforeEach(() => {
+        mockContext.setVariable('a', createNumericValue(9));
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '-=', createNumberLiteral(12));
+      });
+
+      it('assigns', () => {
+        expression.evaluate(mockContext);
+        expect(mockContext.getVariable('a')).toEqualTsNumber(-3);
+      });
+
+      it('returns the value', () => {
+        expect(expression.evaluate(mockContext)).toEqualTsNumber(-3);
+      });
+
+      it('throws if it cannot subtract the value', () => {
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '-=', createObjectLiteral({}, []));
+        expect(() => expression.evaluate(mockContext)).toThrow('Cannot treat OBJECT as NUMBER');
+      });
+    });
+
+    describe('*=', () => {
+      let expression;
+
+      beforeEach(() => {
+        mockContext.setVariable('a', createNumericValue(9));
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '*=', createNumberLiteral(12));
+      });
+
+      it('assigns', () => {
+        expression.evaluate(mockContext);
+        expect(mockContext.getVariable('a')).toEqualTsNumber(108);
+      });
+
+      it('returns the value', () => {
+        expect(expression.evaluate(mockContext)).toEqualTsNumber(108);
+      });
+
+      it('throws if it cannot multiply the value', () => {
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '*=', createObjectLiteral({}, []));
+        expect(() => expression.evaluate(mockContext)).toThrow('Cannot treat OBJECT as NUMBER');
+      });
+    });
+
+    describe('/=', () => {
+      let expression;
+
+      beforeEach(() => {
+        mockContext.setVariable('a', createNumericValue(12));
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '/=', createNumberLiteral(3));
+      });
+
+      it('assigns', () => {
+        expression.evaluate(mockContext);
+        expect(mockContext.getVariable('a')).toEqualTsNumber(4);
+      });
+
+      it('returns the value', () => {
+        expect(expression.evaluate(mockContext)).toEqualTsNumber(4);
+      });
+
+      it('throws if it cannot divide the value', () => {
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '/=', createObjectLiteral({}, []));
+        expect(() => expression.evaluate(mockContext)).toThrow('Cannot treat OBJECT as NUMBER');
+      });
+
+      it('throws if the value is zero', () => {
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '/=', createNumberLiteral(0));
+        expect(() => expression.evaluate(mockContext)).toThrow('Divide by zero');
+      });
+    });
+
+    describe('%=', () => {
+      let expression;
+
+      beforeEach(() => {
+        mockContext.setVariable('a', createNumericValue(12));
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '%=', createNumberLiteral(5));
+      });
+
+      it('assigns', () => {
+        expression.evaluate(mockContext);
+        expect(mockContext.getVariable('a')).toEqualTsNumber(2);
+      });
+
+      it('returns the value', () => {
+        expect(expression.evaluate(mockContext)).toEqualTsNumber(2);
+      });
+
+      it('throws if it cannot divide the value', () => {
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '%=', createObjectLiteral({}, []));
+        expect(() => expression.evaluate(mockContext)).toThrow('Cannot treat OBJECT as NUMBER');
+      });
+
+      it('throws if the value is zero', () => {
+        expression = createAssignmentExpression(mockContext, createVariableExpression('a'), '%=', createNumberLiteral(0));
+        expect(() => expression.evaluate(mockContext)).toThrow('Divide by zero');
+      });
+    });
+
+    it('throws if the operator is invalid', () => {
+      const expression = createAssignmentExpression(mockContext, createVariableExpression('a'), 'nope', createNumberLiteral(9));
+      expect(() => expression.evaluate(mockContext)).toThrow('Unknown operator "nope"');
     });
   });
 
   describe('evaluateAsLeftHandSide', () => {
     it('throws when evaluated as left hand side', () => {
-      expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to assignment expression');
+      const expression = createAssignmentExpression({}, {}, {}, {});
+      expect(() => expression.evaluateAsLeftHandSide()).toThrow('Cannot assign to assignment expression');
     });
   });
 });

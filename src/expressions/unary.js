@@ -31,7 +31,7 @@ const evaluate = (operator, argument) => context => {
   if (operator === 'not') {
     return context.factory.createBooleanValue(!value.asNativeBoolean());
   }
-  throwRuntimeError(`Invalid operator ${operator}`, context);
+  throwRuntimeError(`Invalid operator "${operator}"`, context);
 };
 
 export const createUnaryExpression = (location, operator, argument) => createExpression(

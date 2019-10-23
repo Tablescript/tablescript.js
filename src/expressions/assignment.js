@@ -63,7 +63,7 @@ const evaluate = (leftHandSideExpression, operator, valueExpression) => context 
     const leftValue = (operator === '=') ? undefined : leftHandSideExpression.evaluate(context);
     return operators[operator](context, leftHandSideValue, leftValue, value);
   }
-  throwRuntimeError(`Unknown operator ${operator}`, context);
+  throwRuntimeError(`Unknown operator "${operator}"`, context);
 };
 
 export const createAssignmentExpression = (

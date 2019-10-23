@@ -40,7 +40,7 @@ const notEquals = (context, leftValue, rightValue) => context.factory.createBool
 const lessThan = (context, leftValue, rightValue) => leftValue.lessThan(context, rightValue);
 const greaterThan = (context, leftValue, rightValue) => leftValue.greaterThan(context, rightValue);
 const lessThanOrEquals = (context, leftValue, rightValue) => leftValue.lessThanOrEquals(context, rightValue);
-const greaterThanOrEquals = (context, leftValue, rightValue) => leftValue.lessThan(context, rightValue);
+const greaterThanOrEquals = (context, leftValue, rightValue) => leftValue.greaterThanOrEquals(context, rightValue);
 
 const evaluateLeft = f => (context, leftExpression, rightExpression) => {
   const leftValue = leftExpression.evaluate(context);

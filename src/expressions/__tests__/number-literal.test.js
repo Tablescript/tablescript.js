@@ -15,31 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-
+import * as R from 'ramda';
 import { createNumberLiteral } from '../number-literal';
+import { initializeContext } from '../../context';
+import { defaultValueFactory } from '../../index';
+import '../../__tests__/matchers';
 
-xdescribe('createNumberLiteral', () => {
+describe('createNumberLiteral', () => {
   describe('evaluate', () => {
     let mockContext;
 
     beforeEach(() => {      
-      mockContext = {
-        factory: {
-          createNumericValue: n => n
-        }
-      }
+      mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
     });
 
     it('evaluates a number literal to an equivalent numeric value', () => {
       const expression = createNumberLiteral(12);
-      return expression.evaluate(mockContext).then(v => {
-        expect(v).to.equal(12);
-      });
+      expect(expression.evaluate(mockContext)).toEqualTsNumber(12);
     });
   });
 
   it('throws when evaluated as a lhs', () => {
     const expression = createNumberLiteral(12);
-    expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to number expression');
+    expect(() => expression.evaluateAsLeftHandSide()).toThrow('Cannot assign to number expression');
   });
 });

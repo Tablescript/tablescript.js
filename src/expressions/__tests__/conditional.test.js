@@ -15,41 +15,39 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-
+import * as R from 'ramda';
 import { createNumericValue } from '../../values/numeric';
 import { createBooleanValue } from '../../values/boolean';
 import { createConditionalExpression } from '../conditional';
 import { numericValue } from '../../__tests__/util';
+import { initializeContext } from '../../context';
+import { defaultValueFactory } from '../..';
+import { createNumberLiteral } from '../number-literal';
+import { createBooleanLiteral } from '../boolean-literal';
+import '../../__tests__/matchers';
+import { createStringLiteral } from '../string-literal';
 
-xdescribe('createConditionalExpression', () => {
+describe('createConditionalExpression', () => {
+  let mockContext;
+
+  beforeEach(() => {
+    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+  });
+
   describe('evaluate', () => {
     it('returns the consequent value when test expression is true', () => {
-      const mockTestExpression = {
-        evaluate: () => createBooleanValue(true),
-      };
-      const mockConsequentExpression = {
-        evaluate: () => createNumericValue(9),
-      };
-      const expression = createConditionalExpression({}, mockTestExpression, mockConsequentExpression, undefined);
-      return expect(expression.evaluate({})).to.eventually.satisfy(numericValue(9));
+      const expression = createConditionalExpression({}, createBooleanLiteral(true), createNumberLiteral(9), undefined);
+      expect(expression.evaluate(mockContext)).toEqualTsNumber(9);
     });
 
     it('returns the alternate value when test expression is true', () => {
-      const mockTestExpression = {
-        evaluate: () => ({
-          asNativeBoolean: () => false
-        })
-      };
-      const mockAlternateExpression = {
-        evaluate: () => 47
-      };
-      const expression = createConditionalExpression({}, mockTestExpression, undefined, mockAlternateExpression);
-      return expect(expression.evaluate({})).to.eventually.equal(47);
+      const expression = createConditionalExpression({}, createBooleanLiteral(false), undefined, createStringLiteral('Sooper'));
+      expect(expression.evaluate(mockContext)).toEqualTsString('Sooper');
     });
   });
 
   it('throws when evaluated as a lhs', () => {
     const expression = createConditionalExpression({}, {}, {}, {});
-    expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to conditional expression');
+    expect(() => expression.evaluateAsLeftHandSide()).toThrow('Cannot assign to conditional expression');
   });
 });

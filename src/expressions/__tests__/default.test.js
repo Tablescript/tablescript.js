@@ -19,7 +19,7 @@
 import { createExpression } from '../default';
 import { expressionTypes } from '../types';
 
-xdescribe('createExpression', () => {
+describe('createExpression', () => {
   let expression;
 
   beforeEach(() => {
@@ -27,15 +27,15 @@ xdescribe('createExpression', () => {
   });
 
   it('stores the type', () => {
-    expect(expression.type).to.equal(expressionTypes.BOOLEAN);
+    expect(expression.type).toEqual(expressionTypes.BOOLEAN);
   });
 
   it('stores the evaluate function', () => {
-    expect(expression.evaluate).to.equal('some function');
+    expect(expression.evaluate).toEqual('some function');
   });
 
   it('throws when evaluating as a left-hand side', () => {
-    expect(() => expression.evaluateAsLeftHandSide()).to.throw('Cannot assign to boolean expression');
+    expect(() => expression.evaluateAsLeftHandSide()).toThrow('Cannot assign to boolean expression');
   });
 
   describe('with an evaluateAsLeftHandSide parameter', () => {
@@ -44,7 +44,7 @@ xdescribe('createExpression', () => {
     });
 
     it('stores the evaluateAsLeftHandSide function', () => {
-      expect(expression.evaluateAsLeftHandSide).to.equal('some other function');
+      expect(expression.evaluateAsLeftHandSide).toEqual('some other function');
     });
   });
 });
