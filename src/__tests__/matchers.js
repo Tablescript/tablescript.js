@@ -1,4 +1,4 @@
-import { isUndefined, isArray, isString, isNumber, isBoolean, isFunction } from '../values/types';
+import { isUndefined, isArray, isObject, isString, isNumber, isBoolean, isFunction } from '../values/types';
 
 const toBeTsUndefined = received => {
   if (isUndefined(received)) {
@@ -27,6 +27,20 @@ const toBeTsArray = received => {
     };
   }
 };
+
+const toBeTsObject = received => {
+  if (isObject(received)) {
+    return {
+      message: () => `Expected ${received.typeName} not to be OBJECT`,
+      pass: true,
+    };
+  } else {
+    return {
+      message: () => `Expected ${received.typeName} to be OBJECT`,
+      pass: false,
+    };
+  }
+}
 
 const toBeTsString = received => {
   if (isString(received)) {
@@ -132,6 +146,7 @@ expect.extend({
   toBeTsBoolean,
   toBeTsString,
   toBeTsArray,
+  toBeTsObject,
   toBeTsUndefined,
   toBeTsFunction,
   toEqualTsBoolean,
