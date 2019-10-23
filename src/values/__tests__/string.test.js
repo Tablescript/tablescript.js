@@ -15,12 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
 import { valueTypes } from '../types';
+import { initializeContext } from '../../context';
+import { defaultValueFactory } from '../..';
+import '../../__tests__/matchers';
 
-xdescribe('string value', () => {
+describe('string value', () => {
+  let mockContext;
   let value;
+
+  beforeEach(() => {
+    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+  });
 
   describe('containing a non-empty string', () => {
     beforeEach(() => {
@@ -28,97 +37,53 @@ xdescribe('string value', () => {
     });
 
     it('has type STRING', () => {
-      expect(value.type).to.equal(valueTypes.STRING);
+      expect(value).toBeTsString();
     });
 
     it('cannot be implicitly converted to number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast STRING to number');
+      expect(() => value.asNativeNumber()).toThrow('Cannot treat STRING as NUMBER');
     });
 
     it('has a string value of itself', () => {
-      expect(value.asNativeString()).to.equal('I have a ham radio');
+      expect(value.asNativeString()).toEqual('I have a ham radio');
     });
 
     it('has a boolean value of true', () => {
-      expect(value.asNativeBoolean()).to.be.true;
+      expect(value.asNativeBoolean()).toEqual(true);
     });
 
     describe('equivalency', () => {
       it('is equal to the same string', () => {
-        expect(value.nativeEquals(createStringValue('I have a ham radio'))).to.be.true;
+        expect(value.nativeEquals(createStringValue('I have a ham radio'))).toBeTruthy();
       });
 
       it('is not equal to a different string', () => {
-        expect(value.nativeEquals(createStringValue('I do not have a ham radio'))).to.be.false;
-      });
-    });
-
-    describe('properties', () => {
-      describe('length', () => {
-        let length;
-
-        beforeEach(() => {
-          length = value.getProperty({}, createStringValue('length'));
-        });
-
-        it('is numeric', () => {
-          expect(length.type).to.equal(valueTypes.NUMBER);
-        });
-
-        it('is correct', () => {
-          expect(length.asNativeNumber()).to.equal(18);
-        });
-      });
-
-      describe('unrecognized...', () => {
-        it('throws', () => {
-          expect(value.getProperty({}, createStringValue('unrecognized')).type).to.equal(valueTypes.UNDEFINED);
-        });
+        expect(value.nativeEquals(createStringValue('I do not have a ham radio'))).toBeFalsy();
       });
     });
 
     it('throws when asked to set a property', () => {
-      expect(() => value.setProperty({}, 'anything', 'anything')).to.throw('Cannot set property of STRING');
+      expect(() => value.setProperty(mockContext, 'anything', 'anything')).toThrow('Cannot set property of STRING');
     });
 
     describe('elements', () => {
-      let element;
-
-      describe('within the string', () => {
-        beforeEach(() => {
-          element = value.getElement({}, createNumericValue(0));
-        });
-
-        it('gets elements as strings', () => {
-          expect(element.type).to.equal(valueTypes.STRING);
-        });
-
-        it('gets the correct character', () => {
-          expect(element.asNativeString()).to.equal('I');
-        });
+      it('gets indexed elements as strings', () => {
+        const element = value.getElement(mockContext, createNumericValue(0));
+        expect(element).toEqualTsString('I');
       });
 
-      describe('reverse-indexed', () => {
-        beforeEach(() => {
-          element = value.getElement({}, createNumericValue(-2));
-        });
-
-        it('gets elements as strings', () => {
-          expect(element.type).to.equal(valueTypes.STRING);
-        });
-
-        it('gets the correct character', () => {
-          expect(element.asNativeString()).to.equal('i');
-        });
+      it('gets reverse-indexed elements as strings', () => {
+        const element = value.getElement(mockContext, createNumericValue(-2));
+        expect(element).toEqualTsString('i');
       });
 
       it('returns undefined when asked for elements outside the string', () => {
-        expect(value.getElement({}, createNumericValue(100)).type).to.equal(valueTypes.UNDEFINED);
+        expect(value.getElement(mockContext, createNumericValue(100))).toBeTsUndefined();
       });
     });
 
     it('throws when called', () => {
-      expect(() => value.callFunction()).to.throw('STRING is not callable');
+      expect(() => value.callFunction()).toThrow('STRING is not callable');
     });
   });
 
@@ -128,93 +93,48 @@ xdescribe('string value', () => {
     });
 
     it('has type STRING', () => {
-      expect(value.type).to.equal(valueTypes.STRING);
+      expect(value).toBeTsString();;
     });
 
     it('cannot be implicitly converted to number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast STRING to number');
+      expect(() => value.asNativeNumber()).toThrow('Cannot treat STRING as NUMBER');
     });
 
     it('has a string value of itself', () => {
-      expect(value.asNativeString()).to.equal('');
+      expect(value.asNativeString()).toEqual('');
     });
 
     it('has a boolean value of false', () => {
-      expect(value.asNativeBoolean()).to.be.false;
+      expect(value.asNativeBoolean()).toEqual(false);
     });
 
     describe('equivalency', () => {
       it('is equal to the same string', () => {
-        expect(value.nativeEquals(createStringValue(''))).to.be.true;
+        expect(value.nativeEquals(createStringValue(''))).toBeTruthy();
       });
 
       it('is not equal to a different string', () => {
-        expect(value.nativeEquals(createStringValue('I do not have a ham radio'))).to.be.false;
-      });
-    });
-
-    describe('properties', () => {
-      describe('length', () => {
-        let length;
-
-        beforeEach(() => {
-          length = value.getProperty({}, createStringValue('length'));
-        });
-
-        it('is numeric', () => {
-          expect(length.type).to.equal(valueTypes.NUMBER);
-        });
-
-        it('is correct', () => {
-          expect(length.asNativeNumber()).to.equal(0);
-        });
-      });
-
-      describe('empty', () => {
-        let empty;
-
-        beforeEach(() => {
-          empty = value.getProperty({}, createStringValue('empty'));
-        });
-
-        it('is boolean', () => {
-          expect(empty.type).to.equal(valueTypes.BOOLEAN);
-        });
-
-        it('is correct', () => {
-          expect(empty.asNativeBoolean()).to.be.true;
-        });
-      });
-
-      describe('unrecognized...', () => {
-        it('throws', () => {
-          expect(value.getProperty({}, createStringValue('unrecognized')).type).to.equal(valueTypes.UNDEFINED);
-        });
+        expect(value.nativeEquals(createStringValue('I do not have a ham radio'))).toBeFalsy();
       });
     });
 
     it('throws when asked to set a property', () => {
-      expect(() => value.setProperty({}, 'anything', 'anything')).to.throw('Cannot set property of STRING');
+      expect(() => value.setProperty(mockContext, 'anything', 'anything')).toThrow('Cannot set property of STRING');
     });
 
     describe('elements', () => {
       it('returns undefined when asked for elements outside the string', () => {
-        expect(value.getElement({}, createNumericValue(100)).type).to.equal(valueTypes.UNDEFINED);
+        expect(value.getElement(mockContext, createNumericValue(100)).type).toEqual(valueTypes.UNDEFINED);
       });
     });
 
     it('throws when called', () => {
-      expect(() => value.callFunction()).to.throw('STRING is not callable');
+      expect(() => value.callFunction()).toThrow('STRING is not callable');
     });
   });
 
-  describe('with numeric value', () => {
-    beforeEach(() => {
-      value = createStringValue('123');
-    });
-
-    it('cannot convert implicitly to number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast STRING to number');
-    });
+  it('cannot implicitly convert to number', () => {
+    const value = createStringValue('123');
+    expect(() => value.asNativeNumber()).toThrow('Cannot treat STRING as NUMBER');
   });
 });
