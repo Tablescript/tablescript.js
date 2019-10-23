@@ -121,7 +121,8 @@ describe('numeric value', () => {
       });
 
       it('throws when adding anything else', () => {
-        expect(() => value.add(mockContext, createArrayValue([createNumericValue(1), createNumericValue(2)]))).toThrow('Cannot treat ARRAY as NUMBER');
+        expect(() => value.add(mockContext, createArrayValue([createNumericValue(1), createNumericValue(2)])))
+          .toThrow('Cannot treat ARRAY as NUMBER');
       });
     });
 
