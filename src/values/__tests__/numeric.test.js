@@ -15,15 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-
+import * as R from 'ramda';
 import { createNumericValue } from '../numeric';
-import { stringValue, numericValue } from '../../__tests__/util';
 import { valueTypes } from '../types';
 import { createStringValue } from '../string';
 import { createArrayValue } from '../array';
+import { initializeContext } from '../../context';
+import { defaultValueFactory } from '../../index';
+require('../../__tests__/matchers');
 
-xdescribe('numeric value', () => {
+describe('numeric value', () => {
+  let mockContext;
   let value;
+
+  beforeEach(() => {
+    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+  });
 
   describe('non-zero', () => {
     beforeEach(() => {
@@ -31,224 +38,214 @@ xdescribe('numeric value', () => {
     });
 
     it('has type NUMBER', () => {
-      expect(value.type).to.equal(valueTypes.NUMBER);
+      expect(value.type).toEqual(valueTypes.NUMBER);
     });
 
     it('has a native value', () => {
-      expect(value.asNativeValue()).to.equal(9);
+      expect(value.asNativeValue()).toEqual(9);
     });
 
     it('is identical to the same number', () => {
-      expect(value.identicalTo(createNumericValue(9))).to.be.true;
+      expect(value.identicalTo(createNumericValue(9))).toBeTruthy();
     });
 
     it('is not identical to a different number', () => {
-      expect(value.identicalTo(createNumericValue(777))).to.be.false;
+      expect(value.identicalTo(createNumericValue(777))).toBeFalsy();
     });
 
     it('is not identical to a string', () => {
-      expect(value.identicalTo(createStringValue('nope'))).to.be.false;
+      expect(value.identicalTo(createStringValue('nope'))).toBeFalsy();
     });
 
     it('has its own value', () => {
-      expect(value.asNativeNumber()).to.equal(9);
+      expect(value.asNativeNumber()).toEqual(9);
     });
 
     it('has its own value in a string', () => {
-      expect(value.asNativeString()).to.equal('9');
+      expect(value.asNativeString()).toEqual('9');
     });
 
     it('is true', () => {
-      expect(value.asNativeBoolean()).to.be.true;
+      expect(value.asNativeBoolean()).toEqual(true);
     });
 
     it('cannot be converted to array', () => {
-      expect(() => value.asNativeArray()).to.throw('Cannot treat NUMBER as ARRAY');
+      expect(() => value.asNativeArray()).toThrow('Cannot treat NUMBER as ARRAY');
     });
 
     it('cannot be converted to object', () => {
-      expect(() => value.asNativeObject()).to.throw('Cannot treat NUMBER as OBJECT');
+      expect(() => value.asNativeObject()).toThrow('Cannot treat NUMBER as OBJECT');
     });
 
     describe('equivalency', () => {
       it('is equal to its own value', () => {
-        expect(value.nativeEquals(createNumericValue(9))).to.be.true;
+        expect(value.nativeEquals(createNumericValue(9))).toBeTruthy();
       });
 
       it('is not equal to a different value', () => {
-        expect(value.nativeEquals(createNumericValue(9999))).to.be.false;
+        expect(value.nativeEquals(createNumericValue(9999))).toBeFalsy();
       });
     });
 
     it('cannot be converted to array', () => {
-      expect(() => value.asArray({})).to.throw('Cannot treat NUMBER as ARRAY');
+      expect(() => value.asArray()).toThrow('Cannot treat NUMBER as ARRAY');
     });
 
     it('cannot be converted to object', () => {
-      expect(() => value.asObject({})).to.throw('Cannot treat NUMBER as OBJECT');
+      expect(() => value.asObject()).toThrow('Cannot treat NUMBER as OBJECT');
     });
 
     it('throws when asked to get a property', () => {
-      expect(() => value.getProperty({}, 'anything')).to.throw('Cannot get property of NUMBER');
+      expect(() => value.getProperty(mockContext, createStringValue('anything'))).toThrow('Cannot get property of NUMBER');
     });
 
     it('throws when asked to set a property', () => {
-      expect(() => value.setProperty({}, 'anything')).to.throw('Cannot set property of NUMBER');
+      expect(() => value.setProperty(mockContext, createStringValue('anything'))).toThrow('Cannot set property of NUMBER');
     });
 
     it('throws when asked to get element', () => {
-      expect(() => value.getElement({}, 'anything')).to.throw('Cannot get element of NUMBER');
+      expect(() => value.getElement(mockContext, createStringValue('anything'))).toThrow('Cannot get element of NUMBER');
     });
 
     it('throws when called', () => {
-      expect(() => value.callFunction()).to.throw('NUMBER is not callable');
+      expect(() => value.callFunction()).toThrow('NUMBER is not callable');
     });
 
     describe('adding', () => {
-      let context;
-
-      beforeEach(() => {
-        context = {
-          factory: {
-            createStringValue,
-          }
-        };
-      });
-
       it('converts to string when added to a string', () => {
-        expect(value.add(context, createStringValue('abc'))).to.satisfy(stringValue('9abc'));
+        expect(value.add(mockContext, createStringValue('abc'))).toEqualTsString('9abc');
       });
 
       it('adds other numbers', () => {
-        expect(value.add(context, createNumericValue(90))).to.satisfy(numericValue(99));
+        expect(value.add(mockContext, createNumericValue(90))).toEqualTsNumber(99);
       });
 
       it('throws when adding anything else', () => {
-        expect(() => value.add(context, createArrayValue([createNumericValue(1), createNumericValue(2)]))).to.throw('Cannot treat ARRAY as NUMBER');
+        expect(() => value.add(mockContext, createArrayValue([createNumericValue(1), createNumericValue(2)]))).toThrow('Cannot treat ARRAY as NUMBER');
       });
     });
 
     describe('subtract', () => {
       it('subtracts other numbers', () => {
-        expect(value.subtract({}, createNumericValue(4))).to.satisfy(numericValue(5));
+        expect(value.subtract(mockContext, createNumericValue(4))).toEqualTsNumber(5);
       });
 
       it('throws when subtracting anything else', () => {
-        expect(() => value.subtract({}, createStringValue('4'))).to.throw('Cannot treat STRING as NUMBER');
+        expect(() => value.subtract(mockContext, createStringValue('4'))).toThrow('Cannot treat STRING as NUMBER');
       });
     });
 
     describe('multiply by', () => {
       it('multiplies by other numbers', () => {
-        expect(value.multiplyBy({}, createNumericValue(4))).to.satisfy(numericValue(36));
+        expect(value.multiplyBy(mockContext, createNumericValue(4))).toEqualTsNumber(36);
       });
 
       it('throws when multiplying by anything else', () => {
-        expect(() => value.multiplyBy({}, createStringValue('4'))).to.throw('Cannot treat STRING as NUMBER');
+        expect(() => value.multiplyBy(mockContext, createStringValue('4'))).toThrow('Cannot treat STRING as NUMBER');
       });
     });
 
     describe('divide by', () => {
       it('divides by other numbers', () => {
-        expect(value.divideBy({}, createNumericValue(3))).to.satisfy(numericValue(3));
+        expect(value.divideBy(mockContext, createNumericValue(3))).toEqualTsNumber(3);
       });
 
       it('even floats', () => {
-        expect(value.divideBy({}, createNumericValue(2))).to.satisfy(numericValue(4.5));
+        expect(value.divideBy(mockContext, createNumericValue(2))).toEqualTsNumber(4.5);
       });
 
       it('throws when dividing by 0', () => {
-        expect(() => value.divideBy({}, createNumericValue(0))).to.throw('Divide by zero');
+        expect(() => value.divideBy(mockContext, createNumericValue(0))).toThrow('Divide by zero');
       });
 
       it('throws when dividing by anything else', () => {
-        expect(() => value.divideBy({}, createStringValue('2'))).to.throw('Cannot treat STRING as NUMBER');
+        expect(() => value.divideBy(mockContext, createStringValue('2'))).toThrow('Cannot treat STRING as NUMBER');
       });
     });
 
     describe('modulo', () => {
       it('modulos other numbers', () => {
-        expect(value.modulo({}, createNumericValue(4))).to.satisfy(numericValue(1));
+        expect(value.modulo(mockContext, createNumericValue(4))).toEqualTsNumber(1);
       });
 
       it('throws when modulo-ing 0', () => {
-        expect(() => value.divideBy({}, createNumericValue(0))).to.throw('Divide by zero');
+        expect(() => value.divideBy(mockContext, createNumericValue(0))).toThrow('Divide by zero');
       });
 
       it('throws when modulo-ing anything else', () => {
-        expect(() => value.divideBy({}, createStringValue('4'))).to.throw('Cannot treat STRING as NUMBER');
+        expect(() => value.divideBy(mockContext, createStringValue('4'))).toThrow('Cannot treat STRING as NUMBER');
       });
     });
 
     describe('less than', () => {
       it('compares larger values', () => {
-        expect(value.lessThan({}, createNumericValue(100))).to.be.true;
+        expect(value.lessThan(mockContext, createNumericValue(100))).toEqualTsBoolean(true);
       });
 
       it('compares equal values', () => {
-        expect(value.lessThan({}, createNumericValue(9))).to.be.false;
+        expect(value.lessThan(mockContext, createNumericValue(9))).toEqualTsBoolean(false);
       });
 
       it('compares smaller values', () => {
-        expect(value.lessThan({}, createNumericValue(1))).to.be.false;
+        expect(value.lessThan(mockContext, createNumericValue(1))).toEqualTsBoolean(false);
       });
 
       it('throws when comparing anything else', () => {
-        expect(() => value.lessThan({}, createStringValue('100'))).to.throw('Cannot treat STRING as NUMBER');
+        expect(() => value.lessThan(mockContext, createStringValue('100'))).toThrow('Cannot treat STRING as NUMBER');
       });
     });
 
     describe('greater than', () => {
       it('compares larger values', () => {
-        expect(value.greaterThan({}, createNumericValue(100))).to.be.false;
+        expect(value.greaterThan(mockContext, createNumericValue(100))).toEqualTsBoolean(false);
       });
 
       it('compares equal values', () => {
-        expect(value.greaterThan({}, createNumericValue(9))).to.be.false;
+        expect(value.greaterThan(mockContext, createNumericValue(9))).toEqualTsBoolean(false);
       });
 
       it('compares smaller values', () => {
-        expect(value.greaterThan({}, createNumericValue(1))).to.be.true;
+        expect(value.greaterThan(mockContext, createNumericValue(1))).toEqualTsBoolean(true);
       });
 
       it('throws when comparing anything else', () => {
-        expect(() => value.greaterThan({}, createStringValue('100'))).to.throw('Cannot treat STRING as NUMBER');
+        expect(() => value.greaterThan(mockContext, createStringValue('100'))).toThrow('Cannot treat STRING as NUMBER');
       });
     });
 
     describe('less than or equal', () => {
       it('compares larger values', () => {
-        expect(value.lessThanOrEquals({}, createNumericValue(100))).to.be.true;
+        expect(value.lessThanOrEquals(mockContext, createNumericValue(100))).toEqualTsBoolean(true);
       });
 
       it('compares equal values', () => {
-        expect(value.lessThanOrEquals({}, createNumericValue(9))).to.be.true;
+        expect(value.lessThanOrEquals(mockContext, createNumericValue(9))).toEqualTsBoolean(true);
       });
 
       it('compares smaller values', () => {
-        expect(value.lessThanOrEquals({}, createNumericValue(1))).to.be.false;
+        expect(value.lessThanOrEquals(mockContext, createNumericValue(1))).toEqualTsBoolean(false);
       });
 
       it('throws when comparing anything else', () => {
-        expect(() => value.lessThanOrEquals({}, createStringValue('100'))).to.throw('Cannot treat STRING as NUMBER');
+        expect(() => value.lessThanOrEquals(mockContext, createStringValue('100'))).toThrow('Cannot treat STRING as NUMBER');
       });
     });
 
     describe('greater than or equal', () => {
       it('compares larger values', () => {
-        expect(value.greaterThanOrEquals({}, createNumericValue(100))).to.be.false;
+        expect(value.greaterThanOrEquals(mockContext, createNumericValue(100))).toEqualTsBoolean(false);
       });
 
       it('compares equal values', () => {
-        expect(value.greaterThanOrEquals({}, createNumericValue(9))).to.be.true;
+        expect(value.greaterThanOrEquals(mockContext, createNumericValue(9))).toEqualTsBoolean(true);
       });
 
       it('compares smaller values', () => {
-        expect(value.greaterThanOrEquals({}, createNumericValue(1))).to.be.true;
+        expect(value.greaterThanOrEquals(mockContext, createNumericValue(1))).toEqualTsBoolean(true);
       });
 
       it('throws when comparing anything else', () => {
-        expect(() => value.greaterThanOrEquals({}, createStringValue('100'))).to.throw('Cannot treat STRING as NUMBER');
+        expect(() => value.greaterThanOrEquals(mockContext, createStringValue('100'))).toThrow('Cannot treat STRING as NUMBER');
       });
     });
   });
@@ -259,19 +256,19 @@ xdescribe('numeric value', () => {
     });
 
     it('has type NUMBER', () => {
-      expect(value.type).to.equal(valueTypes.NUMBER);
+      expect(value.type).toEqual(valueTypes.NUMBER);
     });
 
     it('has numeric value 0', () => {
-      expect(value.asNativeNumber()).to.equal(0);
+      expect(value.asNativeNumber()).toEqual(0);
     });
 
     it('has string value "0"', () => {
-      expect(value.asNativeString()).to.equal('0');
+      expect(value.asNativeString()).toEqual('0');
     });
 
     it('has boolean value false', () => {
-      expect(value.asNativeBoolean()).to.be.false;
+      expect(value.asNativeBoolean()).toEqual(false);
     });
   });
 });
