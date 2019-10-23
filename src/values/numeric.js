@@ -18,7 +18,6 @@
 import { createValue } from './default';
 import { valueTypes, isNumber, isString } from './types';
 import { throwRuntimeError } from '../error';
-import { floor, ceiling } from './numeric-methods';
 
 const asNativeNumber = value => () => value;
 
@@ -66,10 +65,7 @@ export const createNumericValue = value => createValue(
   asNativeNumber(value),
   nativeEquals(value),
   nativeEquals(value),
-  {
-    floor: floor(value),
-    ceiling: ceiling(value),
-  },
+  {},
   {
     asNativeNumber: asNativeNumber(value),
     asNativeString: asNativeString(value),
