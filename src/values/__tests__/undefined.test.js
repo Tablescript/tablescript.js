@@ -15,10 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypes } from '../types';
 import { createUndefined } from '../undefined';
+import '../../__tests__/matchers';
 
-xdescribe('createUndefined', () => {
+describe('createUndefined', () => {
   let value;
 
   beforeEach(() => {
@@ -27,87 +27,49 @@ xdescribe('createUndefined', () => {
 
   describe('native', () => {
     it('has a native value of undefined', () => {
-      expect(value.asNativeValue()).to.equal(undefined);
+      expect(value.asNativeValue()).toEqual(undefined);
     });
 
     it('has type UNDEFINED', () => {
-      expect(value.type).to.equal(valueTypes.UNDEFINED);
+      expect(value).toBeTsUndefined();
     });
 
     it('throws when converted to number', () => {
-      expect(() => value.asNativeNumber()).to.throw('Cannot cast UNDEFINED to number');
+      expect(() => value.asNativeNumber()).toThrow('Cannot treat UNDEFINED as NUMBER');
     });
 
     it('has string value undefined', () => {
-      expect(value.asNativeString()).to.equal('undefined');
+      expect(value.asNativeString()).toEqual('undefined');
     });
 
     it('is false', () => {
-      expect(value.asNativeBoolean()).to.be.false;
+      expect(value.asNativeBoolean()).toEqual(false);
     });
 
     describe('equality', () => {
       it('is equal to another undefined', () => {
-        expect(value.nativeEquals(createUndefined())).to.be.true;
+        expect(value.nativeEquals(createUndefined())).toBeTruthy();
       });
 
       it('is not equal to anything else', () => {
-        expect(value.nativeEquals({ type: 'anything else' })).to.be.false;
-      });
-    });
-  });
-
-  describe('non-native', () => {
-    it('throws when converted to number', () => {
-      expect(() => value.asNumber()).to.throw('Cannot cast UNDEFINED to number');
-    });
-
-    describe('as string', () => {
-      let stringValue;
-
-      beforeEach(() => {
-        stringValue = value.asString();
-      });
-
-      it('has a string type', () => {
-        expect(stringValue.type).to.equal(valueTypes.STRING);
-      });
-
-      it('is "undefined"', () => {
-        expect(stringValue.asNativeString()).to.equal('undefined');
-      });
-    });
-
-    describe('as boolean', () => {
-      let booleanValue;
-
-      beforeEach(() => {
-        booleanValue = value.asBoolean();
-      });
-
-      it('has a boolean type', () => {
-        expect(booleanValue.type).to.equal(valueTypes.BOOLEAN);
-      });
-
-      it('is false', () => {
-        expect(booleanValue.asNativeBoolean()).to.be.false;
+        expect(value.nativeEquals({ type: 'anything else' })).toBeFalsy();
       });
     });
   });
 
   it('throws when asked for a property', () => {
-    expect(() => value.getProperty()).to.throw('Cannot get property of UNDEFINED');
+    expect(() => value.getProperty()).toThrow('Cannot get property of UNDEFINED');
   });
 
   it('throws when asked to set property', () => {
-    expect(() => value.setProperty()).to.throw('Cannot set property of UNDEFINED');
+    expect(() => value.setProperty()).toThrow('Cannot set property of UNDEFINED');
   });
 
   it('throws when asked for an element', () => {
-    expect(() => value.getElement()).to.throw('Cannot get element of UNDEFINED');
+    expect(() => value.getElement()).toThrow('Cannot get element of UNDEFINED');
   });
 
   it('throws when called', () => {
-    expect(() => value.callFunction()).to.throw('UNDEFINED is not callable');
+    expect(() => value.callFunction()).toThrow('UNDEFINED is not callable');
   });
 });
