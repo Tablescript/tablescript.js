@@ -1,1 +1,9 @@
 src
+jest.config.js
+junit.xml
+tablescript-graph.svg
+yarn.lock
+.circleci
+.babelrc
+.eslintignore
+.eslintrc.json
