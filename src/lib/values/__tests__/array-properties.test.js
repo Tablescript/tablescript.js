@@ -30,7 +30,7 @@ import { createNumericValue } from '../numeric';
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../../index';
+import defaultValueFactory from '../../value-factory';
 import { numericValue, booleanValue, arrayValue } from '../../__tests__/util';
 require('../../__tests__/matchers');
 
@@ -42,7 +42,7 @@ describe('array', () => {
   let mockContext;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
   });
 
   describe('methods', () => {

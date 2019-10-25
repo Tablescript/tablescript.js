@@ -17,7 +17,7 @@
 
 import * as R from 'ramda';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../..';
+import defaultValueFactory from '../../value-factory';
 import { createArrayValue } from '../array';
 import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
@@ -33,7 +33,7 @@ describe('string properties', () => {
   let getStringMethod;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
     getStringMethod = stringMethod(mockContext);
   });
 

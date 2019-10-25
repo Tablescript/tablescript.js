@@ -18,7 +18,7 @@
 import * as R from 'ramda';
 import { createBinaryExpression } from '../binary';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../..';
+import defaultValueFactory from '../../value-factory';
 import { createBooleanLiteral } from '../boolean-literal';
 import { createObjectLiteral } from '../object-literal';
 import { createNumberLiteral } from '../number-literal';
@@ -29,7 +29,7 @@ describe('createBinaryExpression', () => {
   let mockContext;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
   });
 
   describe('or', () => {

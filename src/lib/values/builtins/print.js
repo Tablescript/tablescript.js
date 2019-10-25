@@ -15,25 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { parse } from './parser/tablescript-parser';
-import { throwRuntimeError } from './error';
+import { createNativeFunctionValue, toStringResult } from '../native-function';
 
-export const runScript = (context, script, scriptPath) => {
-  const expression = parse(script, scriptPath);
-  return expression.evaluate(context);
-};
-
-const loadScript = (context, scriptPath) => {
-  for (const loader of context.options.input.loaders) {
-    const script = loader(context, scriptPath);
-    if (script) {
-      return script;
-    }
-  }
-  throwRuntimeError(`Unable to load "${scriptPath}"`, context);
-};
-
-export const loadAndRunScript = (context, scriptPath, args) => {
-  const script = loadScript(context, scriptPath);
-  return runScript(context, script.body, script.path, args);
-};
+export const printBuiltIn = createNativeFunctionValue(
+  'print',
+  [], 
+  (context, args) => {
+    const s = args.map(p => p.asNativeString())
+      .join();
+    context.options.io.output(s);
+    return s;
+  },
+  toStringResult,
+);

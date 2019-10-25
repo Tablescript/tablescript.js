@@ -22,7 +22,7 @@ import { createStringValue } from '../string';
 import { createArrayValue } from '../array';
 import { valueTypes } from '../types';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../../index';
+import defaultValueFactory from '../../value-factory';
 import '../../__tests__/matchers';
 
 describe('object value', () => {
@@ -31,7 +31,7 @@ describe('object value', () => {
   let value;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
   });
 
   describe('when non-empty', () => {

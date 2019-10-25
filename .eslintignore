@@ -1,2 +1,1 @@
-src/parser/tablescript-grammar-parser.js
-src/parser/template-string-grammar-parser.js
+src/lib/parser/tablescript-grammar-parser.js

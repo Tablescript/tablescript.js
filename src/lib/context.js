@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { valueTypeName } from './values/types';
-
 const valueAsString = value => value.asNativeString();
 
 const dumpScopeEntry = scope => name => {
@@ -29,19 +27,19 @@ const dumpScope = scope => {
   console.log('    *****************');
 };
 
-export const initializeContext = (initializeScope, args, options, factory) => {
+export const dumpContext = (context, message) => {
+  console.log(`  ----- CONTEXT ${message}`);
+  context.scopes().forEach(dumpScope);
+  console.log('  -----');
+};
+
+export const initializeContext = (initialScope, options, factory) => {
   const stacks = {
     locations: [],
-    scopes: [initializeScope(args, options)],
+    scopes: [initialScope],
   };
 
   return ({
-    dump: message => {
-      console.log(`  ----- CONTEXT ${message}`);
-      stacks.scopes.forEach(dumpScope);
-      console.log('  -----');
-    },
-    initializeScope,
     options,
     factory,
     locations: () => stacks.locations,

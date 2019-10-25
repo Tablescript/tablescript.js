@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { initializeContext } from './context';
-import { runScript, loadAndRunScript } from './runner';
-import { initializeBuiltins } from './values/builtins/builtins';
-import { loadFsFile } from './fs-loader';
 import { createArrayValue } from './values/array';
 import { createBooleanValue } from './values/boolean';
 import { createNumericValue } from './values/numeric';
@@ -26,29 +22,6 @@ import { createObjectValue } from './values/object';
 import { createStringValue } from './values/string';
 import { createTableValue } from './values/table';
 import { createUndefined } from './values/undefined';
-
-const defaultInterpreterOptions = options => ({
-  input: {
-    loaders: [loadFsFile],
-  },
-  output: {
-    print: s => {
-      console.log(s);
-    },
-  },
-  flags: {
-    validateTables: options.tableValidation || true,
-  }
-});
-
-const expandArguments = args => ({
-  arguments: createArrayValue(args.map(a => (typeof a === 'string') ? createStringValue(a) : a))
-});
-
-const defaultInitializeScope = (args, options) => ({
-  ...expandArguments(args),
-  ...initializeBuiltins(options),
-});
 
 const defaultValueFactory = {
   createArrayValue,
@@ -60,11 +33,4 @@ const defaultValueFactory = {
   createUndefined,
 };
 
-export {
-  initializeContext,
-  runScript,
-  loadAndRunScript,
-  defaultInterpreterOptions,
-  defaultInitializeScope,
-  defaultValueFactory,
-};
+export default defaultValueFactory;

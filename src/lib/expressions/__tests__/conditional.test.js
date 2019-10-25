@@ -21,7 +21,7 @@ import { createBooleanValue } from '../../values/boolean';
 import { createConditionalExpression } from '../conditional';
 import { numericValue } from '../../__tests__/util';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../..';
+import defaultValueFactory from '../../value-factory';
 import { createNumberLiteral } from '../number-literal';
 import { createBooleanLiteral } from '../boolean-literal';
 import '../../__tests__/matchers';
@@ -31,7 +31,7 @@ describe('createConditionalExpression', () => {
   let mockContext;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
   });
 
   describe('evaluate', () => {

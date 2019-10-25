@@ -16,27 +16,27 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import * as R from 'ramda';
-import { createStringLiteral } from '../string-literal';
+import { createNumberLiteral } from '../number-literal';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../../index';
+import defaultValueFactory from '../../value-factory';
 import '../../__tests__/matchers';
 
-describe('createStringLiteral', () => {
+describe('createNumberLiteral', () => {
   describe('evaluate', () => {
     let mockContext;
 
-    beforeEach(() => {
-      mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    beforeEach(() => {      
+      mockContext = initializeContext({}, {}, defaultValueFactory);
     });
 
-    it('evaluates a string literal to an equivalent string value', () => {
-      const expression = createStringLiteral('I have a ham radio');
-      expect(expression.evaluate(mockContext)).toEqualTsString('I have a ham radio');
+    it('evaluates a number literal to an equivalent numeric value', () => {
+      const expression = createNumberLiteral(12);
+      expect(expression.evaluate(mockContext)).toEqualTsNumber(12);
     });
   });
 
   it('throws when evaluated as a lhs', () => {
-    const expression = createStringLiteral('I have a ham radio');
-    expect(() => expression.evaluateAsLeftHandSide()).toThrow('Cannot assign to string expression');
+    const expression = createNumberLiteral(12);
+    expect(() => expression.evaluateAsLeftHandSide()).toThrow('Cannot assign to number expression');
   });
 });

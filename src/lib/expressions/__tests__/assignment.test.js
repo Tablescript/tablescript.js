@@ -19,7 +19,7 @@ import * as R from 'ramda';
 import { createAssignmentExpression } from '../assignment';
 import '../../__tests__/matchers';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../..';
+import defaultValueFactory from '../../value-factory';
 import { createBooleanLiteral } from '../boolean-literal';
 import { createVariableExpression } from '../variable';
 import { createNumberLiteral } from '../number-literal';
@@ -30,7 +30,7 @@ describe('createAssignmentExpression', () => {
   let mockContext;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
   });
 
   describe('evaluate', () => {

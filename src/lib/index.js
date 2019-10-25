@@ -15,23 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { loadAndRunScript } from '../../runner';
-import {
-  createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredStringParameterF,
-  toNativeString
-} from '../native-function';
+import initializeTablescript from './engine';
+import { TablescriptError } from './error';
 
-export const requireBuiltIn = createNativeFunctionValue(
-  'require',
-  [
-    nativeFunctionParameter('filename', requiredStringParameterF(toNativeString)),
-  ],
-  (context, args, filename) => {
-    const oldScopes = context.swapScopes([context.initializeScope(args.slice(1), context.options)]);
-    const result = loadAndRunScript(context, filename);
-    context.swapScopes(oldScopes);
-    return result;
-  },
-);
+export {
+  initializeTablescript,
+  TablescriptError,
+};

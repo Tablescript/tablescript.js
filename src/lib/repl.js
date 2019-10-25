@@ -34,7 +34,7 @@ const evaluate = (cmd, context, filename, callback) => {
   }
 };
 
-export const repl = context => {
+const repl = context => {
   const r = nodeRepl.start({
     prompt: '> ',
     eval: evaluate
@@ -51,3 +51,5 @@ export const repl = context => {
   });
   r.context = context;
 };
+
+export default repl;

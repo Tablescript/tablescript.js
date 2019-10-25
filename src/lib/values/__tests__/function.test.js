@@ -32,14 +32,14 @@ import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
 import { createUndefined } from '../undefined';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../..';
+import defaultValueFactory from '../../value-factory';
 require('../../__tests__/matchers');
 
 describe('function', () => {
   let mockContext;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
   });
 
   describe('createNativeFunctionValue', () => {

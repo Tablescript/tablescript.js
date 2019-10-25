@@ -20,7 +20,7 @@ import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
 import { valueTypes } from '../types';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../..';
+import defaultValueFactory from '../../value-factory';
 import '../../__tests__/matchers';
 
 describe('string value', () => {
@@ -28,7 +28,7 @@ describe('string value', () => {
   let value;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
   });
 
   describe('containing a non-empty string', () => {

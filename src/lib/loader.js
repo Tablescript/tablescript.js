@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import fs from 'fs';
 import path from 'path';
 
 const pathedPrefixes = ['/', './', '../'];
@@ -33,7 +32,7 @@ const bundlePaths = () => ([
 
 const allPaths = (context, filename) => isPathed(filename) ? pathFromContext(context) : bundlePaths();
 
-const fileContents = filePath => {
+const fileContents = (fs, filePath) => {
   try {
     const contents = fs.readFileSync(filePath, 'utf8');
     return {
@@ -46,17 +45,20 @@ const fileContents = filePath => {
   return undefined;
 };
 
-const tryPath = (thePath, filename) => {
+const tryPath = (fs, thePath, filename) => {
   const resolvedPath = path.resolve(thePath, filename);
+  if (resolvedPath.endsWith('.tab')) {
+    return fileContents(fs, resolvedPath);
+  }
   const bundleFilename = path.resolve(resolvedPath, 'main.tab');
-  const bundleContents = fileContents(bundleFilename);
+  const bundleContents = fileContents(fs, bundleFilename);
   if (bundleContents) {
     return bundleContents;
   }
   const resolvedFilename = `${resolvedPath}.tab`;
-  return fileContents(resolvedFilename);
+  return fileContents(fs, resolvedFilename);
 };
 
-const tryAllPaths = (paths, filename) => paths.reduce((result, path) => result || tryPath(path, filename), undefined);
+const tryAllPaths = (fs, paths, filename) => paths.reduce((result, path) => result || tryPath(fs, path, filename), undefined);
 
-export const loadFsFile = (context, filename) => tryAllPaths(allPaths(context, filename), filename);
+export const findAndLoadScript = (context, filename) => tryAllPaths(context.options.io.fs, allPaths(context, filename), filename);

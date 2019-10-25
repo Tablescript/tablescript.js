@@ -21,7 +21,7 @@ import { valueTypes } from '../types';
 import { createStringValue } from '../string';
 import { createArrayValue } from '../array';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../../index';
+import defaultValueFactory from '../../value-factory';
 require('../../__tests__/matchers');
 
 describe('numeric value', () => {
@@ -29,7 +29,7 @@ describe('numeric value', () => {
   let value;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
   });
 
   describe('non-zero', () => {

@@ -19,10 +19,7 @@
 
 import '@babel/polyfill';
 import options from 'commander';
-import fs from 'fs';
-import { runScript, initializeContext, defaultInitializeScope, defaultInterpreterOptions, defaultValueFactory } from '../index';
-import { repl } from '../repl';
-import { TablescriptError } from '../error';
+import { initializeTablescript, repl, TablescriptError } from '../lib/index';
 import pkginfo from 'pkginfo';
 
 pkginfo(module, 'version');
@@ -34,24 +31,18 @@ options
   .option('-v, --no-table-validation', 'Disable table entry validation')
   .parse(process.argv);
 
-const interpreterOptions = defaultInterpreterOptions(options);
-
 const filename = options.args[0];
 const args = options.args.slice(1);
 
-const context = initializeContext(
-  defaultInitializeScope,
-  args,
-  interpreterOptions,
-  defaultValueFactory,
-);
+const tablescript = initializeTablescript({
+  validateTables: options.tableValidation || true,
+});
 
 if (!filename) {
-  repl(context);
+  tablescript.repl();
 } else {
   try {
-    const script = fs.readFileSync(filename, 'utf8');
-    const value = runScript(context, script, filename);
+    const value = tablescript.runScriptFromFile(filename, args);
     if (options.printLastValue) {
       console.log(value.asNativeValue());
     }

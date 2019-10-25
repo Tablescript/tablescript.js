@@ -20,7 +20,7 @@ import { createUnaryExpression } from '../unary';
 import { createNumberLiteral } from '../number-literal';
 import { createStringLiteral } from '../string-literal';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../../index';
+import defaultValueFactory from '../../value-factory';
 import '../../__tests__/matchers';
 import { createBooleanLiteral } from '../boolean-literal';
 
@@ -29,7 +29,7 @@ describe('createUnaryExpression', () => {
   let mockLocation;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
     mockLocation = 'some location';
   });
 

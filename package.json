@@ -6,12 +6,12 @@
   "bin": {
     "tablescript": "./dist/bin/tablescript.js"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/lib/index.js",
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "node_modules/.bin/babel src --ignore __tests__ --out-dir dist",
-    "build:parser": "node_modules/.bin/pegjs --cache --output src/parser/tablescript-grammar-parser.js src/grammar/tablescript.pegjs",
-    "build:tracing-parser": "node_modules/.bin/pegjs --trace --cache --output src/parser/tablescript-grammar-parser.js src/grammar/tablescript.pegjs",
+    "build:parser": "node_modules/.bin/pegjs --cache --output src/lib/parser/tablescript-grammar-parser.js src/lib/grammar/tablescript.pegjs",
+    "build:tracing-parser": "node_modules/.bin/pegjs --trace --cache --output src/lib/parser/tablescript-grammar-parser.js src/lib/grammar/tablescript.pegjs",
     "dependency-graph": "madge --image tablescript-graph.svg src/bin/tablescript.js",
     "lint": "node_modules/.bin/eslint src",
     "test": "jest",

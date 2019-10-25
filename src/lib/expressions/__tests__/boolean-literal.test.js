@@ -18,14 +18,14 @@
 import * as R from 'ramda';
 import { createBooleanLiteral } from '../boolean-literal';
 import { initializeContext } from '../../context';
-import { defaultValueFactory } from '../..';
+import defaultValueFactory from '../../value-factory';
 import '../../__tests__/matchers';
 
 describe('createBooleanValue', () => {
   let mockContext;
 
   beforeEach(() => {
-    mockContext = initializeContext(R.always({}), [], {}, defaultValueFactory);
+    mockContext = initializeContext({}, {}, defaultValueFactory);
   });
 
   describe('evaluate', () => {
