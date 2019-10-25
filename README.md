@@ -4,17 +4,15 @@
 
 This is a Javascript implementation of the Tablescript concept - a scripting language with first-class random content-generating tables for use in roleplaying game preparation and play.
 
-This is a work in progress. Version 0.0.1.
+This is a work in progress.
 
 ## Development
 
     $> yarn lint
     $> yarn test
-
-### Parser
-
-    $> yarn build:parser
+    $> yarn test:examples
 
 ### Build
 
+    $> yarn build:parser
     $> yarn build
