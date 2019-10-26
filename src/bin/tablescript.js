@@ -60,7 +60,7 @@ if (!filename) {
     if (e instanceof TablescriptError) {
       console.log(e.toString());
     } else {
-      console.log(e);
+      console.log(`Internal Error: ${ e.toString() }`);
     }
   }
 }
