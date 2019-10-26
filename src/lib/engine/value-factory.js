@@ -24,7 +24,7 @@ import {
   createTableValue,
   createUndefined,
   createFunctionValue
-} from './values';
+} from '../values';
 
 const defaultValueFactory = {
   createArrayValue,

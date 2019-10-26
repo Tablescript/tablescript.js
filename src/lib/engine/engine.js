@@ -19,7 +19,7 @@ import fs from 'fs';
 import * as R from 'ramda';
 import { initializeContext } from './context';
 import { findAndLoadScript } from './loader';
-import { initializeBuiltins as initializeDefaultBuiltins } from './builtins';
+import { initializeBuiltins as initializeDefaultBuiltins } from '../builtins';
 import {
   createArrayValue,
   createBooleanValue,
@@ -27,10 +27,10 @@ import {
   createStringValue,
   createUndefined,
   isCallable
-} from './values';
+} from '../values';
 
-import { parse } from './parser/tablescript-parser';
-import { throwRuntimeError } from './error';
+import { parse } from '../parser/tablescript-parser';
+import { throwRuntimeError } from '../error';
 import defaultValueFactory from './value-factory';
 
 const optionalDefaultBuiltins = useDefaultBuiltins => (useDefaultBuiltins ? initializeDefaultBuiltins() : {});

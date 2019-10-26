@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
-import { throwRuntimeError } from "./error";
+import { throwRuntimeError } from "../error";
 
 const valueAsString = value => value.asNativeString();
 
