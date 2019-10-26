@@ -18,8 +18,14 @@
 import { throwRuntimeError } from '../error';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
-import { isArray, isObject, isTable } from '../values/types';
-import { createArraySpread, createObjectSpread, createTableSpread } from '../values/spread';
+import {
+  createArraySpread,
+  createObjectSpread,
+  createTableSpread,
+  isArray,
+  isObject,
+  isTable
+} from '../values';
 import { withSetLocation } from './util/context';
 
 const evaluate = expression => context => {

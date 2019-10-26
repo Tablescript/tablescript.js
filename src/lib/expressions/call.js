@@ -17,7 +17,7 @@
 
 import { expressionTypes } from './types';
 import { createExpression } from './default';
-import { isArraySpread } from '../values/types';
+import { isArraySpread } from '../values';
 import { withSetLocation } from './util/context';
 
 const evaluateParameter = context => (values, parameter) => {

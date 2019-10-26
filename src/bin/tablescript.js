@@ -20,9 +20,9 @@
 import '@babel/polyfill';
 import * as R from 'ramda';
 import options from 'commander';
-import { initializeTablescript, TablescriptError } from '../lib/index';
-import repl from './repl';
 import pkginfo from 'pkginfo';
+import { initializeTablescript, TablescriptError } from '../lib';
+import repl from './repl';
 
 pkginfo(module, 'version');
 

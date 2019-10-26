@@ -17,8 +17,32 @@
 
 import initializeTablescript from './engine';
 import { TablescriptError } from './error';
+import {
+  createArrayValue,
+  createBooleanValue,
+  createFunctionValue,
+  createNativeFunctionValue,
+  createNumericValue,
+  createObjectValue,
+  createStringValue,
+  createTableValue,
+  createUndefined,
+} from './values';
+
+const custom = {
+  createArrayValue,
+  createBooleanValue,
+  createFunctionValue,
+  createNativeFunctionValue,
+  createNumericValue,
+  createObjectValue,
+  createStringValue,
+  createTableValue,
+  createUndefined,
+};
 
 export {
   initializeTablescript,
   TablescriptError,
+  custom,
 };

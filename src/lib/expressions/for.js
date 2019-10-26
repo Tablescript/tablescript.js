@@ -18,7 +18,7 @@
 import * as R from 'ramda';
 import { createExpression } from './default';
 import { expressionTypes } from './types';
-import { isArray } from '../values/types';
+import { isArray } from '../values';
 import { withSetLocation } from './util/context';
 import { throwRuntimeError } from '../error';
 

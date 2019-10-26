@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { isArraySpread, isTableSpread } from '../values/types';
+import { isArraySpread, isTableSpread } from '../values';
 import { throwRuntimeError } from '../error';
 
 const createTableEntry = (selector, body) => ({
