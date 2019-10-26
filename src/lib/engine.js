@@ -19,7 +19,7 @@ import fs from 'fs';
 import * as R from 'ramda';
 import { initializeContext } from './context';
 import { findAndLoadScript } from './loader';
-import { initializeBuiltins as initializeDefaultBuiltins } from './builtins/builtins';
+import { initializeBuiltins as initializeDefaultBuiltins } from './builtins';
 import {
   createArrayValue,
   createBooleanValue,
