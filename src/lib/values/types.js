@@ -74,3 +74,4 @@ export const isString = isType(valueTypes.STRING);
 export const isTable = isType(valueTypes.TABLE);
 export const isTableSpread = isType(valueTypes.TABLE_SPREAD);
 export const isUndefined = isType(valueTypes.UNDEFINED);
+export const isCallable = o => isFunction(o) || isTable(o);

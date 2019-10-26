@@ -18,6 +18,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import '@babel/polyfill';
+import * as R from 'ramda';
 import options from 'commander';
 import { initializeTablescript, TablescriptError } from '../lib/index';
 import repl from './repl';
@@ -29,14 +30,16 @@ options
   .version(`Tablescript v${module.exports.version}`)
   .usage('[options] <file> [...args]')
   .option('-p, --print-last-value', 'Print the last evaluated value')
-  .option('-v, --no-table-validation', 'Disable table entry validation')
+  .option('-V, --no-validate-tables', 'Disable table entry validation')
+  .option('-c, --evaluate-callable-result', 'Evaluate callable results')
   .parse(process.argv);
 
 const filename = options.args[0];
 const args = options.args.slice(1);
 
 const tablescript = initializeTablescript({
-  validateTables: options.tableValidation || true,
+  validateTables: R.isNil(options.validateTables) ? true : options.validateTables,
+  evaluateCallableResult: R.isNil(options.evaluateCallableResult) ? false : options.evaluateCallableResult,
 });
 
 if (!filename) {

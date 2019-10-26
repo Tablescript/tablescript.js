@@ -1,0 +1,10 @@
+# Run this as:
+# $> tablescript -p -c callable-function-result.tab
+#
+add = fn(x) fn(y) x + y;
+
+add1 = add(1);
+
+fn() {
+  add1(10);
+};

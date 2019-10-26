@@ -1,0 +1,17 @@
+# Run this as:
+# $> tablescript -p -c callable-table-result.tab
+#
+colour = choice {
+  red
+  orange
+  yellow
+  green
+  blue
+  violet
+  indigo
+  purple
+  black
+  white
+  silver
+  gold
+};

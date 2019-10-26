@@ -25,6 +25,7 @@ import { createBooleanValue } from './values/boolean';
 import { createNumericValue } from './values/numeric';
 import { createStringValue } from './values/string';
 import { createUndefined } from './values/undefined';
+import { isCallable } from './values/types';
 
 import { parse } from './parser/tablescript-parser';
 import { throwRuntimeError } from './error';
@@ -71,9 +72,16 @@ const loadScript = (context, scriptPath) => {
   return script;
 };
 
+const optionallyCall = (context, value) => {
+  if (isCallable(value) && context.options.flags.evaluateCallableResult) {
+    return value.callFunction(context, []);
+  }
+  return value;
+};
+
 const parseAndEvaluate = (context, script, scriptPath) => {
   const expression = parse(script, scriptPath);
-  return expression.evaluate(context);
+  return optionallyCall(context, expression.evaluate(context));
 };
 
 const loadParseAndEvaluate = (context, scriptPath) => {
@@ -108,6 +116,7 @@ const mergeWithDefaults = options => ({
   flags: {
     useDefaultBuiltins: R.has('defaultBuiltins', options) ? options.defaultBuiltins : true,
     validateTables: R.has('tableValidation', options) ? options.tableValidation : true,
+    evaluateCallableResult: R.has('evaluateCallableResult', options) ? options.evaluateCallableResult : true,
   },
   customBuiltins: options.customBuiltins || {},
 });
@@ -124,6 +133,7 @@ export const initializeTablescript = options => {
     },
     flags: {
       validateTables: mergedOptions.flags.validateTables,
+      evaluateCallableResult: mergedOptions.flags.evaluateCallableResult,
     },
   };
 
