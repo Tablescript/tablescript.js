@@ -23,10 +23,9 @@ const evaluate = (condition, ifBlock, elseBlock) => context => {
   const expressionValue = condition.evaluate(context);
   if (expressionValue.asNativeBoolean()) {
     return ifBlock.evaluate(context);
-  } else {
-    if (elseBlock) {
-      return elseBlock.evaluate(context);
-    }
+  }
+  if (elseBlock) {
+    return elseBlock.evaluate(context);
   }
   return context.factory.createUndefined();
 };
