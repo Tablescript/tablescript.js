@@ -1,0 +1,18 @@
+
+fib = fn(n) {
+  range(n + 1).reduce(fn(acc, n) {
+    if (n == 0) {
+      [0];
+    } else if (n == 1) {
+      [0,1];
+    } else {
+      [...acc, acc[-2] + acc[-1]];
+    };
+  }, [])[-1];
+};
+
+if (arguments.length() < 1) {
+  print('Usage: iterative-fib <n>');
+} else {
+  print(fib(int(arguments[0])));
+};

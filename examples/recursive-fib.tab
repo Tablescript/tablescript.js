@@ -1,0 +1,22 @@
+fibCache = {};
+
+fib = fn(n, self) {
+  if (fibCache[str(n)]) {
+    fibCache[str(n)];
+  } else {
+    value = if (n == 0) {
+      0;
+    } else if (n == 1) {
+      1;
+    } else {
+      self(n - 1, self) + self(n - 2, self);
+    };
+    fibCache[str(n)] = value;
+  };
+};
+
+if (arguments.length() < 1) {
+  print('Usage: recursive-fib <n>');
+} else {
+  print(fib(int(arguments[0]), fib));
+};
