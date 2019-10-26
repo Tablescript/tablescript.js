@@ -18,18 +18,22 @@
 import { createArrayValue } from './array';
 import { createBooleanValue } from './boolean';
 import { createFunctionValue } from './function';
-import { createLeftHandSideValue, createArrayElementLeftHandSideValue, createObjectPropertyLeftHandSideValue } from './left-hand-side';
+import {
+  createLeftHandSideValue,
+  createArrayElementLeftHandSideValue,
+  createObjectPropertyLeftHandSideValue
+} from './left-hand-side';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredParameterF,
-  requiredNumericParameterF,
-  requiredStringParameterF,
-  requiredArrayParameterF,
-  requiredObjectParameterF,
-  optionalParameterF,
-  optionalNumericParameterF,
-  optionalStringParameterF,
+  requiredParameter,
+  requiredNumericParameter,
+  requiredStringParameter,
+  requiredArrayParameter,
+  requiredObjectParameter,
+  optionalParameter,
+  optionalNumericParameter,
+  optionalStringParameter,
   toNativeNumber,
   toNativeString,
   toNativeBoolean,
@@ -43,7 +47,11 @@ import {
 } from './native-function';
 import { createNumericValue } from './numeric';
 import { createObjectValue } from './object';
-import { createArraySpread, createObjectSpread, createTableSpread } from './spread';
+import {
+  createArraySpread,
+  createObjectSpread,
+  createTableSpread
+} from './spread';
 import { createStringValue } from './string';
 import { createTableValue } from './table';
 import { createUndefined } from './undefined';
@@ -94,14 +102,14 @@ export {
   isCallable,
 
   nativeFunctionParameter,
-  requiredParameterF,
-  requiredNumericParameterF,
-  requiredStringParameterF,
-  requiredArrayParameterF,
-  requiredObjectParameterF,
-  optionalParameterF,
-  optionalNumericParameterF,
-  optionalStringParameterF,
+  requiredParameter,
+  requiredNumericParameter,
+  requiredStringParameter,
+  requiredArrayParameter,
+  requiredObjectParameter,
+  optionalParameter,
+  optionalNumericParameter,
+  optionalStringParameter,
   toNativeNumber,
   toNativeString,
   toNativeBoolean,

@@ -19,8 +19,8 @@ import { norm } from './norm';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredNumericParameterF,
-  optionalNumericParameterF,
+  requiredNumericParameter,
+  optionalNumericParameter,
   toNativeNumber,
   toNumericResult
 } from '../values';
@@ -44,7 +44,7 @@ const mathMin = createNativeFunctionValue(
 const mathRound = createNativeFunctionValue(
   'round',
   [
-    nativeFunctionParameter('n', requiredNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('n', requiredNumericParameter(toNativeNumber)),
   ],
   (_, args, n) => Math.round(n),
   toNumericResult,
@@ -53,7 +53,7 @@ const mathRound = createNativeFunctionValue(
 const mathFloor = createNativeFunctionValue(
   'floor',
   [
-    nativeFunctionParameter('n', requiredNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('n', requiredNumericParameter(toNativeNumber)),
   ],
   (_, args, n) => Math.floor(n),
   toNumericResult,
@@ -62,7 +62,7 @@ const mathFloor = createNativeFunctionValue(
 const mathCeil = createNativeFunctionValue(
   'ceil',
   [
-    nativeFunctionParameter('n', requiredNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('n', requiredNumericParameter(toNativeNumber)),
   ],
   (_, args, n) => Math.ceil(n),
   toNumericResult,
@@ -71,8 +71,8 @@ const mathCeil = createNativeFunctionValue(
 const mathPow = createNativeFunctionValue(
   'pow',
   [
-    nativeFunctionParameter('x', requiredNumericParameterF(toNativeNumber)),
-    nativeFunctionParameter('y', requiredNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('x', requiredNumericParameter(toNativeNumber)),
+    nativeFunctionParameter('y', requiredNumericParameter(toNativeNumber)),
   ],
   (_, args, x, y) => Math.pow(x, y),
   toNumericResult,
@@ -81,8 +81,8 @@ const mathPow = createNativeFunctionValue(
 const mathNorm = createNativeFunctionValue(
   'norm',
   [
-    nativeFunctionParameter('mean', requiredNumericParameterF(toNativeNumber)),
-    nativeFunctionParameter('stdev', optionalNumericParameterF(toNativeNumber, 1.0)),
+    nativeFunctionParameter('mean', requiredNumericParameter(toNativeNumber)),
+    nativeFunctionParameter('stdev', optionalNumericParameter(toNativeNumber, 1.0)),
   ],
   (_, args, mean, stdev) => norm(mean, stdev),
   toNumericResult,
@@ -91,8 +91,8 @@ const mathNorm = createNativeFunctionValue(
 const mathNormI = createNativeFunctionValue(
   'normI',
   [
-    nativeFunctionParameter('mean', requiredNumericParameterF(toNativeNumber)),
-    nativeFunctionParameter('stdev', optionalNumericParameterF(toNativeNumber, 1.0)),
+    nativeFunctionParameter('mean', requiredNumericParameter(toNativeNumber)),
+    nativeFunctionParameter('stdev', optionalNumericParameter(toNativeNumber, 1.0)),
   ],  
   (_, args, mean, stdev) => Math.round(norm(mean, stdev)),
   toNumericResult,

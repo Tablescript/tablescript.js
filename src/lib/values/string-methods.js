@@ -19,10 +19,10 @@ import * as R from 'ramda';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredNumericParameterF,
-  requiredStringParameterF,
-  optionalNumericParameterF,
-  optionalStringParameterF,
+  requiredNumericParameter,
+  requiredStringParameter,
+  optionalNumericParameter,
+  optionalStringParameter,
   toNativeNumber,
   toNativeString,
   toArrayResult,
@@ -36,7 +36,7 @@ import { rollDiceFromString } from '../util/dice-strings';
 export const split = value => createNativeFunctionValue(
   'split',
   [
-    nativeFunctionParameter('separator', optionalStringParameterF(toNativeString)),
+    nativeFunctionParameter('separator', optionalStringParameter(toNativeString)),
   ],
   (context, args, separator) => (args.length === 1 ? (
     value.split(separator).map(context.factory.createStringValue)
@@ -70,7 +70,7 @@ export const lowercase = value => createNativeFunctionValue(
 export const includes = value => createNativeFunctionValue(
   'includes',
   [
-    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
+    nativeFunctionParameter('s', requiredStringParameter(toNativeString)),
   ],
   (context, args, s) => value.includes(s),
   toBooleanResult,
@@ -79,7 +79,7 @@ export const includes = value => createNativeFunctionValue(
 export const indexOf = value => createNativeFunctionValue(
   'indexOf',
   [
-    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
+    nativeFunctionParameter('s', requiredStringParameter(toNativeString)),
   ],
   (context, args, s) => value.indexOf(s),
   toNumericResult,
@@ -88,8 +88,8 @@ export const indexOf = value => createNativeFunctionValue(
 export const slice = value => createNativeFunctionValue(
   'slice',
   [
-    nativeFunctionParameter('start', requiredNumericParameterF(toNativeNumber)),
-    nativeFunctionParameter('end', optionalNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('start', requiredNumericParameter(toNativeNumber)),
+    nativeFunctionParameter('end', optionalNumericParameter(toNativeNumber)),
   ],
   (context, args, startValue, endValue) => (args.length === 1 ? (
     value.slice(startValue)
@@ -102,7 +102,7 @@ export const slice = value => createNativeFunctionValue(
 export const startsWith = value => createNativeFunctionValue(
   'startsWith',
   [
-    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
+    nativeFunctionParameter('s', requiredStringParameter(toNativeString)),
   ],
   (context, args, s) => value.startsWith(s),
   toBooleanResult,
@@ -111,7 +111,7 @@ export const startsWith = value => createNativeFunctionValue(
 export const endsWith = value => createNativeFunctionValue(
   'endsWith',
   [
-    nativeFunctionParameter('s', requiredStringParameterF(toNativeString)),
+    nativeFunctionParameter('s', requiredStringParameter(toNativeString)),
   ],
   (context, args, s) => value.endsWith(s),
   toBooleanResult,

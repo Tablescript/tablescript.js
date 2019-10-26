@@ -20,10 +20,10 @@ import { isUndefined } from './types';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredParameterF,
-  optionalParameterF,
-  optionalNumericParameterF,
-  optionalStringParameterF,
+  requiredParameter,
+  optionalParameter,
+  optionalNumericParameter,
+  optionalStringParameter,
   toNativeNumber,
   toNativeString,
   toNumericResult,
@@ -41,7 +41,7 @@ const indexedFilter = R.addIndex(R.filter);
 export const each = entries => createNativeFunctionValue(
   'each',
   [
-    nativeFunctionParameter('f', requiredParameterF()),
+    nativeFunctionParameter('f', requiredParameter()),
   ],
   (context, args, f) => indexedReduce(
     (_, entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]),
@@ -53,8 +53,8 @@ export const each = entries => createNativeFunctionValue(
 export const reduce = entries => createNativeFunctionValue(
   'reduce',
   [
-    nativeFunctionParameter('reducer', requiredParameterF()),
-    nativeFunctionParameter('initialValue', requiredParameterF()),
+    nativeFunctionParameter('reducer', requiredParameter()),
+    nativeFunctionParameter('initialValue', requiredParameter()),
   ],
   (context, args, reducer, initialValue) => indexedReduce(
     (acc, entry, i) => reducer.callFunction(context, [acc, entry, context.factory.createNumericValue(i)]),
@@ -66,7 +66,7 @@ export const reduce = entries => createNativeFunctionValue(
 export const map = entries => createNativeFunctionValue(
   'map',
   [
-    nativeFunctionParameter('f', requiredParameterF()),
+    nativeFunctionParameter('f', requiredParameter()),
   ],
   (context, args, f) => indexedMap(
     (entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]),
@@ -78,7 +78,7 @@ export const map = entries => createNativeFunctionValue(
 export const filter = entries => createNativeFunctionValue(
   'filter',
   [
-    nativeFunctionParameter('f', requiredParameterF()),
+    nativeFunctionParameter('f', requiredParameter()),
   ],
   (context, args, f) => indexedFilter(
     (entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]).asNativeBoolean(),
@@ -90,7 +90,7 @@ export const filter = entries => createNativeFunctionValue(
 export const includes = entries => createNativeFunctionValue(
   'includes',
   [
-    nativeFunctionParameter('value', requiredParameterF()),
+    nativeFunctionParameter('value', requiredParameter()),
   ],
   (context, args, value) => R.reduce((result, entry) => result || entry.nativeEquals(value), false, entries),
   toBooleanResult,
@@ -99,7 +99,7 @@ export const includes = entries => createNativeFunctionValue(
 export const indexOf = entries => createNativeFunctionValue(
   'indexOf',
   [
-    nativeFunctionParameter('value', requiredParameterF()),
+    nativeFunctionParameter('value', requiredParameter()),
   ],
   (context, args, value) => R.findIndex(entry => entry.nativeEquals(value), entries),
   toNumericResult,
@@ -108,7 +108,7 @@ export const indexOf = entries => createNativeFunctionValue(
 export const find = entries => createNativeFunctionValue(
   'find',
   [
-    nativeFunctionParameter('f', requiredParameterF()),
+    nativeFunctionParameter('f', requiredParameter()),
   ],
   (context, args, f) => R.reduce(
     (foundValue, entry) => {
@@ -127,7 +127,7 @@ export const find = entries => createNativeFunctionValue(
 export const findIndex = entries => createNativeFunctionValue(
   'findIndex',
   [
-    nativeFunctionParameter('f', requiredParameterF()),
+    nativeFunctionParameter('f', requiredParameter()),
   ],
   (context, args, f) => indexedReduce(
     (foundIndex, entry, i) => {
@@ -147,8 +147,8 @@ export const findIndex = entries => createNativeFunctionValue(
 export const defaultSorter = createNativeFunctionValue(
   'defaultSorter',
   [
-    nativeFunctionParameter('a', requiredParameterF()),
-    nativeFunctionParameter('b', requiredParameterF()),
+    nativeFunctionParameter('a', requiredParameter()),
+    nativeFunctionParameter('b', requiredParameter()),
   ],
   (context, args, a, b) => a.compare(context, b),
 );
@@ -156,7 +156,7 @@ export const defaultSorter = createNativeFunctionValue(
 export const sort = entries => createNativeFunctionValue(
   'sort',
   [
-    nativeFunctionParameter('f', optionalParameterF()),
+    nativeFunctionParameter('f', optionalParameter()),
   ],
   (context, args, f) => (args.length === 1 ? (
     quickSort(context, [...entries], f)
@@ -169,7 +169,7 @@ export const sort = entries => createNativeFunctionValue(
 export const join = entries => createNativeFunctionValue(
   'join',
   [
-    nativeFunctionParameter('separator', optionalStringParameterF(toNativeString)),
+    nativeFunctionParameter('separator', optionalStringParameter(toNativeString)),
   ],
   (_, args, separator) => (args.length === 1 ? (
     entries.map(e => e.asNativeString()).join(separator)
@@ -189,8 +189,8 @@ export const reverse = entries => createNativeFunctionValue(
 export const slice = entries => createNativeFunctionValue(
   'slice',
   [
-    nativeFunctionParameter('begin', optionalNumericParameterF(toNativeNumber)),
-    nativeFunctionParameter('end', optionalNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('begin', optionalNumericParameter(toNativeNumber)),
+    nativeFunctionParameter('end', optionalNumericParameter(toNativeNumber)),
   ],
   (_, args, begin, end) => {
     if (args.length === 2) {

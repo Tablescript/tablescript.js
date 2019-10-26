@@ -19,14 +19,14 @@ import * as R from 'ramda';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredStringParameterF,
+  requiredStringParameter,
   toNativeString
 } from '../values';
 
 export const importBuiltIn = createNativeFunctionValue(
   'import',
   [
-    nativeFunctionParameter('filename', requiredStringParameterF(toNativeString)),
+    nativeFunctionParameter('filename', requiredStringParameter(toNativeString)),
   ],
   (context, args, filename) => context.options.importScript(
     context,

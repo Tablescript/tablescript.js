@@ -19,8 +19,8 @@ import { throwRuntimeError } from '../error';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredNumericParameterF,
-  optionalNumericParameterF,
+  requiredNumericParameter,
+  optionalNumericParameter,
   toNativeNumber,
   toArrayResult
 } from '../values';
@@ -43,9 +43,9 @@ const createRangeArray = (context, start, end, step) => {
 export const rangeBuiltIn = createNativeFunctionValue(
   'range',
   [
-    nativeFunctionParameter('start', requiredNumericParameterF(toNativeNumber)),
-    nativeFunctionParameter('end', optionalNumericParameterF(toNativeNumber)),
-    nativeFunctionParameter('step', optionalNumericParameterF(toNativeNumber)),
+    nativeFunctionParameter('start', requiredNumericParameter(toNativeNumber)),
+    nativeFunctionParameter('end', optionalNumericParameter(toNativeNumber)),
+    nativeFunctionParameter('step', optionalNumericParameter(toNativeNumber)),
   ],
   (context, args, startValue, endValue, stepValue) => {
     if (args.length === 1) {

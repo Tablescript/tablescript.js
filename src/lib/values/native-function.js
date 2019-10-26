@@ -23,7 +23,7 @@ import { throwRuntimeError } from '../error';
 
 export const nativeFunctionParameter = (name, extractor) => ({ name, extractor });
 
-export const requiredParameterF = (transformer = R.identity) => (context, signature, parameterName) => {
+export const requiredParameter = (transformer = R.identity) => (context, signature, parameterName) => {
   const value = context.getLocalVariable(parameterName);
   if (isUndefined(value)) {
     throwRuntimeError(`${signature} missing required parameter "${parameterName}"`, context);
@@ -31,7 +31,7 @@ export const requiredParameterF = (transformer = R.identity) => (context, signat
   return transformer(value);
 };
 
-const requiredTypedParameterF = (validator, typeName) => (transformer = R.identity) => (context, signature, parameterName) => {
+const requiredTypedParameter = (validator, typeName) => (transformer = R.identity) => (context, signature, parameterName) => {
   const value = context.getLocalVariable(parameterName);
   if (isUndefined(value)) {
     throwRuntimeError(`${signature} missing required parameter "${parameterName}"`, context);
@@ -42,12 +42,12 @@ const requiredTypedParameterF = (validator, typeName) => (transformer = R.identi
   return transformer(value);
 };
 
-export const requiredNumericParameterF = requiredTypedParameterF(isNumber, 'a number');
-export const requiredStringParameterF = requiredTypedParameterF(isString, 'a string');
-export const requiredArrayParameterF = requiredTypedParameterF(isArray, 'an array');
-export const requiredObjectParameterF = requiredTypedParameterF(isObject, 'an object');
+export const requiredNumericParameter = requiredTypedParameter(isNumber, 'a number');
+export const requiredStringParameter = requiredTypedParameter(isString, 'a string');
+export const requiredArrayParameter = requiredTypedParameter(isArray, 'an array');
+export const requiredObjectParameter = requiredTypedParameter(isObject, 'an object');
 
-export const optionalParameterF = (transformer = R.identity) => (context, signature, parameterName) => {
+export const optionalParameter = (transformer = R.identity) => (context, signature, parameterName) => {
   const value = context.getLocalVariable(parameterName);
   if (!isUndefined(value)) {
     return transformer(value);
@@ -55,7 +55,7 @@ export const optionalParameterF = (transformer = R.identity) => (context, signat
   return context.factory.createUndefined();
 };
 
-const optionalTypedParameterF = (validator, factoryProp, typeName) =>
+const optionalTypedParameter = (validator, factoryProp, typeName) =>
   (transformer = R.identity, defaultValue) =>
   (context, signature, parameterName) => {
   const value = context.getLocalVariable(parameterName);
@@ -71,8 +71,8 @@ const optionalTypedParameterF = (validator, factoryProp, typeName) =>
   return context.factory.createUndefined();
 };
 
-export const optionalNumericParameterF = optionalTypedParameterF(isNumber, R.prop('createNumericValue'), 'a number');
-export const optionalStringParameterF = optionalTypedParameterF(isString, R.prop('createStringValue'), 'a string');
+export const optionalNumericParameter = optionalTypedParameter(isNumber, R.prop('createNumericValue'), 'a number');
+export const optionalStringParameter = optionalTypedParameter(isString, R.prop('createStringValue'), 'a string');
 
 export const toNativeNumber = value => value.asNativeNumber();
 export const toNativeString = value => value.asNativeString();

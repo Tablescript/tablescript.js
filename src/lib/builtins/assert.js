@@ -20,8 +20,8 @@ import {
   isUndefined,
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredParameterF,
-  optionalStringParameterF,
+  requiredParameter,
+  optionalStringParameter,
   toNativeBoolean,
   toUndefinedResult
 } from '../values';
@@ -29,8 +29,8 @@ import {
 export const assertBuiltIn = createNativeFunctionValue(
   'assert',
   [
-    nativeFunctionParameter('condition', requiredParameterF(toNativeBoolean)),
-    nativeFunctionParameter('message', optionalStringParameterF()),
+    nativeFunctionParameter('condition', requiredParameter(toNativeBoolean)),
+    nativeFunctionParameter('message', optionalStringParameter()),
   ],
   (context, args, condition, message) => {
     if (!condition) {

@@ -19,7 +19,7 @@ import * as R from 'ramda';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredObjectParameterF,
+  requiredObjectParameter,
   toObject,
   toArrayResult
 } from '../values';
@@ -27,7 +27,7 @@ import {
 export const keysBuiltIn = createNativeFunctionValue(
   'keys',
   [
-    nativeFunctionParameter('o', requiredObjectParameterF(toObject)),
+    nativeFunctionParameter('o', requiredObjectParameter(toObject)),
   ],
   (context, args, o) => R.compose(
     R.map(context.factory.createStringValue),

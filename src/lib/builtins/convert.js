@@ -22,14 +22,14 @@ import {
   isBoolean,
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredParameterF,
+  requiredParameter,
   toNumericResult
 } from '../values';
 
 export const strBuiltIn = createNativeFunctionValue(
   'str',
   [
-    nativeFunctionParameter('s', requiredParameterF()),
+    nativeFunctionParameter('s', requiredParameter()),
   ],
   (context, args, s) => {
     if (isString(s)) {
@@ -42,7 +42,7 @@ export const strBuiltIn = createNativeFunctionValue(
 export const intBuiltIn = createNativeFunctionValue(
   'int',
   [
-    nativeFunctionParameter('i', requiredParameterF()),
+    nativeFunctionParameter('i', requiredParameter()),
   ],
   (context, args, i) => {
     if (isNumber(i)) {
