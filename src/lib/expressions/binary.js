@@ -22,14 +22,12 @@ import { withSetLocation } from './util/context';
 
 const evaluate = (operators, leftExpression, operator, rightExpression) => context => operators[operator](context, leftExpression, rightExpression);
 
-export const createBinaryExpressionWithOperators = operators => (
+export const createBinaryExpression = (
   location,
   leftExpression,
   operator,
   rightExpression
 ) => createExpression(
   expressionTypes.BINARY,
-  withSetLocation(location, evaluate(operators, leftExpression, operator, rightExpression)),
+  withSetLocation(location, evaluate(allOperators, leftExpression, operator, rightExpression)),
 );
-
-export const createBinaryExpression = createBinaryExpressionWithOperators(allOperators);
