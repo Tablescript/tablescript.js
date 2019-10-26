@@ -61,10 +61,7 @@
   };
 
   const optionalList = (list) => list ? list : [];
-  const extractOptional = (optional, index) => optional ? optional[index] : null;
-  const extractList = (list, index) => list.map(e => e[index]);
   const composeList = (head, tail) => [head, ...tail];
-  const buildList = (head, tail, index) => [head, ...extractList(tail, index)];
   const flattenList = (list) => list.reduce((acc, e) => ([...acc, ...e]), []);
   const filterSublists = (list, indices) => list.map(sublist => sublist.filter((e, i) => indices.includes(i)));
 
