@@ -108,17 +108,22 @@ const importScript = builtins => (context, scriptPath, args) => {
   return withSwappedScopes(context, [initialScope], () => loadParseAndEvaluate(context, scriptPath));
 };
 
+const optionOr = (option, defaultValue) => R.isNil(option) ? defaultValue : option;
+
 const mergeWithDefaults = options => ({
   io: {
-    fs: options.fs || fs,
-    output: options.output || console.log,
+    fs: optionOr(options.fs, fs),
+    output: optionOr(options.output, console.log),
   },
   flags: {
-    useDefaultBuiltins: R.has('defaultBuiltins', options) ? options.defaultBuiltins : true,
-    validateTables: R.has('tableValidation', options) ? options.tableValidation : true,
-    evaluateCallableResult: R.has('evaluateCallableResult', options) ? options.evaluateCallableResult : true,
+    useDefaultBuiltins: optionOr(options.defaultBuiltins, true),
+    validateTables: optionOr(options.tableValidation, true),
+    evaluateCallableResult: optionOr(options.evaluateCallableResult, false),
   },
-  customBuiltins: options.customBuiltins || {},
+  values: {
+    maximumLoopCount: optionOr(options.maximumLoopCount, 100000),
+  },
+  customBuiltins: optionOr(options.customBuiltins, {}),
 });
 
 export const initializeTablescript = options => {
@@ -127,14 +132,9 @@ export const initializeTablescript = options => {
 
   const engineOptions = {
     importScript: importScript(builtins),
-    io: {
-      fs: mergedOptions.io.fs,
-      output: mergedOptions.io.output,
-    },
-    flags: {
-      validateTables: mergedOptions.flags.validateTables,
-      evaluateCallableResult: mergedOptions.flags.evaluateCallableResult,
-    },
+    io: R.pick(['fs', 'output'], mergedOptions.io),
+    flags: R.pick(['validateTables', 'evaluateCallableResult'], mergedOptions.flags),
+    values: R.pick(['maximumLoopCount'], mergedOptions.values),
   };
 
   return {

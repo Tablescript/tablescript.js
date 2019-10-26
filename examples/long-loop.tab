@@ -1,0 +1,7 @@
+doTheThing = fn() {};
+
+i = 0;
+while (i < 2000000) {
+  doTheThing();
+  i += 1;
+};

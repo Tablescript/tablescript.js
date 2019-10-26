@@ -32,6 +32,7 @@ options
   .option('-p, --print-last-value', 'Print the last evaluated value')
   .option('-V, --no-validate-tables', 'Disable table entry validation')
   .option('-c, --evaluate-callable-result', 'Evaluate callable results')
+  .option('-l, --max-loop-count <count>', 'Maximum loop count')
   .parse(process.argv);
 
 const filename = options.args[0];
@@ -40,6 +41,7 @@ const args = options.args.slice(1);
 const tablescript = initializeTablescript({
   validateTables: R.isNil(options.validateTables) ? true : options.validateTables,
   evaluateCallableResult: R.isNil(options.evaluateCallableResult) ? false : options.evaluateCallableResult,
+  maximumLoopCount: R.isNil(options.maxLoopCount) ? undefined : options.maxLoopCount,
 });
 
 if (!filename) {
