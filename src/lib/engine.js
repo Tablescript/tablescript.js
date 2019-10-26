@@ -28,7 +28,6 @@ import { createUndefined } from './values/undefined';
 
 import { parse } from './parser/tablescript-parser';
 import { throwRuntimeError } from './error';
-import repl from './repl';
 import defaultValueFactory from './value-factory';
 
 const optionalDefaultBuiltins = useDefaultBuiltins => (useDefaultBuiltins ? initializeDefaultBuiltins() : {});
@@ -82,15 +81,12 @@ const loadParseAndEvaluate = (context, scriptPath) => {
   return parseAndEvaluate(context, script.body, script.path);
 };
 
-const runScript = (options, builtins, defaultValueFactory) => (script, args) => {
-  const context = initializeContext(initializeScope(args, builtins), options, defaultValueFactory);
-  return parseAndEvaluate(context, script, 'local');
-};
+const createContextFactory = (options, builtins, valueFactory) =>
+  (args = []) => initializeContext(initializeScope(args, builtins), options, valueFactory);
 
-const runScriptFromFile = (options, builtins, defaultValueFactory) => (scriptPath, args) => {
-  const context = initializeContext(initializeScope(args, builtins), options, defaultValueFactory);
-  return loadParseAndEvaluate(context, scriptPath);
-};
+const runScript = contextFactory => (script, args, path = 'local') => parseAndEvaluate(contextFactory(args), script, path);
+
+const runScriptFromFile = contextFactory => (scriptPath, args) => loadParseAndEvaluate(contextFactory(args), scriptPath);
 
 const withSwappedScopes = (context, scopes, f) => {
   const oldScopes = context.swapScopes(scopes);
@@ -132,11 +128,10 @@ export const initializeTablescript = options => {
   };
 
   return {
-    runScript: runScript(engineOptions, builtins, defaultValueFactory),
-    runScriptFromFile: runScriptFromFile(engineOptions, builtins, defaultValueFactory),
-    repl: () => {
-      repl(initializeContext(initializeScope([], builtins), engineOptions, defaultValueFactory));
-    },
+    runScript: runScript(createContextFactory(engineOptions, builtins, defaultValueFactory)),
+    runScriptFromFile: runScriptFromFile(createContextFactory(engineOptions, builtins, defaultValueFactory)),
+    createContext: createContextFactory(engineOptions, builtins, defaultValueFactory),
+    parseAndEvaluate,
   };
 };
 

@@ -16,13 +16,12 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import nodeRepl from 'repl';
-import { parse } from './parser/tablescript-parser';
-import { TablescriptError } from './error';
+import { TablescriptError } from '../lib';
 
-const evaluate = (cmd, context, filename, callback) => {
+const evaluate = tablescript => (cmd, context, filename, callback) => {
   try {
-    const expression = parse(cmd, '');
-    const value = expression.evaluate(context)
+    console.log(context);
+    const value = tablescript.parseAndEvaluate(context, cmd, '');
     context.setVariable('_', value);
     callback(null, value.asNativeValue());
   } catch (e) {
@@ -34,11 +33,7 @@ const evaluate = (cmd, context, filename, callback) => {
   }
 };
 
-const repl = context => {
-  const r = nodeRepl.start({
-    prompt: '> ',
-    eval: evaluate
-  });
+const addScopeCommand = r => {
   r.defineCommand('scope', {
     help: 'Dump scope',
     action(name) {
@@ -49,7 +44,19 @@ const repl = context => {
       this.displayPrompt();
     },
   });
-  r.context = context;
+};
+
+const addTablescriptContext = (r, tablescript) => {
+  r.context = tablescript.createContext();
+};
+
+const repl = tablescript => {
+  const r = nodeRepl.start({
+    prompt: '> ',
+    eval: evaluate(tablescript)
+  });
+  addScopeCommand(r);
+  addTablescriptContext(r, tablescript);
 };
 
 export default repl;

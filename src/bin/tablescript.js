@@ -19,7 +19,8 @@
 
 import '@babel/polyfill';
 import options from 'commander';
-import { initializeTablescript, repl, TablescriptError } from '../lib/index';
+import { initializeTablescript, TablescriptError } from '../lib/index';
+import repl from './repl';
 import pkginfo from 'pkginfo';
 
 pkginfo(module, 'version');
@@ -39,7 +40,7 @@ const tablescript = initializeTablescript({
 });
 
 if (!filename) {
-  tablescript.repl();
+  repl(tablescript);
 } else {
   try {
     const value = tablescript.runScriptFromFile(filename, args);
