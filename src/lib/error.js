@@ -18,12 +18,11 @@
 const locationToString = (location, i) => `[${i + 1}] ${location.path} (line ${location.line} column ${location.column})`;
 
 export class TablescriptError extends Error {
-  constructor(name, message, context, trace) {
+  constructor(name, message, context) {
     super(message);
     this.name = name;
     this.message = message;
     this.context = context;
-    this.trace = trace;
     Object.setPrototypeOf(this, TablescriptError.prototype);
   }
 
