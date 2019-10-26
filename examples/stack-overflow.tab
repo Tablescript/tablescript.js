@@ -1,0 +1,5 @@
+f = fn(self) {
+  self(self);
+};
+
+f(f);

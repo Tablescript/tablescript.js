@@ -33,15 +33,19 @@ options
   .option('-V, --no-validate-tables', 'Disable table entry validation')
   .option('-c, --evaluate-callable-result', 'Evaluate callable results')
   .option('-l, --max-loop-count <count>', 'Maximum loop count')
+  .option('-s, --max-stack-depth <count>', 'Maximum stack depth')
   .parse(process.argv);
 
 const filename = options.args[0];
 const args = options.args.slice(1);
 
+const optionOr = (option, defaultValue) => R.isNil(option) ? defaultValue : option;
+
 const tablescript = initializeTablescript({
-  validateTables: R.isNil(options.validateTables) ? true : options.validateTables,
-  evaluateCallableResult: R.isNil(options.evaluateCallableResult) ? false : options.evaluateCallableResult,
-  maximumLoopCount: R.isNil(options.maxLoopCount) ? undefined : options.maxLoopCount,
+  validateTables: optionOr(options.validateTables, true),
+  evaluateCallableResult: optionOr(options.evaluateCallableResult, false),
+  maximumLoopCount: optionOr(options.maxLoopCount, undefined),
+  maximumStackDepth: optionOr(options.maxStackDepth, undefined),
 });
 
 if (!filename) {

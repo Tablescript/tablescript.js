@@ -122,6 +122,7 @@ const mergeWithDefaults = options => ({
   },
   values: {
     maximumLoopCount: optionOr(options.maximumLoopCount, 100000),
+    maximumStackDepth: optionOr(options.maximumStackDepth, 200),
   },
   customBuiltins: optionOr(options.customBuiltins, {}),
 });
@@ -134,7 +135,7 @@ export const initializeTablescript = options => {
     importScript: importScript(builtins),
     io: R.pick(['fs', 'output'], mergedOptions.io),
     flags: R.pick(['validateTables', 'evaluateCallableResult'], mergedOptions.flags),
-    values: R.pick(['maximumLoopCount'], mergedOptions.values),
+    values: R.pick(['maximumLoopCount', 'maximumStackDepth'], mergedOptions.values),
   };
 
   return {
