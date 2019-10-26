@@ -23,8 +23,8 @@ import {
   toNativeString
 } from '../values';
 
-export const requireBuiltIn = createNativeFunctionValue(
-  'require',
+export const importBuiltIn = createNativeFunctionValue(
+  'import',
   [
     nativeFunctionParameter('filename', requiredStringParameterF(toNativeString)),
   ],

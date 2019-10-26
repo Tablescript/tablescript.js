@@ -1,4 +1,4 @@
 
-taverns = require('./tavern/taverns');
+taverns = import('./tavern/taverns');
 
 print(taverns.tavern());

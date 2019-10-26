@@ -20,7 +20,7 @@ import { chooseBuiltIn } from './choose';
 import { keysBuiltIn } from './keys';
 import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
-import { requireBuiltIn } from './require';
+import { importBuiltIn } from './import';
 import { strBuiltIn, intBuiltIn } from './convert';
 import { initializeMath } from './math';
 import { createObjectValue } from '../values';
@@ -31,7 +31,7 @@ export const initializeBuiltins = () => ({
   keys: keysBuiltIn,
   print: printBuiltIn,
   range: rangeBuiltIn,
-  require: requireBuiltIn,
+  import: importBuiltIn,
   str: strBuiltIn,
   int: intBuiltIn,
   math: createObjectValue({

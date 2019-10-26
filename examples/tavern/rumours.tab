@@ -1,6 +1,6 @@
-names = require('./names');
-things = require('./things');
-creatures = require('./creatures');
+names = import('./names');
+things = import('./things');
+creatures = import('./creatures');
 
 all_things = choice {
   ...things.body_part;
