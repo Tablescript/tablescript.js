@@ -20,7 +20,6 @@ import { TablescriptError } from '../lib';
 
 const evaluate = tablescript => (cmd, context, filename, callback) => {
   try {
-    console.log(context);
     const value = tablescript.parseAndEvaluate(context, cmd, '');
     context.setVariable('_', value);
     callback(null, value.asNativeValue());
