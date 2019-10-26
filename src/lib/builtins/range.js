@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../../error';
+import { throwRuntimeError } from '../error';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
@@ -23,7 +23,7 @@ import {
   optionalNumericParameterF,
   toNativeNumber,
   toArrayResult
-} from '../native-function';
+} from '../values';
 
 const createRangeArray = (context, start, end, step) => {
   const result = [];

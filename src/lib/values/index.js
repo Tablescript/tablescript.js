@@ -19,7 +19,28 @@ import { createArrayValue } from './array';
 import { createBooleanValue } from './boolean';
 import { createFunctionValue } from './function';
 import { createLeftHandSideValue, createArrayElementLeftHandSideValue, createObjectPropertyLeftHandSideValue } from './left-hand-side';
-import { createNativeFunctionValue } from './native-function';
+import {
+  createNativeFunctionValue,
+  nativeFunctionParameter,
+  requiredParameterF,
+  requiredNumericParameterF,
+  requiredStringParameterF,
+  requiredArrayParameterF,
+  requiredObjectParameterF,
+  optionalParameterF,
+  optionalNumericParameterF,
+  optionalStringParameterF,
+  toNativeNumber,
+  toNativeString,
+  toNativeBoolean,
+  toArray,
+  toObject,
+  toNumericResult,
+  toStringResult,
+  toBooleanResult,
+  toArrayResult,
+  toUndefinedResult,
+} from './native-function';
 import { createNumericValue } from './numeric';
 import { createObjectValue } from './object';
 import { createArraySpread, createObjectSpread, createTableSpread } from './spread';
@@ -71,4 +92,24 @@ export {
   isTableSpread,
   isUndefined,
   isCallable,
+
+  nativeFunctionParameter,
+  requiredParameterF,
+  requiredNumericParameterF,
+  requiredStringParameterF,
+  requiredArrayParameterF,
+  requiredObjectParameterF,
+  optionalParameterF,
+  optionalNumericParameterF,
+  optionalStringParameterF,
+  toNativeNumber,
+  toNativeString,
+  toNativeBoolean,
+  toArray,
+  toObject,
+  toNumericResult,
+  toStringResult,
+  toBooleanResult,
+  toArrayResult,
+  toUndefinedResult,
 };

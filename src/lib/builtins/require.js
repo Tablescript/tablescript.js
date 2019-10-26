@@ -15,18 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { randomNumber } from '../../util/random';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredArrayParameterF,
-  toArray
-} from '../native-function';
+  requiredStringParameterF,
+  toNativeString
+} from '../values';
 
-export const chooseBuiltIn = createNativeFunctionValue(
-  'choose',
+export const requireBuiltIn = createNativeFunctionValue(
+  'require',
   [
-    nativeFunctionParameter('items', requiredArrayParameterF(toArray)),
+    nativeFunctionParameter('filename', requiredStringParameterF(toNativeString)),
   ],
-  (context, args, items) => items[randomNumber(items.length) - 1],
+  (context, args, filename) => context.options.loadAndRunScript(context, filename, args.asNativeValue()),
 );

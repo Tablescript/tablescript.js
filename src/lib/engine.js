@@ -18,14 +18,16 @@
 import fs from 'fs';
 import * as R from 'ramda';
 import { initializeContext } from './context';
-import { initializeBuiltins as initializeDefaultBuiltins } from './values/builtins/builtins';
 import { findAndLoadScript } from './loader';
-import { createArrayValue } from './values/array';
-import { createBooleanValue } from './values/boolean';
-import { createNumericValue } from './values/numeric';
-import { createStringValue } from './values/string';
-import { createUndefined } from './values/undefined';
-import { isCallable } from './values/types';
+import { initializeBuiltins as initializeDefaultBuiltins } from './builtins/builtins';
+import {
+  createArrayValue,
+  createBooleanValue,
+  createNumericValue,
+  createStringValue,
+  createUndefined,
+  isCallable
+} from './values';
 
 import { parse } from './parser/tablescript-parser';
 import { throwRuntimeError } from './error';

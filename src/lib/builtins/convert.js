@@ -15,14 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { isString, isNumber, isBoolean } from '../types';
-import { throwRuntimeError } from '../../error';
+import { throwRuntimeError } from '../error';
 import {
+  isString,
+  isNumber,
+  isBoolean,
   createNativeFunctionValue,
   nativeFunctionParameter,
   requiredParameterF,
   toNumericResult
-} from '../native-function';
+} from '../values';
 
 export const strBuiltIn = createNativeFunctionValue(
   'str',

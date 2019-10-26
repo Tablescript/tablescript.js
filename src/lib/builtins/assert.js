@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import { throwRuntimeError } from '../../error';
+import { throwRuntimeError } from '../error';
 import {
+  isUndefined,
   createNativeFunctionValue,
   nativeFunctionParameter,
   requiredParameterF,
   optionalStringParameterF,
   toNativeBoolean,
   toUndefinedResult
-} from '../native-function';
-import { isUndefined } from '../types';
+} from '../values';
 
 export const assertBuiltIn = createNativeFunctionValue(
   'assert',

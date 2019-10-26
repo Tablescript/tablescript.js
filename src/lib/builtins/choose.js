@@ -15,24 +15,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
+import { randomNumber } from '../util/random';
 import {
   createNativeFunctionValue,
   nativeFunctionParameter,
-  requiredObjectParameterF,
-  toObject,
-  toArrayResult
-} from '../native-function';
+  requiredArrayParameterF,
+  toArray
+} from '../values';
 
-export const keysBuiltIn = createNativeFunctionValue(
-  'keys',
+export const chooseBuiltIn = createNativeFunctionValue(
+  'choose',
   [
-    nativeFunctionParameter('o', requiredObjectParameterF(toObject)),
+    nativeFunctionParameter('items', requiredArrayParameterF(toArray)),
   ],
-  (context, args, o) => R.compose(
-    R.map(context.factory.createStringValue),
-    R.sort(R.comparator(R.lt)),
-    R.keys,
-  )(o),
-  toArrayResult,
+  (context, args, items) => items[randomNumber(items.length) - 1],
 );
