@@ -26,13 +26,11 @@ import {
 
 export const keysBuiltIn = createNativeFunctionValue(
   'keys',
-  [
-    nativeFunctionParameter('o', requiredObjectParameter(toObject)),
-  ],
+  ['o'],
   (context, args, o) => R.compose(
     R.map(context.factory.createStringValue),
     R.sort(R.comparator(R.lt)),
     R.keys,
-  )(o),
+  )(o.asObject()),
   toArrayResult,
 );

@@ -43,58 +43,49 @@ const mathMin = createNativeFunctionValue(
 
 const mathRound = createNativeFunctionValue(
   'round',
-  [
-    nativeFunctionParameter('n', requiredNumericParameter(toNativeNumber)),
-  ],
-  (_, args, n) => Math.round(n),
+  ['n'],
+  (_, args, n) => Math.round(n.asNativeNumber()),
   toNumericResult,
 );
 
 const mathFloor = createNativeFunctionValue(
   'floor',
-  [
-    nativeFunctionParameter('n', requiredNumericParameter(toNativeNumber)),
-  ],
-  (_, args, n) => Math.floor(n),
+  ['n'],
+  (_, args, n) => Math.floor(n.asNativeNumber()),
   toNumericResult,
 );
 
 const mathCeil = createNativeFunctionValue(
   'ceil',
-  [
-    nativeFunctionParameter('n', requiredNumericParameter(toNativeNumber)),
-  ],
-  (_, args, n) => Math.ceil(n),
+  ['n'],
+  (_, args, n) => Math.ceil(n.asNativeNumber()),
   toNumericResult,
 );
 
 const mathPow = createNativeFunctionValue(
   'pow',
-  [
-    nativeFunctionParameter('x', requiredNumericParameter(toNativeNumber)),
-    nativeFunctionParameter('y', requiredNumericParameter(toNativeNumber)),
-  ],
-  (_, args, x, y) => Math.pow(x, y),
+  ['x', 'y'],
+  (_, args, x, y) => Math.pow(x.asNativeNumber(), y.asNativeNumber()),
   toNumericResult,
 );
 
 const mathNorm = createNativeFunctionValue(
   'norm',
-  [
-    nativeFunctionParameter('mean', requiredNumericParameter(toNativeNumber)),
-    nativeFunctionParameter('stdev', optionalNumericParameter(toNativeNumber, 1.0)),
-  ],
-  (_, args, mean, stdev) => norm(mean, stdev),
+  ['mean', 'stdev'],
+  (_, args, mean, stdev) => {
+    const resolvedStdev = isUndefined(stdev) ? 1.0 : stdev.asNativeNumber();
+    return norm(mean.asNativeNumber(), resolvedStdev);
+  },
   toNumericResult,
 );
 
 const mathNormI = createNativeFunctionValue(
   'normI',
-  [
-    nativeFunctionParameter('mean', requiredNumericParameter(toNativeNumber)),
-    nativeFunctionParameter('stdev', optionalNumericParameter(toNativeNumber, 1.0)),
-  ],  
-  (_, args, mean, stdev) => Math.round(norm(mean, stdev)),
+  ['mean', 'stdev'],  
+  (_, args, mean, stdev) => {
+    const resolvedStdev = isUndefined(stdev) ? 1.0 : stdev.asNativeNumber();
+    return Math.round(norm(mean.asNativeNumber(), resolvedStdev));
+  },
   toNumericResult,
 );
 

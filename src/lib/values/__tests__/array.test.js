@@ -20,7 +20,7 @@ import { createNumericValue } from '../numeric';
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
 import defaultFactory from '../../__tests__/factory';
-require('../../__tests__/matchers');
+import '../../__tests__/matchers';
 
 const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);
 const emptyArray = () => createArrayValue([]);

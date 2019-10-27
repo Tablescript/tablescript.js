@@ -15,24 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
 import {
   createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredNumericParameterF,
   toNumericResult,
-  toNativeNumber,
-  requiredParameterF,
   toBooleanResult
 } from '../native-function';
 import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
-import { initializeContext } from '../../context';
-import defaultValueFactory from '../../value-factory';
-import { numericValue, booleanValue, arrayValue } from '../../__tests__/util';
-require('../../__tests__/matchers');
+import { initializeContext, defaultValueFactory } from '../../engine';
+import '../../__tests__/matchers';
 
 describe('array', () => {
   const nonEmptyArray = () => createArrayValue([createStringValue('I have a ham radio'), createNumericValue(12), createBooleanValue(false)]);
@@ -86,10 +79,8 @@ describe('array', () => {
       beforeEach(() => {
         callback = createNativeFunctionValue(
           'inc',
-          [
-            nativeFunctionParameter('n', requiredNumericParameterF(toNativeNumber))
-          ],
-          (context, args, n) => n + 1,
+          ['n'],
+          (context, args, n) => n.asNativeNumber() + 1,
           toNumericResult
         );
       });
@@ -122,11 +113,8 @@ describe('array', () => {
       beforeEach(() => {
         callback = createNativeFunctionValue(
           'max',
-          [
-            nativeFunctionParameter('acc', requiredParameterF(toNativeNumber)),
-            nativeFunctionParameter('n', requiredParameterF(toNativeNumber)),
-          ],
-          (context, args, acc, n) => Math.max(acc, n),
+          ['acc', 'n'],
+          (context, args, acc, n) => Math.max(acc.asNativeNumber(), n.asNativeNumber()),
           toNumericResult,
         );
       });
@@ -153,10 +141,8 @@ describe('array', () => {
       beforeEach(() => {
         callback = createNativeFunctionValue(
           'even',
-          [
-            nativeFunctionParameter('n', requiredParameterF(toNativeNumber)),
-          ],
-          (context, args, n) => n % 2 === 0,
+          ['n'],
+          (context, args, n) => n.asNativeNumber() % 2 === 0,
           toBooleanResult,
         );
       });

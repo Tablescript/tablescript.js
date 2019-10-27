@@ -19,22 +19,15 @@ import { throwRuntimeError } from '../error';
 import {
   isUndefined,
   createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredParameter,
-  optionalStringParameter,
-  toNativeBoolean,
   toUndefinedResult
 } from '../values';
 
 export const assertBuiltIn = createNativeFunctionValue(
   'assert',
-  [
-    nativeFunctionParameter('condition', requiredParameter(toNativeBoolean)),
-    nativeFunctionParameter('message', optionalStringParameter()),
-  ],
+  ['condition', 'message'],
   (context, args, condition, message) => {
-    if (!condition) {
-      if (message && !isUndefined(message)) {
+    if (!condition.asNativeBoolean()) {
+      if (!isUndefined(message)) {
         throwRuntimeError(`assertion failed: ${message.asNativeString()}`, context);
       }
       throwRuntimeError('assertion failed', context);

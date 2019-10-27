@@ -16,5 +16,12 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import initializeTablescript from './engine';
+import { initializeContext } from './context';
+import defaultValueFactory from './value-factory';
 
 export default initializeTablescript;
+
+export {
+  initializeContext,
+  defaultValueFactory,
+};

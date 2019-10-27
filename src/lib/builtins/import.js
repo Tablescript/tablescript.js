@@ -25,12 +25,10 @@ import {
 
 export const importBuiltIn = createNativeFunctionValue(
   'import',
-  [
-    nativeFunctionParameter('filename', requiredStringParameter(toNativeString)),
-  ],
+  ['filename'],
   (context, args, filename) => context.options.importScript(
     context,
-    filename,
+    filename.asNativeString(),
     R.map(a => a.asNativeValue(), args),
   ),
 );

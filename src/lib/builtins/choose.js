@@ -18,15 +18,13 @@
 import { randomNumber } from '../util/random';
 import {
   createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredArrayParameter,
-  toArray
 } from '../values';
 
 export const chooseBuiltIn = createNativeFunctionValue(
   'choose',
-  [
-    nativeFunctionParameter('items', requiredArrayParameter(toArray)),
-  ],
-  (context, args, items) => items[randomNumber(items.length) - 1],
+  ['items'],
+  (context, args, items) => {
+    const itemsArray = items.asArray();
+    return itemsArray[randomNumber(itemsArray.length) - 1];
+  },
 );

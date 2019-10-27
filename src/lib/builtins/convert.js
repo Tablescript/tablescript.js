@@ -25,27 +25,20 @@ import {
   requiredParameter,
   toNumericResult,
   toNativeBoolean,
-  toBooleanResult
+  toBooleanResult,
+  toStringResult
 } from '../values';
 
 export const strBuiltIn = createNativeFunctionValue(
   'str',
-  [
-    nativeFunctionParameter('s', requiredParameter()),
-  ],
-  (context, args, s) => {
-    if (isString(s)) {
-      return s;
-    }
-    return context.factory.createStringValue(s.asNativeString());
-  },
+  ['s'],
+  (context, args, s) => s.asNativeString(),
+  toStringResult,
 );
 
 export const intBuiltIn = createNativeFunctionValue(
   'int',
-  [
-    nativeFunctionParameter('i', requiredParameter()),
-  ],
+  ['i'],
   (context, args, i) => {
     if (isNumber(i)) {
       return Math.round(i.asNativeValue());
@@ -67,9 +60,7 @@ export const intBuiltIn = createNativeFunctionValue(
 
 export const boolBuiltIn = createNativeFunctionValue(
   'bool',
-  [
-    nativeFunctionParameter('b', requiredParameter(toNativeBoolean)),
-  ],
-  (context, args, b) => b,
+  ['b'],
+  (context, args, b) => b.asNativeBoolean(),
   toBooleanResult,
 );

@@ -18,13 +18,6 @@
 import * as R from 'ramda';
 import {
   createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredNumericParameter,
-  requiredStringParameter,
-  optionalNumericParameter,
-  optionalStringParameter,
-  toNativeNumber,
-  toNativeString,
   toArrayResult,
   toStringResult,
   toBooleanResult,
@@ -32,16 +25,15 @@ import {
 } from './native-function';
 import { throwRuntimeError } from '../error';
 import { rollDiceFromString } from '../util/dice-strings';
+import { isUndefined } from './types';
 
 export const split = value => createNativeFunctionValue(
   'split',
-  [
-    nativeFunctionParameter('separator', optionalStringParameter(toNativeString)),
-  ],
-  (context, args, separator) => (args.length === 1 ? (
-    value.split(separator).map(context.factory.createStringValue)
-  ) : (
+  ['separator'],
+  (context, args, separator) => (isUndefined(separator) ? (
     value.split().map(context.factory.createStringValue)
+  ) : (
+    value.split(separator.asNativeString()).map(context.factory.createStringValue)
   )),
   toArrayResult,
 );
@@ -69,51 +61,40 @@ export const lowercase = value => createNativeFunctionValue(
 
 export const includes = value => createNativeFunctionValue(
   'includes',
-  [
-    nativeFunctionParameter('s', requiredStringParameter(toNativeString)),
-  ],
-  (context, args, s) => value.includes(s),
+  ['s'],
+  (context, args, s) => value.includes(s.asNativeString()),
   toBooleanResult,
 );
 
 export const indexOf = value => createNativeFunctionValue(
   'indexOf',
-  [
-    nativeFunctionParameter('s', requiredStringParameter(toNativeString)),
-  ],
-  (context, args, s) => value.indexOf(s),
+  ['s'],
+  (context, args, s) => value.indexOf(s.asNativeString()),
   toNumericResult,
 );
 
 export const slice = value => createNativeFunctionValue(
   'slice',
-  [
-    nativeFunctionParameter('start', requiredNumericParameter(toNativeNumber)),
-    nativeFunctionParameter('end', optionalNumericParameter(toNativeNumber)),
-  ],
-  (context, args, startValue, endValue) => (args.length === 1 ? (
-    value.slice(startValue)
+  ['start', 'end'],
+  (context, args, startValue, endValue) => (isUndefined(endValue) ? (
+    value.slice(startValue.asNativeNumber())
   ) : (
-    value.slice(startValue, endValue)
+    value.slice(startValue.asNativeNumber(), endValue.asNativeNumber())
   )),
   toStringResult,
 );
 
 export const startsWith = value => createNativeFunctionValue(
   'startsWith',
-  [
-    nativeFunctionParameter('s', requiredStringParameter(toNativeString)),
-  ],
-  (context, args, s) => value.startsWith(s),
+  ['s'],
+  (context, args, s) => value.startsWith(s.asNativeString()),
   toBooleanResult,
 );
 
 export const endsWith = value => createNativeFunctionValue(
   'endsWith',
-  [
-    nativeFunctionParameter('s', requiredStringParameter(toNativeString)),
-  ],
-  (context, args, s) => value.endsWith(s),
+  ['s'],
+  (context, args, s) => value.endsWith(s.asNativeString()),
   toBooleanResult,
 );
 

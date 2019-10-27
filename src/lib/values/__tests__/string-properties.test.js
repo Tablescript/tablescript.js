@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
-import { initializeContext } from '../../context';
-import defaultValueFactory from '../../value-factory';
+import { initializeContext, defaultValueFactory } from '../../engine';
 import { createArrayValue } from '../array';
 import { createStringValue } from '../string';
 import { createNumericValue } from '../numeric';
@@ -63,9 +61,9 @@ describe('string properties', () => {
       });
     });
 
-    it('throws if the delimiter is not a string', () => {
-      const split = getStringMethod('john george paul ringo', 'split');
-      expect(() => split.callFunction(mockContext, [createNumericValue(12)])).toThrow('split(separator) separator must be a string');
+    it('converts passed value to string', () => {
+      const split = getStringMethod('john12george12paul12ringo', 'split');
+      expect(split.callFunction(mockContext, [createNumericValue(12)])).toEqualTsArray(tsStringArray(['john', 'george', 'paul', 'ringo']));
     });
   });
 
@@ -131,9 +129,9 @@ describe('string properties', () => {
       expect(includes.callFunction(mockContext, [createStringValue('ham')])).toEqualTsBoolean(true);
     });
 
-    it('throws when passed a non-string', () => {
-      const includes = getStringMethod('I have a ham radio', 'includes');
-      expect(() => includes.callFunction(mockContext, [createBooleanValue(true)])).toThrow('includes(s) s must be a string');
+    it('converts passed value to string', () => {
+      const includes = getStringMethod('It is true I have a ham radio', 'includes');
+      expect(includes.callFunction(mockContext, [createBooleanValue(true)])).toEqualTsBoolean(true);
     })
   });
 
@@ -158,9 +156,9 @@ describe('string properties', () => {
       expect(indexOf.callFunction(mockContext, [createStringValue('ha')])).toEqualTsNumber(2);
     });
 
-    it('throws when passed a non-string', () => {
-      const indexOf = getStringMethod('I have a ham radio', 'indexOf');
-      expect(() => indexOf.callFunction(mockContext, [createBooleanValue(true)])).toThrow('indexOf(s) s must be a string');
+    it('converts passed value to string', () => {
+      const indexOf = getStringMethod('It is true I have a ham radio', 'indexOf');
+      expect(indexOf.callFunction(mockContext, [createBooleanValue(true)])).toEqualTsNumber(6);
     });
   });
 
@@ -187,21 +185,21 @@ describe('string properties', () => {
 
     it('throws when start is not passed', () => {
       const slice = getStringMethod('I have a ham radio', 'slice');
-      expect(() => slice.callFunction(mockContext, [])).toThrow('slice(start,end) missing required parameter "start"');
+      expect(() => slice.callFunction(mockContext, [])).toThrow('Cannot treat UNDEFINED as NUMBER');
     });
 
     it('throws when start is not a number', () => {
       const slice = getStringMethod('I have a ham radio', 'slice');
       expect(
         () => slice.callFunction(mockContext, [createStringValue('not gonna work')])
-      ).toThrow('slice(start,end) start must be a number');
+      ).toThrow('Cannot treat STRING as NUMBER');
     });
 
     it('throws when end is passed but is not a number', () => {
       const slice = getStringMethod('I have a ham radio', 'slice');
       expect(
         () => slice.callFunction(mockContext, [createNumericValue(3), createStringValue('not gonna work')])
-      ).toThrow('slice(start,end) end must be a number');
+      ).toThrow('Cannot treat STRING as NUMBER');
     });
   });
 
@@ -225,11 +223,6 @@ describe('string properties', () => {
       const startsWith = getStringMethod('abalone', 'startsWith');
       expect(startsWith.callFunction(mockContext, [createStringValue('nope')])).toEqualTsBoolean(false);
     });
-
-    it('throws if passed a non-string', () => {
-      const startsWith = getStringMethod('abalone', 'startsWith');
-      expect(() => startsWith.callFunction(mockContext, [createBooleanValue(true)])).toThrow('startsWith(s) s must be a string');
-    });
   });
 
   describe('endsWith', () => {
@@ -251,11 +244,6 @@ describe('string properties', () => {
     it('returns false if a non-empty string does not end with a non-empty string', () => {
       const endsWith = getStringMethod('abalone', 'endsWith');
       expect(endsWith.callFunction(mockContext, [createStringValue('nope')])).toEqualTsBoolean(false);
-    });
-
-    it('throws if passed a non-string', () => {
-      const endsWith = getStringMethod('abalone', 'endsWith');
-      expect(() => endsWith.callFunction(mockContext, [createBooleanValue(true)])).toThrow('endsWith(s) s must be a string');
     });
   });
 

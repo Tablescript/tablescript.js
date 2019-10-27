@@ -15,10 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
 import { createBinaryExpression } from '../binary';
-import { initializeContext } from '../../context';
-import defaultValueFactory from '../../value-factory';
+import { initializeContext, defaultValueFactory } from '../../engine';
 import { createBooleanLiteral } from '../boolean-literal';
 import { createObjectLiteral } from '../object-literal';
 import { createNumberLiteral } from '../number-literal';

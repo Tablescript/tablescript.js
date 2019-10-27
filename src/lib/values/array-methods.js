@@ -19,13 +19,6 @@ import * as R from 'ramda';
 import { isUndefined } from './types';
 import {
   createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredParameter,
-  optionalParameter,
-  optionalNumericParameter,
-  optionalStringParameter,
-  toNativeNumber,
-  toNativeString,
   toNumericResult,
   toStringResult,
   toBooleanResult,
@@ -40,9 +33,7 @@ const indexedFilter = R.addIndex(R.filter);
 
 export const each = entries => createNativeFunctionValue(
   'each',
-  [
-    nativeFunctionParameter('f', requiredParameter()),
-  ],
+  ['f'],
   (context, args, f) => indexedReduce(
     (_, entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]),
     context.factory.createUndefined(),
@@ -52,10 +43,7 @@ export const each = entries => createNativeFunctionValue(
 
 export const reduce = entries => createNativeFunctionValue(
   'reduce',
-  [
-    nativeFunctionParameter('reducer', requiredParameter()),
-    nativeFunctionParameter('initialValue', requiredParameter()),
-  ],
+  ['reducer', 'initialValue'],
   (context, args, reducer, initialValue) => indexedReduce(
     (acc, entry, i) => reducer.callFunction(context, [acc, entry, context.factory.createNumericValue(i)]),
     initialValue,
@@ -65,9 +53,7 @@ export const reduce = entries => createNativeFunctionValue(
 
 export const map = entries => createNativeFunctionValue(
   'map',
-  [
-    nativeFunctionParameter('f', requiredParameter()),
-  ],
+  ['f'],
   (context, args, f) => indexedMap(
     (entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]),
     entries,
@@ -77,9 +63,7 @@ export const map = entries => createNativeFunctionValue(
 
 export const filter = entries => createNativeFunctionValue(
   'filter',
-  [
-    nativeFunctionParameter('f', requiredParameter()),
-  ],
+  ['f'],
   (context, args, f) => indexedFilter(
     (entry, i) => f.callFunction(context, [entry, context.factory.createNumericValue(i)]).asNativeBoolean(),
     entries,
@@ -89,27 +73,21 @@ export const filter = entries => createNativeFunctionValue(
 
 export const includes = entries => createNativeFunctionValue(
   'includes',
-  [
-    nativeFunctionParameter('value', requiredParameter()),
-  ],
+  ['value'],
   (context, args, value) => R.reduce((result, entry) => result || entry.nativeEquals(value), false, entries),
   toBooleanResult,
 );
 
 export const indexOf = entries => createNativeFunctionValue(
   'indexOf',
-  [
-    nativeFunctionParameter('value', requiredParameter()),
-  ],
+  ['value'],
   (context, args, value) => R.findIndex(entry => entry.nativeEquals(value), entries),
   toNumericResult,
 );
 
 export const find = entries => createNativeFunctionValue(
   'find',
-  [
-    nativeFunctionParameter('f', requiredParameter()),
-  ],
+  ['f'],
   (context, args, f) => R.reduce(
     (foundValue, entry) => {
       if (isUndefined(foundValue)) {
@@ -126,9 +104,7 @@ export const find = entries => createNativeFunctionValue(
 
 export const findIndex = entries => createNativeFunctionValue(
   'findIndex',
-  [
-    nativeFunctionParameter('f', requiredParameter()),
-  ],
+  ['f'],
   (context, args, f) => indexedReduce(
     (foundIndex, entry, i) => {
       if (foundIndex === -1) {
@@ -146,35 +122,28 @@ export const findIndex = entries => createNativeFunctionValue(
 
 export const defaultSorter = createNativeFunctionValue(
   'defaultSorter',
-  [
-    nativeFunctionParameter('a', requiredParameter()),
-    nativeFunctionParameter('b', requiredParameter()),
-  ],
+  ['a', 'b'],
   (context, args, a, b) => a.compare(context, b),
 );
 
 export const sort = entries => createNativeFunctionValue(
   'sort',
-  [
-    nativeFunctionParameter('f', optionalParameter()),
-  ],
-  (context, args, f) => (args.length === 1 ? (
-    quickSort(context, [...entries], f)
-  ) : (
+  ['f'],
+  (context, args, f) => (isUndefined(f) ? (
     quickSort(context, [...entries], defaultSorter)
+  ) : (
+    quickSort(context, [...entries], f)
   )),
   toArrayResult,
 );
 
 export const join = entries => createNativeFunctionValue(
   'join',
-  [
-    nativeFunctionParameter('separator', optionalStringParameter(toNativeString)),
-  ],
-  (_, args, separator) => (args.length === 1 ? (
-    entries.map(e => e.asNativeString()).join(separator)
-  ) : (
+  ['separator'],
+  (_, args, separator) => (isUndefined(separator) ? (
     entries.map(e => e.asNativeString()).join()
+  ) : (
+    entries.map(e => e.asNativeString()).join(separator.asNativeString())
   )),
   toStringResult,
 );
@@ -188,18 +157,15 @@ export const reverse = entries => createNativeFunctionValue(
 
 export const slice = entries => createNativeFunctionValue(
   'slice',
-  [
-    nativeFunctionParameter('begin', optionalNumericParameter(toNativeNumber)),
-    nativeFunctionParameter('end', optionalNumericParameter(toNativeNumber)),
-  ],
+  ['begin', 'end'],
   (_, args, begin, end) => {
-    if (args.length === 2) {
-      return entries.slice(begin, end);
+    if (isUndefined(begin)) {
+      return entries.slice();
     }
-    if (args.length === 1) {
-      return entries.slice(begin);
+    if (isUndefined(end)) {
+      return entries.slice(begin.asNativeNumber());
     }
-    return entries.slice();
+    return entries.slice(begin.asNativeNumber(), end.asNativeNumber());
   },
   toArrayResult,
 );

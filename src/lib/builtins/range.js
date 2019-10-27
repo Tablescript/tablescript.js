@@ -42,25 +42,29 @@ const createRangeArray = (context, start, end, step) => {
 
 export const rangeBuiltIn = createNativeFunctionValue(
   'range',
-  [
-    nativeFunctionParameter('start', requiredNumericParameter(toNativeNumber)),
-    nativeFunctionParameter('end', optionalNumericParameter(toNativeNumber)),
-    nativeFunctionParameter('step', optionalNumericParameter(toNativeNumber)),
-  ],
+  ['start', 'end', 'step'],
   (context, args, startValue, endValue, stepValue) => {
+    if (args.length === 0) {
+      throwRuntimeError('range(end|[start, end]|[start, end, step]) missing parameter', context);
+    }
     if (args.length === 1) {
-      return createRangeArray(context, 0, startValue, startValue > 0 ? 1 : -1);
+      return createRangeArray(context, 0, startValue.asNativeNumber(), startValue.asNativeNumber() > 0 ? 1 : -1);
     }
     if (args.length === 2) {
-      return createRangeArray(context, startValue, endValue, startValue <= endValue ? 1 : -1);
+      return createRangeArray(
+        context,
+        startValue.asNativeNumber(),
+        endValue.asNativeNumber(),
+        startValue.asNativeNumber() <= endValue.asNativeNumber() ? 1 : -1
+      );
     }
-    if (endValue < startValue && stepValue >= 0) {
+    if (endValue.asNativeNumber() < startValue.asNativeNumber() && stepValue.asNativeNumber() >= 0) {
       throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be negative if end is less than start', context);
     }
-    if (endValue > startValue && stepValue <= 0) {
+    if (endValue.asNativeNumber() > startValue.asNativeNumber() && stepValue.asNativeNumber() <= 0) {
       throwRuntimeError('range(end|[start, end]|[start, end, step]) step must be positive if start is less than end', context);
     }
-    return createRangeArray(context, startValue, endValue, stepValue);
+    return createRangeArray(context, startValue.asNativeNumber(), endValue.asNativeNumber(), stepValue.asNativeNumber());
   },
   toArrayResult,
 );

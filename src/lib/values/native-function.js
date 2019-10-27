@@ -86,13 +86,12 @@ export const toBooleanResult = (context, value) => context.factory.createBoolean
 export const toArrayResult = (context, value) => context.factory.createArrayValue(value);
 export const toUndefinedResult = context => context.factory.createUndefined();
 
-const extractParameter = (context, signature) => parameter => parameter.extractor(context, signature, parameter.name);
+const extractParameter = context => parameter => context.getLocalVariable(parameter);
 
 const nopFilter = (_, value) => value;
 
 export const createNativeFunctionValue = (name, formalParameters, f, filter = nopFilter) => {
-  const formalParameterNames = R.map(R.prop('name'), formalParameters);
-  const signature = `${name}(${formalParameterNames.join(',')})`;
+  const signature = `${name}(${formalParameters.join(',')})`;
 
   const asNativeString = R.always('function(native)');
 
@@ -107,9 +106,9 @@ export const createNativeFunctionValue = (name, formalParameters, f, filter = no
       asNativeBoolean: R.T,
       callFunction: (context, parameters) => {
         const oldScopes = context.swapScopes([
-          bindFunctionParameters(context, formalParameterNames, parameters),
+          bindFunctionParameters(context, formalParameters, parameters),
         ]);
-        const parameterValues = R.map(extractParameter(context, signature), formalParameters);
+        const parameterValues = R.map(extractParameter(context), formalParameters);
         const result = filter(context, f(context, parameters, ...parameterValues));
         context.swapScopes(oldScopes);
         return result;

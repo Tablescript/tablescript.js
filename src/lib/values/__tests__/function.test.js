@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
 import { valueTypes } from '../types';
 import { createNumericValue } from '../numeric';
 import { createStringValue } from '../string';
@@ -24,16 +23,12 @@ import {
   createNativeFunctionValue,
   toArrayResult,
   toNumericResult,
-  nativeFunctionParameter,
-  optionalParameterF,
-  requiredParameterF
 } from '../native-function';
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
 import { createUndefined } from '../undefined';
-import { initializeContext } from '../../context';
-import defaultValueFactory from '../../value-factory';
-require('../../__tests__/matchers');
+import { initializeContext, defaultValueFactory } from '../../engine';
+import '../../__tests__/matchers';
 
 describe('function', () => {
   let mockContext;
@@ -115,10 +110,7 @@ describe('function', () => {
         it('sets the arguments variable', () => {
           const f = createNativeFunctionValue(
             'test',
-            [
-              nativeFunctionParameter('p1', optionalParameterF()),
-              nativeFunctionParameter('p2', optionalParameterF()),
-            ],
+            ['p1', 'p2'],
             (context, args) => args,
             toArrayResult,
           );
@@ -131,10 +123,7 @@ describe('function', () => {
         it('sets the parameters', () => {
           const f = createNativeFunctionValue(
             'test',
-            [
-              nativeFunctionParameter('p1', requiredParameterF()),
-              nativeFunctionParameter('p2', requiredParameterF()),
-            ],
+            ['p1', 'p2'],
             (context, args, p1, p2) => ([p1, p2]),
             toArrayResult,
           );
@@ -145,10 +134,7 @@ describe('function', () => {
         it('does not set un-passed parameters', () => {
           const f = createNativeFunctionValue(
             'test',
-            [
-              nativeFunctionParameter('p1', requiredParameterF()),
-              nativeFunctionParameter('p2', optionalParameterF()),
-            ],
+            ['p1', 'p2'],
             (context, args, p1, p2) => ([p1, p2]),
             toArrayResult,
           );

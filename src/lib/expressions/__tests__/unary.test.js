@@ -15,12 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
 import { createUnaryExpression } from '../unary';
 import { createNumberLiteral } from '../number-literal';
 import { createStringLiteral } from '../string-literal';
-import { initializeContext } from '../../context';
-import defaultValueFactory from '../../value-factory';
+import { initializeContext, defaultValueFactory } from '../../engine';
 import '../../__tests__/matchers';
 import { createBooleanLiteral } from '../boolean-literal';
 
