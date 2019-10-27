@@ -21,7 +21,7 @@ import { keysBuiltIn } from './keys';
 import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
 import { importBuiltIn } from './import';
-import { strBuiltIn, intBuiltIn } from './convert';
+import { strBuiltIn, intBuiltIn, boolBuiltIn } from './convert';
 import { initializeMath } from './math';
 import { createObjectValue } from '../values';
 
@@ -34,6 +34,7 @@ export const initializeBuiltins = () => ({
   import: importBuiltIn,
   str: strBuiltIn,
   int: intBuiltIn,
+  bool: boolBuiltIn,
   math: createObjectValue({
     ...initializeMath(),
   }),

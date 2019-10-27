@@ -23,7 +23,9 @@ import {
   createNativeFunctionValue,
   nativeFunctionParameter,
   requiredParameter,
-  toNumericResult
+  toNumericResult,
+  toNativeBoolean,
+  toBooleanResult
 } from '../values';
 
 export const strBuiltIn = createNativeFunctionValue(
@@ -61,4 +63,13 @@ export const intBuiltIn = createNativeFunctionValue(
     throwRuntimeError(`Cannot convert ${i.type} to NUMBER`);
   },
   toNumericResult,
+);
+
+export const boolBuiltIn = createNativeFunctionValue(
+  'bool',
+  [
+    nativeFunctionParameter('b', requiredParameter(toNativeBoolean)),
+  ],
+  (context, args, b) => b,
+  toBooleanResult,
 );
