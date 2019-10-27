@@ -21,6 +21,7 @@ import { valueTypes } from './types';
 import { randomNumber } from '../util/random';
 import { bindFunctionParameters } from './util/parameters';
 import { withSwappedScopes } from './util/context';
+import { throwRuntimeError } from '../error';
 
 const asNativeString = () => 'table';
 
@@ -57,14 +58,17 @@ const getRolledEntry = (entries, roll) => entries.find((e, index) => e.rollAppli
 const callFunction = (formalParameters, entries, closure) => (context, parameters) => {
   const roll = getTableRoll(entries);
   const rolledEntry = getRolledEntry(entries, roll);
-  return withSwappedScopes(
-    (context, parameters) => ([
-      closure,
-      bindFunctionParameters(context, formalParameters, parameters),
-      tableEntryScope(context, formalParameters, entries, closure, roll),  
-    ]),
-    rolledEntry.evaluate
-  )(context, parameters);
+  if (rolledEntry) {
+    return withSwappedScopes(
+      (context, parameters) => ([
+        closure,
+        bindFunctionParameters(context, formalParameters, parameters),
+        tableEntryScope(context, formalParameters, entries, closure, roll),  
+      ]),
+      rolledEntry.evaluate
+    )(context, parameters);
+  }
+  throwRuntimeError(`Table has no entry for roll of ${roll}`, context);
 };
 
 export const createTableValue = (formalParameters, entries, closure) => createValue(
