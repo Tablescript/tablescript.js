@@ -30,6 +30,10 @@ export class TablescriptError extends Error {
     if (this.context) {
       return `${this.name}: ${this.message} at:\n${this.stackTraceToString()}`;
     }
+    return this.toShortString();
+  }
+
+  toShortString() {
     return `${this.name}: ${this.message}`;
   }
 

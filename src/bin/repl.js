@@ -15,19 +15,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import nodeRepl from 'repl';
 import { TablescriptError } from '../lib';
 
-const evaluate = tablescript => (cmd, context, filename, callback) => {
+const resetTsContext = R.curry((tablescript, replContext) => {
+  replContext.tsContext = tablescript.createContext();
+});
+
+const evaluate = tablescript => (cmd, replContext, filename, callback) => {
   try {
-    const value = tablescript.parseAndEvaluate(context, cmd, '');
-    context.setVariable('_', value);
+    const value = tablescript.parseAndEvaluate(replContext.tsContext, cmd, '');
+    replContext.tsContext.setVariable('_', value);
     callback(null, value.asNativeValue());
   } catch (e) {
     if (e instanceof TablescriptError && e.name == 'SyntaxError') {
       return callback(new nodeRepl.Recoverable(e));
     }
-    e.context = undefined;
+    if (e instanceof TablescriptError) {
+      callback(null, e.toShortString());
+      resetTsContext(tablescript, replContext);
+      return;
+    }
+    resetTsContext(tablescript, replContext);
     return callback(e);
   }
 };
@@ -36,8 +46,8 @@ const addScopeCommand = r => {
   r.defineCommand('scope', {
     help: 'Dump scope',
     action(name) {
-      Object.keys(this.context.getScope()).forEach(key => {
-        const value = this.context.getVariable(key).asNativeValue(this.context);
+      Object.keys(this.context.tsContext.getScope()).forEach(key => {
+        const value = this.context.tsContext.getVariable(key).asNativeValue();
         console.log(`${key} = ${value}`);
       });
       this.displayPrompt();
@@ -45,17 +55,14 @@ const addScopeCommand = r => {
   });
 };
 
-const addTablescriptContext = (r, tablescript) => {
-  r.context = tablescript.createContext();
-};
-
 const repl = tablescript => {
   const r = nodeRepl.start({
     prompt: '> ',
     eval: evaluate(tablescript)
   });
+  resetTsContext(tablescript, r.context);
   addScopeCommand(r);
-  addTablescriptContext(r, tablescript);
+  r.on('reset', resetTsContext(tablescript));
 };
 
 export default repl;
