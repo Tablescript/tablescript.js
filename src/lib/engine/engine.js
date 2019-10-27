@@ -118,8 +118,8 @@ const mergeWithDefaults = options => ({
     output: optionOr(options.output, console.log),
   },
   flags: {
-    useDefaultBuiltins: optionOr(options.defaultBuiltins, true),
-    validateTables: optionOr(options.tableValidation, true),
+    useDefaultBuiltins: optionOr(options.useDefaultBuiltins, true),
+    validateTables: optionOr(options.validateTables, true),
     evaluateCallableResult: optionOr(options.evaluateCallableResult, false),
   },
   values: {
