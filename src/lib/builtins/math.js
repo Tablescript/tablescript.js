@@ -18,10 +18,6 @@
 import { norm } from './norm';
 import {
   createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredNumericParameter,
-  optionalNumericParameter,
-  toNativeNumber,
   toNumericResult
 } from '../values';
 

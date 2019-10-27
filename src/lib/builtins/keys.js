@@ -18,9 +18,6 @@
 import * as R from 'ramda';
 import {
   createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredObjectParameter,
-  toObject,
   toArrayResult
 } from '../values';
 

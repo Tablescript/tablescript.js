@@ -18,9 +18,6 @@
 import * as R from 'ramda';
 import {
   createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredStringParameter,
-  toNativeString
 } from '../values';
 
 export const importBuiltIn = createNativeFunctionValue(

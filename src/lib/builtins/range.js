@@ -18,10 +18,6 @@
 import { throwRuntimeError } from '../error';
 import {
   createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredNumericParameter,
-  optionalNumericParameter,
-  toNativeNumber,
   toArrayResult
 } from '../values';
 

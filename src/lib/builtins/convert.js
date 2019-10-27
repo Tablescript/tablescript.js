@@ -21,10 +21,7 @@ import {
   isNumber,
   isBoolean,
   createNativeFunctionValue,
-  nativeFunctionParameter,
-  requiredParameter,
   toNumericResult,
-  toNativeBoolean,
   toBooleanResult,
   toStringResult
 } from '../values';

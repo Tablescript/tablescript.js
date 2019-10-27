@@ -17,62 +17,8 @@
 
 import * as R from 'ramda';
 import { createValue } from './default';
-import { valueTypes, isNumber, isString, isArray, isObject, isUndefined } from './types';
+import { valueTypes } from './types';
 import { bindFunctionParameters } from './util/parameters';
-import { throwRuntimeError } from '../error';
-
-export const nativeFunctionParameter = (name, extractor) => ({ name, extractor });
-
-export const requiredParameter = (transformer = R.identity) => (context, signature, parameterName) => {
-  const value = context.getLocalVariable(parameterName);
-  if (isUndefined(value)) {
-    throwRuntimeError(`${signature} missing required parameter "${parameterName}"`, context);
-  }
-  return transformer(value);
-};
-
-const requiredTypedParameter = (validator, typeName) => (transformer = R.identity) => (context, signature, parameterName) => {
-  const value = context.getLocalVariable(parameterName);
-  if (isUndefined(value)) {
-    throwRuntimeError(`${signature} missing required parameter "${parameterName}"`, context);
-  }
-  if (!validator(value)) {
-    throwRuntimeError(`${signature} ${parameterName} must be ${typeName}`, context);
-  }
-  return transformer(value);
-};
-
-export const requiredNumericParameter = requiredTypedParameter(isNumber, 'a number');
-export const requiredStringParameter = requiredTypedParameter(isString, 'a string');
-export const requiredArrayParameter = requiredTypedParameter(isArray, 'an array');
-export const requiredObjectParameter = requiredTypedParameter(isObject, 'an object');
-
-export const optionalParameter = (transformer = R.identity) => (context, signature, parameterName) => {
-  const value = context.getLocalVariable(parameterName);
-  if (!isUndefined(value)) {
-    return transformer(value);
-  }
-  return context.factory.createUndefined();
-};
-
-const optionalTypedParameter = (validator, factoryProp, typeName) =>
-  (transformer = R.identity, defaultValue) =>
-  (context, signature, parameterName) => {
-  const value = context.getLocalVariable(parameterName);
-  if (!isUndefined(value)) {
-    if (!validator(value)) {
-      throwRuntimeError(`${signature} ${parameterName} must be ${typeName}`, context);
-    }
-    return transformer(value);
-  }
-  if (defaultValue) {
-    return transformer(factoryProp(context.factory)(defaultValue));
-  }
-  return context.factory.createUndefined();
-};
-
-export const optionalNumericParameter = optionalTypedParameter(isNumber, R.prop('createNumericValue'), 'a number');
-export const optionalStringParameter = optionalTypedParameter(isString, R.prop('createStringValue'), 'a string');
 
 export const toNativeNumber = value => value.asNativeNumber();
 export const toNativeString = value => value.asNativeString();
