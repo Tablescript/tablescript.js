@@ -61,6 +61,29 @@ export const valueTypeName = type => {
   }
 };
 
+export const typeOf = o => {
+  switch (o.type) {
+    case valueTypes.ARRAY:
+      return 'array';
+    case valueTypes.BOOLEAN:
+      return 'boolean';
+    case valueTypes.FUNCTION:
+      return 'function';
+    case valueTypes.NUMBER:
+      return 'number';
+    case valueTypes.OBJECT:
+      return 'object';
+    case valueTypes.STRING:
+      return 'string';
+    case valueTypes.TABLE:
+      return 'table';
+    case valueTypes.UNDEFINED:
+      return 'undefined';
+    default:
+      return '<unknown>';
+  }
+};
+
 const isType = type => o => o.type === type;
 export const isArray = isType(valueTypes.ARRAY);
 export const isArraySpread = isType(valueTypes.ARRAY_SPREAD);

@@ -47,6 +47,7 @@ import { createStringValue } from './string';
 import { createTableValue } from './table';
 import { createUndefined } from './undefined';
 import {
+  typeOf,
   isArray,
   isArraySpread,
   isBoolean,
@@ -78,6 +79,8 @@ export {
   createStringValue,
   createTableValue,
   createUndefined,
+
+  typeOf,
   isArray,
   isArraySpread,
   isBoolean,

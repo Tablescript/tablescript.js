@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import { createObjectValue } from '../values';
 import { assertBuiltIn } from './assert';
 import { chooseBuiltIn } from './choose';
 import { keysBuiltIn } from './keys';
@@ -23,7 +24,7 @@ import { rangeBuiltIn } from './range';
 import { importBuiltIn } from './import';
 import { strBuiltIn, intBuiltIn, boolBuiltIn } from './convert';
 import { initializeMath } from './math';
-import { createObjectValue } from '../values';
+import { typeOfBuiltIn } from './typeof';
 
 export const initializeBuiltins = () => ({
   assert: assertBuiltIn,
@@ -32,6 +33,7 @@ export const initializeBuiltins = () => ({
   print: printBuiltIn,
   range: rangeBuiltIn,
   import: importBuiltIn,
+  typeOf: typeOfBuiltIn,
   str: strBuiltIn,
   int: intBuiltIn,
   bool: boolBuiltIn,
