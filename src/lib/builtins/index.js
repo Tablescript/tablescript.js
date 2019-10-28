@@ -17,7 +17,10 @@
 
 import { createObjectValue } from '../values';
 import { assertBuiltIn } from './assert';
-import { chooseBuiltIn } from './choose';
+import {
+  chooseBuiltIn,
+  chooseNBuiltIn,
+} from './choose';
 import {
   keysBuiltIn,
   valuesBuiltIn,
@@ -34,6 +37,7 @@ import { typeOfBuiltIn } from './typeof';
 export const initializeBuiltins = () => ({
   assert: assertBuiltIn,
   choose: chooseBuiltIn,
+  chooseN: chooseNBuiltIn,
   keys: keysBuiltIn,
   values: valuesBuiltIn,
   toPairs: toPairsBuiltIn,

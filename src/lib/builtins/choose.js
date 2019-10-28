@@ -15,16 +15,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { randomNumber } from '../util/random';
 import {
   createNativeFunctionValue,
+  toArrayResult,
 } from '../values';
+
+const randomEntry = items => items[randomNumber(items.length) - 1];
 
 export const chooseBuiltIn = createNativeFunctionValue(
   'choose',
   ['items'],
-  (context, args, items) => {
-    const itemsArray = items.asArray();
-    return itemsArray[randomNumber(itemsArray.length) - 1];
-  },
+  (context, args, items) => randomEntry(items.asArray()),
+);
+
+export const chooseNBuiltIn = createNativeFunctionValue(
+  'chooseN',
+  ['items', 'n'],
+  (context, args, items, n) => R.map(
+    () => randomEntry(items.asArray()),
+    R.range(0, n.asNativeNumber()),
+  ),
+  toArrayResult,
 );

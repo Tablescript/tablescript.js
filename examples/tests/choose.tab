@@ -1,0 +1,6 @@
+a = ['red', 'green', 'blue'];
+assert(a.includes(choose(a)));
+
+multiple = chooseN(a, 5);
+assert(multiple.length() == 5);
+multiple.map(fn(s) assert(a.includes(s)));
