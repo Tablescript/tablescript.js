@@ -18,7 +18,12 @@
 import { createObjectValue } from '../values';
 import { assertBuiltIn } from './assert';
 import { chooseBuiltIn } from './choose';
-import { keysBuiltIn } from './keys';
+import {
+  keysBuiltIn,
+  valuesBuiltIn,
+  toPairsBuiltIn,
+  fromPairsBuiltIn,
+} from './objects';
 import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
 import { importBuiltIn } from './import';
@@ -30,6 +35,9 @@ export const initializeBuiltins = () => ({
   assert: assertBuiltIn,
   choose: chooseBuiltIn,
   keys: keysBuiltIn,
+  values: valuesBuiltIn,
+  toPairs: toPairsBuiltIn,
+  fromPairs: fromPairsBuiltIn,
   print: printBuiltIn,
   range: rangeBuiltIn,
   import: importBuiltIn,

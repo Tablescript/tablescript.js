@@ -18,7 +18,8 @@
 import * as R from 'ramda';
 import {
   createNativeFunctionValue,
-  toArrayResult
+  toArrayResult,
+  toObjectResult
 } from '../values';
 
 export const keysBuiltIn = createNativeFunctionValue(
@@ -26,8 +27,36 @@ export const keysBuiltIn = createNativeFunctionValue(
   ['o'],
   (context, args, o) => R.compose(
     R.map(context.factory.createStringValue),
-    R.sort(R.comparator(R.lt)),
     R.keys,
   )(o.asObject()),
   toArrayResult,
+);
+
+export const valuesBuiltIn = createNativeFunctionValue(
+  'values',
+  ['o'],
+  (context, args, o) => R.values(o.asObject()),
+  toArrayResult,
+);
+
+export const toPairsBuiltIn = createNativeFunctionValue(
+  'toPairs',
+  ['o'],
+  (context, args, o) => R.compose(
+    R.map(context.factory.createArrayValue),
+    R.map(([key, value]) => ([context.factory.createStringValue(key), value])),
+    R.toPairs,
+  )(o.asObject()),
+  toArrayResult,
+);
+
+export const fromPairsBuiltIn = createNativeFunctionValue(
+  'toPairs',
+  ['a'],
+  (context, args, a) => R.compose(
+    R.fromPairs,
+    R.map(([keyValue, value]) => ([keyValue.asNativeString(), value])),
+    R.map(e => e.asArray()),
+  )(a.asArray()),
+  toObjectResult,
 );

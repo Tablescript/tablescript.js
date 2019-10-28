@@ -25,15 +25,11 @@ import {
 } from './left-hand-side';
 import {
   createNativeFunctionValue,
-  toNativeNumber,
-  toNativeString,
-  toNativeBoolean,
-  toArray,
-  toObject,
   toNumericResult,
   toStringResult,
   toBooleanResult,
   toArrayResult,
+  toObjectResult,
   toUndefinedResult,
 } from './native-function';
 import { createNumericValue } from './numeric';
@@ -95,14 +91,10 @@ export {
   isUndefined,
   isCallable,
 
-  toNativeNumber,
-  toNativeString,
-  toNativeBoolean,
-  toArray,
-  toObject,
   toNumericResult,
   toStringResult,
   toBooleanResult,
   toArrayResult,
+  toObjectResult,
   toUndefinedResult,
 };

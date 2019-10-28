@@ -20,16 +20,11 @@ import { createValue } from './default';
 import { valueTypes } from './types';
 import { bindFunctionParameters } from './util/parameters';
 
-export const toNativeNumber = value => value.asNativeNumber();
-export const toNativeString = value => value.asNativeString();
-export const toNativeBoolean = value => value.asNativeBoolean();
-export const toArray = value => value.asArray();
-export const toObject = value => value.asObject();
-
 export const toNumericResult = (context, value) => context.factory.createNumericValue(value);
 export const toStringResult = (context, value) => context.factory.createStringValue(value);
 export const toBooleanResult = (context, value) => context.factory.createBooleanValue(value);
 export const toArrayResult = (context, value) => context.factory.createArrayValue(value);
+export const toObjectResult = (context, value) => context.factory.createObjectValue(value);
 export const toUndefinedResult = context => context.factory.createUndefined();
 
 const extractParameter = context => parameter => context.getLocalVariable(parameter);

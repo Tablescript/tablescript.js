@@ -42,11 +42,6 @@ import {
   isUndefined,
   isCallable,
 
-  toNativeNumber,
-  toNativeString,
-  toNativeBoolean,
-  toArray,
-  toObject,
   toNumericResult,
   toStringResult,
   toBooleanResult,
@@ -79,11 +74,6 @@ const api = {
   isUndefined,
   isCallable,
 
-  toNativeNumber,
-  toNativeString,
-  toNativeBoolean,
-  toArray,
-  toObject,
   toNumericResult,
   toStringResult,
   toBooleanResult,

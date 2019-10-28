@@ -40,7 +40,7 @@ const nativeEquals = o => other => {
     return false;
   }
   return Object.keys(o).reduce((result, key) => {
-    if (!otherProperties[key]) {
+    if (!R.has(key, otherProperties)) {
       return false;
     }
     return result && o[key].nativeEquals(otherProperties[key]);
