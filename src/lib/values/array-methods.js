@@ -41,6 +41,28 @@ export const each = entries => createNativeFunctionValue(
   ),
 );
 
+export const every = entries => createNativeFunctionValue(
+  'every',
+  ['f'],
+  (context, args, f) => indexedReduce(
+    (b, entry, i) => b && f.callFunction(context, [entry, context.factory.createNumericValue(i)]).asNativeBoolean(),
+    true,
+    entries,
+  ),
+  toBooleanResult,
+);
+
+export const some = entries => createNativeFunctionValue(
+  'some',
+  ['f'],
+  (context, args, f) => indexedReduce(
+    (b, entry, i) => b || f.callFunction(context, [entry, context.factory.createNumericValue(i)]).asNativeBoolean(),
+    false,
+    entries,
+  ),
+  toBooleanResult,
+);
+
 export const reduce = entries => createNativeFunctionValue(
   'reduce',
   ['reducer', 'initialValue'],

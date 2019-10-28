@@ -22,6 +22,8 @@ import { throwRuntimeError } from '../error';
 import {
   choose,
   each,
+  every,
+  some,
   filter,
   includes,
   indexOf,
@@ -104,6 +106,8 @@ export const createArrayValue = entries => createValue(
   {
     choose: choose(entries),
     each: each(entries),
+    every: every(entries),
+    some: some(entries),
     filter: filter(entries),
     includes: includes(entries),
     indexOf: indexOf(entries),

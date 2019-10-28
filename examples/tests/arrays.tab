@@ -118,6 +118,56 @@ assert(b == [2, 3, 4, 5, 6]);
 ############################################################################
 
 ############################################################################
+# Array.every
+#
+# The every returns true if for every entry, the passed function returns
+# true.
+all_evens = [2, 4, 6, 8, 10];
+some_evens = [2, 4, 5, 7, 12];
+no_evens = [1, 3, 5, 7, 9];
+
+is_even = fn(n) n % 2 == 0;
+assert(all_evens.every(is_even) == true);
+assert(some_evens.every(is_even) == false);
+assert(no_evens.every(is_even) == false);
+
+# The each function can also take a 2nd parameter that is the 0-based index
+# of the array member passed as the 1st parameter
+a = [2, 3, 4, 5, 6];
+b = [2, 3, 9, 5, 6];
+c = [1, 2, 5, 4, 9];
+even_add_even_index = fn(n, i) i % 2 != 0 or n % 2 == 0;
+assert(a.every(even_add_even_index) == true);
+assert(b.every(even_add_even_index) == false);
+assert(c.every(even_add_even_index) == false);
+############################################################################
+
+############################################################################
+# Array.some
+#
+# The every returns true if for some entries, the passed function returns
+# true.
+all_evens = [2, 4, 6, 8, 10];
+some_evens = [2, 4, 5, 7, 12];
+no_evens = [1, 3, 5, 7, 9];
+
+is_even = fn(n) n % 2 == 0;
+assert(all_evens.some(is_even) == true);
+assert(some_evens.some(is_even) == true);
+assert(no_evens.some(is_even) == false);
+
+# The each function can also take a 2nd parameter that is the 0-based index
+# of the array member passed as the 1st parameter
+a = [2, 3, 4, 5, 6];
+b = [2, 3, 9, 5, 6];
+c = [1, 2, 5, 4, 9];
+even_add_even_index = fn(n, i) i % 2 != 0 or n % 2 == 0;
+assert(a.some(even_add_even_index) == true);
+assert(b.some(even_add_even_index) == true);
+assert(c.some(even_add_even_index) == true);
+############################################################################
+
+############################################################################
 # Array.map
 #
 # The map function applies a function to each member of the array. It's also
