@@ -15,7 +15,7 @@
     "dependency-graph": "madge --image tablescript-graph.svg src/bin/tablescript.js",
     "lint": "node_modules/.bin/eslint src",
     "test": "jest",
-    "test:examples": "yarn build:parser && yarn build && find examples/tests -name \"*.tab\" -exec echo {} \\; -exec node dist/bin/tablescript.js {} \\;",
+    "test:examples": "find examples/tests -name \"*.tab\" -exec echo {} \\; -exec node dist/bin/tablescript.js {} \\;",
     "ci:test": "jest --ci --runInBand --reporters=default --reporters=jest-junit",
     "postversion": "git push --tags && yarn publish . --tag $npm_package_version && git push && echo \"Successfully released version $npm_package_version!\""
   },
