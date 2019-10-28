@@ -62,5 +62,6 @@ if (!filename) {
     } else {
       console.log(`Internal Error: ${ e.toString() }`);
     }
+    process.exit(-1);
   }
 }
