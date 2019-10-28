@@ -1,6 +1,19 @@
-a = ['red', 'green', 'blue'];
+a = ['red', 'green', 'blue', 'yellow', 'purple', 'orange', 'black'];
 assert(a.includes(choose(a)));
 
 multiple = chooseN(a, 5);
 assert(multiple.length() == 5);
 multiple.map(fn(s) assert(a.includes(s)));
+
+for (i in range(100)) {
+  unique = chooseUniqueN(a, 5);
+  assert(unique.length() == 5);
+  counts = {};
+  unique.each(fn(s) {
+    if (counts[s]) {
+      assert(false);
+    } else {
+      counts[s] = 1;
+    };
+  });
+};

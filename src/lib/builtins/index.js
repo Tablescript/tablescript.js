@@ -20,6 +20,7 @@ import { assertBuiltIn } from './assert';
 import {
   chooseBuiltIn,
   chooseNBuiltIn,
+  chooseUniqueNBuiltIn,
 } from './choose';
 import {
   keysBuiltIn,
@@ -38,6 +39,7 @@ export const initializeBuiltins = () => ({
   assert: assertBuiltIn,
   choose: chooseBuiltIn,
   chooseN: chooseNBuiltIn,
+  chooseUniqueN: chooseUniqueNBuiltIn,
   keys: keysBuiltIn,
   values: valuesBuiltIn,
   toPairs: toPairsBuiltIn,

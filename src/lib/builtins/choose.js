@@ -21,8 +21,17 @@ import {
   createNativeFunctionValue,
   toArrayResult,
 } from '../values';
+import { throwRuntimeError } from '../error';
 
 const randomEntry = items => items[randomNumber(items.length) - 1];
+
+const nUniqueRolls = (n, max) => {
+  let rolls = [];
+  while (rolls.length < n) {
+    rolls = R.uniq(R.append(randomNumber(max) - 1, rolls));
+  }
+  return rolls;
+};
 
 export const chooseBuiltIn = createNativeFunctionValue(
   'choose',
@@ -33,9 +42,35 @@ export const chooseBuiltIn = createNativeFunctionValue(
 export const chooseNBuiltIn = createNativeFunctionValue(
   'chooseN',
   ['items', 'n'],
-  (context, args, items, n) => R.map(
-    () => randomEntry(items.asArray()),
-    R.range(0, n.asNativeNumber()),
-  ),
+  (context, args, items, n) => {
+    if (n.asNativeNumber() <= 0) {
+      throwRuntimeError(`Cannot choose ${n.asNativeNumber()} items`, context);
+    }
+    return R.map(
+      () => randomEntry(items.asArray()),
+      R.range(0, n.asNativeNumber()),
+    );
+  },
+  toArrayResult,
+);
+
+export const chooseUniqueNBuiltIn = createNativeFunctionValue(
+  'chooseNUnique',
+  ['items', 'n'],
+  (context, args, items, n) => {
+    if (n.asNativeNumber() <= 0) {
+      throwRuntimeError(`Cannot choose ${n.asNativeNumber()} items`, context);
+    }
+    if (n.asNativeNumber() > items.asArray().length) {
+      throwRuntimeError(`Cannot choose unique ${n.asNativeNumber()} of ${items.asArray().length}`);
+    }
+    if (n.asNativeNumber() === items.asArray().length) {
+      return items.asArray();
+    }
+    return R.map(
+      n => items.asArray()[n],
+      nUniqueRolls(n.asNativeNumber(), items.asArray().length),
+    );
+  },
   toArrayResult,
 );

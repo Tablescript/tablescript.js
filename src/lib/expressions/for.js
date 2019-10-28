@@ -23,11 +23,15 @@ import { withSetLocation } from './util/context';
 import { throwRuntimeError } from '../error';
 
 const evaluateLoopIteration = (identifier, loopBlock, context) => (_, item) => {
+  console.log('BEFORE PUSH', R.map(R.keys, context.scopes()));
   context.pushScope({
     [identifier]: item,
   });
+  console.log('BEFORE CALL', R.map(R.keys, context.scopes()));
   const result = loopBlock.evaluate(context);
+  console.log('AFTER CALL', R.map(R.keys, context.scopes()));
   context.popScope();
+  console.log('AFTER POP', R.map(R.keys, context.scopes()));
   return result;
 };
 
