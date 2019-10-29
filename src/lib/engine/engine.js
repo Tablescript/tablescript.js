@@ -17,6 +17,7 @@
 
 import fs from 'fs';
 import * as R from 'ramda';
+import { version } from '../../../package.json';
 import { initializeContext } from './context';
 import { findAndLoadScript } from './loader';
 import { initializeBuiltins as initializeDefaultBuiltins } from '../builtins';
@@ -147,6 +148,7 @@ export const initializeTablescript = options => {
     runScriptFromFile: runScriptFromFile(createContextFactory(engineOptions, builtins, defaultValueFactory)),
     createContext: createContextFactory(engineOptions, builtins, defaultValueFactory),
     parseAndEvaluate,
+    version,
   };
 };
 

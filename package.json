@@ -47,7 +47,6 @@
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
     "commander": "^3.0.2",
-    "pkginfo": "^0.4.1",
     "ramda": "^0.26.1"
   }
 }

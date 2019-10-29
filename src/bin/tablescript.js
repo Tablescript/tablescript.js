@@ -20,14 +20,12 @@
 import '@babel/polyfill';
 import * as R from 'ramda';
 import options from 'commander';
-import pkginfo from 'pkginfo';
+import { version } from '../../package.json';
 import { initializeTablescript, TablescriptError } from '../lib';
 import repl from './repl';
 
-pkginfo(module, 'version');
-
 options
-  .version(`Tablescript v${module.exports.version}`)
+  .version(`Tablescript v${version}`)
   .usage('[options] <file> [...args]')
   .option('-p, --print-last-value', 'Print the last evaluated value')
   .option('-V, --no-validate-tables', 'Disable table entry validation')
@@ -47,6 +45,7 @@ const tablescript = initializeTablescript({
   maximumLoopCount: optionOr(options.maxLoopCount, undefined),
   maximumStackDepth: optionOr(options.maxStackDepth, undefined),
 });
+
 
 if (!filename) {
   repl(tablescript);

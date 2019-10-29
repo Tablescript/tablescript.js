@@ -56,6 +56,7 @@ const addScopeCommand = r => {
 };
 
 const repl = tablescript => {
+  console.log(`Tablescript v${tablescript.version}`);
   const r = nodeRepl.start({
     prompt: '> ',
     eval: evaluate(tablescript)
