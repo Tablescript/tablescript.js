@@ -25,9 +25,9 @@ expected_values = ['first', 'second', 'third'];
 actual_value = t1();
 assert(expected_values.includes(actual_value));
 
-range(10).map(fn() {
+for (i in range(10)) {
   assert(expected_values.includes(t1()));
-});
+};
 ############################################################################
 
 ############################################################################
@@ -53,9 +53,9 @@ assert(t1[9] == 'fourth');
 assert(t1[10] == 'fourth');
 
 expected_values = ['first', 'second', 'third', 'fourth'];
-range(10).map(fn() {
+for (i in range(10)) {
   assert(expected_values.includes(t1()));
-});
+};
 ############################################################################
 
 ############################################################################
@@ -80,9 +80,9 @@ expected_value = [
   'third 4', 'third 5',
   'fourth 6', 'fourth 7', 'fourth 8', 'fourth 9', 'fourth 10'
 ];
-range(10).map(fn() {
+for (i in range(10)) {
   assert(expected_value.includes(t1()));
-});
+};
 
 t1 = choice {
   first ${roll}
@@ -91,9 +91,9 @@ t1 = choice {
 };
 
 expected_value = ['first 1', 'second 2', 'third 3', 'fourth 4'];
-range(10).map(fn() {
+for (i in range(10)) {
   assert(expected_value.includes(t1()));
-});
+};
 ############################################################################
 
 ############################################################################
@@ -149,9 +149,9 @@ t2 = choice {
 };
 
 expected_values = ['third 1', 'first 2', 'second 3'];
-range(10).map(fn() {
+for (i in range(10)) {
   assert(expected_values.includes(t2()));
-});
+};
 ############################################################################
 
 ############################################################################
@@ -163,9 +163,9 @@ t1 = choice {
   ...(colours.split(' '));
 };
 
-range(10).map(fn() {
+for (i in range(10)) {
   assert(colours.includes(t1()));
-});
+};
 ############################################################################
 
 ############################################################################
@@ -189,9 +189,9 @@ expected_values = [
   'second from second',
   'third from second'
 ];
-range(10).map(fn() {
+for (i in range(10)) {
   assert(expected_values.includes(t2()));
-});
+};
 ############################################################################
 
 ############################################################################
@@ -207,9 +207,9 @@ expected_values = [
   'first a',
   'second b'
 ];
-range(10).map(fn() {
+for (i in range(10)) {
   assert(expected_values.includes(t1('a', 'b')));
-});
+};
 ############################################################################
 # Hackity Hack
 t1 = choice(entries) {
@@ -218,9 +218,9 @@ t1 = choice(entries) {
 
 expected_values = ['red', 'green', 'blue'];
 
-range(10).map(fn() {
+for (i in range(10)) {
   assert(expected_values.includes(t1(['red', 'green', 'blue'])));
-});
+};
 ############################################################################
 
 ############################################################################
@@ -241,7 +241,56 @@ o = {
 a = ['red', 'green', 'blue'];
 
 expected_values = [1, 2, 3, 'red', 'green', 'blue'];
-range(10).map(fn() {
+for (i in range(10)) {
   assert(expected_values.includes(t1(o, a)));
-});
+};
 ############################################################################
+
+############################################################################
+# Multiple, unique, and ignored rolls
+c = choice {
+  first
+  second
+  third
+  fourth
+  fifth
+};
+
+assert(c.multiple(10).length() == 10);
+assert(c.unique(5).sort() == ['fifth', 'first', 'fourth', 'second', 'third']);
+identity = fn(n) n;
+for (i in range(100)) {
+  assert(values(c.unique(4).countBy(identity)).every(fn(n) n == 1));
+};
+for (i in range(100)) {
+  assert(c.ignore(fn(roll, index) roll < 5) == 'fifth');
+};
+for (i in range(100)) {
+  assert(c.uniqueIgnore(4, fn(roll, index) index == 4).sort() == ['first', 'fourth', 'second', 'third']);
+};
+
+t = table {
+  1-8: first
+  9: second
+  10: third
+};
+
+assert(t.multiple(10).length() == 10);
+assert(t.unique(3).sort() == ['first', 'second', 'third']);
+for (i in range(100)) {
+  assert(values(t.unique(2).countBy(identity)).every(fn(n) n == 1));
+};
+for (i in range(100)) {
+  assert(not t.ignore(fn(roll) roll == 9).includes('second'));
+};
+for (i in range(100)) {
+  assert(t.uniqueIgnore(2, fn(roll) roll == 9).sort() == ['first', 'third']);
+};
+
+colours = 'red orange yellow green blue violet';
+t1 = choice {
+  ...(colours.split(' '));
+};
+for (i in range(100)) {
+  assert(not t1.uniqueIgnore(4, fn(roll) roll == 3).includes('yellow'));
+};

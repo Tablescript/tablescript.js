@@ -90,7 +90,7 @@ const nUniqueWithIgnore = (n, context, entries, die, f) => {
   let count = 0;
   while (count < context.options.values.maximumTableUniqueAttempts) {
     const roll = rollWithIgnore(context, entries, die, f);
-    rolls = R.uniqBy(R.nth(0), R.append(roll, rolls));
+    rolls = R.uniqBy(R.nth(1), R.append(roll, rolls));
     if (rolls.length === n) {
       return rolls;
     }
@@ -104,7 +104,7 @@ const nUnique = (n, entries, die) => {
   while (rolls.length < n) {
     const roll = randomNumber(die);
     const entryIndex = getRolledEntryIndex(entries, roll);
-    rolls = R.uniqBy(R.nth(0), R.append([roll, entryIndex], rolls));
+    rolls = R.uniqBy(R.nth(1), R.append([roll, entryIndex], rolls));
   }
   return rolls;
 };

@@ -17,7 +17,7 @@
 
 import { expressionTypes } from './types';
 import { createExpression } from './default';
-import { TablescriptError } from '../error';
+import { throwRuntimeError } from '../error';
 import { withSetLocation } from './util/context';
 
 const entryExpander = context => (acc, entry) => {
@@ -46,7 +46,7 @@ const validateEntries = (context, entries) => {
   });
   for (let i = 1; i <= allSelectors.max; i += 1) {
     if (!allSelectors.set.has(i)) {
-      throw new TablescriptError('RuntimeError', `Table missing entry for ${i}`, context);
+      throwRuntimeError(`Table missing entry for ${i}`, context);
     }
   }
 };
