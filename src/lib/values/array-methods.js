@@ -23,6 +23,7 @@ import {
   toStringResult,
   toBooleanResult,
   toArrayResult,
+  toObjectResult,
 } from './native-function';
 import { quickSort } from '../util/sort';
 import { randomNumber } from '../util/random';
@@ -34,7 +35,7 @@ const indexedFilter = R.addIndex(R.filter);
 export const append = entries => createNativeFunctionValue(
   'append',
   ['i'],
-  (context, args, i) => [...entries, i],
+  (context, args, i) => ([...entries, i]),
   toArrayResult,
 );
 
@@ -46,6 +47,30 @@ export const each = entries => createNativeFunctionValue(
     context.factory.createUndefined(),
     entries,
   ),
+);
+
+export const countBy = entries => createNativeFunctionValue(
+  'countBy',
+  ['f'],
+  (context, args, f) => R.fromPairs(
+    R.map(
+      ([key, value]) => ([key, context.factory.createNumericValue(value)]),
+      R.toPairs(
+        indexedReduce(
+          (acc, entry, i) => {
+            const key = f.callFunction(context, [entry, context.factory.createNumericValue(i)]).asNativeString();
+            return {
+              ...acc,
+              [key]: R.has(key, acc) ? acc[key] + 1 : 1,
+            };
+          },
+          {},
+          entries,
+        ),
+      ),
+    ),
+  ),
+  toObjectResult
 );
 
 export const every = entries => createNativeFunctionValue(

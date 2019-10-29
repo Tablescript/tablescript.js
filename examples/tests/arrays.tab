@@ -107,6 +107,16 @@ assert(a.append([6, 7, 8]) == [1, 2, 3, 4, 5, [6, 7, 8]]);
 ############################################################################
 
 ############################################################################
+# Array.countBy
+#
+# The countBy function creates an object of value counts with keys generated
+# by the passed function.
+a = [1, 2, 3, 4, 5];
+number_type = fn(n) n % 2 == 0 ? 'even' : 'odd';
+assert(a.countBy(number_type) == { even: 2, odd: 3 });
+############################################################################
+
+############################################################################
 # Array.each
 #
 # The each function applies a function to each member of the array. It's
