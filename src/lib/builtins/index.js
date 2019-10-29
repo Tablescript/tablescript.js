@@ -34,6 +34,7 @@ import { importBuiltIn } from './import';
 import { strBuiltIn, intBuiltIn, boolBuiltIn } from './convert';
 import { initializeMath } from './math';
 import { typeOfBuiltIn } from './typeof';
+import { pipeBuiltIn, composeBuiltIn } from './fp';
 
 export const initializeBuiltins = () => ({
   assert: assertBuiltIn,
@@ -51,6 +52,8 @@ export const initializeBuiltins = () => ({
   str: strBuiltIn,
   int: intBuiltIn,
   bool: boolBuiltIn,
+  pipe: pipeBuiltIn,
+  compose: composeBuiltIn,
   math: createObjectValue({
     ...initializeMath(),
   }),

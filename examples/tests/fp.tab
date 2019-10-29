@@ -1,0 +1,32 @@
+add1 = fn(n) n + 1;
+mult3 = fn(n) n * 3;
+
+f1 = pipe(
+  add1,
+  mult3
+);
+
+assert(f1(3) == 12);
+
+f2 = pipe(
+  add1,
+  mult3,
+  add1
+);
+
+assert(f2(3) == 13);
+
+f3 = compose(
+  add1,
+  mult3
+);
+
+assert(f3(3) == 10);
+
+f4 = compose(
+  add1,
+  mult3,
+  add1
+);
+
+assert(f4(3) == 13);
