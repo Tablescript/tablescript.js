@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { throwRuntimeError } from "../error";
 
 const valueAsString = value => value.asNativeString();
@@ -70,7 +71,7 @@ export const initializeContext = (initialScope, options, factory) => {
     popScope: () => {
       stacks.scopes = [...stacks.scopes.slice(1)];
     },
-    getScope: () => stacks.scopes.reverse().reduce((acc, s) => ({ ...acc, ...s }), {}),
+    getScope: () => R.reduce((acc, s) => ({ ...acc, ...s }), {}, R.reverse(stacks.scopes)),
     getVariable: name => stacks.scopes.reduce((acc, s) => acc || s[name], undefined),
     getLocalVariable: name => stacks.scopes[0][name],
     setVariable: (name, value) => {
