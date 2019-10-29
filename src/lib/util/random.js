@@ -15,6 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
+
 export const randomNumber = n => {
   return Math.floor(Math.random() * n) + 1;
+};
+
+export const nUniqueRolls = (n, max) => {
+  let rolls = [];
+  while (rolls.length < n) {
+    rolls = R.uniq(R.append(randomNumber(max), rolls));
+  }
+  return rolls;
 };

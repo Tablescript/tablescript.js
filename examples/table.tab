@@ -1,21 +1,17 @@
-t = table {
-  1:       With lots of spaces something
-  2: Something else
-  3: With ${d4} things
-  4: ${d9} at the start
-  5: In ${d4} the ${d4} middle
-  6: At the end ${d4}
-};
-
-print(t());
-
 c = choice {
-        With lots of spaces something
-  Something else
-  With ${d4} things
-  ${d9} at the start
-  In ${d4} the ${d4} middle
-  At the end ${d4}
+  first
+  second
+  third
+  fourth
+  fifth
 };
 
-print(c());
+print(c.uniqueN(4));
+
+t = table {
+  1-8: first
+  9: second
+  10: third
+};
+
+print(t.uniqueEntriesN(2));

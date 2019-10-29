@@ -15,13 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import * as R from 'ramda';
-import { createValue } from './default';
-import { valueTypes } from './types';
-import { randomNumber } from '../util/random';
+import { throwRuntimeError } from '../error';
 import { bindFunctionParameters } from './util/parameters';
 import { withSwappedScopes } from './util/context';
-import { throwRuntimeError } from '../error';
+import { createValue } from './default';
+import { valueTypes } from './types';
+import { getTableRoll, getRolledEntryIndex, uniqueN, uniqueEntriesN } from './table-methods';
 
 const asNativeString = () => 'table';
 
@@ -29,43 +28,42 @@ const asNativeBoolean = () => true;
 
 const asArray = entries => () => entries;
 
-const tableEntryScope = (context, formalParameters, entries, closure, roll) => ({
+const tableEntryScope = (context, formalParameters, entries, closure, roll, index) => ({
   'roll': context.factory.createNumericValue(roll),
+  'index': context.factory.createNumericValue(index),
   'this': createTableValue(formalParameters, entries, closure),
 });
 
+const buildEntryScope = (formalParameters, entries, closure, roll, index) => context => ([
+  closure,
+  tableEntryScope(context, formalParameters, entries, closure, roll, index),
+]);
+
+const buildCallScope = (formalParameters, entries, closure, roll, index) => (context, parameters) => ([
+  closure,
+  bindFunctionParameters(context, formalParameters, parameters),
+  tableEntryScope(context, formalParameters, entries, closure, roll, index),  
+]);
+
 const getElement = (formalParameters, entries, closure) => (context, index) => {
   const roll = index.asNativeNumber();
-  const selectedEntry = entries.find((e, index) => e.rollApplies(roll, index + 1));
-  if (selectedEntry) {
+  const entryIndex = getRolledEntryIndex(entries, roll);
+  if (entryIndex >= 0) {
     return withSwappedScopes(
-      context => ([
-        closure,
-        tableEntryScope(context, formalParameters, entries, closure, roll),
-      ]),
-      selectedEntry.evaluate
+      buildEntryScope(formalParameters, entries, closure, roll, entryIndex),
+      entries[entryIndex].evaluate
     )(context);
   }
   return context.factory.createUndefined();
 };
 
-const getTableDie = entries => entries.reduce((max, entry, index) => Math.max(max, entry.getHighestSelector(index + 1)), 0);
-
-const getTableRoll = R.pipe(getTableDie, randomNumber);
-
-const getRolledEntry = (entries, roll) => entries.find((e, index) => e.rollApplies(roll, index + 1));
-
 const callFunction = (formalParameters, entries, closure) => (context, parameters) => {
   const roll = getTableRoll(entries);
-  const rolledEntry = getRolledEntry(entries, roll);
-  if (rolledEntry) {
+  const entryIndex = getRolledEntryIndex(entries, roll);
+  if (entryIndex >= 0) {
     return withSwappedScopes(
-      (context, parameters) => ([
-        closure,
-        bindFunctionParameters(context, formalParameters, parameters),
-        tableEntryScope(context, formalParameters, entries, closure, roll),  
-      ]),
-      rolledEntry.evaluate
+      buildCallScope(formalParameters, entries, closure, roll, entryIndex),
+      entries[entryIndex].evaluate
     )(context, parameters);
   }
   throwRuntimeError(`Table has no entry for roll of ${roll}`, context);
@@ -76,7 +74,19 @@ export const createTableValue = (formalParameters, entries, closure) => createVa
   asNativeString,
   () => false,
   () => false,
-  {},
+  {
+    uniqueN: uniqueN(
+      (roll, index) => buildCallScope(formalParameters, entries, closure, roll, index),
+      entries
+    ),
+    uniqueEntriesN: uniqueEntriesN(
+      (roll, index) => buildCallScope(formalParameters, entries, closure, roll, index),
+      entries
+    ),
+    //uniqueValuesN: uniqueValuesN(formalParameters, entries, closure),
+    //ignoreRolls: ignoreRolls(formalParameters, entries, closure),
+    //ignoreRollsBy: ignoreRollsBy(formalParameters, entries, closure),
+  },
   {
     asNativeString,
     asNativeBoolean,

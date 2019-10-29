@@ -16,7 +16,7 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import * as R from 'ramda';
-import { randomNumber } from '../util/random';
+import { randomNumber, nUniqueRolls } from '../util/random';
 import {
   createNativeFunctionValue,
   toArrayResult,
@@ -24,14 +24,6 @@ import {
 import { throwRuntimeError } from '../error';
 
 const randomEntry = items => items[randomNumber(items.length) - 1];
-
-const nUniqueRolls = (n, max) => {
-  let rolls = [];
-  while (rolls.length < n) {
-    rolls = R.uniq(R.append(randomNumber(max) - 1, rolls));
-  }
-  return rolls;
-};
 
 export const chooseBuiltIn = createNativeFunctionValue(
   'choose',
@@ -68,7 +60,7 @@ export const chooseUniqueNBuiltIn = createNativeFunctionValue(
       return items.asArray();
     }
     return R.map(
-      n => items.asArray()[n],
+      n => items.asArray()[n - 1],
       nUniqueRolls(n.asNativeNumber(), items.asArray().length),
     );
   },
