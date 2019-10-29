@@ -15,12 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { expressionTypes } from './types';
 import { createExpression } from './default';
-import { evaluateExpressions } from './util/evaluate';
+import { createExpressionEvaluator } from './util/evaluate';
 import { withRestoredLocation } from './util/context';
 
 export const createBlockExpression = (location, expressions) => createExpression(
   expressionTypes.BLOCK,
-  withRestoredLocation(location, evaluateExpressions(expressions)),
+  R.compose(
+    withRestoredLocation(location),
+    createExpressionEvaluator(expressions)
+  )(),
 );

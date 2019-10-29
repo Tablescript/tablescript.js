@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
+import * as R from 'ramda';
 import { expressionTypes } from './types';
 import { createExpression } from './default';
 import { isArraySpread } from '../values';
@@ -36,7 +37,7 @@ const evaluateParameter = context => (values, parameter) => {
 
 const evaluateParameters = (context, parameters) => parameters.reduce(evaluateParameter(context), []);
 
-const evaluate = (callee, parameters) => context => {
+const evaluate = (callee, parameters) => () => context => {
   const calleeValue = callee.evaluate(context);
   const evaluatedParameters = evaluateParameters(context, parameters);
   return calleeValue.callFunction(context, evaluatedParameters);
@@ -44,5 +45,8 @@ const evaluate = (callee, parameters) => context => {
 
 export const createCallExpression = (location, callee, parameters) => createExpression(
   expressionTypes.CALL,
-  withSetLocation(location, evaluate(callee, parameters)),
+  R.compose(
+    withSetLocation(location),
+    evaluate(callee, parameters),
+  )(),
 );

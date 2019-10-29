@@ -23,24 +23,24 @@ import { withSetLocation } from './util/context';
 import { throwRuntimeError } from '../error';
 
 const evaluateLoopIteration = (identifier, loopBlock, context) => (_, item) => {
-  console.log('BEFORE PUSH', R.map(R.keys, context.scopes()));
   context.pushScope({
     [identifier]: item,
   });
-  console.log('BEFORE CALL', R.map(R.keys, context.scopes()));
   const result = loopBlock.evaluate(context);
-  console.log('AFTER CALL', R.map(R.keys, context.scopes()));
   context.popScope();
-  console.log('AFTER POP', R.map(R.keys, context.scopes()));
   return result;
 };
 
-const evaluate = (identifier, collection, loopBlock) => context => {
+const evaluate = (identifier, collection, loopBlock) => () => context => {
   const items = collection.evaluate(context);
   if (!isArray(items)) {
     throwRuntimeError('Cannot loop over a non-array', context);
   }
-  return R.reduce(evaluateLoopIteration(identifier, loopBlock, context), context.factory.createUndefined(), items.asArray());
+  return R.reduce(
+    evaluateLoopIteration(identifier, loopBlock, context),
+    context.factory.createUndefined(),
+    items.asArray()
+  );
 };
 
 export const createForExpression = (
@@ -50,5 +50,8 @@ export const createForExpression = (
   loopBlock
 ) => createExpression(
   expressionTypes.FOR,
-  withSetLocation(location, evaluate(identifier, collection, loopBlock)),
+  R.compose(
+    withSetLocation(location),
+    evaluate(identifier, collection, loopBlock),
+  )(),
 );

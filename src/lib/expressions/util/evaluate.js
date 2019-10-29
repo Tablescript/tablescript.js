@@ -19,7 +19,7 @@ import * as R from 'ramda';
 
 const evaluateExpression = context => (_, expression) => expression.evaluate(context);
 
-export const evaluateExpressions = expressions => context => R.reduce(
+export const createExpressionEvaluator = expressions => () => context => R.reduce(
   evaluateExpression(context),
   context.factory.createUndefined(),
   expressions,

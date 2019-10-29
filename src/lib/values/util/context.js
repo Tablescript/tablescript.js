@@ -15,12 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-export const callWithSwappedScopes = (context, scopes, f) => {
-  const oldScopes = context.swapScopes(scopes);
-  const result = f(context);
-  context.swapScopes(oldScopes);
-  return result;
-};
+import * as R from 'ramda';
 
 export const withSwappedScopes = (buildScopes, f) => (context, parameters) => {
   const oldScopes = context.swapScopes(buildScopes(context, parameters));

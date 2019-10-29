@@ -35,7 +35,9 @@ export const evaluateLoop = (context, condition, loopCheck, loopBlock) => {
   const validateLoopCount = initializeCounter(context);
   while (loopCheck(expressionValue)) {
     validateLoopCount();
+    context.pushScope({});
     result = loopBlock.evaluate(context);
+    context.popScope();
     expressionValue = condition.evaluate(context);
   }
   return result;

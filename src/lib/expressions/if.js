@@ -22,10 +22,16 @@ import { withSetLocation } from './util/context';
 const evaluate = (condition, ifBlock, elseBlock) => context => {
   const expressionValue = condition.evaluate(context);
   if (expressionValue.asNativeBoolean()) {
-    return ifBlock.evaluate(context);
+    context.pushScope({});
+    const result = ifBlock.evaluate(context);
+    context.popScope();
+    return result;
   }
   if (elseBlock) {
-    return elseBlock.evaluate(context);
+    context.pushScope({});
+    const result = elseBlock.evaluate(context);
+    context.popScope();
+    return result;
   }
   return context.factory.createUndefined();
 };
