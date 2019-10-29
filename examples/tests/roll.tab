@@ -195,3 +195,10 @@ expected_results = range(fireball_hit_dice + 3, 9 * 6 + 1);
 
 roll = fn() fireball_damage.roll();
 test_rolls(roll, expected_results, fn() assert(false));
+
+############################################################################
+# Fate dice
+#
+# Use 'F' as the die to specify Fate/Fudge dice.
+roll = fn() '4dF'.roll();
+test_rolls(roll, [-4, -3, -2, -1, 0, 1, 2, 3, 4], fn() assert(false));

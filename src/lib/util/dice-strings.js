@@ -108,13 +108,13 @@ const extractSuffixes = (s, suffixes = []) => {
 };
 
 export const rollDiceFromString = s => {
-  const dicePattern = /^\s*([1-9][0-9]*)?d([1-9][0-9]*)/;
+  const dicePattern = /^\s*([1-9][0-9]*)?d(F|[1-9][0-9]*)/;
   const matches = s.match(dicePattern);
   if (!matches) {
     throw new Error('Invalid dice string');
   }
   const count = parseInt(matches[1], 10) || 1;
-  const die = parseInt(matches[2], 10);
+  const die = matches[2] === 'F' ? 'F' : parseInt(matches[2], 10);
 
   const suffix = R.slice(R.length(matches[0]), Infinity, s);
   const suffixes = extractSuffixes(suffix);
