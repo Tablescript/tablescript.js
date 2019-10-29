@@ -122,7 +122,11 @@ export const unique = (buildCallScope, entries) => createNativeFunctionValue(
     const die = getTableDie(entries);
     if (n.asNativeNumber() === entries.length) {
       return R.map(
-        entry => evaluateEntry(buildCallScope(entry.getLowestSelector(), getRolledEntryIndex(entries, entry.getLowestSelector())), context, args.slice(1))(entry),
+        entry => evaluateEntry(
+          buildCallScope(entry.getLowestSelector(), getRolledEntryIndex(entries, entry.getLowestSelector())),
+          context,
+          args.slice(1)
+        )(entry),
         entries,
       );
     }
