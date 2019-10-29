@@ -346,10 +346,10 @@ MemberExpression
     PrimaryExpression
   )
   tail:(
-    '[' __ property:AssignmentExpression __ ']' {
+    __ '[' __ property:AssignmentExpression __ ']' {
       return { property };
     }
-    / '.' __ property:IdentifierName {
+    / __ '.' __ property:IdentifierName {
       return { property: createStringLiteral(property) };
     }
   )* {
@@ -366,10 +366,10 @@ CallExpression
     __ args:Arguments {
       return { type: 'call', args }
     }
-    / '[' __ property:AssignmentExpression __ ']' {
+    / __ '[' __ property:AssignmentExpression __ ']' {
       return { 'type': 'member', property };
     }
-    / '.' __ property:IdentifierName {
+    / __ '.' __ property:IdentifierName {
       return { 'type': 'member', property: createStringLiteral(property) };
     }
   )* {
