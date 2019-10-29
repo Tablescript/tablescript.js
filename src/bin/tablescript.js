@@ -32,6 +32,7 @@ options
   .option('-c, --evaluate-callable-result', 'Evaluate callable results')
   .option('-l, --max-loop-count <count>', 'Maximum loop count')
   .option('-s, --max-stack-depth <count>', 'Maximum stack depth')
+  .option('-d, --debug', 'Enable debug mode (for development)')
   .parse(process.argv);
 
 const filename = options.args[0];
@@ -44,6 +45,7 @@ const tablescript = initializeTablescript({
   evaluateCallableResult: optionOr(options.evaluateCallableResult, false),
   maximumLoopCount: optionOr(options.maxLoopCount, undefined),
   maximumStackDepth: optionOr(options.maxStackDepth, undefined),
+  debug: optionOr(options.debug, false),
 });
 
 
@@ -59,7 +61,11 @@ if (!filename) {
     if (e instanceof TablescriptError) {
       console.log(e.toString());
     } else {
-      console.log(`Internal Error: ${ e.toString() }`);
+      if (debug) {
+        console.log(e);
+      } else {
+        console.log(`Internal Error: ${ e.toString() }`);
+      }
     }
     process.exit(-1);
   }
