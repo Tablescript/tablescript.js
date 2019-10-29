@@ -31,6 +31,13 @@ const indexedReduce = R.addIndex(R.reduce);
 const indexedMap = R.addIndex(R.map);
 const indexedFilter = R.addIndex(R.filter);
 
+export const append = entries => createNativeFunctionValue(
+  'append',
+  ['i'],
+  (context, args, i) => [...entries, i],
+  toArrayResult,
+);
+
 export const each = entries => createNativeFunctionValue(
   'each',
   ['f'],

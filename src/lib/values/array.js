@@ -20,6 +20,7 @@ import { createValue } from './default';
 import { valueTypes, isArray } from './types';
 import { throwRuntimeError } from '../error';
 import {
+  append,
   choose,
   each,
   every,
@@ -104,6 +105,7 @@ export const createArrayValue = entries => createValue(
   identicalTo(entries),
   nativeEquals(entries),
   {
+    append: append(entries),
     choose: choose(entries),
     each: each(entries),
     every: every(entries),

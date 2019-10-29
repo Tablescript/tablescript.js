@@ -97,6 +97,16 @@ assert(not a.includes('abc'));
 ############################################################################
 
 ############################################################################
+# Array.append
+#
+# The append function adds the parameter to the end of the array.
+a = [1, 2, 3, 4, 5];
+assert(a.append(6) == [1, 2, 3, 4, 5, 6]);
+assert(a.append('something') == [1, 2, 3, 4, 5, 'something']);
+assert(a.append([6, 7, 8]) == [1, 2, 3, 4, 5, [6, 7, 8]]);
+############################################################################
+
+############################################################################
 # Array.each
 #
 # The each function applies a function to each member of the array. It's
