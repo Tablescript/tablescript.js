@@ -21,7 +21,7 @@ import {
   toArrayResult,
 } from './native-function';
 import { throwRuntimeError } from '../error';
-import { randomNumber, nUniqueRolls } from '../util/random';
+import { randomNumber, nRolls } from '../util/random';
 import { withSwappedScopes } from './util/context';
 
 const getTableDie = entries => entries.reduce((max, entry, index) => Math.max(max, entry.getHighestSelector(index + 1)), 0);
@@ -37,23 +37,14 @@ const evaluateEntry = (buildCallScope, context, parameters) => entry => withSwap
   entry.evaluate,
 )(context, parameters);
 
-export const uniqueN = (buildCallScope, entries) => createNativeFunctionValue(
-  'uniqueN',
+export const multiple = (buildCallScope, entries) => createNativeFunctionValue(
+  'multiple',
   ['n'],
   (context, args, n) => {
     if (n.asNativeNumber() <= 0) {
-      throwRuntimeError(`uniqueN(n) n must more than 0`, context);
+      throwRuntimeError(`multiple(n) n must more than 0`, context);
     }
     const die = getTableDie(entries);
-    if (n.asNativeNumber() > die) {
-      throwRuntimeError(`uniqueN(n) n cannot be higher than ${die}`, context);
-    }
-    if (n.asNativeNumber() === die) {
-      return R.addIndex(R.map)(
-        entry => evaluateEntry(buildCallScope(entry.getLowestSelector(), getRolledEntryIndex(entry.getLowestSelector())), context, args.slice(1))(entry),
-        entries,
-      );
-    }
     return R.map(
       ([roll, index, entry]) => evaluateEntry(buildCallScope(roll, index), context, args.slice(1))(entry),
       R.map(
@@ -62,49 +53,113 @@ export const uniqueN = (buildCallScope, entries) => createNativeFunctionValue(
           getRolledEntryIndex(entries, roll),
           getRolledEntry(entries, roll),
         ]),
-        nUniqueRolls(n.asNativeNumber(), die),
+        nRolls(n.asNativeNumber(), die),
       ),
     );
   },
   toArrayResult,
 );
 
-const nUniqueEntryIndices = (n, entries, max) => {
-  let indices = [];
-  while (indices.length < n) {
-    const roll = randomNumber(max);
+const rollWithIgnore = (context, entries, die, f) => {
+  let count = 0;
+  while (count < context.options.values.maximumTableIgnoreCount) {
+    const roll = randomNumber(die);
     const entryIndex = getRolledEntryIndex(entries, roll);
-    indices = R.uniqBy(R.nth(1), R.append([entryIndex, roll], indices));
+    const ignore = f.callFunction(context, [context.factory.createNumericValue(roll), context.factory.createNumericValue(entryIndex)]);
+    if (!ignore.asNativeBoolean()) {
+      return [roll, entryIndex];
+    }
+    count += 1;
   }
-  return indices;
-};  
+  throwRuntimeError(`All ${count} rolls were ignored`, context);
+};
 
-export const uniqueEntriesN = (buildCallScope, entries) => createNativeFunctionValue(
-  'uniqueEntriesN',
+export const ignore = (buildCallScope, entries) => createNativeFunctionValue(
+  'ignore',
+  ['f'],
+  (context, args, f) => {
+    const die = getTableDie(entries);
+    const [roll, entryIndex] = rollWithIgnore(context, entries, die, f);
+    const entry = entries[entryIndex];
+    return evaluateEntry(buildCallScope(roll, entryIndex), context, args.slice(1))(entry);
+  },
+);
+
+const nUniqueWithIgnore = (n, context, entries, die, f) => {
+  let rolls = [];
+  let count = 0;
+  while (count < context.options.values.maximumTableUniqueAttempts) {
+    const roll = rollWithIgnore(context, entries, die, f);
+    rolls = R.uniqBy(R.nth(0), R.append(roll, rolls));
+    if (rolls.length === n) {
+      return rolls;
+    }
+    count += 1;
+  }
+  throwRuntimeError(`Tried ${count} times for unique rolls`, context);
+};
+
+const nUnique = (n, entries, die) => {
+  let rolls = [];
+  while (rolls.length < n) {
+    const roll = randomNumber(die);
+    const entryIndex = getRolledEntryIndex(entries, roll);
+    rolls = R.uniqBy(R.nth(0), R.append([roll, entryIndex], rolls));
+  }
+  return rolls;
+};
+
+export const unique = (buildCallScope, entries) => createNativeFunctionValue(
+  'unique',
   ['n'],
   (context, args, n) => {
     if (n.asNativeNumber() <= 0) {
-      throwRuntimeError(`uniqueEntriesN(n) n must more than 0`, context);
+      throwRuntimeError(`unique(n) n must more than 0`, context);
+    }
+    if (n.asNativeNumber() > entries.length) {
+      throwRuntimeError(`unique(n) n cannot be more than ${entries.length}`, context);
     }
     const die = getTableDie(entries);
-    if (n.asNativeNumber() > entries.length) {
-      throwRuntimeError(`uniqueEntriesN(n) n cannot be higher than ${entries.length}`, context);
-    }
     if (n.asNativeNumber() === entries.length) {
       return R.map(
-        entry => evaluateEntry(buildCallScope(entry.getLowestSelector(), getRolledEntryIndex(entry.getLowestSelector())), context, args.slice(1))(entry),
+        entry => evaluateEntry(buildCallScope(entry.getLowestSelector(), getRolledEntryIndex(entries, entry.getLowestSelector())), context, args.slice(1))(entry),
         entries,
       );
     }
+    const rolls = nUnique(n.asNativeNumber(), entries, die);
     return R.map(
       ([roll, index, entry]) => evaluateEntry(buildCallScope(roll, index), context, args.slice(1))(entry),
       R.map(
-        ([index, roll]) => ([
+        ([roll, index]) => ([
           roll,
           index,
           entries[index],
         ]),
-        nUniqueEntryIndices(n.asNativeNumber(), entries, die),
+        rolls,
+      ),
+    );
+  },
+  toArrayResult,
+);
+
+export const uniqueIgnore = (buildCallScope, entries) => createNativeFunctionValue(
+  'uniqueIgnore',
+  ['n', 'f'],
+  (context, args, n, f) => {
+    if (n.asNativeNumber() <= 0) {
+      throwRuntimeError(`unique(n, f) n must more than 0`, context);
+    }
+    const die = getTableDie(entries);
+    const rolls = nUniqueWithIgnore(n.asNativeNumber(), context, entries, die, f);
+    return R.map(
+      ([roll, index, entry]) => evaluateEntry(buildCallScope(roll, index), context, args.slice(2))(entry),
+      R.map(
+        ([roll, index]) => ([
+          roll,
+          index,
+          entries[index],
+        ]),
+        rolls,
       ),
     );
   },

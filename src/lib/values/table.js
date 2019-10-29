@@ -20,7 +20,7 @@ import { bindFunctionParameters } from './util/parameters';
 import { withSwappedScopes } from './util/context';
 import { createValue } from './default';
 import { valueTypes } from './types';
-import { getTableRoll, getRolledEntryIndex, uniqueN, uniqueEntriesN } from './table-methods';
+import { getTableRoll, getRolledEntryIndex, multiple, ignore, unique, uniqueIgnore } from './table-methods';
 
 const asNativeString = () => 'table';
 
@@ -75,17 +75,22 @@ export const createTableValue = (formalParameters, entries, closure) => createVa
   () => false,
   () => false,
   {
-    uniqueN: uniqueN(
+    multiple: multiple(
       (roll, index) => buildCallScope(formalParameters, entries, closure, roll, index),
       entries
     ),
-    uniqueEntriesN: uniqueEntriesN(
+    ignore: ignore(
       (roll, index) => buildCallScope(formalParameters, entries, closure, roll, index),
       entries
     ),
-    //uniqueValuesN: uniqueValuesN(formalParameters, entries, closure),
-    //ignoreRolls: ignoreRolls(formalParameters, entries, closure),
-    //ignoreRollsBy: ignoreRollsBy(formalParameters, entries, closure),
+    unique: unique(
+      (roll, index) => buildCallScope(formalParameters, entries, closure, roll, index),
+      entries
+    ),
+    uniqueIgnore: uniqueIgnore(
+      (roll, index) => buildCallScope(formalParameters, entries, closure, roll, index),
+      entries
+    ),
   },
   {
     asNativeString,

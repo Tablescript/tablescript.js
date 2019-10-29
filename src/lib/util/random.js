@@ -21,6 +21,11 @@ export const randomNumber = n => {
   return Math.floor(Math.random() * n) + 1;
 };
 
+export const nRolls = (n, max) => R.map(
+  () => randomNumber(max),
+  R.range(0, n)
+);
+
 export const nUniqueRolls = (n, max) => {
   let rolls = [];
   while (rolls.length < n) {

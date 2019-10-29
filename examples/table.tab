@@ -6,7 +6,16 @@ c = choice {
   fifth
 };
 
-print(c.uniqueN(4));
+assert(c.multiple(10).length() == 10);
+assert(c.unique(5).sort() == ['fifth', 'first', 'fourth', 'second', 'third']);
+identity = fn(n) n;
+for (i in range(100)) {
+  assert(values(c.unique(4).countBy(identity)).every(fn(n) n == 1));
+};
+for (i in range(100)) {
+  assert(c.ignore(fn(roll, index) roll < 5) == 'fifth');
+};
+assert(c.uniqueIgnore(4, fn(roll, index) index == 4).sort() == ['first', 'fourth', 'second', 'third']);
 
 t = table {
   1-8: first
@@ -14,4 +23,9 @@ t = table {
   10: third
 };
 
-print(t.uniqueEntriesN(2));
+assert(t.multiple(10).length() == 10);
+assert(t.unique(3).sort() == ['first', 'second', 'third']);
+for (i in range(10)) {
+  print(t.unique(2));
+  assert(values(t.unique(2).countBy(identity)).every(fn(n) n == 1));
+};
