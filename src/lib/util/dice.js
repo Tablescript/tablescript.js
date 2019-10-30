@@ -51,7 +51,7 @@ const rerollWhen = (die, test) => roll => {
   return reroll;
 };
 
-const applyReroll = die => (rolls, rerollSuffix) => R.map(rerollWhen(die, rerollSuffix.test), rolls);
+const applyReroll = die => (rolls, test) => R.map(rerollWhen(die, test), rolls);
 
 const log = msg => o => {
   console.log(msg, JSON.stringify(o, null, 2));

@@ -79,10 +79,12 @@ const extractSuffixes = (s, suffixes = []) => {
     return extractSuffixes(
       remainingString(rerollMatches[0], s),
       R.append(
-        rerollMatches[2] ? (
+        rerollMatches[1] ? (
+          rerollEqualSuffixFromMatches(rerollMatches)
+        ) : rerollMatches[2] ? (
           rerollSuffixFromMatches(rerollMatches)
         ) : (
-          rerollEqualSuffixFromMatches(rerollMatches)
+          rerollSuffix('=', 1)
         ),
         suffixes,
       ),

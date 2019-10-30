@@ -4,11 +4,11 @@
 # test_rolls calls the passed roll function 100 times and asserts the result
 # is in the expected_values array.
 test_rolls = fn(roll, expected_values, assertFn) {
-  range(100).map(fn() {
+  for (i in range(100)) {
     if (not expected_values.includes(roll())) {
       assertFn(false);
     };
-  });
+  };
 };
 
 # all_rolls_for_d creates an array of possible rolls for a die with
@@ -133,6 +133,21 @@ test_rolls(roll, expected_results, fn() assert(false));
 # only.
 roll = fn() { 2d6k20; };
 expected_results = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+test_rolls(roll, expected_results, fn() assert(false));
+############################################################################
+
+############################################################################
+# Re-rolls
+roll = fn() 3d6r;
+expected_results = range(3, 19);
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() 3d6r6;
+expected_results = range(3, 19);
+test_rolls(roll, expected_results, fn() assert(false));
+
+roll = fn() 3d6r<6;
+expected_results = range(3, 19);
 test_rolls(roll, expected_results, fn() assert(false));
 ############################################################################
 
