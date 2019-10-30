@@ -140,15 +140,15 @@ test_rolls(roll, expected_results, fn() assert(false));
 ############################################################################
 # Re-rolls
 roll = fn() '3d6r'.roll();
-expected_results = range(3, 19);
+expected_results = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 test_rolls(roll, expected_results, fn() assert(false));
 
 roll = fn() '3d6r6'.roll();
-expected_results = range(3, 19);
+expected_results = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 test_rolls(roll, expected_results, fn() assert(false));
 
-roll = fn() '3d6r<6'.roll();
-expected_results = range(3, 19);
+roll = fn() '3d6r<5'.roll();
+expected_results = [18];
 test_rolls(roll, expected_results, fn() assert(false));
 ############################################################################
 

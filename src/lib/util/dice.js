@@ -44,7 +44,7 @@ const rollPasses = (roll, test) => {
 const rerollWhen = (die, test) => roll => {
   let reroll = roll;
   let count = 0;
-  while (rollPasses(reroll, test) && count < 100) {
+  while (rollPasses(reroll, test) && count < 1000) {
     reroll = randomNumber(die);
     count += 1;
   }

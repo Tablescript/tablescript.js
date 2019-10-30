@@ -703,19 +703,19 @@ DiceLiteralDie
   / 'F'
 
 DiceLiteralSuffix
-  = 'd' specifier:[lh]? count:NonZeroInteger {
+  = 'd' specifier:[lh]? count:NonZeroInteger? {
     return {
       drop: {
         specifier: specifier || 'l',
-        count,
+        count: count || 1,
       },
     };
   }
-  / 'k' specifier:[lh]? count:NonZeroInteger {
+  / 'k' specifier:[lh]? count:NonZeroInteger? {
     return {
       keep: {
         specifier: specifier || 'h',
-        count,
+        count: count || 1,
       },
     };
   }

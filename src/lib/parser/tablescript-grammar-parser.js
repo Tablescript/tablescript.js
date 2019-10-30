@@ -503,7 +503,7 @@ function peg$parse(input, options) {
           return {
             drop: {
               specifier: specifier || 'l',
-              count,
+              count: count || 1,
             },
           };
         },
@@ -513,7 +513,7 @@ function peg$parse(input, options) {
           return {
             keep: {
               specifier: specifier || 'h',
-              count,
+              count: count || 1,
             },
           };
         },
@@ -8121,6 +8121,9 @@ function peg$parse(input, options) {
       }
       if (s2 !== peg$FAILED) {
         s3 = peg$parseNonZeroInteger();
+        if (s3 === peg$FAILED) {
+          s3 = null;
+        }
         if (s3 !== peg$FAILED) {
           peg$savedPos = s0;
           s1 = peg$c226(s2, s3);
@@ -8159,6 +8162,9 @@ function peg$parse(input, options) {
         }
         if (s2 !== peg$FAILED) {
           s3 = peg$parseNonZeroInteger();
+          if (s3 === peg$FAILED) {
+            s3 = null;
+          }
           if (s3 !== peg$FAILED) {
             peg$savedPos = s0;
             s1 = peg$c229(s2, s3);
