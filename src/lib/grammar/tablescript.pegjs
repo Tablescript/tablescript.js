@@ -20,6 +20,7 @@
     createBlockExpression,
     createCompoundExpression,
     createAssignmentExpression,
+    createDeclarationExpression,
     createConditionalExpression,
     createBinaryExpression,
     createUnaryExpression,
@@ -121,6 +122,7 @@ Keyword
   / FalseToken
   / FunctionToken
   / IfToken
+  / LetToken
   / NotToken
   / OrToken
   / TableToken
@@ -253,6 +255,7 @@ FunctionToken = "fn" !IdentifierPart
 ChoiceToken = "choice" !IdentifierPart
 TableToken = "table" !IdentifierPart
 UndefinedToken = "undefined" !IdentifierPart
+LetToken = "let" !IdentifierPart
 
 __
   = (Whitespace / LineTerminatorSequence / Comment)*
@@ -489,8 +492,19 @@ AssignmentOperator "assignment operator"
   / '/='
   / '%='
 
+DeclarationExpression
+  = LetToken __ i:IdentifierName __ "=" __ e:AssignmentExpression {
+    return createDeclarationExpression(createLocation(location(), options), i, e);
+  }
+  / LetToken __ i:IdentifierName {
+    return createDeclarationExpression(createLocation(location(), options), i);
+  }
+
 Expression
-  = e:AssignmentExpression __ ";" {
+  = e:DeclarationExpression __ ";" {
+    return e;
+  }
+  / e:AssignmentExpression __ ";" {
     return e;
   }
 

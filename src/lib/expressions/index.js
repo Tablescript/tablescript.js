@@ -23,6 +23,7 @@ import { createBooleanLiteral } from './boolean-literal';
 import { createCallExpression } from './call';
 import { createCompoundExpression } from './compound';
 import { createConditionalExpression } from './conditional';
+import { createDeclarationExpression } from './declaration';
 import { createDiceLiteral } from './dice-literal';
 import { createForExpression } from './for';
 import { createFunctionExpression } from './function';
@@ -51,6 +52,7 @@ export {
   createCallExpression,
   createCompoundExpression,
   createConditionalExpression,
+  createDeclarationExpression,
   createDiceLiteral,
   createForExpression,
   createFunctionExpression,

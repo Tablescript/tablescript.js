@@ -1,0 +1,11 @@
+let x;
+assert(x == undefined);
+
+let y = 12;
+assert(y == 12);
+
+if (true) {
+  let y = 'I have a ham radio';
+  assert(y == 'I have a ham radio');
+};
+assert(y == 12);

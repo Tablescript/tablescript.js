@@ -82,5 +82,8 @@ export const initializeContext = (initialScope, options, factory) => {
         stacks.scopes[frame][name] = value;
       }
     },
+    setLocalVariable: (name, value) => {
+      stacks.scopes[0][name] = value;
+    },
   });
 };
