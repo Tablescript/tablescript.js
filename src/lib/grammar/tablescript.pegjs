@@ -92,6 +92,7 @@ LineTerminatorSequence "end of line"
 
 Comment "comment"
   = '#' (!LineTerminator SourceCharacter)*
+  / '//' (!LineTerminator SourceCharacter)*
 
 Identifier
   = !ReservedWord name:IdentifierName {

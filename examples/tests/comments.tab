@@ -1,0 +1,11 @@
+# this is a comment
+assert(true);
+# this is another comment
+assert( # this is a third comment
+  true);
+
+// this is a comment
+assert(true);
+// this is another comment
+assert( // this is a third comment
+  true);

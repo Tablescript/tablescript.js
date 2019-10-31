@@ -1,7 +1,0 @@
-# this is a comment
-x = 1;
-# this is another comment
-x = # this is a third comment
-  99;
-
-print(x == 99);
