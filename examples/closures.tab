@@ -1,12 +1,25 @@
-add = fn(x) {
-  addX = fn(y) {
-    x + y;
-  };
-  addX;
-};
+add = fn(x) fn(y) x + y;
 
 add1 = add(1);
 add5 = add(5);
 
-print(add1(3));
-print(add5(3));
+assert(add1(3) == 4);
+assert(add5(3) == 8);
+
+counter = fn() {
+  let count = 0;
+  let next = fn() count += 1;
+  let current = fn() count;
+  {
+    next,
+    current
+  };
+};
+
+c = counter();
+assert(c.current() == 0);
+c.next();
+assert(c.current() == 1);
+c.next();
+c.next();
+assert(c.current() == 3);
