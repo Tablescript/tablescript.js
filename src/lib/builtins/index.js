@@ -31,7 +31,7 @@ import {
 import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
 import { importBuiltIn } from './import';
-import { strBuiltIn, intBuiltIn, boolBuiltIn } from './convert';
+import { strBuiltIn, intBuiltIn, floatBuiltIn, boolBuiltIn } from './convert';
 import { initializeMath } from './math';
 import { typeOfBuiltIn } from './typeof';
 import { pipeBuiltIn, composeBuiltIn } from './fp';
@@ -51,6 +51,7 @@ export const initializeBuiltins = () => ({
   typeOf: typeOfBuiltIn,
   str: strBuiltIn,
   int: intBuiltIn,
+  float: floatBuiltIn,
   bool: boolBuiltIn,
   pipe: pipeBuiltIn,
   compose: composeBuiltIn,

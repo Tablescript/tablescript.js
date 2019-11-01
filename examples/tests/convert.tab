@@ -1,2 +1,21 @@
-assert(['0', '1', '2', '3', '4', '5'].map(int) == [0, 1, 2, 3, 4, 5]);
-assert([0, 1, 2, 3, 4, 5].map(str) == ['0', '1', '2', '3', '4', '5']);
+assert(str(3.14159) == '3.14159');
+assert(str(7) == '7');
+assert(str('something') == 'something');
+assert(str(true) == 'true');
+assert(str(false) == 'false');
+
+assert(int(3.14159) == 3);
+assert(int('3.14159') == 3);
+assert(int(true) == 1);
+assert(int(false) == 0);
+
+assert(float('3.14159') == 3.14159);
+assert(float(3.14159) == 3.14159);
+assert(float(true) == 1.0);
+assert(float(false) == 0.0);
+
+assert(bool(3.14159) == true);
+assert(bool({}) == true);
+assert(bool('') == false);
+assert(bool('something') == true);
+assert(bool(undefined) == false);

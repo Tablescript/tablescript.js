@@ -38,17 +38,39 @@ export const intBuiltIn = createNativeFunctionValue(
   ['i'],
   (context, args, i) => {
     if (isNumber(i)) {
-      return Math.round(i.asNativeValue());
+      return Math.floor(i.asNativeValue());
     }
     if (isString(i)) {
       const value = parseInt(i.asNativeString(), 10);
       if (isNaN(value)) {
-        throwRuntimeError(`Cannot convert ${i.type} to NUMBER`);
+        throwRuntimeError(`Cannot convert ${i.asNativeString()} to NUMBER`);
       }
       return value;
     }
     if (isBoolean(i)) {
       return i.asNativeBoolean() ? 1 : 0;
+    }
+    throwRuntimeError(`Cannot convert ${i.type} to NUMBER`);
+  },
+  toNumericResult,
+);
+
+export const floatBuiltIn = createNativeFunctionValue(
+  'float',
+  ['f'],
+  (context, args, i) => {
+    if (isNumber(i)) {
+      return i.asNativeNumber();
+    }
+    if (isString(i)) {
+      const value = parseFloat(i.asNativeString());
+      if (isNaN(value)) {
+        throwRuntimeError(`Cannot convert ${i.asNativeString()} to NUMBER`);
+      }
+      return value;
+    }
+    if (isBoolean(i)) {
+      return i.asNativeBoolean() ? 1.0 : 0.0;
     }
     throwRuntimeError(`Cannot convert ${i.type} to NUMBER`);
   },
