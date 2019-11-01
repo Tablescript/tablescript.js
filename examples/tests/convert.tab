@@ -16,6 +16,7 @@ assert(float(false) == 0.0);
 
 assert(bool(3.14159) == true);
 assert(bool({}) == true);
+assert(bool([]) == true);
 assert(bool('') == false);
 assert(bool('something') == true);
 assert(bool(undefined) == false);

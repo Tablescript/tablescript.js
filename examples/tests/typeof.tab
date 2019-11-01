@@ -1,0 +1,13 @@
+assert(typeOf(true) == 'boolean');
+assert(typeOf(9) == 'number');
+assert(typeOf(3.14159) == 'number');
+assert(typeOf('something') == 'string');
+assert(typeOf(fn() 7) == 'function');
+assert(typeOf({}) == 'object');
+assert(typeOf([]) == 'array');
+assert(typeOf(choice {
+  first
+  second
+  third
+}) == 'table');
+assert(typeOf(undefined) == 'undefined');
