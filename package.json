@@ -1,6 +1,6 @@
 {
   "name": "tablescript.js",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "Javascript-based Tablescript parser and interpreter",
   "url": "https://tablescript.org",
   "bin": {
