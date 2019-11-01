@@ -35,27 +35,59 @@ import { strBuiltIn, intBuiltIn, floatBuiltIn, boolBuiltIn } from './convert';
 import { initializeMath } from './math';
 import { typeOfBuiltIn } from './typeof';
 import { pipeBuiltIn, composeBuiltIn } from './fp';
+import {
+  isBooleanBuiltIn,
+  isNumberBuiltIn,
+  isStringBuiltIn,
+  isObjectBuiltIn,
+  isArrayBuiltIn,
+  isFunctionBuiltIn,
+  isTableBuiltIn,
+  isUndefinedBuiltIn,
+  isCallableBuiltIn,
+} from './types';
 
 export const initializeBuiltins = () => ({
   assert: assertBuiltIn,
+
   choose: chooseBuiltIn,
   chooseN: chooseNBuiltIn,
   chooseUniqueN: chooseUniqueNBuiltIn,
+
   keys: keysBuiltIn,
   values: valuesBuiltIn,
   toPairs: toPairsBuiltIn,
   fromPairs: fromPairsBuiltIn,
+
   print: printBuiltIn,
+
   range: rangeBuiltIn,
+
   import: importBuiltIn,
+
   typeOf: typeOfBuiltIn,
+
   str: strBuiltIn,
   int: intBuiltIn,
   float: floatBuiltIn,
   bool: boolBuiltIn,
+
   pipe: pipeBuiltIn,
   compose: composeBuiltIn,
+
+  isBoolean: isBooleanBuiltIn,
+  isNumber: isNumberBuiltIn,
+  isString: isStringBuiltIn,
+  isObject: isObjectBuiltIn,
+  isArray: isArrayBuiltIn,
+  isFunction: isFunctionBuiltIn,
+  isTable: isTableBuiltIn,
+  isUndefined: isUndefinedBuiltIn,
+  isCallable: isCallableBuiltIn,
+
   math: createObjectValue({
     ...initializeMath(),
   }),
 });
+
+

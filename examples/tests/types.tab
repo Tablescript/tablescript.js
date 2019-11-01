@@ -1,0 +1,70 @@
+assert(isBoolean(true));
+assert(isBoolean(false));
+assert(not isBoolean(12));
+
+assert(isNumber(12));
+assert(isNumber(3.14159));
+assert(not isNumber(true));
+
+assert(isString('something'));
+assert(isString("something else"));
+assert(isString(`it's ${12 > 3} this is a string`));
+assert(not isString(77));
+
+assert(isArray([]));
+assert(isArray([1, 2, 3]));
+assert(not isArray(12));
+assert(isArray(toPairs({
+  a: 1,
+  b: 2,
+  c: 3
+})));
+
+assert(isObject({}));
+assert(isObject({
+  a: 1,
+  b: 2,
+  c: 3
+}));
+assert(not isObject([1, 2, 3]));
+assert(isObject(fromPairs([
+  ['a', 1],
+  ['b', 2],
+  ['c', 3]
+])));
+
+assert(isFunction(assert));
+assert(isFunction(fn() 12));
+assert(not isFunction(true));
+assert(isFunction([1, 2, 3].map));
+
+assert(isTable(choice {
+  first
+  second
+  third
+}));
+assert(isTable(table {
+  1: first
+  2: second
+  3: third
+}));
+assert(not isTable([1,2,3]));
+
+assert(isCallable(fn() 12));
+assert(isCallable(choice {
+  first
+  second
+  third
+}));
+assert(isCallable(table {
+  1: first
+  2: second
+  3: third
+}));
+assert(isCallable(assert));
+assert(isCallable([1, 2, 3].map));
+assert(not isCallable(true));
+
+assert(isUndefined(undefined));
+assert(isUndefined(a_variable_that_doesnt_exist));
+assert(not isUndefined(true));
