@@ -1,7 +1,7 @@
-adjectives = import('./adjectives');
-creatures = import('./creatures');
-things = import('./things');
-names = import('./names');
+adjectives = import('helpers/adjectives');
+creatures = import('helpers/creatures');
+things = import('helpers/things');
+names = import('chance-names');
 rumours = import('./rumours');
 
 suffix = table {

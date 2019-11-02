@@ -1,6 +1,6 @@
-names = import('./names');
-things = import('./things');
-creatures = import('./creatures');
+names = import('chance-names');
+things = import('helpers/things');
+creatures = import('helpers/creatures');
 
 all_things = choice {
   ...things.body_part;
