@@ -27,7 +27,7 @@ import {
 import { createBooleanValue } from '../boolean';
 import { createArrayValue } from '../array';
 import { createUndefined } from '../undefined';
-import { initializeContext, defaultValueFactory } from '../../engine';
+import { initializeContext, defaultValueFactory, newScope } from '../../engine';
 import '../../__tests__/matchers';
 
 describe('function', () => {
@@ -202,19 +202,27 @@ describe('function', () => {
         });
 
         it('sets scope from closure', () => {
-          const f = createFunctionValue([], { evaluate: context => context.getVariable('fromClosure') }, { fromClosure: createNumericValue(12) });
+          const f = createFunctionValue(
+            [],
+            { evaluate: context => context.getVariable('fromClosure') },
+            newScope({ fromClosure: createNumericValue(12) })
+          );
           expect(f.callFunction(mockContext, [])).toEqualTsNumber(12);
         });
 
         it('overrides closure scope with parameters', () => {
-          const f = createFunctionValue([], { evaluate: context => context.getVariable('arguments') }, { 'arguments': createNumericValue(12) });
+          const f = createFunctionValue(
+            [],
+            { evaluate: context => context.getVariable('arguments') },
+            newScope({ 'arguments': createNumericValue(12) })
+          );
           expect(f.callFunction(mockContext, [createNumericValue(13)])).toEqualTsArray(createArrayValue([createNumericValue(13)]));
         });
       });
 
       describe('with formal parameters', () => {
         it('sets the arguments variable', () => {
-          const f = createFunctionValue(['p1', 'p2'], { evaluate: context => context.getVariable('arguments') }, {});
+          const f = createFunctionValue(['p1', 'p2'], { evaluate: context => context.getVariable('arguments') }, newScope({}));
           const params = [createStringValue('string'), createNumericValue(12), createBooleanValue(true)];
           expect(
             f.callFunction(mockContext, params)
@@ -225,7 +233,7 @@ describe('function', () => {
           const f = createFunctionValue(
             ['p1', 'p2'],
             { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2')]) },
-            {}
+            newScope({})
           );
           const params = [createStringValue('string'), createNumericValue(12)];
           expect(f.callFunction(mockContext, params)).toEqualTsArray(createArrayValue(params));
@@ -235,7 +243,7 @@ describe('function', () => {
           const f = createFunctionValue(
             ['p1', 'p2'],
             { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2') || createUndefined()]) },
-            {}
+            newScope({})
           );
           expect(f.callFunction(mockContext, [createStringValue('string')]))
             .toEqualTsArray(createArrayValue([createStringValue('string'), createUndefined()]));
@@ -245,7 +253,7 @@ describe('function', () => {
           const f = createFunctionValue(
             ['p1', 'p2'],
             { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2')]) },
-            { p2: createStringValue('not this') }
+            newScope({ p2: createStringValue('not this') })
           );
           const params = [createNumericValue(12), createNumericValue(13)];
           expect(f.callFunction(mockContext, params)).toEqualTsArray(createArrayValue(params));
@@ -255,7 +263,7 @@ describe('function', () => {
           const f = createFunctionValue(
             ['p1', 'p2'],
             { evaluate: context => createArrayValue([context.getVariable('p1'), context.getVariable('p2') || createUndefined()]) },
-            { p2: createStringValue('this') }
+            newScope({ p2: createStringValue('this') })
           );
           expect(f.callFunction(mockContext, [createNumericValue(12)])).toEqualTsArray(createArrayValue([createNumericValue(12), createUndefined()]));
         });

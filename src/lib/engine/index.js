@@ -17,11 +17,13 @@
 
 import initializeTablescript from './engine';
 import { initializeContext } from './context';
+import { newScope } from './scope';
 import defaultValueFactory from './value-factory';
 
 export default initializeTablescript;
 
 export {
   initializeContext,
+  newScope,
   defaultValueFactory,
 };

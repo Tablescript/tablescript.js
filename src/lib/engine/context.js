@@ -17,6 +17,7 @@
 
 import * as R from 'ramda';
 import { throwRuntimeError } from "../error";
+import { newScope } from './scope';
 
 const valueAsString = value => value.asNativeString();
 
@@ -37,53 +38,6 @@ export const dumpContext = (context, message) => {
   console.log(`  ----- CONTEXT ${message}`);
   dumpScope(context.getScope());
   console.log('  -----');
-};
-
-const newScope = (initialScope = {}, parentScope) => {
-  const localScope = initialScope;
-
-  const getVariable = name => {
-    if (R.has(name, localScope)) {
-      return localScope[name];
-    }
-    if (R.isNil(parentScope)) {
-      return undefined;
-    }
-    return parentScope.getVariable(name);
-  };
-
-  const getLocalVariable = name => localScope[name];
-  
-  const setVariable = (name, value) => {
-    if (R.has(name, localScope)) {
-      localScope[name] = value;
-      return true;
-    }
-    if (R.isNil(parentScope)) {
-      return false;
-    }
-    return parentScope.setVariable(name, value);
-  };
-
-  const setLocalVariable = (name, value) => {
-    localScope[name] = value;
-  };
-
-  const setOrDeclareVariable = (name, value) => {
-    if (!setVariable(name, value)) {
-      setLocalVariable(name, value);
-    }
-  };
-
-  return {
-    parentScope,
-    localScope,
-    getVariable,
-    getLocalVariable,
-    setVariable,
-    setLocalVariable,
-    setOrDeclareVariable,
-  };
 };
 
 export const initializeContext = (initialScope, options, factory) => {
@@ -112,17 +66,17 @@ export const initializeContext = (initialScope, options, factory) => {
     currentPath: () => stacks.locations[0].path,
     rootPath: () => stacks.locations[stacks.locations.length - 1].path,
 
-    pushScope: (scope = {}) => {
-      stacks.scope = newScope(scope, stacks.scope);
+    pushScope: (namespace = {}) => {
+      stacks.scope = newScope(namespace, stacks.scope);
     },
     swapScope: scope => {
       const currentScope = stacks.scope;
       stacks.scope = scope;
       return currentScope;
     },
-    swapWithNewScope: scope => {
+    swapWithNewScope: namespace => {
       const currentScope = stacks.scope;
-      stacks.scope = newScope(scope);
+      stacks.scope = newScope(namespace);
       return currentScope;
     },
     popScope: () => {
