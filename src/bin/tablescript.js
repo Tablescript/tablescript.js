@@ -61,7 +61,7 @@ if (!filename) {
     if (e instanceof TablescriptError) {
       console.log(e.toString());
     } else {
-      if (debug) {
+      if (options.debug) {
         console.log(e);
       } else {
         console.log(`Internal Error: ${ e.toString() }`);
