@@ -16,10 +16,11 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import fs from 'fs';
+import path from 'path';
 import * as R from 'ramda';
 import { version } from '../../../package.json';
 import { initializeContext } from './context';
-import { findAndLoadScript } from './loader';
+import { findAndLoadScript, loadScript } from './loader';
 import { initializeBuiltins as initializeDefaultBuiltins } from '../builtins';
 import {
   createArrayValue,
@@ -67,14 +68,6 @@ const initializeScope = (args, builtins) => ({
   ...builtins,
 });
 
-const loadScript = (context, scriptPath) => {
-  const script = findAndLoadScript(context, scriptPath);
-  if (R.isNil(script)) {
-    throwRuntimeError(`Unable to load "${scriptPath}"`, context);
-  }
-  return script;
-};
-
 const optionallyCall = (context, value) => {
   if (isCallable(value) && context.options.flags.evaluateCallableResult) {
     return value.callFunction(context, []);
@@ -83,12 +76,18 @@ const optionallyCall = (context, value) => {
 };
 
 const parseAndEvaluate = (context, script, scriptPath) => {
+  context.pushLocation(scriptPath);
   const expression = parse(script, scriptPath);
-  return optionallyCall(context, expression.evaluate(context));
+  const result = optionallyCall(context, expression.evaluate(context));
+  context.popLocation();
+  return result;
 };
 
 const loadParseAndEvaluate = (context, scriptPath) => {
   const script = loadScript(context, scriptPath);
+  if (R.isNil(script)) {
+    throwRuntimeError(`Unable to load "${scriptPath}"`, context);
+  }
   return parseAndEvaluate(context, script.body, script.path);
 };
 
@@ -99,12 +98,20 @@ const runScript = contextFactory => (script, args, path = 'local') => parseAndEv
 
 const runScriptFromFile = contextFactory => (scriptPath, args) => loadParseAndEvaluate(contextFactory(args), scriptPath);
 
+const importParseAndEvaluate = (context, scriptPath) => {
+  const script = findAndLoadScript(context, scriptPath);
+  if (R.isNil(script)) {
+    throwRuntimeError(`Unable to load "${scriptPath}"`, context);
+  }
+  return parseAndEvaluate(context, script.body, script.path);
+};
+
 const importScript = builtins => (context, scriptPath, args) => {
   const oldScopes = context.swapWithNewScope(builtins);
   context.pushScope({
     arguments: createArrayValue(args),
   });
-  const result = loadParseAndEvaluate(context, scriptPath);
+  const result = importParseAndEvaluate(context, scriptPath);
   context.swapScope(oldScopes);
   return result;
 };
@@ -114,6 +121,7 @@ const optionOr = (option, defaultValue) => R.isNil(option) ? defaultValue : opti
 const mergeWithDefaults = options => ({
   io: {
     fs: optionOr(options.fs, fs),
+    path: optionOr(options.path, path),
     output: optionOr(options.output, console.log),
   },
   flags: {
@@ -137,7 +145,7 @@ export const initializeTablescript = options => {
 
   const engineOptions = {
     importScript: importScript(builtins),
-    io: R.pick(['fs', 'output'], mergedOptions.io),
+    io: R.pick(['fs', 'path', 'output'], mergedOptions.io),
     flags: R.pick(['validateTables', 'evaluateCallableResult', 'debug'], mergedOptions.flags),
     values: R.pick(['maximumLoopCount', 'maximumStackDepth', 'maximumTableIgnoreCount', 'maximumTableUniqueAttempts'], mergedOptions.values),
   };

@@ -109,6 +109,9 @@ export const initializeContext = (initialScope, options, factory) => {
       stacks.locations = [...stacks.locations.slice(1)];
     },
 
+    currentPath: () => stacks.locations[0].path,
+    rootPath: () => stacks.locations[stacks.locations.length - 1].path,
+
     pushScope: (scope = {}) => {
       stacks.scope = newScope(scope, stacks.scope);
     },

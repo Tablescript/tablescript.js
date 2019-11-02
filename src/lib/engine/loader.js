@@ -15,24 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import path from 'path';
+import * as R from 'ramda';
 
-const pathedPrefixes = ['/', './', '../'];
-
-const isPathed = p => pathedPrefixes.reduce((result, prefix) => result || p.startsWith(prefix), false);
-
-const pathFromContext = context => context.locations().length > 0 ? [path.dirname(context.locations()[0].path)] : [];
-
-const environmentPaths = () => (process.env.TS_PATH || '').split(':');
-
-const bundlePaths = () => ([
-  'bundles',
-  ...environmentPaths()
-]);
-
-const allPaths = (context, filename) => isPathed(filename) ? pathFromContext(context) : bundlePaths();
-
-const fileContents = (fs, filePath) => {
+const fileContents = (context, filePath) => {
+  const { fs } = context.options.io;
+  if (context.options.flags.debug) {
+    console.log('Loader:', `Trying to load ${filePath}...`);
+  }
   try {
     const contents = fs.readFileSync(filePath, 'utf8');
     return {
@@ -45,20 +34,41 @@ const fileContents = (fs, filePath) => {
   return undefined;
 };
 
-const tryPath = (fs, thePath, filename) => {
-  const resolvedPath = path.resolve(thePath, filename);
-  if (resolvedPath.endsWith('.tab')) {
-    return fileContents(fs, resolvedPath);
+const globalPaths = (path, moduleName) => R.isNil(process.env.TS_PATH) ? [] : R.reduce(
+  (paths, globalPath) => ([
+    ...paths,
+    path.resolve(globalPath, `${moduleName}.tab`),
+    path.resolve(globalPath, moduleName, 'main.tab'),
+  ]),
+  [],
+  R.split(':', process.env.TS_PATH),
+);
+
+const pathedPrefixes = ['/', './', '../'];
+
+const isPathed = p => pathedPrefixes.reduce((result, prefix) => result || p.startsWith(prefix), false);
+
+const tryPaths = (context, paths) => paths.reduce((script, path) => script || fileContents(context, path), undefined);
+
+export const findAndLoadScript = (context, moduleName) => {
+  const { path } = context.options.io;
+  if (isPathed(moduleName)) {
+    return tryPaths(
+      context,
+      [
+        path.resolve(path.dirname(context.currentPath()), `${moduleName}.tab`),
+        path.resolve(path.dirname(context.currentPath()), moduleName, 'main.tab'),
+      ],
+    );
   }
-  const bundleFilename = path.resolve(resolvedPath, 'main.tab');
-  const bundleContents = fileContents(fs, bundleFilename);
-  if (bundleContents) {
-    return bundleContents;
-  }
-  const resolvedFilename = `${resolvedPath}.tab`;
-  return fileContents(fs, resolvedFilename);
+  return tryPaths(
+    context,
+    [
+      path.resolve(path.dirname(context.rootPath()), 'bundles', `${moduleName}.tab`),
+      path.resolve(path.dirname(context.rootPath()), 'bundles', moduleName, 'main.tab'),
+      ...globalPaths(path, moduleName),
+    ],
+  );
 };
 
-const tryAllPaths = (fs, paths, filename) => paths.reduce((result, path) => result || tryPath(fs, path, filename), undefined);
-
-export const findAndLoadScript = (context, filename) => tryAllPaths(context.options.io.fs, allPaths(context, filename), filename);
+export const loadScript = (context, filename) => fileContents(context, filename);
