@@ -26,6 +26,6 @@ export const importBuiltIn = createNativeFunctionValue(
   (context, args, filename) => context.options.importScript(
     context,
     filename.asNativeString(),
-    R.map(a => a.asNativeValue(), args),
+    R.tail(args),
   ),
 );
