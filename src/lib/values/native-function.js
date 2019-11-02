@@ -46,12 +46,10 @@ export const createNativeFunctionValue = (name, formalParameters, f, filter = no
       asNativeString,
       asNativeBoolean: R.T,
       callFunction: (context, parameters) => {
-        const oldScopes = context.swapScopes([
-          bindFunctionParameters(context, formalParameters, parameters),
-        ]);
+        context.pushScope(bindFunctionParameters(context, formalParameters, parameters));
         const parameterValues = R.map(extractParameter(context), formalParameters);
         const result = filter(context, f(context, parameters, ...parameterValues));
-        context.swapScopes(oldScopes);
+        context.popScope();
         return result;
       },
     },

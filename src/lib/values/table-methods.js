@@ -32,12 +32,15 @@ export const getRolledEntry = (entries, roll) => entries.find((e, index) => e.ro
 
 export const getRolledEntryIndex = (entries, roll) => entries.findIndex((e, index) => e.rollApplies(roll, index + 1));
 
-const evaluateEntry = (buildCallScope, context, parameters) => entry => withSwappedScopes(
-  buildCallScope,
-  entry.evaluate,
-)(context, parameters);
+const evaluateEntry = (closure, buildScope, context, parameters) => entry => {
+  const oldScopes = context.swapScope(closure);
+  context.pushScope(buildScope(context, parameters));
+  const result = entry.evaluate(context);
+  context.swapScope(oldScopes);
+  return result;
+};
 
-export const multiple = (buildCallScope, entries) => createNativeFunctionValue(
+export const multiple = (closure, buildScope, entries) => createNativeFunctionValue(
   'multiple',
   ['n'],
   (context, args, n) => {
@@ -46,7 +49,7 @@ export const multiple = (buildCallScope, entries) => createNativeFunctionValue(
     }
     const die = getTableDie(entries);
     return R.map(
-      ([roll, index, entry]) => evaluateEntry(buildCallScope(roll, index), context, args.slice(1))(entry),
+      ([roll, index, entry]) => evaluateEntry(closure, buildScope(roll, index), context, args.slice(1))(entry),
       R.map(
         roll => ([
           roll,
@@ -74,14 +77,14 @@ const rollWithIgnore = (context, entries, die, f) => {
   throwRuntimeError(`All ${count} rolls were ignored`, context);
 };
 
-export const ignore = (buildCallScope, entries) => createNativeFunctionValue(
+export const ignore = (closure, buildScope, entries) => createNativeFunctionValue(
   'ignore',
   ['f'],
   (context, args, f) => {
     const die = getTableDie(entries);
     const [roll, entryIndex] = rollWithIgnore(context, entries, die, f);
     const entry = entries[entryIndex];
-    return evaluateEntry(buildCallScope(roll, entryIndex), context, args.slice(1))(entry);
+    return evaluateEntry(closure, buildScope(roll, entryIndex), context, args.slice(1))(entry);
   },
 );
 
@@ -109,7 +112,7 @@ const nUnique = (n, entries, die) => {
   return rolls;
 };
 
-export const unique = (buildCallScope, entries) => createNativeFunctionValue(
+export const unique = (closure, buildScope, entries) => createNativeFunctionValue(
   'unique',
   ['n'],
   (context, args, n) => {
@@ -123,7 +126,8 @@ export const unique = (buildCallScope, entries) => createNativeFunctionValue(
     if (n.asNativeNumber() === entries.length) {
       return R.map(
         entry => evaluateEntry(
-          buildCallScope(entry.getLowestSelector(), getRolledEntryIndex(entries, entry.getLowestSelector())),
+          closure,
+          buildScope(entry.getLowestSelector(), getRolledEntryIndex(entries, entry.getLowestSelector())),
           context,
           args.slice(1)
         )(entry),
@@ -132,7 +136,7 @@ export const unique = (buildCallScope, entries) => createNativeFunctionValue(
     }
     const rolls = nUnique(n.asNativeNumber(), entries, die);
     return R.map(
-      ([roll, index, entry]) => evaluateEntry(buildCallScope(roll, index), context, args.slice(1))(entry),
+      ([roll, index, entry]) => evaluateEntry(closure, buildScope(roll, index), context, args.slice(1))(entry),
       R.map(
         ([roll, index]) => ([
           roll,
@@ -146,7 +150,7 @@ export const unique = (buildCallScope, entries) => createNativeFunctionValue(
   toArrayResult,
 );
 
-export const uniqueIgnore = (buildCallScope, entries) => createNativeFunctionValue(
+export const uniqueIgnore = (closure, buildScope, entries) => createNativeFunctionValue(
   'uniqueIgnore',
   ['n', 'f'],
   (context, args, n, f) => {
@@ -156,7 +160,7 @@ export const uniqueIgnore = (buildCallScope, entries) => createNativeFunctionVal
     const die = getTableDie(entries);
     const rolls = nUniqueWithIgnore(n.asNativeNumber(), context, entries, die, f);
     return R.map(
-      ([roll, index, entry]) => evaluateEntry(buildCallScope(roll, index), context, args.slice(2))(entry),
+      ([roll, index, entry]) => evaluateEntry(closure, buildScope(roll, index), context, args.slice(2))(entry),
       R.map(
         ([roll, index]) => ([
           roll,

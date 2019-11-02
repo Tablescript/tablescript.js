@@ -14,11 +14,14 @@ assert(f(3, 4) == 12);
 ############################################################################
 # Function scope
 f = fn() {
-  local = 9;
+  let local = 9;
+  outer = 9;
 };
 local = 12;
+outer = 12;
 f();
 assert(local == 12);
+assert(outer == 9);
 
 f = fn(q) {
   q = 'overwritten';

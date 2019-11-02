@@ -34,25 +34,20 @@ const tableEntryScope = (context, formalParameters, entries, closure, roll, inde
   'this': createTableValue(formalParameters, entries, closure),
 });
 
-const buildEntryScope = (formalParameters, entries, closure, roll, index) => context => ([
-  closure,
-  tableEntryScope(context, formalParameters, entries, closure, roll, index),
-]);
-
-const buildCallScope = (formalParameters, entries, closure, roll, index) => (context, parameters) => ([
-  closure,
-  bindFunctionParameters(context, formalParameters, parameters),
-  tableEntryScope(context, formalParameters, entries, closure, roll, index),  
-]);
+const buildCallScope = (formalParameters, entries, closure, roll, index) => (context, parameters) => ({
+  ...bindFunctionParameters(context, formalParameters, parameters),
+  ...tableEntryScope(context, formalParameters, entries, closure, roll, index),  
+});
 
 const getElement = (formalParameters, entries, closure) => (context, index) => {
   const roll = index.asNativeNumber();
   const entryIndex = getRolledEntryIndex(entries, roll);
   if (entryIndex >= 0) {
-    return withSwappedScopes(
-      buildEntryScope(formalParameters, entries, closure, roll, entryIndex),
-      entries[entryIndex].evaluate
-    )(context);
+    const oldScopes = context.swapScope(closure);
+    context.pushScope(tableEntryScope(context, formalParameters, entries, closure, roll, entryIndex))
+    const result = entries[entryIndex].evaluate(context);
+    context.swapScope(oldScopes);
+    return result;
   }
   return context.factory.createUndefined();
 };
@@ -61,10 +56,14 @@ const callFunction = (formalParameters, entries, closure) => (context, parameter
   const roll = getTableRoll(entries);
   const entryIndex = getRolledEntryIndex(entries, roll);
   if (entryIndex >= 0) {
-    return withSwappedScopes(
-      buildCallScope(formalParameters, entries, closure, roll, entryIndex),
-      entries[entryIndex].evaluate
-    )(context, parameters);
+    const oldScopes = context.swapScope(closure);
+    context.pushScope({
+      ...bindFunctionParameters(context, formalParameters, parameters),
+      ...tableEntryScope(context, formalParameters, entries, closure, roll, entryIndex),
+    });
+    const result = entries[entryIndex].evaluate(context, parameters);
+    context.swapScope(oldScopes);
+    return result;
   }
   throwRuntimeError(`Table has no entry for roll of ${roll}`, context);
 };
@@ -76,18 +75,22 @@ export const createTableValue = (formalParameters, entries, closure) => createVa
   () => false,
   {
     multiple: multiple(
+      closure,
       (roll, index) => buildCallScope(formalParameters, entries, closure, roll, index),
       entries
     ),
     ignore: ignore(
+      closure,
       (roll, index) => buildCallScope(formalParameters, entries, closure, roll, index),
       entries
     ),
     unique: unique(
+      closure,
       (roll, index) => buildCallScope(formalParameters, entries, closure, roll, index),
       entries
     ),
     uniqueIgnore: uniqueIgnore(
+      closure,
       (roll, index) => buildCallScope(formalParameters, entries, closure, roll, index),
       entries
     ),

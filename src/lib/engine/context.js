@@ -26,20 +26,70 @@ const dumpScopeEntry = scope => name => {
 
 const dumpScope = scope => {
   console.log('    ***** SCOPE *****');
-  Object.keys(scope).forEach(dumpScopeEntry(scope));
+  Object.keys(scope.localScope).forEach(dumpScopeEntry(scope.localScope));
   console.log('    *****************');
+  if (!R.isNil(scope.parentScope)) {
+    dumpScope(scope.parentScope);
+  }
 };
 
 export const dumpContext = (context, message) => {
   console.log(`  ----- CONTEXT ${message}`);
-  context.scopes().forEach(dumpScope);
+  dumpScope(context.getScope());
   console.log('  -----');
+};
+
+const newScope = (initialScope = {}, parentScope) => {
+  const localScope = initialScope;
+
+  const getVariable = name => {
+    if (R.has(name, localScope)) {
+      return localScope[name];
+    }
+    if (R.isNil(parentScope)) {
+      return undefined;
+    }
+    return parentScope.getVariable(name);
+  };
+
+  const getLocalVariable = name => localScope[name];
+  
+  const setVariable = (name, value) => {
+    if (R.has(name, localScope)) {
+      localScope[name] = value;
+      return true;
+    }
+    if (R.isNil(parentScope)) {
+      return false;
+    }
+    return parentScope.setVariable(name, value);
+  };
+
+  const setLocalVariable = (name, value) => {
+    localScope[name] = value;
+  };
+
+  const setOrDeclareVariable = (name, value) => {
+    if (!setVariable(name, value)) {
+      setLocalVariable(name, value);
+    }
+  };
+
+  return {
+    parentScope,
+    localScope,
+    getVariable,
+    getLocalVariable,
+    setVariable,
+    setLocalVariable,
+    setOrDeclareVariable,
+  };
 };
 
 export const initializeContext = (initialScope, options, factory) => {
   const stacks = {
     locations: [],
-    scopes: [initialScope],
+    scope: newScope(initialScope),
   };
 
   return ({
@@ -59,31 +109,31 @@ export const initializeContext = (initialScope, options, factory) => {
       stacks.locations = [...stacks.locations.slice(1)];
     },
 
-    scopes: () => stacks.scopes,
     pushScope: (scope = {}) => {
-      stacks.scopes = [scope, ...stacks.scopes];
+      stacks.scope = newScope(scope, stacks.scope);
     },
-    swapScopes: scopes => {
-      const currentScopes = stacks.scopes;
-      stacks.scopes = scopes;
-      return currentScopes;
+    swapScope: scope => {
+      const currentScope = stacks.scope;
+      stacks.scope = scope;
+      return currentScope;
+    },
+    swapWithNewScope: scope => {
+      const currentScope = stacks.scope;
+      stacks.scope = newScope(scope);
+      return currentScope;
     },
     popScope: () => {
-      stacks.scopes = [...stacks.scopes.slice(1)];
+      stacks.scope = stacks.scope.parentScope;
     },
-    getScope: () => R.reduce((acc, s) => ({ ...acc, ...s }), {}, R.reverse(stacks.scopes)),
-    getVariable: name => stacks.scopes.reduce((acc, s) => acc || s[name], undefined),
-    getLocalVariable: name => stacks.scopes[0][name],
+
+    getScope: () => stacks.scope,
+    getVariable: name => stacks.scope.getVariable(name),
+    getLocalVariable: name => stacks.scope.getLocalVariable(name),
     setVariable: (name, value) => {
-      const frame = stacks.scopes.findIndex(s => s[name]);
-      if (frame === -1) {
-        stacks.scopes[0][name] = value;
-      } else {
-        stacks.scopes[frame][name] = value;
-      }
+      stacks.scope.setOrDeclareVariable(name, value);
     },
     setLocalVariable: (name, value) => {
-      stacks.scopes[0][name] = value;
+      stacks.scope.setLocalVariable(name, value);
     },
   });
 };

@@ -18,8 +18,8 @@
 import * as R from 'ramda';
 
 export const withSwappedScopes = (buildScopes, f) => (context, parameters) => {
-  const oldScopes = context.swapScopes(buildScopes(context, parameters));
+  const oldScopes = context.swapScope(buildScopes(context, parameters));
   const result = f(context);
-  context.swapScopes(oldScopes);
+  context.swapScope(oldScopes);
   return result;
 };

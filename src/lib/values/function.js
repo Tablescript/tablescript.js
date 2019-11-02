@@ -19,7 +19,6 @@ import * as R from 'ramda';
 import { createValue } from './default';
 import { valueTypes } from './types';
 import { bindFunctionParameters } from './util/parameters';
-import { withSwappedScopes } from './util/context';
 
 export const createFunctionValue = (formalParameters, body, closure) => {
   const asNativeString = R.always('function(tablescript)');
@@ -33,13 +32,13 @@ export const createFunctionValue = (formalParameters, body, closure) => {
     {
       asNativeString,
       asNativeBoolean: R.T,
-      callFunction: withSwappedScopes(
-        (context, parameters) => ([
-          bindFunctionParameters(context, formalParameters, parameters),
-          closure,
-        ]),
-        body.evaluate,
-      ),
+      callFunction: (context, parameters) => {
+        const oldScopes = context.swapScope(closure);
+        context.pushScope(bindFunctionParameters(context, formalParameters, parameters));
+        const result = body.evaluate(context);
+        context.swapScope(oldScopes);
+        return result;
+      },
     }
   );
 };

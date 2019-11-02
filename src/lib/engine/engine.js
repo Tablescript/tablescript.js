@@ -99,16 +99,14 @@ const runScript = contextFactory => (script, args, path = 'local') => parseAndEv
 
 const runScriptFromFile = contextFactory => (scriptPath, args) => loadParseAndEvaluate(contextFactory(args), scriptPath);
 
-const withSwappedScopes = (context, scopes, f) => {
-  const oldScopes = context.swapScopes(scopes);
-  const result = f();
-  context.swapScopes(oldScopes);
-  return result;
-};
-
 const importScript = builtins => (context, scriptPath, args) => {
-  const initialScope = initializeScope(args, builtins);
-  return withSwappedScopes(context, [initialScope], () => loadParseAndEvaluate(context, scriptPath));
+  const oldScopes = context.swapWithNewScope(builtins);
+  context.pushScope({
+    arguments: createArrayValue(args),
+  });
+  const result = loadParseAndEvaluate(context, scriptPath);
+  context.swapScope(oldScopes);
+  return result;
 };
 
 const optionOr = (option, defaultValue) => R.isNil(option) ? defaultValue : option;
