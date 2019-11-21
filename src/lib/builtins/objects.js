@@ -19,7 +19,8 @@ import * as R from 'ramda';
 import {
   createNativeFunctionValue,
   toArrayResult,
-  toObjectResult
+  toObjectResult,
+  toBooleanResult
 } from '../values';
 
 export const keysBuiltIn = createNativeFunctionValue(
@@ -59,4 +60,11 @@ export const fromPairsBuiltIn = createNativeFunctionValue(
     R.map(e => e.asArray()),
   )(a.asArray()),
   toObjectResult,
+);
+
+export const hasKeyBuiltIn = createNativeFunctionValue(
+  'hasKey',
+  ['o', 's'],
+  (context, args, o, s) => R.has(s.asNativeString(), o.asObject()),
+  toBooleanResult,
 );

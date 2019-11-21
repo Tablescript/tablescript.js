@@ -27,6 +27,7 @@ import {
   valuesBuiltIn,
   toPairsBuiltIn,
   fromPairsBuiltIn,
+  hasKeyBuiltIn,
 } from './objects';
 import { printBuiltIn } from './print';
 import { rangeBuiltIn } from './range';
@@ -58,6 +59,7 @@ export const initializeBuiltins = () => ({
   values: valuesBuiltIn,
   toPairs: toPairsBuiltIn,
   fromPairs: fromPairsBuiltIn,
+  hasKey: hasKeyBuiltIn,
 
   print: printBuiltIn,
 
