@@ -22,6 +22,7 @@ import { throwRuntimeError } from '../error';
 import {
   append,
   choose,
+  concat,
   countBy,
   each,
   every,
@@ -109,6 +110,7 @@ export const createArrayValue = entries => createValue(
   {
     append: append(entries),
     choose: choose(entries),
+    concat: concat(entries),
     countBy: countBy(entries),
     each: each(entries),
     every: every(entries),

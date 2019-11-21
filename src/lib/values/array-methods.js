@@ -39,6 +39,13 @@ export const append = entries => createNativeFunctionValue(
   toArrayResult,
 );
 
+export const concat = entries => createNativeFunctionValue(
+  'concat',
+  ['a'],
+  (context, args, a) => ([...entries, ...a.asArray()]),
+  toArrayResult,
+);
+
 export const each = entries => createNativeFunctionValue(
   'each',
   ['f'],
