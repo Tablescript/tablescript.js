@@ -1,5 +1,9 @@
-f = fn(self) {
-  self(self);
+factorial = fn(n, self) {
+  if (n == 1) {
+    1;
+  } else {
+    n * self(n - 1, self);
+  };
 };
 
-f(f);
+print(factorial(100, factorial));

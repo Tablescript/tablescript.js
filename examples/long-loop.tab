@@ -1,3 +1,8 @@
+// If you run this without overriding the default maximum loop count, it will
+// error out with a 'Maximum loop count hit' message. To allow it to run to
+// completion, run with the -l <count> option where <count> is at least
+// 2000000.
+//
 doTheThing = fn() {};
 
 i = 0;
@@ -5,3 +10,5 @@ while (i < 2000000) {
   doTheThing();
   i += 1;
 };
+
+print('Done.');

@@ -1,0 +1,24 @@
+// This file is imported by import.tab but you can run it on its own.
+//
+a = 'I also have a ham radio';
+double = fn(x) {
+  x * 2;
+};
+t = table {
+  1: first
+  2: second
+};
+
+if (arguments.length() > 0) {
+  assert(arguments[0] == 12);
+  assert(arguments[1] == 'I have a ham radio');
+  assert(arguments[2](3) == 9);
+} else {
+  assert(true);
+};
+
+{
+  a,
+  double,
+  t
+};

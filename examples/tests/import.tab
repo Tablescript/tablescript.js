@@ -1,0 +1,5 @@
+imported = import('./imported', 12, 'I have a ham radio', fn(x) x * 3);
+
+assert(imported.a == 'I also have a ham radio');
+assert(imported.double(5) == 10);
+assert(['first', 'second'].includes(imported.t()));

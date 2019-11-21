@@ -1,7 +1,0 @@
-imported = import('./imported', 12, 'I have a ham radio', fn(x) x * 3);
-
-print(imported.a);
-print(imported.double(5));
-print(imported.t());
-
-print(arguments);

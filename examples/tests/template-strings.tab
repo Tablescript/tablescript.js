@@ -1,0 +1,12 @@
+assert(`abc` == 'abc');
+assert(`abc${9}def` == 'abc9def');
+
+x = 9;
+assert(`abc${x}def` == 'abc9def');
+
+y = 'gooberface';
+assert(`abc${x}def${y}ghi` == 'abc9defgooberfaceghi');
+
+assert(`${9}abc` == '9abc');
+assert(`` == '');
+assert(`abc${9}` == 'abc9');

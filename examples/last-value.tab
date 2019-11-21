@@ -1,3 +1,6 @@
+// Run this with the -p option to print the last value of the script.
+// Tablescript will print the stringified object below.
+//
 {
   a: 'I have a ham radio',
   b: 12,

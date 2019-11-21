@@ -238,8 +238,30 @@ export const length = entries => createNativeFunctionValue(
   toNumericResult,
 );
 
+const randomIndex = entries => randomNumber(entries.length) - 1;
+
+const randomEntry = entries => entries[randomIndex(entries)];
+
 export const choose = entries => createNativeFunctionValue(
   'choose',
   [],
-  () => entries[randomNumber(entries.length) - 1],
+  () => randomEntry(entries),
+);
+
+const permuteRemaining = (remaining, chosen) => {
+  if (R.isEmpty(remaining)) {
+    return chosen;
+  }
+  const selectedIndex = randomIndex(remaining);
+  return permuteRemaining(R.remove(selectedIndex, 1, remaining), [...chosen, remaining[selectedIndex]]);
+};
+
+export const permute = entries => createNativeFunctionValue(
+  'permute',
+  [],
+  () => R.map(
+    index => entries[index],
+    permuteRemaining(R.range(0, entries.length), []),
+  ),
+  toArrayResult,
 );
