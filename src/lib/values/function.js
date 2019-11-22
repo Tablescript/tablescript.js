@@ -34,7 +34,10 @@ export const createFunctionValue = (formalParameters, body, closure) => {
       asNativeBoolean: R.T,
       callFunction: (context, parameters) => {
         const oldScopes = context.swapScope(closure);
-        context.pushScope(bindFunctionParameters(context, formalParameters, parameters));
+        context.pushScope({
+          ...bindFunctionParameters(context, formalParameters, parameters),
+          'this': createFunctionValue(formalParameters, body, closure),
+        });
         const result = body.evaluate(context);
         context.swapScope(oldScopes);
         return result;
