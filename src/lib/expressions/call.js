@@ -26,7 +26,7 @@ const evaluateParameter = context => (values, parameter) => {
   if (isArraySpread(value)) {
     return [
       ...values,
-      ...value.asArray(),
+      ...value.asArray(context),
     ];
   }
   return [

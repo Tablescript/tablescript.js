@@ -51,10 +51,10 @@ export const createSpreadTableEntryExpression = spread => ({
   expand: context => {
     const spreadValue = spread.evaluate(context);
     if (isArraySpread(spreadValue)) {
-      return spreadValue.asArray().map(entry => createLiteralTableEntry(entry));
+      return spreadValue.asArray(context).map(entry => createLiteralTableEntry(entry));
     }
     if (isTableSpread(spreadValue)) {
-      return spreadValue.asArray();
+      return spreadValue.asArray(context);
     }
     throwRuntimeError(`Can only spread ARRAY and TABLE into TABLE`, context);
   },

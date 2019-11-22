@@ -23,7 +23,7 @@ const mergeObjectEntries = context => (acc, entry) => {
   const value = entry.evaluate(context);
   return {
     ...acc,
-    ...value.asObject(),
+    ...value.asObject(context),
   };
 };
 

@@ -39,7 +39,7 @@ const evaluate = (identifier, collection, loopBlock) => () => context => {
   return R.reduce(
     evaluateLoopIteration(identifier, loopBlock, context),
     context.factory.createUndefined(),
-    items.asArray()
+    items.asArray(context)
   );
 };
 

@@ -29,14 +29,14 @@ export const keysBuiltIn = createNativeFunctionValue(
   (context, args, o) => R.compose(
     R.map(context.factory.createStringValue),
     R.keys,
-  )(o.asObject()),
+  )(o.asObject(context)),
   toArrayResult,
 );
 
 export const valuesBuiltIn = createNativeFunctionValue(
   'values',
   ['o'],
-  (context, args, o) => R.values(o.asObject()),
+  (context, args, o) => R.values(o.asObject(context)),
   toArrayResult,
 );
 
@@ -47,7 +47,7 @@ export const toPairsBuiltIn = createNativeFunctionValue(
     R.map(context.factory.createArrayValue),
     R.map(([key, value]) => ([context.factory.createStringValue(key), value])),
     R.toPairs,
-  )(o.asObject()),
+  )(o.asObject(context)),
   toArrayResult,
 );
 
@@ -57,14 +57,14 @@ export const fromPairsBuiltIn = createNativeFunctionValue(
   (context, args, a) => R.compose(
     R.fromPairs,
     R.map(([keyValue, value]) => ([keyValue.asNativeString(), value])),
-    R.map(e => e.asArray()),
-  )(a.asArray()),
+    R.map(e => e.asArray(context)),
+  )(a.asArray(context)),
   toObjectResult,
 );
 
 export const hasKeyBuiltIn = createNativeFunctionValue(
   'hasKey',
   ['o', 's'],
-  (context, args, o, s) => R.has(s.asNativeString(), o.asObject()),
+  (context, args, o, s) => R.has(s.asNativeString(), o.asObject(context)),
   toBooleanResult,
 );

@@ -33,7 +33,7 @@ const valueToEntries = context => (entries, value) => {
   if (isArraySpread(v)) {
     return [
       ...entries,
-      ...v.asArray(),
+      ...v.asArray(context),
     ];
   }
   return [
