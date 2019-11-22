@@ -41,6 +41,7 @@ import {
   slice,
   sort,
   unique,
+  without,
 } from './array-methods';
 
 const entriesAsNativeValues = entries => entries.map(e => e.asNativeValue());
@@ -129,6 +130,7 @@ export const createArrayValue = entries => createValue(
     slice: slice(entries),
     sort: sort(entries),
     unique: unique(entries),
+    without: without(entries),
   },
   {
     asNativeString: asNativeString(entries),

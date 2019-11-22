@@ -132,10 +132,12 @@ export const filter = entries => createNativeFunctionValue(
   toArrayResult,
 );
 
+const nativeIncludes = (value, arr) => R.reduce((result, entry) => result || entry.nativeEquals(value), false, arr);
+
 export const includes = entries => createNativeFunctionValue(
   'includes',
   ['value'],
-  (context, args, value) => R.reduce((result, entry) => result || entry.nativeEquals(value), false, entries),
+  (context, args, value) => nativeIncludes(value, entries),
   toBooleanResult,
 );
 
@@ -269,6 +271,16 @@ export const permute = entries => createNativeFunctionValue(
   () => R.map(
     index => entries[index],
     permuteRemaining(R.range(0, entries.length), []),
+  ),
+  toArrayResult,
+);
+
+export const without = entries => createNativeFunctionValue(
+  'without',
+  ['a'],
+  (context, args, a) => R.filter(
+    entry => !nativeIncludes(entry, a.asArray(context)),
+    entries,
   ),
   toArrayResult,
 );
