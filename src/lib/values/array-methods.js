@@ -265,6 +265,17 @@ const permuteRemaining = (remaining, chosen) => {
   return permuteRemaining(R.remove(selectedIndex, 1, remaining), [...chosen, remaining[selectedIndex]]);
 };
 
+export const chooseN = entries => createNativeFunctionValue(
+  'choose',
+  ['n'],
+  (context, args, n) => R.slice(
+    0,
+    n.asNativeNumber(),
+    permuteRemaining(entries, [])
+  ),
+  toArrayResult,
+);
+
 export const permute = entries => createNativeFunctionValue(
   'permute',
   [],
