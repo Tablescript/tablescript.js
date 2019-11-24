@@ -138,7 +138,7 @@ const outputVersion = () => {
 
 const padding = count => ' '.repeat(count);
 
-const processConfig = (options) => ({
+const processConfig = options => ({
   optionsByToken: R.fromPairs([
     ...R.map(
       option => ([option.shortForm, option]),
@@ -173,7 +173,7 @@ const processConfig = (options) => ({
   }
 });
 
-const createOptionParser = (options) => ({
+const createOptionParser = options => ({
   parse: args => {
     const config = processConfig([
       flag('-V', '--version', 'Display the version number'),
