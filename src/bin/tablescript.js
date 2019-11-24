@@ -19,220 +19,36 @@
 
 import '@babel/polyfill';
 import * as R from 'ramda';
-import options from 'commander';
-import { version } from '../../package.json';
+import optionParser from './options';
 import { initializeTablescript, TablescriptError } from '../lib';
 import repl from './repl';
 
-const processTsOptionWithValue = (config, allOptions, option, remainingArgs) => {
-  if (R.isEmpty(remainingArgs)) {
-    throw new Error(`No value for ${option.longForm}`);
-  }
-
-  return processTsOptions(
-    config,
-    {
-      ...allOptions,
-      tsOptions: {
-        ...allOptions.tsOptions,
-        [option.keyName]: R.head(remainingArgs),
-      },
-    },
-    R.tail(remainingArgs),
-  );
-};
-
-const processTsOption = (config, allOptions, option, remainingArgs) => {
-  if (option.isFlag) {
-    return processTsOptions(
-      config,
-      {
-        ...allOptions,
-        tsOptions: {
-          ...allOptions.tsOptions,
-          [option.keyName]: option.isEnablingFlag,
-        },
-      },
-      remainingArgs,
-    );
-  }
-  return processTsOptionWithValue(config, allOptions, option, remainingArgs);
-};
-
-const isOption = token => (token.startsWith('--') && token.length > 2) || (token.startsWith('-') && token.length > 1);
-
-const processTsOptions = (config, allOptions, remainingArgs) => {
-  if (R.isEmpty(remainingArgs)) {
-    return allOptions;
-  }
-
-  const token = R.head(remainingArgs);
-  if (isOption(token)) {
-    const option = config.optionsByToken[token];
-    if (R.isNil(option)) {
-      throw new Error(`Unrecognized option ${token}`);
-    }
-    return processTsOption(config, allOptions, option, R.tail(remainingArgs));
-  }
-
-  return {
-    ...allOptions,
-    filename: token,
-    scriptArgs: R.tail(remainingArgs),
-  };
-};
-
-const initialOptions = {
-  tsOptions: {},
-  scriptArgs: [],
-};
-
-const longFormTokens = longForm => {
-  const tokens = longForm.slice(2).split('-');
-  if (tokens[0] === 'no') {
-    return tokens.slice(1);
-  }
-  return tokens;
-};
-
-const keyNameFromLongForm = longForm => {
-  const tokens = longFormTokens(longForm);
-  return R.join(
-    '',
-    [
-      R.head(tokens),
-      ...R.map(
-        s => `${R.head(s).toUpperCase()}${R.tail(s)}`,
-        R.tail(tokens),
-      ),
-    ],
-  );
-};
-
-const flag = (shortForm, longForm, message) => ({
-  isFlag: true,
-  keyName: keyNameFromLongForm(longForm),
-  shortForm,
-  longForm,
-  message,
-  isEnablingFlag: longForm.slice(2).split('-')[0] !== 'no',
-  toUsage: () => `${shortForm}, ${longForm}`,
-});
-
-const option = (shortForm, longForm, parameterName, message) => ({
-  isFlag: false,
-  keyName: keyNameFromLongForm(longForm),
-  shortForm,
-  longForm,
-  parameterName,
-  message,
-  toUsage: () => `${shortForm}, ${longForm} <${parameterName}>`,
-});
-
-const validOptions = [
-  flag('-p', '--print-last-value', 'Print the last evaluated value'),
-  flag('-T', '--no-validate-tables', 'Disable table entry validation'),
-  flag('-c', '--evaluate-callable-result', 'Evaluate results that are callable'),
-  option('-l', '--max-loop-count', 'count', 'Maximum loop count'),
-  option('-s', '--max-stack-depth', 'count', 'Maximum stack depth'),
-  flag('-d', '--debug', 'Enable debug mode (for development)'),
-];
-
-const outputVersion = () => {
-  console.log(`Tablescript v${version}`);
-};
-
-const padding = count => ' '.repeat(count);
-
-const processConfig = (options) => ({
-  optionsByToken: R.fromPairs([
-    ...R.map(
-      option => ([option.shortForm, option]),
-      options,
-    ),
-    ...R.map(
-      option => ([option.longForm, option]),
-      options,
-    ),
-  ]),
-  usage: () => {
-    outputVersion();
-    console.log('');
-    console.log('Usage: tablescript [options] <file> [...args]');
-    console.log('');
-    console.log('Options:');
-    const optionUsages = R.map(
-      option => ([
-        option.toUsage(),
-        option.message,
-      ]),
-      options,
-    );
-    const widestUsage = R.reduce(
-      (length, [usage, message]) => Math.max(length, usage.length),
-      0,
-      optionUsages,
-    );
-    optionUsages.forEach(([usage, message]) => {
-      console.log(`  ${usage}${padding(widestUsage - usage.length)}  ${message}`);
-    });
-  }
-});
-
-const createOptionParser = (options) => ({
-  parse: args => {
-    const config = processConfig([
-      flag('-V', '--version', 'Display the version number'),
-      ...options,
-      flag('-h', '--help', 'Display usage information'),
-    ]);
-    try {
-      const processedOptions = processTsOptions(config, initialOptions, args.slice(2));
-      if (processedOptions.tsOptions.help) {
-        config.usage();
-        process.exit(0);
-      }
-      if (processedOptions.tsOptions.version) {
-        outputVersion();
-        process.exit(0);
-      }
-      return processedOptions;
-    }
-    catch (e) {
-      console.log(e.message);
-      config.usage();
-      process.exit(-1);
-    }
-  },
-});
-
-const optionParser = createOptionParser(validOptions);
-const newOptions = optionParser.parse(process.argv);
+const options = optionParser.parse(process.argv);
 
 const optionOr = (option, defaultValue) => R.isNil(option) ? defaultValue : option;
 
 const tablescript = initializeTablescript({
-  validateTables: optionOr(newOptions.tsOptions.validateTables, true),
-  evaluateCallableResult: optionOr(newOptions.tsOptions.evaluateCallableResult, false),
-  maximumLoopCount: optionOr(newOptions.tsOptions.maxLoopCount, undefined),
-  maximumStackDepth: optionOr(newOptions.tsOptions.maxStackDepth, undefined),
-  debug: optionOr(newOptions.tsOptions.debug, false),
+  validateTables: optionOr(options.tsOptions.validateTables, true),
+  evaluateCallableResult: optionOr(options.tsOptions.evaluateCallableResult, false),
+  maximumLoopCount: optionOr(options.tsOptions.maxLoopCount, undefined),
+  maximumStackDepth: optionOr(options.tsOptions.maxStackDepth, undefined),
+  debug: optionOr(options.tsOptions.debug, false),
 });
 
 
-if (R.isNil(newOptions.filename)) {
+if (R.isNil(options.filename)) {
   repl(tablescript);
 } else {
   try {
-    const value = tablescript.runScriptFromFile(newOptions.filename, newOptions.scriptArgs);
-    if (newOptions.tsOptions.printLastValue) {
+    const value = tablescript.runScriptFromFile(options.filename, options.scriptArgs);
+    if (options.tsOptions.printLastValue) {
       console.log(value.asNativeValue());
     }
   } catch (e) {
     if (e instanceof TablescriptError) {
       console.log(e.toString());
     } else {
-      if (newOptions.tsOptions.debug) {
+      if (options.tsOptions.debug) {
         console.log(e);
       } else {
         console.log(`Internal Error: ${ e.toString() }`);
