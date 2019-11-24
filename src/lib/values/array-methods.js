@@ -295,3 +295,10 @@ export const without = entries => createNativeFunctionValue(
   ),
   toArrayResult,
 );
+
+export const isEmpty = entries => createNativeFunctionValue(
+  'isEmpty',
+  [],
+  () => R.isEmpty(entries),
+  toBooleanResult,
+);

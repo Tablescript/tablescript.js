@@ -24,6 +24,189 @@ import { version } from '../../package.json';
 import { initializeTablescript, TablescriptError } from '../lib';
 import repl from './repl';
 
+const processTsOptionWithValue = (config, allOptions, option, remainingArgs) => {
+  if (R.isEmpty(remainingArgs)) {
+    throw new Error(`No value for ${option.longForm}`);
+  }
+
+  return processTsOptions(
+    config,
+    {
+      ...allOptions,
+      tsOptions: {
+        ...allOptions.tsOptions,
+        [option.keyName]: R.head(remainingArgs),
+      },
+    },
+    R.tail(remainingArgs),
+  );
+};
+
+const processTsOption = (config, allOptions, option, remainingArgs) => {
+  if (option.isFlag) {
+    return processTsOptions(
+      config,
+      {
+        ...allOptions,
+        tsOptions: {
+          ...allOptions.tsOptions,
+          [option.keyName]: option.isEnablingFlag,
+        },
+      },
+      remainingArgs,
+    );
+  }
+  return processTsOptionWithValue(config, allOptions, option, remainingArgs);
+};
+
+const isOption = token => (token.startsWith('--') && token.length > 2) || (token.startsWith('-') && token.length > 1);
+
+const processTsOptions = (config, allOptions, remainingArgs) => {
+  if (R.isEmpty(remainingArgs)) {
+    return allOptions;
+  }
+
+  const token = R.head(remainingArgs);
+  if (isOption(token)) {
+    if (config.isOption(token)) {
+      return processTsOption(config, allOptions, config.optionsByToken[token], R.tail(remainingArgs));
+    }
+    throw new Error(`Unrecognized option ${token}`);
+  }
+
+  return {
+    ...allOptions,
+    filename: token,
+    scriptArgs: R.tail(remainingArgs),
+  };
+};
+
+const initialOptions = {
+  tsOptions: {},
+  scriptArgs: [],
+};
+
+const longFormTokens = longForm => {
+  const tokens = longForm.slice(2).split('-');
+  if (tokens[0] === 'no') {
+    return tokens.slice(1);
+  }
+  return tokens;
+};
+
+const keyNameFromLongForm = longForm => {
+  const tokens = longFormTokens(longForm);
+  return R.join(
+    '',
+    [
+      R.head(tokens),
+      ...R.map(
+        s => `${R.head(s).toUpperCase()}${R.tail(s)}`,
+        R.tail(tokens),
+      ),
+    ],
+  );
+};
+
+const flag = (shortForm, longForm, message) => ({
+  isFlag: true,
+  keyName: keyNameFromLongForm(longForm),
+  shortForm,
+  longForm,
+  message,
+  isEnablingFlag: longForm.slice(2).split('-')[0] !== 'no',
+});
+
+const option = (shortForm, longForm, parameterName, message) => ({
+  isFlag: false,
+  keyName: keyNameFromLongForm(longForm),
+  shortForm,
+  longForm,
+  parameterName,
+  message,
+});
+
+const validOptions = [
+  option('-l', '--max-loop-count', 'count', 'Maximum loop count'),
+  option('-s', '--max-stack-depth', 'count', 'Maximum stack depth'),
+];
+
+const validFlags = [
+  flag('-p', '--print-last-value', 'Print the last evaluated value'),
+  flag('-V', '--no-validate-tables', 'Print the last evaluated value'),
+  flag('-c', '--evaluate-callable-result', 'Evaluate results that are callable'),
+  flag('-d', '--debug', 'Enable debug mode (for development)'),
+];
+
+const optionIncludes = (token, options) => R.any(R.propEq('shortForm', token), options) || R.any(R.propEq('longForm', token), options);
+
+const processConfig = (options, flags) => ({
+  optionsByToken: R.fromPairs([
+    ...R.map(
+      option => ([option.shortForm, option]),
+      [
+        ...flags,
+        ...options,
+      ],
+    ),
+    ...R.map(
+      option => ([option.longForm, option]),
+      [
+        ...flags,
+        ...options,
+      ],
+    ),
+  ]),
+  isOption: token => optionIncludes(token, [
+    ...flags,
+    ...options,
+  ]),
+  isFlag: token => optionIncludes(token, flags),
+  usage: () => {
+    console.log(`Tablescript v${version}`);
+    console.log('');
+    console.log('Usage: tablescript [options] <file> [...args]');
+    console.log('');
+    console.log('Options:');
+    flags.forEach(flag => {
+      console.log(`  ${flag.shortForm}, ${flag.longForm}: ${flag.message}`);
+    });
+    options.forEach(option => {
+      console.log(`  ${option.shortForm}, ${option.longForm} <${option.parameterName}>: ${option.message}`);
+    })
+  }
+});
+
+const createOptionParser = (flags, options) => ({
+  parse: args => {
+    const config = processConfig(
+      options,
+      [
+        ...flags,
+        flag('-h', '--help', 'Display usage information'),
+      ],
+    );
+    try {
+      const processedOptions = processTsOptions(config, initialOptions, args.slice(2));
+      if (processedOptions.tsOptions.help) {
+        config.usage();
+        process.exit(0);
+      }
+      return processedOptions;
+    }
+    catch (e) {
+      console.log(e.message);
+      config.usage();
+      process.exit(-1);
+    }
+  },
+});
+
+const optionParser = createOptionParser(validFlags, validOptions);
+const newOptions = optionParser.parse(process.argv);
+console.log(JSON.stringify(newOptions, null, 2));
+process.exit(0);
+
 options
   .version(`Tablescript v${version}`)
   .usage('[options] <file> [...args]')
@@ -37,6 +220,8 @@ options
 
 const filename = options.args[0];
 const args = options.args.slice(1);
+
+console.log('args', options.args);
 
 const optionOr = (option, defaultValue) => R.isNil(option) ? defaultValue : option;
 
