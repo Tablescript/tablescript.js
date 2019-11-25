@@ -395,3 +395,10 @@ assert(['a', 'aa', 'b', 'aa', 'b', 'a'].unique() == ['a', 'aa', 'b']);
 
 a = [1, 2, 1, 4, 5, 3, 3, 8, 2, 2, 2];
 assert(a.unique().sort() == [1, 2, 4, 5, 3, 8].sort());
+
+a = [1, 2, 3, 4, 5];
+assert(a.head() == 1);
+assert(a.tail() == [2, 3, 4, 5]);
+
+assert([].head() == undefined);
+assert([].tail() == []);

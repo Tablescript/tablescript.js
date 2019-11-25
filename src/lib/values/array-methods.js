@@ -302,3 +302,16 @@ export const isEmpty = entries => createNativeFunctionValue(
   () => R.isEmpty(entries),
   toBooleanResult,
 );
+
+export const head = entries => createNativeFunctionValue(
+  'head',
+  [],
+  context => R.isEmpty(entries) ? context.factory.createUndefined() : R.head(entries),
+);
+
+export const tail = entries => createNativeFunctionValue(
+  'tail',
+  [],
+  () => R.tail(entries),
+  toArrayResult,
+);
