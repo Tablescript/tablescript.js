@@ -47,6 +47,7 @@ if (R.isNil(options.filename)) {
   } catch (e) {
     if (e instanceof TablescriptError) {
       console.log(e.toString());
+      process.exit(e.exitCode);
     } else {
       if (options.tsOptions.debug) {
         console.log(e);

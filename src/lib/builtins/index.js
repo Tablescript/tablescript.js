@@ -17,6 +17,7 @@
 
 import { createObjectValue } from '../values';
 import { assertBuiltIn } from './assert';
+import { exitBuiltIn } from './exit';
 import {
   chooseBuiltIn,
   chooseNBuiltIn,
@@ -50,6 +51,7 @@ import {
 
 export const initializeBuiltins = () => ({
   assert: assertBuiltIn,
+  exit: exitBuiltIn,
 
   choose: chooseBuiltIn,
   chooseN: chooseNBuiltIn,

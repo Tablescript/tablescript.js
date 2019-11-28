@@ -1,0 +1,5 @@
+if (true) {
+  exit('Forced exit');
+};
+
+print('Nope');

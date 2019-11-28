@@ -18,11 +18,12 @@
 const locationToString = (location, i) => `[${i + 1}] ${location.path} (line ${location.line} column ${location.column})`;
 
 export class TablescriptError extends Error {
-  constructor(name, message, context) {
+  constructor(name, message, context, exitCode = -1) {
     super(message);
     this.name = name;
     this.message = message;
     this.context = context;
+    this.exitCode = exitCode;
     Object.setPrototypeOf(this, TablescriptError.prototype);
   }
 
@@ -66,4 +67,8 @@ export const throwRuntimeError = (message, context) => {
 
 export const runtimeErrorThrower = message => context => {
   throwRuntimeError(message, context);
+};
+
+export const endScript = (message, exitCode) => {
+  throw new TablescriptError('ScriptEnd', message, undefined, exitCode);
 };
