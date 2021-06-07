@@ -7,7 +7,7 @@ version: 2
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: circleci/node:10.14-jessie-browsers-legacy
+    - image: circleci/node:14.16-stretch-browsers-legacy
 
 jobs:
   build:
