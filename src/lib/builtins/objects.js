@@ -52,7 +52,7 @@ export const toPairsBuiltIn = createNativeFunctionValue(
 );
 
 export const fromPairsBuiltIn = createNativeFunctionValue(
-  'toPairs',
+  'fromPairs',
   ['a'],
   (context, args, a) => R.compose(
     R.fromPairs,
