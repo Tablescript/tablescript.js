@@ -31,16 +31,16 @@
     "url": "https://github.com/Tablescript/tablescript.js"
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.3",
-    "@babel/core": "^7.6.3",
-    "@babel/preset-env": "^7.6.3",
-    "@babel/register": "^7.6.2",
-    "babel-jest": "^24.9.0",
+    "@babel/cli": "^7.14.3",
+    "@babel/core": "^7.14.3",
+    "@babel/preset-env": "^7.14.4",
+    "@babel/register": "^7.13.16",
+    "babel-jest": "^27.0.2",
     "eslint": "*",
     "eslint-config-google": "*",
     "eslint-plugin-standard": "*",
-    "jest": "^24.9.0",
-    "jest-junit": "^8.0.0",
+    "jest": "^27.0.4",
+    "jest-junit": "^12.1.0",
     "madge": "^4.0.1",
     "pegjs": "^0.10.0"
   },
