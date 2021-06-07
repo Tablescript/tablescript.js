@@ -41,7 +41,7 @@
     "eslint-plugin-standard": "*",
     "jest": "^24.9.0",
     "jest-junit": "^8.0.0",
-    "madge": "^3.4.4",
+    "madge": "^4.0.1",
     "pegjs": "^0.10.0"
   },
   "dependencies": {
