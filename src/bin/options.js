@@ -129,6 +129,9 @@ const validOptions = [
   flag('-c', '--evaluate-callable-result', 'Evaluate results that are callable'),
   option('-l', '--max-loop-count', 'count', 'Maximum loop count'),
   option('-s', '--max-stack-depth', 'count', 'Maximum stack depth'),
+  option('-L', '--locale', 'locale', 'Locale for string comparisons'),
+  flag('-Ln', '--locale-numeric', 'Enable locale-based numeric string comparisons'),
+  option('-Ls', '--locale-sensitivity', 'localeSensitivity', 'Sensitivity setting for locale-based string comparisons'),
   flag('-d', '--debug', 'Enable debug mode (for development)'),
 ];
 

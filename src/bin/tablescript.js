@@ -33,6 +33,9 @@ const tablescript = initializeTablescript({
   maximumLoopCount: optionOr(options.tsOptions.maxLoopCount, undefined),
   maximumStackDepth: optionOr(options.tsOptions.maxStackDepth, undefined),
   debug: optionOr(options.tsOptions.debug, false),
+  locale: optionOr(options.tsOptions.locale, undefined),
+  localeNumeric: optionOr(options.tsOptions.localeNumeric, undefined),
+  localeSensitivity: optionOr(options.tsOptions.localeSensitivity, undefined),
 });
 
 

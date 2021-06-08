@@ -65,15 +65,22 @@ const multiplyBy = value => (context, other) => {
   return createStringValue(value.repeat(count));
 };
 
-const lessThan = value => (context, other) => context.factory.createBooleanValue(value < other.asNativeString());
+const locale = context => context.options.values.locale;
 
-const greaterThan = value => (context, other) => context.factory.createBooleanValue(value > other.asNativeString());
+const localeOptions = context => ({
+  numeric: context.options.values.localeNumeric,
+  sensitivity: context.options.values.localeSensitivity,
+});
 
-const lessThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value <= other.asNativeString());
+const lessThan = value => (context, other) => context.factory.createBooleanValue(value.localeCompare(other.asNativeString(), locale(context), localeOptions(context)) < 0);
 
-const greaterThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value >= other.asNativeString());
+const greaterThan = value => (context, other) => context.factory.createBooleanValue(value.localeCompare(other.asNativeString(), locale(context), localeOptions(context)) > 0);
 
-const compare = value => (context, other) => context.factory.createNumericValue(value.localeCompare(other.asNativeString()));
+const lessThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value.localeCompare(other.asNativeString(), locale(context), localeOptions(context)) <= 0);
+
+const greaterThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value.localeCompare(other.asNativeString(), locale(context), localeOptions(context)) >= 0);
+
+const compare = value => (context, other) => context.factory.createNumericValue(value.localeCompare(other.asNativeString(), locale(context), localeOptions(context)));
 
 export const createStringValue = value => createValue(
   valueTypes.STRING,
