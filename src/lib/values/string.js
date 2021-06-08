@@ -72,15 +72,40 @@ const localeOptions = context => ({
   sensitivity: context.options.values.localeSensitivity,
 });
 
-const lessThan = value => (context, other) => context.factory.createBooleanValue(value.localeCompare(other.asNativeString(), locale(context), localeOptions(context)) < 0);
+const lessThan = value => (context, other) => context.factory.createBooleanValue(
+  value.localeCompare(
+    other.asNativeString(),
+    locale(context),
+    localeOptions(context),
+  ) < 0);
 
-const greaterThan = value => (context, other) => context.factory.createBooleanValue(value.localeCompare(other.asNativeString(), locale(context), localeOptions(context)) > 0);
+const greaterThan = value => (context, other) => context.factory.createBooleanValue(
+  value.localeCompare(
+    other.asNativeString(),
+    locale(context),
+    localeOptions(context),
+  ) > 0);
 
-const lessThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value.localeCompare(other.asNativeString(), locale(context), localeOptions(context)) <= 0);
+const lessThanOrEquals = value => (context, other) => context.factory.createBooleanValue(
+  value.localeCompare(
+    other.asNativeString(),
+    locale(context),
+    localeOptions(context),
+  ) <= 0);
 
-const greaterThanOrEquals = value => (context, other) => context.factory.createBooleanValue(value.localeCompare(other.asNativeString(), locale(context), localeOptions(context)) >= 0);
+const greaterThanOrEquals = value => (context, other) => context.factory.createBooleanValue(
+  value.localeCompare(
+    other.asNativeString(),
+    locale(context),
+    localeOptions(context),
+  ) >= 0);
 
-const compare = value => (context, other) => context.factory.createNumericValue(value.localeCompare(other.asNativeString(), locale(context), localeOptions(context)));
+const compare = value => (context, other) => context.factory.createNumericValue(
+  value.localeCompare(
+    other.asNativeString(),
+    locale(context),
+    localeOptions(context),
+  ));
 
 export const createStringValue = value => createValue(
   valueTypes.STRING,
