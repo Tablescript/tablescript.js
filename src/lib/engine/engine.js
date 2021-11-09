@@ -150,7 +150,15 @@ export const initializeTablescript = options => {
     importScript: importScript(builtins),
     io: R.pick(['fs', 'path', 'output'], mergedOptions.io),
     flags: R.pick(['validateTables', 'evaluateCallableResult', 'debug'], mergedOptions.flags),
-    values: R.pick(['maximumLoopCount', 'maximumStackDepth', 'maximumTableIgnoreCount', 'maximumTableUniqueAttempts', 'locale', 'localeNumeric', 'localeSensitivity'], mergedOptions.values),
+    values: R.pick([
+      'maximumLoopCount',
+      'maximumStackDepth',
+      'maximumTableIgnoreCount',
+      'maximumTableUniqueAttempts',
+      'locale',
+      'localeNumeric',
+      'localeSensitivity'
+    ], mergedOptions.values),
   };
 
   return {
