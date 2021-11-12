@@ -11,6 +11,7 @@ This is a work in progress.
     $> yarn lint
     $> yarn test
     $> yarn test:examples
+    $> yarn test:tavern
 
 ### Build
 
