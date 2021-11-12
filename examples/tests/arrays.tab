@@ -387,6 +387,11 @@ expected_value = [
 ];
 assert(a.sort(sorter) == expected_value);
 
+# Run with -Ln (locale-based numeric comparisons)
+# assert(['2 chickens', '118 chickens', '1 chicken'].sort() == ['1 chicken', '2 chickens', '118 chickens']);
+# Otherwise...
+assert(['2 chickens', '118 chickens', '1 chicken'].sort() == ['1 chicken', '118 chickens', '2 chickens']);
+
 ############################################################################
 # Array.unique
 assert([].unique() == []);
