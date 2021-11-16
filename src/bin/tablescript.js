@@ -18,6 +18,8 @@
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
 import '@babel/polyfill';
+import fs from 'fs';
+import path from 'path';
 import * as R from 'ramda';
 import optionParser from './options';
 import { initializeTablescript, TablescriptError } from '../lib';
@@ -28,6 +30,8 @@ const options = optionParser.parse(process.argv);
 const optionOr = (option, defaultValue) => R.isNil(option) ? defaultValue : option;
 
 const tablescript = initializeTablescript({
+  fs,
+  path,
   validateTables: optionOr(options.tsOptions.validateTables, true),
   evaluateCallableResult: optionOr(options.tsOptions.evaluateCallableResult, false),
   maximumLoopCount: optionOr(options.tsOptions.maxLoopCount, undefined),

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Tablescript.js. If not, see <http://www.gnu.org/licenses/>.
 
-import fs from 'fs';
-import path from 'path';
 import * as R from 'ramda';
 import { version } from '../../../package.json';
 import { initializeContext } from './context';
@@ -118,10 +116,17 @@ const importScript = builtins => (context, scriptPath, args) => {
 
 const optionOr = (option, defaultValue) => R.isNil(option) ? defaultValue : option;
 
+const optionOrThrow = (option, message) => {
+  if (R.isNil(option)) {
+    throwRuntimeError(message);
+  }
+  return option;
+};
+
 const mergeWithDefaults = options => ({
   io: {
-    fs: optionOr(options.fs, fs),
-    path: optionOr(options.path, path),
+    fs: optionOrThrow(options.fs, 'Tablescript requires an fs-compatible module set in the options'),
+    path: optionOrThrow(options.path, 'Tablescript requires a path-compatible module set in the options'),
     output: optionOr(options.output, console.log),
   },
   flags: {

@@ -32,6 +32,9 @@ jobs:
       - run:
           name: Build package
           command: yarn build
+      - run:
+          name: Build bundle
+          command: yarn build:bundle
 
       - persist_to_workspace:
           root: ~/repo
