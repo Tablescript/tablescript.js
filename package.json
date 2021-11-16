@@ -1,6 +1,6 @@
 {
   "name": "tablescript.js",
-  "version": "0.6.21",
+  "version": "0.6.22",
   "description": "Javascript-based Tablescript parser and interpreter",
   "url": "https://tablescript.org",
   "bin": {
@@ -19,7 +19,7 @@
     "test:examples": "find examples/tests -name \"*.tab\" -exec echo {} \\; -exec node dist/bin/tablescript.js {} \\;",
     "test:tavern": "node dist/bin/tablescript.js examples/tavern/tavern.tab",
     "ci:test": "jest --ci --runInBand --reporters=default --reporters=jest-junit",
-    "postversion": "git push --tags && yarn publish . --tag $npm_package_version && git push && echo \"Successfully released version $npm_package_version!\""
+    "postversion": "git push --tags && yarn publish . --tag latest && git push && echo \"Successfully released version $npm_package_version!\""
   },
   "author": {
     "name": "Jamie Hale",
